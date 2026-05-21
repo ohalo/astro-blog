@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400">
+  <rect width="800" height="400" fill="#1a1a2e"/>
+  <text x="400" y="80" text-anchor="middle" fill="#eee" font-size="24" font-family="sans-serif">Agent 开发工作流</text>
+  <rect x="50" y="150" width="120" height="60" rx="8" fill="#4a4e69"/>
+  <text x="110" y="185" text-anchor="middle" fill="#fff" font-size="14">理解意图</text>
+  <rect x="220" y="150" width="120" height="60" rx="8" fill="#4a4e69"/>
+  <text x="280" y="185" text-anchor="middle" fill="#fff" font-size="14">拆解任务</text>
+  <rect x="390" y="150" width="120" height="60" rx="8" fill="#4a4e69"/>
+  <text x="450" y="185" text-anchor="middle" fill="#fff" font-size="14">执行</text>
+  <rect x="560" y="150" width="120" height="60" rx="8" fill="#4a4e69"/>
+  <text x="620" y="185" text-anchor="middle" fill="#fff" font-size="14">验证修正</text>
+  <line x1="170" y1="180" x2="220" y2="180" stroke="#9a8c98" stroke-width="2"/>
+  <line x1="340" y1="180" x2="390" y2="180" stroke="#9a8c98" stroke-width="2"/>
+  <line x1="510" y1="180" x2="560" y2="180" stroke="#9a8c98" stroke-width="2"/>
+  <text x="400" y="300" text-anchor="middle" fill="#888" font-size="16">画不出来的流程，别写代码</text>
+</svg>

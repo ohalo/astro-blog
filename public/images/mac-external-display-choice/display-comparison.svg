@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <rect width="800" height="400" fill="#f5f5f7"/>
+  
+  <!-- 4K Monitor -->
+  <rect x="50" y="100" width="200" height="150" rx="10" fill="#333" stroke="#0071e3" stroke-width="3"/>
+  <text x="150" y="185" text-anchor="middle" fill="white" font-size="16" font-weight="bold">4K显示器</text>
+  <text x="150" y="210" text-anchor="middle" fill="#aaa" font-size="12">3840×2160</text>
+  <text x="150" y="300" text-anchor="middle" fill="#333" font-size="14">✓ 文字清晰</text>
+  <text x="150" y="320" text-anchor="middle" fill="#333" font-size="14">✗ 价格较高</text>
+  
+  <!-- 2.5K Monitor -->
+  <rect x="300" y="100" width="200" height="150" rx="10" fill="#333" stroke="#34c759" stroke-width="3"/>
+  <text x="400" y="185" text-anchor="middle" fill="white" font-size="16" font-weight="bold">准4K/2.5K</text>
+  <text x="400" y="210" text-anchor="middle" fill="#aaa" font-size="12">2560×1440</text>
+  <text x="400" y="300" text-anchor="middle" fill="#333" font-size="14">✓ 性价比高</text>
+  <text x="400" y="320" text-anchor="middle" fill="#333" font-size="14">✓ 平衡选择</text>
+  
+  <!-- Ultrawide -->
+  <rect x="550" y="100" width="200" height="150" rx="10" fill="#333" stroke="#ff9f0a" stroke-width="3"/>
+  <text x="650" y="180" text-anchor="middle" fill="white" font-size="16" font-weight="bold">带鱼屏</text>
+  <text x="650" y="205" text-anchor="middle" fill="#aaa" font-size="12">3440×1440</text>
+  <text x="650" y="300" text-anchor="middle" fill="#333" font-size="14">✓ 视野宽广</text>
+  <text x="650" y="320" text-anchor="middle" fill="#333" font-size="14">✗ 适配问题</text>
+  
+  <text x="400" y="380" text-anchor="middle" fill="#666" font-size="14">Mac外接显示器选择对比</text>
+</svg>

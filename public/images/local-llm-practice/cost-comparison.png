@@ -1,0 +1,6 @@
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#1a1a2e"/>
+  <text x="400" y="200" font-family="Arial, sans-serif" font-size="24" fill="#4a9eff" text-anchor="middle">成本对比：本地部署 vs 云端API</text>
+  <text x="400" y="250" font-family="Arial, sans-serif" font-size="16" fill="#888" text-anchor="middle">本地：~5000元/年 | 云端：~1400元/年</text>
+  <text x="400" y="300" font-family="Arial, sans-serif" font-size="14" fill="#666" text-anchor="middle">[占位图片 - 请替换为实际成本对比图]</text>
+</svg>

@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16213e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="800" height="400" fill="url(#bg)"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" font-family="Arial, sans-serif" font-size="24" fill="#fff" text-anchor="middle" font-weight="bold">RAG 工作原理</text>
+  
+  <!-- 步骤1: 文档 -->
+  <rect x="30" y="80" width="140" height="100" rx="10" fill="#4a90d9" opacity="0.9"/>
+  <text x="100" y="115" font-family="Arial, sans-serif" font-size="14" fill="#fff" text-anchor="middle">📄 你的文档</text>
+  <text x="100" y="140" font-family="Arial, sans-serif" font-size="11" fill="#ccc" text-anchor="middle">PDF/Word/TXT</text>
+  <text x="100" y="160" font-family="Arial, sans-serif" font-size="11" fill="#ccc" text-anchor="middle">公司制度/产品手册</text>
+  
+  <!-- 箭头1 -->
+  <path d="M175 130 L215 130" stroke="#4ecdc4" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  <text x="195" y="120" font-family="Arial, sans-serif" font-size="10" fill="#4ecdc4" text-anchor="middle">切分</text>
+  
+  <!-- 步骤2: Embedding -->
+  <rect x="220" y="80" width="140" height="100" rx="10" fill="#2ecc71" opacity="0.9"/>
+  <text x="290" y="115" font-family="Arial, sans-serif" font-size="14" fill="#fff" text-anchor="middle">🔢 Embedding</text>
+  <text x="290" y="140" font-family="Arial, sans-serif" font-size="11" fill="#ccc" text-anchor="middle">文字 → 向量</text>
+  <text x="290" y="160" font-family="Arial, sans-serif" font-size="11" fill="#ccc" text-anchor="middle">语义相似的文本距离近</text>
+  
+  <!-- 箭头2 -->
+  <path d="M365 130 L405 130" stroke="#4ecdc4" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+  <text x="385" y="120" font-family="Arial, sans-serif" font-size="10" fill="#4ecdc4" text-anchor="middle">存储</text>
+  
+  <!-- 步骤3: 向量数据库 -->
+  <rect x="410" y="80" width="140" height="100" rx="10" fill="#9b59b6" opacity="0.9"/>
+  <text x="480" y="115" font-family="Arial, sans-serif" font-size="14" fill="#fff" text-anchor="middle">📚 向量数据库</text>
+  <text x="480" y="140" font-family="Arial, sans-serif" font-size="11" fill="#ccc" text-anchor="middle">私有知识库</text>
+  <text x="480" y="160" font-family="Arial, sans-serif" font-size="11" fill="#ccc" text-anchor="middle">按向量存储文档片段</text>
+  
+  <!-- 用户问题 -->
+  <rect x="30" y="250" width="140" height="80" rx="10" fill="#e74c3c" opacity="0.9"/>
+  <text x="100" y="280" font-family="Arial, sans-serif" font-size="14" fill="#fff" text-anchor="middle">❓ 用户问题</text>
+  <text x="100" y="305" font-family="Arial, sans-serif" font-size="11" fill="#ccc" text-anchor="middle">"报销流程是什么？"</text>
+  
+  <!-- 箭头: 问题 → Embedding -->
+  <path d="M175 290 L290 290 L290 185" stroke="#e74c3c" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+  <text x="235" y="280" font-family="Arial, sans-serif" font-size="10" fill="#e74c3c" text-anchor="middle">向量化</text>
+  
+  <!-- 检索 -->
+  <rect x="220" y="250" width="140" height="80" rx="10" fill="#f39c12" opacity="0.9"/>
+  <text x="290" y="280" font-family="Arial, sans-serif" font-size="14" fill="#fff" text-anchor="middle">🔍 向量检索</text>
+  <text x="290" y="305" font-family="Arial, sans-serif" font-size="11" fill="#ccc" text-anchor="middle">找最相似的文档片段</text>
+  
+  <!-- 箭头: 检索 → 数据库 -->
+  <path d="M365 290 L480 290 L480 185" stroke="#f39c12" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+  
+  <!-- 上下文拼接 -->
+  <rect x="410" y="250" width="140" height="80" rx="10" fill="#1abc9c" opacity="0.9"/>
+  <text x="480" y="280" font-family="Arial, sans-serif" font-size="14" fill="#fff" text-anchor="middle">📝 上下文拼接</text>
+  <text x="480" y="305" font-family="Arial, sans-serif" font-size="11" fill="#ccc" text-anchor="middle">问题+相关文档</text>
+  
+  <!-- 箭头: 上下文 → AI -->
+  <path d="M555 290 L595 290" stroke="#1abc9c" stroke-width="3" fill="none"/>
+  
+  <!-- AI生成回答 -->
+  <rect x="600" y="250" width="170" height="80" rx="10" fill="#3498db" opacity="0.9"/>
+  <text x="685" y="280" font-family="Arial, sans-serif" font-size="14" fill="#fff" text-anchor="middle">🤖 AI 生成回答</text>
+  <text x="685" y="305" font-family="Arial, sans-serif" font-size="11" fill="#ccc" text-anchor="middle">基于文档内容回答</text>
+  
+  <!-- 关键结论 -->
+  <rect x="600" y="80" width="170" height="100" rx="10" fill="#27ae60" opacity="0.8"/>
+  <text x="685" y="110" font-family="Arial, sans-serif" font-size="14" fill="#fff" text-anchor="middle" font-weight="bold">✅ 关键理解</text>
+  <text x="685" y="135" font-family="Arial, sans-serif" font-size="11" fill="#ccc" text-anchor="middle">AI 不是"记住"了</text>
+  <text x="685" y="155" font-family="Arial, sans-serif" font-size="11" fill="#ccc" text-anchor="middle">而是在回答时</text>
+  <text x="685" y="175" font-family="Arial, sans-serif" font-size="11" fill="#ccc" text-anchor="middle">"看到"了你的文档</text>
+  
+  <!-- 箭头定义 -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#4ecdc4"/>
+    </marker>
+  </defs>
+</svg>

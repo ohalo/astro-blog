@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8f9fa"/>
+      <stop offset="100%" style="stop-color:#e9ecef"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#bgGrad)"/>
+  
+  <!-- Outer circle representing the cycle -->
+  <ellipse cx="300" cy="200" rx="200" ry="100" fill="none" stroke="#dc3545" stroke-width="3" stroke-dasharray="10,5"/>
+  
+  <!-- Labels on the cycle -->
+  <text x="300" y="70" text-anchor="middle" font-family="system-ui" font-size="18" font-weight="bold" fill="#495057">🚀 先上线再说</text>
+  <text x="500" y="180" text-anchor="middle" font-family="system-ui" font-size="14" fill="#6c757d">业务压力</text>
+  <text x="300" y="350" text-anchor="middle" font-family="system-ui" font-size="18" font-weight="bold" fill="#495057">⚙️ 欠下的技术债</text>
+  <text x="100" y="180" text-anchor="middle" font-family="system-ui" font-size="14" fill="#6c757d">没时间学习</text>
+  
+  <!-- Arrows -->
+  <path d="M 380 90 Q 450 100 480 150" fill="none" stroke="#adb5bd" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M 480 250 Q 450 300 380 310" fill="none" stroke="#adb5bd" stroke-width="2"/>
+  <path d="M 220 310 Q 150 300 120 250" fill="none" stroke="#adb5bd" stroke-width="2"/>
+  <path d="M 120 150 Q 150 100 220 90" fill="none" stroke="#adb5bd" stroke-width="2"/>
+  
+  <!-- Center - the trapped engineer -->
+  <circle cx="300" cy="200" r="50" fill="#343a40"/>
+  <text x="300" y="195" text-anchor="middle" font-family="system-ui" font-size="14" fill="white" font-weight="bold">😰</text>
+  <text x="300" y="215" text-anchor="middle" font-family="system-ui" font-size="12" fill="white">工程师</text>
+  <text x="300" y="230" text-anchor="middle" font-family="system-ui" font-size="10" fill="#adb5bd">越陷越深</text>
+</svg>

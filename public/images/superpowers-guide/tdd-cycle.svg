@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="400" fill="#f8f9fa"/>
+  
+  <!-- Red Circle -->
+  <circle cx="200" cy="200" r="80" fill="#e74c3c" opacity="0.15"/>
+  <circle cx="200" cy="200" r="60" fill="#e74c3c"/>
+  <text x="200" y="195" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white">RED</text>
+  <text x="200" y="220" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white">编写失败测试</text>
+  
+  <!-- Arrow 1 -->
+  <path d="M 270 200 L 330 200" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <text x="300" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#666">写代码</text>
+  
+  <!-- Green Circle -->
+  <circle cx="400" cy="200" r="80" fill="#27ae60" opacity="0.15"/>
+  <circle cx="400" cy="200" r="60" fill="#27ae60"/>
+  <text x="400" y="195" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white">GREEN</text>
+  <text x="400" y="220" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white">测试通过</text>
+  
+  <!-- Arrow 2 -->
+  <path d="M 470 200 L 530 200" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <text x="500" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#666">重构</text>
+  
+  <!-- Refactor Circle -->
+  <circle cx="600" cy="200" r="80" fill="#3498db" opacity="0.15"/>
+  <circle cx="600" cy="200" r="60" fill="#3498db"/>
+  <text x="600" y="195" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white">REFACTOR</text>
+  <text x="600" y="220" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="white">优化代码</text>
+  
+  <!-- Curved Arrow back to Red -->
+  <path d="M 540 280 Q 400 350 260 280" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)" stroke-dasharray="5,5"/>
+  <text x="400" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#666">循环迭代</text>
+  
+  <!-- Title -->
+  <text x="400" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#333">TDD 红-绿-重构循环</text>
+  
+  <!-- Description -->
+  <text x="400" y="380" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#666">Superpowers 强制执行 TDD 流程：先写测试 → 通过测试 → 重构优化</text>
+</svg>

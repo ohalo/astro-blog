@@ -1,0 +1,12 @@
+graph LR
+    A[你的手机<br/>个人号] -->|发消息| B[助理手机<br/>助理号]
+    B -->|扫码| C[你的电脑<br/>OpenClaw Gateway]
+    C -->|API调用| D[AI模型<br/>Claude/GPT/本地]
+    D -->|回复| C
+    C -->|发消息| B
+    B -->|转发| A
+    
+    style A fill:#e1f5fe
+    style B fill:#fff3e0
+    style C fill:#f3e5f5
+    style D fill:#e8f5e9

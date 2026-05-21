@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <rect width="800" height="450" fill="#fafafa"/>
+  
+  <text x="400" y="35" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="22" font-weight="bold" fill="#2c3e50">睡前刷手机的代价：神经科学的真相</text>
+  
+  <!-- Timeline -->
+  <g transform="translate(50, 80)">
+    <line x1="0" y1="0" x2="700" y2="0" stroke="#ddd" stroke-width="2"/>
+    
+    <!-- Hours -->
+    <g font-family="-apple-system, sans-serif" font-size="12" fill="#666">
+      <text x="0" y="20">22:00</text>
+      <text x="175" y="20">23:00</text>
+      <text x="350" y="20">00:00</text>
+      <text x="525" y="20">01:00</text>
+      <text x="700" y="20">02:00</text>
+    </g>
+    
+    <!-- Melatonin curve (natural) -->
+    <path d="M 0,60 Q 175,50 350,20 Q 525,-10 700,-30" fill="none" stroke="#3498db" stroke-width="3" stroke-dasharray="8,4"/>
+    <text x="600" y="25" font-family="-apple-system, sans-serif" font-size="13" fill="#3498db">褪黑素↑</text>
+    
+    <!-- Dopamine spike when using phone -->
+    <path d="M 175,60 L 200,30 L 225,10 L 250,30 L 275,50" fill="none" stroke="#e74c3c" stroke-width="3"/>
+    <text x="230" y="85" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="13" fill="#e74c3c">多巴胺飙升!</text>
+    
+    <!-- Blue light effect -->
+    <rect x="175" y="-40" width="100" height="40" fill="#e74c3c" opacity="0.2" rx="4"/>
+    <text x="225" y="-55" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="12" fill="#e74c3c">蓝光暴露</text>
+  </g>
+  
+  <!-- Two columns explanation -->
+  <g transform="translate(50, 170)">
+    <!-- Left: Phone user -->
+    <rect x="0" y="0" width="320" height="220" fill="#ffe6e6" rx="12" stroke="#e74c3c" stroke-width="2"/>
+    <text x="160" y="35" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="18" font-weight="bold" fill="#c0392b">😫 刷手机时</text>
+    
+    <g font-family="-apple-system, sans-serif" font-size="14" fill="#2c3e50">
+      <text x="20" y="70">• 蓝光抑制褪黑素分泌</text>
+      <text x="20" y="100">• 多巴胺持续刺激</text>
+      <text x="20" y="130">• 大脑处于警觉状态</text>
+      <text x="20" y="160">• 睡意被压制</text>
+      <text x="20" y="190">• 睡眠周期被打乱</text>
+    </g>
+    
+    <!-- Right: Digital curfew -->
+    <rect x="380" y="0" width="320" height="220" fill="#e8f8f5" rx="12" stroke="#27ae60" stroke-width="2"/>
+    <text x="540" y="35" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="18" font-weight="bold" fill="#1e8449">😴 数字宵禁后</text>
+    
+    <g font-family="-apple-system, sans-serif" font-size="14" fill="#2c3e50">
+      <text x="400" y="70">• 自然褪黑素上升</text>
+      <text x="400" y="100">• 大脑进入放松模式</text>
+      <text x="400" y="130">• 皮质醇下降</text>
+      <text x="400" y="160">• 快速进入深度睡眠</text>
+      <text x="400" y="190">• 睡眠质量提升</text>
+    </g>
+  </g>
+  
+  <!-- Key takeaway -->
+  <rect x="150" y="410" width="500" height="35" fill="#fef9e7" rx="8"/>
+  <text x="400" y="433" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="15" font-weight="bold" fill="#d35400">💡 睡前1小时不看手机 = 每晚多2小时深度睡眠</text>
+</svg>

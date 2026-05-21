@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" font-family="-apple-system, BlinkMacSystemFont, sans-serif">
+  <defs>
+    <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ff4444;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#cc0000;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#44cc44;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#009900;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4488ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0033cc;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="400" fill="#f8f9fa" rx="12"/>
+
+  <!-- Title -->
+  <text x="400" y="36" text-anchor="middle" font-size="20" font-weight="700" fill="#1a1a2e">脆弱 vs 强韧 vs 反脆弱：三种系统的命运</text>
+
+  <!-- FRAGILE column -->
+  <rect x="30" y="60" width="230" height="310" fill="white" rx="8" stroke="#ff4444" stroke-width="2"/>
+  <rect x="30" y="60" width="230" height="40" fill="url(#redGrad)" rx="8"/>
+  <text x="145" y="87" text-anchor="middle" font-size="18" font-weight="700" fill="white">🔴 脆弱 Fragile</text>
+
+  <!-- Glass icon -->
+  <path d="M110 125 L130 125 L138 165 L102 165 Z" fill="none" stroke="#ff4444" stroke-width="2.5"/>
+  <line x1="120" y1="125" x2="120" y2="165" stroke="#ff4444" stroke-width="1" stroke-dasharray="3"/>
+  <text x="145" y="190" text-anchor="middle" font-size="13" fill="#cc0000" font-weight="600">压力/冲击</text>
+  <!-- Crack -->
+  <path d="M120 130 L124 145 L118 150 L125 165" fill="none" stroke="#ff4444" stroke-width="2"/>
+  <text x="145" y="215" text-anchor="middle" font-size="12" fill="#555">冲击 → 损坏</text>
+
+  <!-- Arrow down fragile -->
+  <path d="M145 225 L145 245" stroke="#ff4444" stroke-width="2" marker-end="url(#arrowRed)"/>
+  <defs><marker id="arrowRed" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ff4444"/></marker></defs>
+
+  <!-- Broken glass -->
+  <path d="M130 255 L140 250 L138 265 L148 260" fill="none" stroke="#ff4444" stroke-width="2"/>
+  <text x="145" y="285" text-anchor="middle" font-size="13" fill="#cc0000" font-weight="700">❌ 系统崩溃</text>
+  <text x="145" y="305" text-anchor="middle" font-size="11" fill="#888">无法恢复，越来越差</text>
+  <text x="145" y="322" text-anchor="middle" font-size="11" fill="#888">例：玻璃杯、银行危机</text>
+  <text x="145" y="340" text-anchor="middle" font-size="12" fill="#ff4444" font-weight="600">稳定性 = 麻醉剂</text>
+
+  <!-- ROBUST column -->
+  <rect x="285" y="60" width="230" height="310" fill="white" rx="8" stroke="#4488ff" stroke-width="2"/>
+  <rect x="285" y="60" width="230" height="40" fill="url(#blueGrad)" rx="8"/>
+  <text x="400" y="87" text-anchor="middle" font-size="18" font-weight="700" fill="white">🔵 强韧 Robust</text>
+
+  <!-- Rock icon -->
+  <ellipse cx="400" cy="140" rx="35" ry="28" fill="#4488ff" opacity="0.3"/>
+  <ellipse cx="400" cy="135" rx="30" ry="24" fill="#4488ff"/>
+  <text x="400" y="141" text-anchor="middle" font-size="14" fill="white">🪨</text>
+  <text x="400" y="190" text-anchor="middle" font-size="13" fill="#0033cc" font-weight="600">压力/冲击</text>
+
+  <!-- Arrow right robust -->
+  <path d="M420 200 L445 200" stroke="#4488ff" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <defs><marker id="arrowBlue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#4488ff"/></marker></defs>
+
+  <!-- Rock still -->
+  <ellipse cx="455" cy="200" rx="30" ry="24" fill="#4488ff"/>
+  <text x="455" y="206" text-anchor="middle" font-size="14" fill="white">🪨</text>
+
+  <text x="400" y="240" text-anchor="middle" font-size="13" fill="#0033cc" font-weight="700">✅ 不受影响</text>
+  <text x="400" y="262" text-anchor="middle" font-size="11" fill="#888">冲击 → 保持原样</text>
+  <text x="400" y="282" text-anchor="middle" font-size="11" fill="#888">不增不减，原地踏步</text>
+  <text x="400" y="300" text-anchor="middle" font-size="11" fill="#888">例：石头、金属框架</text>
+  <text x="400" y="322" text-anchor="middle" font-size="12" fill="#4488ff" font-weight="600">稳定 = 止步不前</text>
+
+  <!-- ANTIFRAGILE column -->
+  <rect x="540" y="60" width="230" height="310" fill="white" rx="8" stroke="#00aa44" stroke-width="2"/>
+  <rect x="540" y="60" width="230" height="40" fill="url(#greenGrad)" rx="8"/>
+  <text x="655" y="87" text-anchor="middle" font-size="18" font-weight="700" fill="white">🟢 反脆弱 Antifragile</text>
+
+  <!-- Muscle/flex icon -->
+  <circle cx="600" cy="130" r="22" fill="#00aa44"/>
+  <text x="600" y="137" text-anchor="middle" font-size="20" fill="white">💪</text>
+  <text x="655" y="130" text-anchor="middle" font-size="13" fill="#009900" font-weight="600">压力/冲击</text>
+
+  <!-- Arrow -->
+  <path d="M670 145 L695 145" stroke="#00aa44" stroke-width="2" marker-end="url(#arrowGreen)"/>
+  <defs><marker id="arrowGreen" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#00aa44"/></marker></defs>
+
+  <!-- Bigger muscle -->
+  <circle cx="720" cy="145" r="28" fill="#00aa44"/>
+  <text x="720" y="153" text-anchor="middle" font-size="24" fill="white">💪</text>
+
+  <text x="655" y="195" text-anchor="middle" font-size="13" fill="#009900" font-weight="700">✅ 越冲击越强</text>
+  <text x="655" y="217" text-anchor="middle" font-size="11" fill="#888">冲击 → 超越原状态</text>
+  <text x="655" y="237" text-anchor="middle" font-size="11" fill="#888">混乱中成长，波动中进化</text>
+  <text x="655" y="255" text-anchor="middle" font-size="11" fill="#888">例：人体肌肉、免疫系统</text>
+  <text x="655" y="275" text-anchor="middle" font-size="11" fill="#888">创业者、知识工作者</text>
+  <text x="655" y="297" text-anchor="middle" font-size="12" fill="#00aa44" font-weight="600">不稳定 = 成长燃料</text>
+
+  <!-- Key insight box -->
+  <rect x="540" y="310" width="230" height="52" fill="#e8f5e9" rx="6" stroke="#00aa44" stroke-width="1.5"/>
+  <text x="655" y="332" text-anchor="middle" font-size="11" fill="#1b5e20" font-weight="700">💡 塔勒布核心洞察</text>
+  <text x="655" y="350" text-anchor="middle" font-size="10" fill="#2e7d32">脆弱的对立面不是坚固，是</text>
+  <text x="655" y="362" text-anchor="middle" font-size="10" fill="#2e7d32">从混乱中获益的能力</text>
+
+  <!-- Bottom note -->
+  <text x="400" y="385" text-anchor="middle" font-size="11" fill="#666">大多数职场人以为自己在追求"强韧"，其实正在走向"脆弱"</text>
+</svg>
