@@ -1,6 +1,6 @@
 ---
 title: "OpenClaw onboard：一条命令，10个步骤，从零到能用"
-publishDate: '2024-01-01'
+publishDate: '2026-04-10'
 description: "OpenClaw onboard：一条命令，10个步骤，从零到能用 - halo的技术博客"
 tags:
   - AI工具

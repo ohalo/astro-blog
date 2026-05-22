@@ -1,6 +1,6 @@
 ---
 title: "halo的技术博客"
-publishDate: '2024-01-01'
+publishDate: '2026-05-12'
 description: "分享这么多年用显示器的经历。核心观点：没有最好的显示器，只有最适合你使用场景的显示器。"
 tags:
   - 硬件数码

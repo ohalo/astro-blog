@@ -1,6 +1,6 @@
 ---
 title: "用 Claude Code 写代码，怎么省 token？8000万 token 的账我帮你算明白了"
-publishDate: '2024-01-01'
+publishDate: '2026-04-15'
 description: "用 Claude Code 写代码，怎么省 token？8000万 token 的账我帮你算明白了 - halo的技术博客"
 tags:
   - AI工具

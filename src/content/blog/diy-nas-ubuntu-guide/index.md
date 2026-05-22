@@ -1,6 +1,6 @@
 ---
 title: "从零开始自建NAS教程：Ubuntu系统改造实战指南"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "从零开始自建NAS教程：Ubuntu系统改造实战指南 - halo的技术博客"
 tags:
   - 硬件数码

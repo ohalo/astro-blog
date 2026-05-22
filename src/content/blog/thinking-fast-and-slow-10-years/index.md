@@ -1,6 +1,6 @@
 ---
 title: "halo的技术博客"
-publishDate: '2024-01-01'
+publishDate: '2026-05-20'
 description: "重读卡尼曼的经典之作，分享十年后仍影响我决策的三个核心概念，以及那些已经被证伪的观点。"
 tags:
   - 阅读思考

@@ -1,6 +1,6 @@
 ---
 title: "大一专科，GitHub都不会用，该怎么学编程？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-15'
 description: "大一专科，GitHub都不会用，该怎么学编程？ - halo的技术博客"
 tags:
   - AI观察

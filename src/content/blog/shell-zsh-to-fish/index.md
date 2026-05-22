@@ -1,6 +1,6 @@
 ---
 title: "从zsh到fish：shell折腾记录"
-publishDate: '2024-01-01'
+publishDate: '2026-05-12'
 description: "分享我从bash到zsh（oh-my-zsh），再到fish的折腾过程。真正的效率来自''少折腾、多使用''。"
 tags:
   - 效率技巧

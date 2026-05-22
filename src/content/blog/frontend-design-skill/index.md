@@ -1,6 +1,6 @@
 ---
 title: "一个官方Skill，让Claude真正能做设计了"
-publishDate: '2024-01-01'
+publishDate: '2026-04-19'
 description: "一个官方Skill，让Claude真正能做设计了 - halo的技术博客"
 tags:
   - AI工具

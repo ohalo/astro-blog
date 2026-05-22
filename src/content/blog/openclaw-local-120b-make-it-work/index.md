@@ -1,6 +1,6 @@
 ---
 title: "接入本地 120B 大模型后，我发现它像个\"听不懂人话\"的同事"
-publishDate: '2024-01-01'
+publishDate: '2026-04-11'
 description: "接入本地 120B 大模型后，我发现它像个"
 tags:
   - AI工具

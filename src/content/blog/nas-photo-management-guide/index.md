@@ -1,6 +1,6 @@
 ---
 title: "NAS照片管理软件对比：Immich、MT-Photos、PhotoPrism、Synology Photos怎么选？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS照片管理软件对比：Immich、MT-Photos、PhotoPrism、Synology Photos怎么选？ - halo的技术博客"
 tags:
   - 硬件数码

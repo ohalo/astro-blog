@@ -1,6 +1,6 @@
 ---
 title: "苹果扫荡全球内存：不是垄断，是抢饭碗"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "苹果扫荡全球内存：不是垄断，是抢饭碗 - halo的技术博客"
 tags:
   - AI观察

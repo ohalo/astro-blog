@@ -1,6 +1,6 @@
 ---
 title: "NAS打造私人音乐中心：Navidrome搭建与无损音乐体验"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "NAS打造私人音乐中心：Navidrome搭建与无损音乐体验 - halo的技术博客"
 tags:
   - 硬件数码

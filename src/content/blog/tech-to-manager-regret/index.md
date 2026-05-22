@@ -1,6 +1,6 @@
 ---
 title: "halo的技术博客"
-publishDate: '2024-01-01'
+publishDate: '2026-05-13'
 description: "转管理不是升职，是换职业。一年后我选择转回IC，分享这段经历和反思。"
 tags:
   - 职业发展

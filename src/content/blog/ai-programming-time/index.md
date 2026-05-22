@@ -1,6 +1,6 @@
 ---
 title: "Cursor Composer + Claude Code 实测一个月：AI把单测写了，但我反而更慌了"
-publishDate: '2024-01-01'
+publishDate: '2026-04-13'
 description: "Cursor Composer + Claude Code 实测一个月：AI把单测写了，但我反而更慌了 - halo的技术博客"
 tags:
   - AI观察

@@ -1,6 +1,6 @@
 ---
 title: "Claude Code 记忆机制：六层体系实操指南"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "Claude Code 记忆机制：六层体系实操指南 - halo的技术博客"
 tags:
   - AI工具

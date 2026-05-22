@@ -1,6 +1,6 @@
 ---
 title: "10个技巧，通关Claude Code"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "10个技巧，通关Claude Code - halo的技术博客"
 tags:
   - AI工具

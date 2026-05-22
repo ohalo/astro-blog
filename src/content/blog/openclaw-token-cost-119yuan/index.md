@@ -1,6 +1,6 @@
 ---
 title: "不讲虚的，我日均5000万token，月账单119块"
-publishDate: '2024-01-01'
+publishDate: '2026-04-15'
 description: "不讲虚的，我日均5000万token，月账单119块 - halo的技术博客"
 tags:
   - AI工具

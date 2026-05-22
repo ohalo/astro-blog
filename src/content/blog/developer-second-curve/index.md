@@ -1,6 +1,6 @@
 ---
 title: "halo的技术博客"
-publishDate: '2024-01-01'
+publishDate: '2026-05-20'
 description: "35岁危机不是年龄问题，是能力结构问题。本文分享中年程序员如何构建第二曲线，实现职业续航。"
 tags:
   - 职业发展

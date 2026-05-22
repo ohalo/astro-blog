@@ -1,6 +1,6 @@
 ---
 title: "OpenSpec 很香，但代码跑不通"
-publishDate: '2024-01-01'
+publishDate: '2026-04-26'
 description: "OpenSpec 很香，但代码跑不通 - halo的技术博客"
 tags:
   - AI工具

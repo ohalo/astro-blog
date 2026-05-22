@@ -1,6 +1,6 @@
 ---
 title: "NAS的RAID怎么选？RAID0/1/5/10区别详解，家庭用户选这个"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS的RAID怎么选？RAID0/1/5/10区别详解，家庭用户选这个 - halo的技术博客"
 tags:
   - 硬件数码

@@ -1,6 +1,6 @@
 ---
 title: "别慌，CTO没消失——但这类CTO确实该焦虑了"
-publishDate: '2024-01-01'
+publishDate: '2026-04-24'
 description: "别慌，CTO没消失——但这类CTO确实该焦虑了 - halo的技术博客"
 tags:
   - 职业发展

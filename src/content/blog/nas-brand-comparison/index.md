@@ -1,6 +1,6 @@
 ---
 title: "NAS品牌怎么选？群晖、威联通、绿联、飞牛、极空间深度对比"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS品牌怎么选？群晖、威联通、绿联、飞牛、极空间深度对比 - halo的技术博客"
 tags:
   - 硬件数码

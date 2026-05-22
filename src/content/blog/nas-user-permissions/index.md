@@ -1,6 +1,6 @@
 ---
 title: "NAS多用户权限管理：家庭和团队配置实战"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "NAS多用户权限管理：家庭和团队配置实战 - halo的技术博客"
 tags:
   - 硬件数码

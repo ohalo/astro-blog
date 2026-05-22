@@ -1,6 +1,6 @@
 ---
 title: "NAS网络配置指南：2.5G、万兆怎么选？网线、交换机、路由器推荐"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS网络配置指南：2.5G、万兆怎么选？网线、交换机、路由器推荐 - halo的技术博客"
 tags:
   - 硬件数码

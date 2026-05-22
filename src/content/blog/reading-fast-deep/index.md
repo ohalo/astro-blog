@@ -1,6 +1,6 @@
 ---
 title: "读书快，不是本事；记住，才是"
-publishDate: '2024-01-01'
+publishDate: '2026-05-22'
 description: "读书快，不是本事；记住，才是 - halo的技术博客"
 tags:
   - 阅读思考

@@ -1,6 +1,6 @@
 ---
 title: "DDR5 跌了，现在能不能买？用三把尺子给自己算个明白账"
-publishDate: '2024-01-01'
+publishDate: '2026-04-13'
 description: "DDR5 跌了，现在能不能买？用三把尺子给自己算个明白账 - halo的技术博客"
 tags:
   - 硬件数码

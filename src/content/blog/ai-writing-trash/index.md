@@ -1,6 +1,6 @@
 ---
 title: "夫妻用AI写公众号年赚200万，评论区翻车了"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "夫妻用AI写公众号年赚200万，评论区翻车了 - halo的技术博客"
 tags:
   - AI观察

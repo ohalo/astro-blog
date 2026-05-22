@@ -1,6 +1,6 @@
 ---
 title: "Superpowers 为什么值得单独写：不是让AI更强，是让它更稳"
-publishDate: '2024-01-01'
+publishDate: '2026-04-16'
 description: "Superpowers 为什么值得单独写：不是让AI更强，是让它更稳 - halo的技术博客"
 tags:
   - AI工具

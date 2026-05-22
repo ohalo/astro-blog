@@ -1,6 +1,6 @@
 ---
 title: "2026年NAS选购全指南：我对比了5个品牌，最后选了它"
-publishDate: '2024-01-01'
+publishDate: '2026-04-19'
 description: "2026年NAS选购全指南：我对比了5个品牌，最后选了它 - halo的技术博客"
 tags:
   - 硬件数码

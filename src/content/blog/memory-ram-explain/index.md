@@ -1,6 +1,6 @@
 ---
 title: "不用比喻，直接告诉你内存条在干嘛"
-publishDate: '2024-01-01'
+publishDate: '2026-04-24'
 description: "不用比喻，直接告诉你内存条在干嘛 - halo的技术博客"
 tags:
   - 硬件数码

@@ -1,6 +1,6 @@
 ---
 title: "听完马斯克170分钟演讲，我整理了一份AI电力投资清单"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "听完马斯克170分钟演讲，我整理了一份AI电力投资清单 - halo的技术博客"
 tags:
   - 职业发展

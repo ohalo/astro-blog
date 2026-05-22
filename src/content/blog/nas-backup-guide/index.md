@@ -1,6 +1,6 @@
 ---
 title: "NAS数据备份指南：为什么RAID不是备份？3-2-1原则怎么落地？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS数据备份指南：为什么RAID不是备份？3-2-1原则怎么落地？ - halo的技术博客"
 tags:
   - 硬件数码

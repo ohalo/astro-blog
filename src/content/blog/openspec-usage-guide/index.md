@@ -1,6 +1,6 @@
 ---
 title: "OpenSpec 中文上手指南：让AI按你的规矩写代码"
-publishDate: '2024-01-01'
+publishDate: '2026-04-15'
 description: "OpenSpec 中文上手指南：让AI按你的规矩写代码 - halo的技术博客"
 tags:
   - AI工具

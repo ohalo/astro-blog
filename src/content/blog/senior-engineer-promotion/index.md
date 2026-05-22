@@ -1,6 +1,6 @@
 ---
 title: "技术最厉害的那个人，为什么没能升职？"
-publishDate: '2024-01-01'
+publishDate: '2026-05-22'
 description: "技术最厉害的那个人，为什么没能升职？ - halo的技术博客"
 tags:
   - 职业发展

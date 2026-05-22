@@ -1,6 +1,6 @@
 ---
 title: "NAS新手最容易踩的10个坑，踩中3个以上数据就悬了"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS新手最容易踩的10个坑，踩中3个以上数据就悬了 - halo的技术博客"
 tags:
   - 硬件数码

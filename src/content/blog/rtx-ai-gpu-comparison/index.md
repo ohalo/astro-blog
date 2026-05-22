@@ -1,6 +1,6 @@
 ---
 title: "RTX 3060 到 RTX 8000 Ada，AI 推理到底差多少？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-11'
 description: "RTX 3060 到 RTX 8000 Ada，AI 推理到底差多少？ - halo的技术博客"
 tags:
   - 硬件数码

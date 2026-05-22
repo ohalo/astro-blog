@@ -1,6 +1,6 @@
 ---
 title: "halo的技术博客"
-publishDate: '2024-01-01'
+publishDate: '2026-05-12'
 description: "从2022年大模型爆发开始，记录每一波''程序员要失业了''的言论，以及真实发生的变化。"
 tags:
   - AI观察

@@ -1,6 +1,6 @@
 ---
 title: "一个被手机绑架的人，如何用30天找回自己"
-publishDate: '2024-01-01'
+publishDate: '2026-05-06'
 description: "一个被手机绑架的人，如何用30天找回自己 - halo的技术博客"
 tags:
   - 生活方式

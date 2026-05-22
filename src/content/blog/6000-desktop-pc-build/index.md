@@ -1,6 +1,6 @@
 ---
 title: "6000配台电脑？先等等——内存涨了3倍，DIY不如买整机"
-publishDate: '2024-01-01'
+publishDate: '2026-04-12'
 description: "6000配台电脑？先等等——内存涨了3倍，DIY不如买整机 - halo的技术博客"
 tags:
   - 硬件数码

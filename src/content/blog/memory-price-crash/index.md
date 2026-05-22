@@ -1,6 +1,6 @@
 ---
 title: "内存条暴跌30%，但离真正的拐点还很远"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "内存条暴跌30%，但离真正的拐点还很远 - halo的技术博客"
 tags:
   - 硬件数码

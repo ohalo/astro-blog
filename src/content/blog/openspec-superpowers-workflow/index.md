@@ -1,6 +1,6 @@
 ---
 title: "AI写代码老飘？不是它笨，是你没给它划边界"
-publishDate: '2024-01-01'
+publishDate: '2026-04-22'
 description: "AI写代码老飘？不是它笨，是你没给它划边界 - halo的技术博客"
 tags:
   - AI工具

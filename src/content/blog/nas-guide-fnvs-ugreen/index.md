@@ -1,6 +1,6 @@
 ---
 title: "NAS选购指南：飞牛NAS vs 绿联DX4600 真实体验对比"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS选购指南：飞牛NAS vs 绿联DX4600 真实体验对比 - halo的技术博客"
 tags:
   - 硬件数码

@@ -1,6 +1,6 @@
 ---
 title: "NAS vs 云盘 vs 移动硬盘：数据存储方案选哪个？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS vs 云盘 vs 移动硬盘：数据存储方案选哪个？ - halo的技术博客"
 tags:
   - 硬件数码

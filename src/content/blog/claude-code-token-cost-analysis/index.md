@@ -1,6 +1,6 @@
 ---
 title: "Claude Code Token 烧钱实录：一个需求下来，几千万 token 是怎么没的？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-15'
 description: "Claude Code Token 烧钱实录：一个需求下来，几千万 token 是怎么没的？ - halo的技术博客"
 tags:
   - AI工具

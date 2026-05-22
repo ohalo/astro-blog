@@ -1,6 +1,6 @@
 ---
 title: "我们这代人，为什么越来越忙却越来越空？"
-publishDate: '2024-01-01'
+publishDate: '2026-05-22'
 description: "我们这代人，为什么越来越忙却越来越空？ - halo的技术博客"
 tags:
   - 生活方式

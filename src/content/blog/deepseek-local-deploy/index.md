@@ -1,6 +1,6 @@
 ---
 title: "把DeepSeek部署到本地后，我再也没打开过官网"
-publishDate: '2024-01-01'
+publishDate: '2026-04-21'
 description: "把DeepSeek部署到本地后，我再也没打开过官网 - halo的技术博客"
 tags:
   - 硬件数码

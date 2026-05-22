@@ -1,6 +1,6 @@
 ---
 title: "NAS能干啥？家庭用户的10种玩法，最后一种最实用"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS能干啥？家庭用户的10种玩法，最后一种最实用 - halo的技术博客"
 tags:
   - 硬件数码

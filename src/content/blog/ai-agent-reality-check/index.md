@@ -1,6 +1,6 @@
 ---
 title: "AI Agent吹了两年还没落地，我试了6个框架后发现真相"
-publishDate: '2024-01-01'
+publishDate: '2026-04-28'
 description: "AI Agent吹了两年还没落地，我试了6个框架后发现真相 - halo的技术博客"
 tags:
   - AI工具

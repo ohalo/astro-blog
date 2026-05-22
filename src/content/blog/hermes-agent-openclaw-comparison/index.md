@@ -1,6 +1,6 @@
 ---
 title: "用了一个月 Hermes Agent，我决定回到 OpenClaw"
-publishDate: '2024-01-01'
+publishDate: '2026-04-12'
 description: "用了一个月 Hermes Agent，我决定回到 OpenClaw - halo的技术博客"
 tags:
   - AI工具

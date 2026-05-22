@@ -1,6 +1,6 @@
 ---
 title: "halo的技术博客"
-publishDate: '2024-01-01'
+publishDate: '2026-05-13'
 description: "定投指数基金被包装成傻瓜投资法，但实际执行中有很多坑。用亲身经历讲讲我踩过的5个误区。"
 tags:
   - 投资理财

@@ -1,6 +1,6 @@
 ---
 title: "AI「复活」逝者：当科技撞上生死，我们该怎么选？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "AI「复活」逝者：当科技撞上生死，我们该怎么选？ - halo的技术博客"
 tags:
   - AI观察

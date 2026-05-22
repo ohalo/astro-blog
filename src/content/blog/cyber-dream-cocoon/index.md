@@ -1,6 +1,6 @@
 ---
 title: "那条「躺平在赛博梦境里」的评论，暴露了更可怕的事"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "那条「躺平在赛博梦境里」的评论，暴露了更可怕的事 - halo的技术博客"
 tags:
   - AI观察

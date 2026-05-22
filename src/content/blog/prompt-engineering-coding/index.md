@@ -1,6 +1,6 @@
 ---
 title: "让AI帮你写代码，这5个prompt技巧比背100个快捷键有用"
-publishDate: '2024-01-01'
+publishDate: '2026-04-28'
 description: "让AI帮你写代码，这5个prompt技巧比背100个快捷键有用 - halo的技术博客"
 tags:
   - AI工具

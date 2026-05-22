@@ -1,6 +1,6 @@
 ---
 title: "公司用AI提效裁人，我却在知乎一天赚一块钱"
-publishDate: '2024-01-01'
+publishDate: '2026-04-23'
 description: "公司用AI提效裁人，我却在知乎一天赚一块钱 - halo的技术博客"
 tags:
   - AI观察

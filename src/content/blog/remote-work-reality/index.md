@@ -1,6 +1,6 @@
 ---
 title: "halo的技术博客"
-publishDate: '2024-01-01'
+publishDate: '2026-05-12'
 description: "远程工作被宣传为自由，但真实情况是：它需要更强的自律、更好的边界感、更主动的沟通。"
 tags:
   - 生活方式

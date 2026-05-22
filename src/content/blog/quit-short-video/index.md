@@ -1,6 +1,6 @@
 ---
 title: "halo的技术博客"
-publishDate: '2024-01-01'
+publishDate: '2026-05-13'
 description: "不是靠意志力，是找到替代习惯。分享三个月戒掉短视频的具体操作和时间线。"
 tags:
   - 生活方式

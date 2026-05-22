@@ -1,6 +1,6 @@
 ---
 title: "你被优化了，但你的\"数字灵魂\"还在公司上班"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "你被优化了，但你的"
 tags:
   - 其他

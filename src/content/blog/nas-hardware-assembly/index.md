@@ -1,6 +1,6 @@
 ---
 title: "从零组装一台NAS：CPU/主板/机箱/电源选购指南"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "从零组装一台NAS：CPU/主板/机箱/电源选购指南 - halo的技术博客"
 tags:
   - 硬件数码

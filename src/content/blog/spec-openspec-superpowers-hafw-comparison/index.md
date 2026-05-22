@@ -1,6 +1,6 @@
 ---
 title: "三款AI编程工作流横评：Spec-Kit、OpenSpec、Superpowers选哪个"
-publishDate: '2024-01-01'
+publishDate: '2026-04-15'
 description: "三款AI编程工作流横评：Spec-Kit、OpenSpec、Superpowers选哪个 - halo的技术博客"
 tags:
   - AI观察

@@ -1,6 +1,6 @@
 ---
 title: "Spec-Kit 上手指南：GitHub官方的AI编程规范框架"
-publishDate: '2024-01-01'
+publishDate: '2026-04-15'
 description: "Spec-Kit 上手指南：GitHub官方的AI编程规范框架 - halo的技术博客"
 tags:
   - AI工具

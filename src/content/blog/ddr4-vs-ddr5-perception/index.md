@@ -1,6 +1,6 @@
 ---
 title: "内存频率越高越快？DDR5和DDR4用起来为啥没区别"
-publishDate: '2024-01-01'
+publishDate: '2026-04-14'
 description: "内存频率越高越快？DDR5和DDR4用起来为啥没区别 - halo的技术博客"
 tags:
   - 硬件数码

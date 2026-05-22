@@ -1,6 +1,6 @@
 ---
 title: "Mac Studio 的芯片分层，Apple 到底在卡什么？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-11'
 description: "Mac Studio 的芯片分层，Apple 到底在卡什么？ - halo的技术博客"
 tags:
   - 硬件数码

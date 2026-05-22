@@ -1,6 +1,6 @@
 ---
 title: "NAS与智能家居联动：Home Assistant接入米家全攻略"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "NAS与智能家居联动：Home Assistant接入米家全攻略 - halo的技术博客"
 tags:
   - 硬件数码

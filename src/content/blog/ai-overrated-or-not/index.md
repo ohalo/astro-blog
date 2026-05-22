@@ -1,6 +1,6 @@
 ---
 title: "AI被过度神化了吗？我看了100个回答，发现最扎心的答案没人说"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "AI被过度神化了吗？我看了100个回答，发现最扎心的答案没人说 - halo的技术博客"
 tags:
   - AI观察

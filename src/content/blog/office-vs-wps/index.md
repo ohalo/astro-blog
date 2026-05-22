@@ -1,6 +1,6 @@
 ---
 title: "为什么微软Office有几个GB，而WPS只有1GB多？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "为什么微软Office有几个GB，而WPS只有1GB多？ - halo的技术博客"
 tags:
   - 效率技巧

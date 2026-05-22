@@ -1,6 +1,6 @@
 ---
 title: "给NAS装了个私有磁力搜索引擎，1500万种子随时搜"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "给NAS装了个私有磁力搜索引擎，1500万种子随时搜 - halo的技术博客"
 tags:
   - 硬件数码

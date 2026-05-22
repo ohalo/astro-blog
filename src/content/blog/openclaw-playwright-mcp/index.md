@@ -1,6 +1,6 @@
 ---
 title: "我给 OpenClaw 装了个浏览器，现在它能自己上网了"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "我给 OpenClaw 装了个浏览器，现在它能自己上网了 - halo的技术博客"
 tags:
   - AI工具

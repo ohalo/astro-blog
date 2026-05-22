@@ -1,6 +1,6 @@
 ---
 title: "写Skill写崩了4次后，我才搞明白：不是AI不够聪明，是你写的指令格式错了"
-publishDate: '2024-01-01'
+publishDate: '2026-04-22'
 description: "写Skill写崩了4次后，我才搞明白：不是AI不够聪明，是你写的指令格式错了 - halo的技术博客"
 tags:
   - AI工具

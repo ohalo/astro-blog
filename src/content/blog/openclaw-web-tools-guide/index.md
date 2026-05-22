@@ -1,6 +1,6 @@
 ---
 title: "我用AI助手三件套，把一天的网页操作压缩到了3分钟"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "我用AI助手三件套，把一天的网页操作压缩到了3分钟 - halo的技术博客"
 tags:
   - AI工具

@@ -1,6 +1,6 @@
 ---
 title: "我在公司搭了一套私有AI，同事们以为我花了几十万"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "我在公司搭了一套私有AI，同事们以为我花了几十万 - halo的技术博客"
 tags:
   - AI工具

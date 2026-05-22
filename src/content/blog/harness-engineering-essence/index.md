@@ -1,6 +1,6 @@
 ---
 title: "写CLAUDE.md花的时间比写代码还多，我以为我废了"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "写CLAUDE.md花的时间比写代码还多，我以为我废了 - halo的技术博客"
 tags:
   - AI工具

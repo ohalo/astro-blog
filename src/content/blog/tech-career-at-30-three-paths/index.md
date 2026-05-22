@@ -1,6 +1,6 @@
 ---
 title: "技术人30岁后的三条路：走技术、走管理、走自由职业"
-publishDate: '2024-01-01'
+publishDate: '2026-05-10'
 description: ""
 tags:
   - 职业发展

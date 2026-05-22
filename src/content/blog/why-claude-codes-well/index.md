@@ -1,6 +1,6 @@
 ---
 title: "Claude 代码强的秘密：不是模型更强，而是产品思维领先一代"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "Claude 代码强的秘密：不是模型更强，而是产品思维领先一代 - halo的技术博客"
 tags:
   - AI工具

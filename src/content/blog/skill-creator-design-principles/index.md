@@ -1,6 +1,6 @@
 ---
 title: "写给AI的指令，和给人写的完全不同——skill-creator教会我的事"
-publishDate: '2024-01-01'
+publishDate: '2026-04-21'
 description: "写给AI的指令，和给人写的完全不同——skill-creator教会我的事 - halo的技术博客"
 tags:
   - AI工具

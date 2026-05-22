@@ -1,6 +1,6 @@
 ---
 title: "跑一个 AI Agent，每月成本从50块降到5块：Hermes 的部署指南"
-publishDate: '2024-01-01'
+publishDate: '2026-04-13'
 description: "跑一个 AI Agent，每月成本从50块降到5块：Hermes 的部署指南 - halo的技术博客"
 tags:
   - AI工具

@@ -1,6 +1,6 @@
 ---
 title: "Agent记不住事，是最大的痛点。Hermes用四层记忆给出了答案"
-publishDate: '2024-01-01'
+publishDate: '2026-04-13'
 description: "Agent记不住事，是最大的痛点。Hermes用四层记忆给出了答案 - halo的技术博客"
 tags:
   - AI工具

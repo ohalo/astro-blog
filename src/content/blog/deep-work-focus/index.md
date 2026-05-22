@@ -1,6 +1,6 @@
 ---
 title: "碎片化时代，我如何找回两小时深度工作"
-publishDate: '2024-01-01'
+publishDate: '2026-05-22'
 description: "碎片化时代，我如何找回两小时深度工作 - halo的技术博客"
 tags:
   - 效率技巧

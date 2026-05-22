@@ -1,6 +1,6 @@
 ---
 title: "从一堆笔记到知识体系：我的 Obsidian 进阶之路"
-publishDate: '2024-01-01'
+publishDate: '2026-05-22'
 description: "从一堆笔记到知识体系：我的 Obsidian 进阶之路 - halo的技术博客"
 tags:
   - 效率技巧

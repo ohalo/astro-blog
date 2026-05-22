@@ -1,6 +1,6 @@
 ---
 title: "MCP是什么？AI工具正在学会“长出手脚”"
-publishDate: '2024-01-01'
+publishDate: '2026-05-22'
 description: "MCP是什么？AI工具正在学会“长出手脚” - halo的技术博客"
 tags:
   - AI工具

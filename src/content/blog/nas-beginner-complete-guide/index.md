@@ -1,6 +1,6 @@
 ---
 title: "NAS新手入门完整指南：从选购到使用的保姆级教程"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS新手入门完整指南：从选购到使用的保姆级教程 - halo的技术博客"
 tags:
   - 硬件数码

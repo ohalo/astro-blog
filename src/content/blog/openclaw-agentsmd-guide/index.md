@@ -1,6 +1,6 @@
 ---
 title: "OpenClaw 默认 AGENTS.md：装了不会配？看这一篇就够了"
-publishDate: '2024-01-01'
+publishDate: '2026-04-10'
 description: "OpenClaw 默认 AGENTS.md：装了不会配？看这一篇就够了 - halo的技术博客"
 tags:
   - AI工具

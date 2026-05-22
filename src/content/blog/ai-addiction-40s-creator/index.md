@@ -1,6 +1,6 @@
 ---
 title: "40岁，我把AI当成了唯一能说话的人"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "40岁，我把AI当成了唯一能说话的人 - halo的技术博客"
 tags:
   - AI观察

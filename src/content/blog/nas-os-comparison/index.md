@@ -1,6 +1,6 @@
 ---
 title: "飞牛OS vs 群晖/威联通对比：国产NAS系统值得用吗？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "飞牛OS vs 群晖/威联通对比：国产NAS系统值得用吗？ - halo的技术博客"
 tags:
   - 硬件数码

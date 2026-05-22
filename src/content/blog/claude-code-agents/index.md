@@ -1,6 +1,6 @@
 ---
 title: "自从用了Claude Code的子代理，我一个人就是一支AI开发团队"
-publishDate: '2024-01-01'
+publishDate: '2026-04-09'
 description: "自从用了Claude Code的子代理，我一个人就是一支AI开发团队 - halo的技术博客"
 tags:
   - AI工具

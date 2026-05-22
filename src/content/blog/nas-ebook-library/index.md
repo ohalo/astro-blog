@@ -1,6 +1,6 @@
 ---
 title: "NAS电子书管理：Calibre-Web搭建个人数字图书馆"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "NAS电子书管理：Calibre-Web搭建个人数字图书馆 - halo的技术博客"
 tags:
   - 硬件数码

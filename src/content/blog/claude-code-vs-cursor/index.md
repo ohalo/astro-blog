@@ -1,6 +1,6 @@
 ---
 title: "Claude Code vs Cursor：三个月后的真实感受"
-publishDate: '2024-01-01'
+publishDate: '2026-05-22'
 description: "Claude Code vs Cursor：三个月后的真实感受 - halo的技术博客"
 tags:
   - AI工具

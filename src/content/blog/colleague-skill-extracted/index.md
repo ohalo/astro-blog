@@ -1,6 +1,6 @@
 ---
 title: "「同事.skill」爆火后，我认真想了一晚上：你能被\"蒸馏\"走多少？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "「同事.skill」爆火后，我认真想了一晚上：你能被"
 tags:
   - 其他

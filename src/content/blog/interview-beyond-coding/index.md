@@ -1,6 +1,6 @@
 ---
 title: "面试官不说但会暗中加分的3个能力"
-publishDate: '2024-01-01'
+publishDate: '2026-05-22'
 description: "面试官不说但会暗中加分的3个能力 - halo的技术博客"
 tags:
   - 职业发展

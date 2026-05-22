@@ -1,6 +1,6 @@
 ---
 title: "用NAS跑本地大模型：Ollama部署DeepSeek/Qwen体验"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "用NAS跑本地大模型：Ollama部署DeepSeek/Qwen体验 - halo的技术博客"
 tags:
   - 硬件数码

@@ -1,6 +1,6 @@
 ---
 title: "halo的技术博客"
-publishDate: '2024-01-01'
+publishDate: '2026-05-21'
 description: "基于供应链消息和业界分析，深度前瞻MacBook Pro M5的核心升级点、性能预测和发布时间。帮你判断是现在买M4还是等M5。"
 tags:
   - 硬件数码

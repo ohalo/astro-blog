@@ -1,6 +1,6 @@
 ---
 title: "halo的技术博客"
-publishDate: '2024-01-01'
+publishDate: '2026-05-12'
 description: "好代码不是用了多少高级特性，而是未来读这段代码的人能否快速理解。"
 tags:
   - 职业发展

@@ -1,6 +1,6 @@
 ---
 title: "茅台上市25年首次负增长，我为什么反而不慌"
-publishDate: '2024-01-01'
+publishDate: '2026-04-19'
 description: "茅台上市25年首次负增长，我为什么反而不慌 - halo的技术博客"
 tags:
   - 投资理财

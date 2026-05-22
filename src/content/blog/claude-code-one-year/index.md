@@ -1,6 +1,6 @@
 ---
 title: "Claude Code 一年使用报告：从惊艳到日常"
-publishDate: '2024-01-01'
+publishDate: '2026-05-11'
 description: "分享使用 Claude Code 一年的真实经历。不是功能介绍，是心态变化和工作流的改变。"
 tags:
   - AI工具

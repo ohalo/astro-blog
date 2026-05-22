@@ -1,6 +1,6 @@
 ---
 title: "我用 AI 写了大半年代码，发现最缺的不是模型，是一套开发流程"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "我用 AI 写了大半年代码，发现最缺的不是模型，是一套开发流程 - halo的技术博客"
 tags:
   - AI工具

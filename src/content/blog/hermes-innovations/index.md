@@ -1,6 +1,6 @@
 ---
 title: "Hermes Agent 真正创新的地方：不是更会聊，是会自己变强"
-publishDate: '2024-01-01'
+publishDate: '2026-04-13'
 description: "Hermes Agent 真正创新的地方：不是更会聊，是会自己变强 - halo的技术博客"
 tags:
   - AI工具

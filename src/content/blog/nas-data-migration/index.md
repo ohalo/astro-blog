@@ -1,6 +1,6 @@
 ---
 title: "NAS数据迁移指南：换机/扩容/换盘无损迁移数据"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "NAS数据迁移指南：换机/扩容/换盘无损迁移数据 - halo的技术博客"
 tags:
   - 硬件数码

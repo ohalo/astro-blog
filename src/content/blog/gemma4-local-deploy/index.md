@@ -1,6 +1,6 @@
 ---
 title: "我在自己的电脑上跑了一个 AI 模型，token 成本为零"
-publishDate: '2024-01-01'
+publishDate: '2026-04-10'
 description: "我在自己的电脑上跑了一个 AI 模型，token 成本为零 - halo的技术博客"
 tags:
   - AI工具

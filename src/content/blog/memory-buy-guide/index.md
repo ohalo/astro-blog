@@ -1,6 +1,6 @@
 ---
 title: "24GB/48GB内存是不是新一代最均衡的方案？买多大看完这篇就懂了"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "24GB/48GB内存是不是新一代最均衡的方案？买多大看完这篇就懂了 - halo的技术博客"
 tags:
   - 硬件数码

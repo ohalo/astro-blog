@@ -1,6 +1,6 @@
 ---
 title: "绿联DH4300 Plus评测：从存储焦虑到数据自由，小白也能玩转的NAS"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "绿联DH4300 Plus评测：从存储焦虑到数据自由，小白也能玩转的NAS - halo的技术博客"
 tags:
   - 硬件数码

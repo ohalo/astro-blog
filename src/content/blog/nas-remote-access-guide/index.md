@@ -1,6 +1,6 @@
 ---
 title: "NAS远程访问方案对比：IPv6、DDNS、内网穿透哪个好？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS远程访问方案对比：IPv6、DDNS、内网穿透哪个好？ - halo的技术博客"
 tags:
   - 硬件数码

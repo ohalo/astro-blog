@@ -1,6 +1,6 @@
 ---
 title: "从零开始理解 Agent-First 工作流：不是给 AI 套流程，是让 AI 自己跑流程"
-publishDate: '2024-01-01'
+publishDate: '2026-04-15'
 description: "从零开始理解 Agent-First 工作流：不是给 AI 套流程，是让 AI 自己跑流程 - halo的技术博客"
 tags:
   - AI工具

@@ -1,6 +1,6 @@
 ---
 title: "NAS安全防护指南：防止勒索病毒和黑客攻击的9个关键设置"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS安全防护指南：防止勒索病毒和黑客攻击的9个关键设置 - halo的技术博客"
 tags:
   - 硬件数码

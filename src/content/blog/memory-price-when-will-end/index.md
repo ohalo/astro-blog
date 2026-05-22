@@ -1,6 +1,6 @@
 ---
 title: "本轮内存涨价什么时候到头？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-11'
 description: "本轮内存涨价什么时候到头？ - halo的技术博客"
 tags:
   - 硬件数码

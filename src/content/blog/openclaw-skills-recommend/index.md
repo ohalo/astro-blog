@@ -1,6 +1,6 @@
 ---
 title: "OpenClaw 有哪些好用的 Skill？装完不知道怎么选，先看完这篇"
-publishDate: '2024-01-01'
+publishDate: '2026-04-22'
 description: "OpenClaw 有哪些好用的 Skill？装完不知道怎么选，先看完这篇 - halo的技术博客"
 tags:
   - AI工具

@@ -1,6 +1,6 @@
 ---
 title: "128GB 以上统一内存的 Mac Studio，哪一代真正能跑大模型？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-11'
 description: "128GB 以上统一内存的 Mac Studio，哪一代真正能跑大模型？ - halo的技术博客"
 tags:
   - 硬件数码

@@ -1,6 +1,6 @@
 ---
 title: "NVIDIA新论文打脸了：8B小模型吊打GPT-5，靠的是''当指挥官"
-publishDate: '2024-01-01'
+publishDate: '2026-04-22'
 description: "NVIDIA新论文打脸了：8B小模型吊打GPT-5，靠的是''当指挥官'' - halo的技术博客"
 tags:
   - AI工具

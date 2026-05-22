@@ -1,6 +1,6 @@
 ---
 title: "升职三个月，我把自己熬成了最尴尬的人"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "升职三个月，我把自己熬成了最尴尬的人 - halo的技术博客"
 tags:
   - 职业发展

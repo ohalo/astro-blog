@@ -1,6 +1,6 @@
 ---
 title: "NAS功耗与静音优化：一年能省多少电费？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS功耗与静音优化：一年能省多少电费？ - halo的技术博客"
 tags:
   - 硬件数码

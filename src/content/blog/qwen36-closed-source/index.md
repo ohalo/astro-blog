@@ -1,6 +1,6 @@
 ---
 title: "DeepSeek V4 鸽了，Qwen3.6 闭源了——这届开源社区被上了一课"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "DeepSeek V4 鸽了，Qwen3.6 闭源了——这届开源社区被上了一课 - halo的技术博客"
 tags:
   - AI观察

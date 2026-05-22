@@ -1,6 +1,6 @@
 ---
 title: "你投喂给AI的数据，为什么第二天就忘了？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-21'
 description: "你投喂给AI的数据，为什么第二天就忘了？ - halo的技术博客"
 tags:
   - AI工具

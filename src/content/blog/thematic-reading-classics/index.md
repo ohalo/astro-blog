@@ -1,6 +1,6 @@
 ---
 title: "经典读不下去？试试这个被严重低估的阅读方法"
-publishDate: '2024-01-01'
+publishDate: '2026-05-22'
 description: "经典读不下去？试试这个被严重低估的阅读方法 - halo的技术博客"
 tags:
   - 阅读思考

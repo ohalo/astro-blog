@@ -1,6 +1,6 @@
 ---
 title: "NAS上跑虚拟机：Windows/Linux/软路由一台搞定"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "NAS上跑虚拟机：Windows/Linux/软路由一台搞定 - halo的技术博客"
 tags:
   - 硬件数码

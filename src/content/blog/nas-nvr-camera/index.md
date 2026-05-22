@@ -1,6 +1,6 @@
 ---
 title: "把NAS变成NVR：监控摄像头方案全攻略"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "把NAS变成NVR：监控摄像头方案全攻略 - halo的技术博客"
 tags:
   - 硬件数码

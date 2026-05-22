@@ -1,6 +1,6 @@
 ---
 title: "给Claude Code装了个插件，它终于不乱写代码了"
-publishDate: '2024-01-01'
+publishDate: '2026-04-16'
 description: "给Claude Code装了个插件，它终于不乱写代码了 - halo的技术博客"
 tags:
   - AI工具

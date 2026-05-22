@@ -1,6 +1,6 @@
 ---
 title: "OpenClaw 记忆系统源码拆解：为什么它能记住你三个月前聊过什么"
-publishDate: '2024-01-01'
+publishDate: '2026-04-17'
 description: "OpenClaw 记忆系统源码拆解：为什么它能记住你三个月前聊过什么 - halo的技术博客"
 tags:
   - AI工具

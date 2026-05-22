@@ -1,6 +1,6 @@
 ---
 title: "NAS下载工具对比：qBittorrent vs Transmission，PT玩家怎么选？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS下载工具对比：qBittorrent vs Transmission，PT玩家怎么选？ - halo的技术博客"
 tags:
   - 硬件数码

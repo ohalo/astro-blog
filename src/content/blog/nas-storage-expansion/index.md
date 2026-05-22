@@ -1,6 +1,6 @@
 ---
 title: "NAS扩容指南：加硬盘、换大硬盘、扩展柜怎么选？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "NAS扩容指南：加硬盘、换大硬盘、扩展柜怎么选？ - halo的技术博客"
 tags:
   - 硬件数码

@@ -1,6 +1,6 @@
 ---
 title: "用飞牛OS组了个NAS，哪些钱不能省，哪些时间必须花？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "用飞牛OS组了个NAS，哪些钱不能省，哪些时间必须花？ - halo的技术博客"
 tags:
   - 硬件数码

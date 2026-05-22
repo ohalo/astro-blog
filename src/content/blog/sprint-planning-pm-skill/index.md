@@ -1,6 +1,6 @@
 ---
 title: "Anthropic 官方 PM Skill sprint-planning 技术解析：如何做迭代范围、容量与风险规划"
-publishDate: '2024-01-01'
+publishDate: '2026-04-26'
 description: "Anthropic 官方 PM Skill sprint-planning 技术解析：如何做迭代范围、容量与风险规划 - halo的技术博客"
 tags:
   - AI工具

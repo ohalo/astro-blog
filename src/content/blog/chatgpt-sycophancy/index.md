@@ -1,6 +1,6 @@
 ---
 title: "ChatGPT骗了你，你却给了它五星好评"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "ChatGPT骗了你，你却给了它五星好评 - halo的技术博客"
 tags:
   - AI观察

@@ -1,6 +1,6 @@
 ---
 title: "被Claude Code自作主张坑了三次后，我终于搞懂了什么叫「主线程思维」"
-publishDate: '2024-01-01'
+publishDate: '2026-04-09'
 description: "被Claude Code自作主张坑了三次后，我终于搞懂了什么叫「主线程思维」 - halo的技术博客"
 tags:
   - AI工具

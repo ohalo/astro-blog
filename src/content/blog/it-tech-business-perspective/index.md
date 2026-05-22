@@ -1,6 +1,6 @@
 ---
 title: "干了5年开发，我发现技术不懂业务就是个伪命题"
-publishDate: '2024-01-01'
+publishDate: '2026-04-09'
 description: "干了5年开发，我发现技术不懂业务就是个伪命题 - halo的技术博客"
 tags:
   - 效率技巧

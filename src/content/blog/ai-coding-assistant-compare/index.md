@@ -1,6 +1,6 @@
 ---
 title: "别被Cursor的\"好用\"骗了：我为什么转投Claude Code"
-publishDate: '2024-01-01'
+publishDate: '2026-05-06'
 description: "别被Cursor的"
 tags:
   - 其他

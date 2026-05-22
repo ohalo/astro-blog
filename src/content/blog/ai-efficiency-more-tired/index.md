@@ -1,6 +1,6 @@
 ---
 title: "用AI半年后，我终于明白为什么更累了"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "用AI半年后，我终于明白为什么更累了 - halo的技术博客"
 tags:
   - AI观察

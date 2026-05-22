@@ -1,6 +1,6 @@
 ---
 title: "2026年了，你的所有账号还在用同一个密码？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-27'
 description: "2026年了，你的所有账号还在用同一个密码？ - halo的技术博客"
 tags:
   - 效率技巧

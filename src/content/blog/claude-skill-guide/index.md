@@ -1,6 +1,6 @@
 ---
 title: "Anthropic 官方发布：Claude Skill 完全指南（我的解读）"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "Anthropic 官方发布：Claude Skill 完全指南（我的解读） - halo的技术博客"
 tags:
   - AI工具

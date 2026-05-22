@@ -1,6 +1,6 @@
 ---
 title: "凌晨4点代码泄露，他在2小时内重写了整个项目，然后GitHub炸了"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "凌晨4点代码泄露，他在2小时内重写了整个项目，然后GitHub炸了 - halo的技术博客"
 tags:
   - AI观察

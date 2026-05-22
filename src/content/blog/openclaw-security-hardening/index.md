@@ -1,6 +1,6 @@
 ---
 title: "OpenClaw 安全加固完全指南（2026）：防御 GhostClaw 与权限控制"
-publishDate: '2024-01-01'
+publishDate: '2026-04-17'
 description: "OpenClaw 安全加固完全指南（2026）：防御 GhostClaw 与权限控制 - halo的技术博客"
 tags:
   - AI工具

@@ -1,6 +1,6 @@
 ---
 title: "halo的技术博客"
-publishDate: '2024-01-01'
+publishDate: '2026-05-14'
 description: "AI编程工具越来越强，但一个悖论正在浮现：工具越好用，新人越难成长。"
 tags:
   - AI观察

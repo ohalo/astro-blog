@@ -1,6 +1,6 @@
 ---
 title: "用NAS搭建私有Git服务器：Gitea/群晖Git Server对比"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "用NAS搭建私有Git服务器：Gitea/群晖Git Server对比 - halo的技术博客"
 tags:
   - 硬件数码

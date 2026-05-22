@@ -1,6 +1,6 @@
 ---
 title: "AI Agent 越跑越蠢？先把六层架构搭好再说"
-publishDate: '2024-01-01'
+publishDate: '2026-04-13'
 description: "AI Agent 越跑越蠢？先把六层架构搭好再说 - halo的技术博客"
 tags:
   - AI工具

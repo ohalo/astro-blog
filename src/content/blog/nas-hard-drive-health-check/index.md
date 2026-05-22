@@ -1,6 +1,6 @@
 ---
 title: "NAS硬盘健康检测指南：SMART参数详解，如何判断硬盘寿命？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS硬盘健康检测指南：SMART参数详解，如何判断硬盘寿命？ - halo的技术博客"
 tags:
   - 硬件数码

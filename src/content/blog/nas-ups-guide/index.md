@@ -1,6 +1,6 @@
 ---
 title: "NAS必须配UPS吗？断电保护指南，铅酸vs锂电池怎么选？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "NAS必须配UPS吗？断电保护指南，铅酸vs锂电池怎么选？ - halo的技术博客"
 tags:
   - 硬件数码

@@ -1,6 +1,6 @@
 ---
 title: "AI画出来的画确实好看，但好看就够了？"
-publishDate: '2024-01-01'
+publishDate: '2026-05-22'
 description: "AI画出来的画确实好看，但好看就够了？ - halo的技术博客"
 tags:
   - AI观察

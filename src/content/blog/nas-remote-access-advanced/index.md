@@ -1,6 +1,6 @@
 ---
 title: "NAS远程访问进阶：Tailscale零配置VPN、WireGuard自建、frp内网穿透方案对比"
-publishDate: '2024-01-01'
+publishDate: '2026-04-16'
 description: "NAS远程访问进阶：Tailscale零配置VPN、WireGuard自建、frp内网穿透方案对比 - halo的技术博客"
 tags:
   - 硬件数码

@@ -1,6 +1,6 @@
 ---
 title: "halo的技术博客"
-publishDate: '2024-01-01'
+publishDate: '2026-05-12'
 description: "一个技术人离开技术岗位一段时间后的反思。离开后才发现技术不是全部。"
 tags:
   - AI工具

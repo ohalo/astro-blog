@@ -1,6 +1,6 @@
 ---
 title: "2024年买内存，24GB和48GB到底能不能买？我被坑了3次才搞明白"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "2024年买内存，24GB和48GB到底能不能买？我被坑了3次才搞明白 - halo的技术博客"
 tags:
   - 硬件数码

@@ -1,6 +1,6 @@
 ---
 title: "AI Agent 失忆症有救了：Mem0 让你的 Agent 记住一切"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "AI Agent 失忆症有救了：Mem0 让你的 Agent 记住一切 - halo的技术博客"
 tags:
   - AI工具

@@ -1,6 +1,6 @@
 ---
 title: "AI时代学的东西明天就过时，普通人该怎么办？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-14'
 description: "AI时代学的东西明天就过时，普通人该怎么办？ - halo的技术博客"
 tags:
   - AI观察

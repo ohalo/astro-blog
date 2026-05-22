@@ -1,6 +1,6 @@
 ---
 title: "我把AI装进了微信、QQ、Telegram，现在它24小时帮我干活"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "我把AI装进了微信、QQ、Telegram，现在它24小时帮我干活 - halo的技术博客"
 tags:
   - AI工具

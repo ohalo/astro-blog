@@ -1,6 +1,6 @@
 ---
 title: "NAS日志监控与告警：半夜硬盘快满了你都不知道？"
-publishDate: '2024-01-01'
+publishDate: '2026-04-08'
 description: "NAS日志监控与告警：半夜硬盘快满了你都不知道？ - halo的技术博客"
 tags:
   - 硬件数码
