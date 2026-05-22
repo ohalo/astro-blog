@@ -28,8 +28,7 @@
     "katex": "^0.16.45",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0",
-    "sharp": "^0.34.5",
-    "typescript": "^6.0.3"
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@astrojs/markdown-remark": "^7.1.2",
@@ -41,6 +40,7 @@
     "eslint-plugin-astro": "^1.7.0",
     "prettier": "^3.8.3",
     "prettier-plugin-astro": "^0.14.1",
+    "typescript": "^5.9.3",
     "unist-util-visit": "^5.1.0"
   }
 }
