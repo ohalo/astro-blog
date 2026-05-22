@@ -30,7 +30,7 @@ const replacements = [
       ["aria-label='Back to Top'", "aria-label='回到顶部'"],
     ]
   },
-  // Copyright.astro
+  // Copyright.astro - simple replacements
   {
     file: 'node_modules/astro-pure/components/pages/Copyright.astro',
     changes: [
@@ -67,6 +67,19 @@ for (const { file, changes } of replacements) {
       count++
     }
   }
+  
+  // Special handling for Copyright.astro - replace "Buy me a cup of coffee" block
+  if (file.includes('Copyright.astro')) {
+    const oldBlock = /  <div class='mx-6 rounded-b-xl border border-t-0 px-3 pb-1\.5 pt-1 sm:mx-8 sm:px-4'>\n    <a\n      href='\/projects#sponsorship'\n      class='flex items-center justify-between text-muted-foreground no-underline'\n      target='_blank'\n    >\n      <span>Buy me a cup of coffee ☕\.<\/span>\n      <Icon class='box-content size-5 p-1' name='receive-money' \/>\n    <\/a>\n  <\/div>/s
+    const newBlock = `  <div class='mx-6 rounded-b-xl border border-t-0 px-3 pb-1.5 pt-1 text-center text-sm text-muted-foreground sm:mx-8 sm:px-4'>\n    <span>学而时习之，不亦说乎</span>\n  </div>`
+    
+    if (oldBlock.test(content)) {
+      content = content.replace(oldBlock, newBlock)
+      count++
+      console.log(`  ✓ Replaced "Buy me a cup of coffee" block`)
+    }
+  }
+  
   if (count > 0) {
     writeFileSync(path, content)
     console.log(`✓ ${file} (${count} changes)`)
