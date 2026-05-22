@@ -182,23 +182,11 @@ export const integ: IntegrationUserConfig = {
 }
 
 export const terms: CardListData = {
-  title: 'Terms content',
+  title: '站点政策',
   list: [
     {
-      title: 'Privacy Policy',
-      link: '/terms/privacy-policy'
-    },
-    {
-      title: 'Terms and Conditions',
-      link: '/terms/terms-and-conditions'
-    },
-    {
-      title: 'Copyright',
-      link: '/terms/copyright'
-    },
-    {
-      title: 'Disclaimer',
-      link: '/terms/disclaimer'
+      title: '隐私政策',
+      link: '/terms/privacy'
     }
   ]
 }
