@@ -1,0 +1,33 @@
+diff --git a/node_modules/astro-pure/components/pages/Paginator.astro b/node_modules/astro-pure/components/pages/Paginator.astro
+index 4489e3c..82e17d3 100644
+--- a/node_modules/astro-pure/components/pages/Paginator.astro
++++ b/node_modules/astro-pure/components/pages/Paginator.astro
+@@ -19,13 +19,13 @@ const { nextUrl, prevUrl } = Astro.props
+       {prevUrl && (
+         <a class='me-auto py-2' data-astro-prefetch href={prevUrl.url}>
+           {prevUrl.srLabel && <span class='sr-only'>{prevUrl.srLabel}</span>}
+-          {prevUrl.text ? prevUrl.text : 'Previous'}
++          {prevUrl.text ? prevUrl.text : '上一页'}
+         </a>
+       )}
+       {nextUrl && (
+         <a class='ms-auto py-2' data-astro-prefetch href={nextUrl.url}>
+           {nextUrl.srLabel && <span class='sr-only'>{nextUrl.srLabel}</span>}
+-          {nextUrl.text ? nextUrl.text : 'Next'}
++          {nextUrl.text ? nextUrl.text : '下一页'}
+         </a>
+       )}
+     </nav>
+diff --git a/node_modules/astro-pure/components/pages/PostPreview.astro b/node_modules/astro-pure/components/pages/PostPreview.astro
+index 777883f..edc79b1 100644
+--- a/node_modules/astro-pure/components/pages/PostPreview.astro
++++ b/node_modules/astro-pure/components/pages/PostPreview.astro
+@@ -104,7 +104,7 @@ const postDate = data.updatedDate ?? data.publishDate
+               )}
+             </div>
+             {data.tags.length > 0 && (
+-              <object title='Tags' aria-label='Tags' aria-labelledby='Tags'>
++              <object title='标签' aria-label='标签' aria-labelledby='标签'>
+                 <ul class='tag-list mt-1 flex gap-2'>
+                   {data.tags.map((tag: string) => (
+                     <li>
