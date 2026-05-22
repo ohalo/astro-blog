@@ -27,7 +27,7 @@ export const theme: ThemeUserConfig = {
   /** Set a logo image to show in the homepage. */
   logo: {
     src: '/src/assets/avatar.png',
-    alt: 'Avatar'
+    alt: '头像'
   },
 
   titleDelimiter: '•',
@@ -48,8 +48,8 @@ export const theme: ThemeUserConfig = {
   /** Configure the header of your site. */
   header: {
     menu: [
-      { title: 'Blog', link: '/blog' },
-      { title: 'About', link: '/about' }
+      { title: '博客', link: '/blog' },
+      { title: '关于', link: '/about' }
     ]
   },
 
@@ -67,7 +67,7 @@ export const theme: ThemeUserConfig = {
       },
       // Privacy Policy link
       {
-        title: 'Site Policy',
+        title: '站点政策',
         link: '/terms',
         pos: 2 // position set to 2 will be appended to copyright line
       }
@@ -173,8 +173,8 @@ export const integ: IntegrationUserConfig = {
       pageview: true,
       comment: true,
       locale: {
-        reaction0: 'Like',
-        placeholder: 'Welcome to comment. (Email to receive replies. Login is unnecessary)'
+        reaction0: '点赞',
+        placeholder: '欢迎评论。（填写邮箱接收回复，无需登录）'
       },
       imageUploader: false
     }
