@@ -1,3 +1,89 @@
+diff --git a/node_modules/astro-pure/components/basic/Footer.astro b/node_modules/astro-pure/components/basic/Footer.astro
+index c3b6540..b2e90c1 100644
+--- a/node_modules/astro-pure/components/basic/Footer.astro
++++ b/node_modules/astro-pure/components/basic/Footer.astro
+@@ -57,11 +57,11 @@ const footerLink1 = footerConf.links?.filter(({ pos }) => pos === 1) || []
+               <a href='https://github.com/withastro/astro' target='_blank'>
+                 Astro
+               </a>
+-              &
++              主题
+               <a href='https://github.com/cworld1/astro-theme-pure' target='_blank'>
+                 Pure
+               </a>
+-              theme powered
++              驱动
+             </span>
+           )
+         }
+diff --git a/node_modules/astro-pure/components/basic/Header.astro b/node_modules/astro-pure/components/basic/Header.astro
+index 3101092..5a8bf45 100644
+--- a/node_modules/astro-pure/components/basic/Header.astro
++++ b/node_modules/astro-pure/components/basic/Header.astro
+@@ -34,8 +34,8 @@ import { Icon } from '../user'
+           ))
+         }
+         <div class='flex w-full grow flex-row justify-end gap-x-3 sm:w-fit sm:gap-x-5'>
+-          <a class='px-1 py-2 transition-none sm:px-2' href='/search' title='Search'>
+-            <span class='sr-only'>Search</span>
++          <a class='px-1 py-2 transition-none sm:px-2' href='/search' title='搜索'>
++            <span class='sr-only'>搜索</span>
+             <Icon name='search' class='size-5' />
+           </a>
+         </div>
+@@ -48,7 +48,7 @@ import { Icon } from '../user'
+         id='toggleDarkMode'
+         class='group/dark box-content size-5 rounded-md border p-1.5 transition-colors hover:bg-border sm:group-[.not-top]:rounded-xl'
+       >
+-        <span class='sr-only'>Dark Theme</span>
++        <span class='sr-only'>深色主题</span>
+         <Icon class='system size-5 group-hover/dark:text-primary' name='computer' />
+         <Icon class='light hidden size-5 group-hover/dark:text-primary' name='sun' />
+         <Icon class='dark hidden size-5 group-hover/dark:text-primary' name='moon' />
+@@ -57,7 +57,7 @@ import { Icon } from '../user'
+         id='toggleMenu'
+         class='rounded-md border p-1.5 transition-colors hover:bg-border sm:hidden sm:group-[.not-top]:rounded-xl'
+       >
+-        <span class='sr-only'>Menu</span>
++        <span class='sr-only'>菜单</span>
+         <Icon class='size-5' name='menu' />
+       </button>
+     </div>
+@@ -95,7 +95,7 @@ import { Icon } from '../user'
+         // document.dispatchEvent(toggleDarkModeEvent)
+         const newTheme = setTheme(undefined, true)
+         darkModeBtn.dataset.theme = newTheme
+-        showToast({ message: `Set theme to ${newTheme}` })
++        showToast({ message: `已切换主题到 ${newTheme}` })
+       })
+ 
+       // Menu
+diff --git a/node_modules/astro-pure/components/pages/BackToTop.astro b/node_modules/astro-pure/components/pages/BackToTop.astro
+index 0ea248e..bb4f319 100644
+--- a/node_modules/astro-pure/components/pages/BackToTop.astro
++++ b/node_modules/astro-pure/components/pages/BackToTop.astro
+@@ -11,7 +11,7 @@ const { header: headerName, content: contentName, needPercent = true } = Astro.p
+   <slot name='other-icons' />
+   <scroll-button>
+     <button
+-      aria-label='Back to Top'
++      aria-label='回到顶部'
+       class='relative size-10 flex items-center justify-center rounded-full border-2 border-transparent bg-muted text-muted-foreground duration-300 hover:border-border/75 sm:size-12 opacity-0'
+       id='to-top-btn'
+     >
+diff --git a/node_modules/astro-pure/components/pages/Copyright.astro b/node_modules/astro-pure/components/pages/Copyright.astro
+index b06066a..72b7902 100644
+--- a/node_modules/astro-pure/components/pages/Copyright.astro
++++ b/node_modules/astro-pure/components/pages/Copyright.astro
+@@ -65,7 +65,7 @@ const shares = {
+       )
+     }
+     <div class='flex gap-x-2 sm:flex-col'>
+-      <span>Copyright</span>
++      <span>版权声明</span>
+       <a
+         class='text-sm text-foreground max-sm:place-self-center'
+         href='https://creativecommons.org/licenses/by/4.0/'
 diff --git a/node_modules/astro-pure/components/pages/Paginator.astro b/node_modules/astro-pure/components/pages/Paginator.astro
 index 4489e3c..82e17d3 100644
 --- a/node_modules/astro-pure/components/pages/Paginator.astro
