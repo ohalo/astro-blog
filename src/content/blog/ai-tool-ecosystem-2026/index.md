@@ -7,26 +7,6 @@ tags:
 language: Chinese
 ---
 
-## AI工具 · 行业观察 · 技术实践
-
-  * [__主页](/)
-  * [__AI工具](/posts/ai-tools/)
-  * [__AI观察](/posts/ai-observation/)
-  * [__硬件数码](/posts/hardware/)
-  * [__职业成长](/posts/career/)
-  * [__投资理财](/posts/investment/)
-  * [__阅读思考](/posts/reading/)
-  * [__效率技巧](/posts/tech-tips/)
-  * [__生活方式](/posts/life/)
-  * [__归档](/posts/archive/)
-  * [__关于](/about/)
-
-
-
-# 2026年AI工具生态观察：从API价格战到多模态应用爆发
-
-![AI工具生态2026](/images/2026-ai-tool-ecosystem/cover.jpg)
-
 ## 引言：AI工具进入"应用爆发期"
 
 2026年5月，站在AI工具发展的关键节点回望，我们可以清晰地看到这个行业正在经历从"技术验证"到"规模化应用"的质变。如果说2023-2024是AI工具的"技术萌芽期"，2025是"商业模式探索期"，那么2026年无疑开启了"应用爆发期"。
