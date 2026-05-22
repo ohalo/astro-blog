@@ -76,7 +76,7 @@ export const theme: ThemeUserConfig = {
     credits: false,
     /** Optional details about the social media accounts for this site. */
     social: [
-      { icon: 'github', label: 'GitHub', href: 'https://github.com/cworld1/astro-theme-pure' },
+      { icon: 'github', label: 'GitHub', href: 'https://github.com/ohalo' },
       { icon: 'rss', label: 'RSS', href: '/rss.xml' }
     ]
   },
