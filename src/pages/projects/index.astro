@@ -2,15 +2,15 @@
 import { Button, Collapse, Icon } from 'astro-pure/user'
 import PageLayout from '@/layouts/CommonPage.astro'
 import ProjectSection from '@/components/projects/ProjectSection.astro'
----
 
 const headings = [
   { depth: 2, slug: 'programs', text: '开源项目' },
   { depth: 2, slug: 'learnings', text: '学习项目' },
   { depth: 2, slug: 'others', text: '其他' }
 ]
+---
 
-<PageLayout title='项目' {headings} view>
+<PageLayout title='项目' headings={headings} view>
   <!-- 关于 astro-pure -->
   <div class='not-prose flex justify-center'>
     <a
@@ -28,7 +28,6 @@ const headings = [
     <img
       src='https://ghchart.rshah.org/659eb9/halo'
       alt='GitHub 活动'
-      inferSize
       loading='lazy'
     />
   </p>
@@ -41,16 +40,6 @@ const headings = [
   <ProjectSection
     projects={[
       // 在这里添加你的开源项目
-      // 示例：
-      // {
-      //   name: '🚀 项目名称',
-      //   description: '项目描述',
-      //   links: [
-      //     { type: 'github', href: 'https://github.com/你的用户名/项目名' },
-      //     { type: 'site', href: 'https://项目演示地址' },
-      //     { type: 'doc', href: 'https://项目文档地址' }
-      //   ]
-      // }
     ]}
   />
 
@@ -59,15 +48,6 @@ const headings = [
     class='my-2'
     projects={[
       // 在这里添加你的学习项目
-      // 示例：
-      // {
-      //   name: 'Python 学习笔记',
-      //   description: 'Python 语言学习笔记和代码示例',
-      //   links: [
-      //     { type: 'github', href: 'https://github.com/你的用户名/python-learning' },
-      //     { type: 'site', href: 'https://你的用户名.github.io/python-learning' }
-      //   ]
-      // }
     ]}
   />
 
