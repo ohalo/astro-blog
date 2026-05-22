@@ -54,6 +54,13 @@ const replacements = [
       ["aria-labelledby='Tags'", "aria-labelledby='标签'"],
     ]
   },
+  // TOC.astro
+  {
+    file: 'node_modules/astro-pure/components/pages/TOC.astro',
+    changes: [
+      ['<h2 class=\'font-medium\'>TABLE OF CONTENTS</h2>', '<h2 class=\'font-medium\'>目录</h2>'],
+    ]
+  },
 ]
 
 let total = 0
