@@ -73,14 +73,21 @@ function patchFile(filePath) {
 
 console.log('Patching i18n strings in built HTML files...\n');
 
+console.log('Dist dir:', distDir);
+console.log('Vercel dir:', vercelDir);
+console.log('');
+
 console.log('Patching dist/client/...');
 walkDir(distDir);
 
+console.log('');
+console.log('Checking .vercel/output/static/...');
+console.log('  exists:', fs.existsSync(vercelDir));
 if (fs.existsSync(vercelDir)) {
-  console.log('\nPatching .vercel/output/static/...');
+  console.log('  Patching .vercel/output/static/...');
   walkDir(vercelDir);
 } else {
-  console.log('\n⚠️  Skipping .vercel/output/static/ (not found)');
+  console.log('  ⚠️  Skipping .vercel/output/static/ (not found)');
 }
 
 console.log('\nDone!');
