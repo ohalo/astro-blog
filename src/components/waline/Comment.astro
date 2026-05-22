@@ -42,17 +42,21 @@ const { class: className } = Astro.props
         (preset) => `${config.npmCDN}/@waline/emojis@1.2.0/${preset}` as WalineEmojiPresets
       )
 
+      // Custom locale to remove subscription text
+      const customLocale = {
+        subText: '',    // "订阅本文评论" → 空
+        subHint: '',    // "订阅本站评论" → 空  
+      }
+
       walineInit({
         el: 'comment-component #waline',
         serverURL: walineConfig.server || '',
         emoji,
         reaction: ['/icons/heart-item.svg'],
+        noCopyright: true,
+        locale: customLocale,
         ...walineConfig.additionalConfigs
       })
-      
-      // Hide subscription and copyright after init (wait for DOM update)
-      // Use CSS instead of JS to avoid hiding wrong elements
-      // The CSS is defined in the style block below
     }
   }
 
