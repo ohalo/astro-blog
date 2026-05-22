@@ -1,6 +1,6 @@
 ---
 title: "36岁，我用AI写了半年代码，终于想明白一件事"
-publishDate: '2024-01-01'
+publishDate: '2026-04-07'
 description: "36岁，我用AI写了半年代码，终于想明白一件事 - halo的技术博客"
 tags:
   - AI观察
