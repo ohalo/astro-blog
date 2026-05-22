@@ -1,27 +1,11 @@
 ---
-title: "halo的技术博客"
+title: "在数字过载和AI工具泛滥的2026年，如何通过数字极简主义找回专注力"
 publishDate: '2026-05-21'
 description: "在数字过载和AI工具泛滥的2026年，如何通过数字极简主义找回专注力。包含具体的方法论、工具推荐和实践案例。"
 tags:
   - 生活方式
 language: Chinese
 ---
-
-## AI工具 · 行业观察 · 技术实践
-
-  * [__主页](/)
-  * [__AI工具](/posts/ai-tools/)
-  * [__AI观察](/posts/ai-observation/)
-  * [__硬件数码](/posts/hardware/)
-  * [__职业成长](/posts/career/)
-  * [__投资理财](/posts/investment/)
-  * [__阅读思考](/posts/reading/)
-  * [__效率技巧](/posts/tech-tips/)
-  * [__生活方式](/posts/life/)
-  * [__归档](/posts/archive/)
-  * [__关于](/posts/about/)
-
-
 
 # 数字极简主义实践：如何在AI时代保持专注力
 

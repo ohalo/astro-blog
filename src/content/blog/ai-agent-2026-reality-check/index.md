@@ -1,5 +1,5 @@
 ---
-title: "halo的技术博客"
+title: "2026年AI Agent市场正在经历从概念炒作到实际落地的关键转折"
 publishDate: '2026-05-20'
 description: "2026年AI Agent市场正在经历从概念炒作到实际落地的关键转折，本文分析当前Agent生态的真实进展与瓶颈。"
 tags:

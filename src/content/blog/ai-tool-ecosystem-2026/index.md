@@ -1,5 +1,5 @@
 ---
-title: "halo的技术博客"
+title: "深度分析2026年5月AI工具生态的五大趋势"
 publishDate: '2026-05-21'
 description: "深度分析2026年5月AI工具生态的五大趋势：API价格战、多模态应用、开源模型崛起、垂直领域工具爆发和AI Agent商业化。"
 tags:

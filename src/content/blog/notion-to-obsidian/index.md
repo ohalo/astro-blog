@@ -1,5 +1,5 @@
 ---
-title: "halo的技术博客"
+title: "从Notion到Obsidian，我花了三年时间才明白知识管理工具的选择核心不是功能"
 publishDate: '2026-05-20'
 description: "从Notion到Obsidian，我花了三年时间才明白知识管理工具的选择核心不是功能，而是思维方式。"
 tags:

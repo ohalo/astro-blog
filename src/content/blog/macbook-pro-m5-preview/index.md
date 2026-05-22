@@ -1,27 +1,11 @@
 ---
-title: "halo的技术博客"
+title: "MacBook Pro M5前瞻：从供应链消息看苹果的下一代芯片策略"
 publishDate: '2026-05-21'
 description: "基于供应链消息和业界分析，深度前瞻MacBook Pro M5的核心升级点、性能预测和发布时间。帮你判断是现在买M4还是等M5。"
 tags:
   - 硬件数码
 language: Chinese
 ---
-
-## AI工具 · 行业观察 · 技术实践
-
-  * [__主页](/)
-  * [__AI工具](/posts/ai-tools/)
-  * [__AI观察](/posts/ai-observation/)
-  * [__硬件数码](/posts/hardware/)
-  * [__职业成长](/posts/career/)
-  * [__投资理财](/posts/investment/)
-  * [__阅读思考](/posts/reading/)
-  * [__效率技巧](/posts/tech-tips/)
-  * [__生活方式](/posts/life/)
-  * [__归档](/posts/archive/)
-  * [__关于](/posts/about/)
-
-
 
 # MacBook Pro M5前瞻：从供应链消息看苹果的下一代芯片策略
 

@@ -1,27 +1,11 @@
 ---
-title: "halo的技术博客"
+title: "详解可转债打新与网格交易的组合策略"
 publishDate: '2026-05-21'
 description: "详解可转债打新与网格交易的组合策略，如何在2026年实现年化8-12%的低风险收益。包含实操步骤、风险控制和真实案例。"
 tags:
   - 投资理财
 language: Chinese
 ---
-
-## AI工具 · 行业观察 · 技术实践
-
-  * [__主页](/)
-  * [__AI工具](/posts/ai-tools/)
-  * [__AI观察](/posts/ai-observation/)
-  * [__硬件数码](/posts/hardware/)
-  * [__职业成长](/posts/career/)
-  * [__投资理财](/posts/investment/)
-  * [__阅读思考](/posts/reading/)
-  * [__效率技巧](/posts/tech-tips/)
-  * [__生活方式](/posts/life/)
-  * [__归档](/posts/archive/)
-  * [__关于](/about/)
-
-
 
 # 可转债打新+网格交易：2026年稳健理财的黄金组合
 
