@@ -51,30 +51,8 @@ const { class: className } = Astro.props
       })
       
       // Hide subscription and copyright after init (wait for DOM update)
-      setTimeout(() => {
-        const waline = document.getElementById('waline')
-        if (!waline) return
-        
-        // Hide subscription links
-        const subscriptionLinks = waline.querySelectorAll('a[href*="subscribe"]')
-        subscriptionLinks.forEach((el: Element) => {
-          const parent = el.closest('div') || el.parentElement
-          if (parent) (parent as HTMLElement).style.display = 'none'
-        })
-        
-        // Hide copyright footer
-        const copyright = waline.querySelector('.wl-copyright, [class*="copyright"]')
-        if (copyright) (copyright as HTMLElement).style.display = 'none'
-        
-        // Hide any element containing subscription text
-        const allDivs = waline.querySelectorAll('div')
-        allDivs.forEach((div: Element) => {
-          const text = div.textContent || ''
-          if (text.includes('订阅本文评论') || text.includes('订阅本站评论') || text.includes('Powered by Waline')) {
-            (div as HTMLElement).style.display = 'none'
-          }
-        })
-      }, 1000)
+      // Use CSS instead of JS to avoid hiding wrong elements
+      // The CSS is defined in the style block below
     }
   }
 
@@ -89,15 +67,17 @@ const { class: className } = Astro.props
 
 <style>
   /* Hide Waline subscription and copyright footer */
+  /* Subscribe links */
   #waline :global(.wl-subscription) { display: none !important; }
+  #waline a[href*="subscribe"] { display: none !important; }
+  
+  /* Copyright footer */
   #waline :global(.wl-copyright) { display: none !important; }
+  #waline footer { display: none !important; }
   
-  /* Fallback: hide by class name variations */
-  #waline [class*="subscription"] { display: none !important; }
-  #waline [class*="copyright"] { display: none !important; }
+  /* Hide any element containing subscription text */
+  #waline div:has(> a[href*="subscribe"]) { display: none !important; }
   
-  /* Hide any divs containing subscription text */
-  #waline div:has(a[href*="subscribe"]) { display: none !important; }
   /* Basic theme */
   #waline {
     /* Font size */
