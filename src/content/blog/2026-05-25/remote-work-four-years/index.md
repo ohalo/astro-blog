@@ -85,6 +85,6 @@ language: Chinese
 
 对我而言，远程办公已经成为了默认选项，我不打算回到每天通勤的状态。但我也会建议周围的人：这是一个个人选择，没有标准答案。最重要的是找到适合自己的方式，而不是盲目跟随某种「潮流」。
 
-![在家办公的书桌布置](/images/remote-work-four-years/home-office.jpg)
+![在家办公的书桌布置](/images/2026-05-25/remote-work-four-years/home-office.jpg)
 
-![远程工作者使用笔记本电脑](/images/remote-work-four-years/remote-laptop.jpg)
+![远程工作者使用笔记本电脑](/images/2026-05-25/remote-work-four-years/remote-laptop.jpg)
