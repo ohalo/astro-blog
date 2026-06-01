@@ -1,0 +1,13 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#f5f5f5"/>
+  <text x="400" y="50" font-size="24" text-anchor="middle" font-weight="bold">Risk Parity Portfolio Allocation</text>
+  <circle cx="400" cy="300" r="150" fill="none" stroke="black" stroke-width="2"/>
+  <path d="M 400 150 A 150 150 0 0 1 500 250 L 400 300 Z" fill="#4CAF50" opacity="0.7"/>
+  <path d="M 500 250 A 150 150 0 0 1 400 450 L 400 300 Z" fill="#2196F3" opacity="0.7"/>
+  <path d="M 400 450 A 150 150 0 0 1 300 250 L 400 300 Z" fill="#FFC107" opacity="0.7"/>
+  <path d="M 300 250 A 150 150 0 0 1 400 150 L 400 300 Z" fill="#9C27B0" opacity="0.7"/>
+  <text x="420" y="220" font-size="14">Stocks 25%</text>
+  <text x="420" y="350" font-size="14">Bonds 25%</text>
+  <text x="320" y="420" font-size="14">Commodities 25%</text>
+  <text x="320" y="230" font-size="14">REITs 25%</text>
+</svg>
