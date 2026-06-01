@@ -1,6 +1,6 @@
 ---
 title: "因子衰减效应：量化因子为什么会逐渐失效？"
-publishDate: '2026-06-02'
+publishDate: '2026-06-01'
 description: "因子衰减效应 - halo的技术博客"
 tags:
  - 量化交易
