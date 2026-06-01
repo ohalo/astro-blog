@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#555"/>
+    </defs>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="1200" height="900" fill="#F8F9FA"/>
+  
+  <!-- 标题 -->
+  <text x="600" y="40" font-size="24" font-weight="bold" text-anchor="middle" fill="#333">
+    执行质量分析图表
+  </text>
+  
+  <!-- 左上图：滑点分布直方图 -->
+  <rect x="50" y="80" width="500" height="350" fill="white" stroke="#4A90E2" stroke-width="2" rx="5"/>
+  <text x="300" y="110" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">滑点分布 (基点)</text>
+  
+  <!-- 模拟直方图柱条 -->
+  <rect x="80" y="200" width="30" height="180" fill="#4A90E2" opacity="0.7"/>
+  <rect x="120" y="170" width="30" height="210" fill="#4A90E2" opacity="0.7"/>
+  <rect x="160" y="140" width="30" height="240" fill="#4A90E2" opacity="0.7"/>
+  <rect x="200" y="120" width="30" height="260" fill="#4A90E2" opacity="0.7"/>
+  <rect x="240" y="100" width="30" height="280" fill="#4A90E2" opacity="0.7"/>
+  <rect x="280" y="150" width="30" height="230" fill="#4A90E2" opacity="0.7"/>
+  <rect x="320" y="180" width="30" height="200" fill="#4A90E2" opacity="0.7"/>
+  <rect x="360" y="220" width="30" height="160" fill="#4A90E2" opacity="0.7"/>
+  <rect x="400" y="260" width="30" height="120" fill="#4A90E2" opacity="0.7"/>
+  
+  <!-- 平均线 -->
+  <line x1="80" y1="320" x2="450" y2="320" stroke="#FF6347" stroke-width="2" stroke-dasharray="5,5"/>
+  <text x="460" y="325" font-size="12" fill="#FF6347">平均: 2.5 bps</text>
+  
+  <!-- 坐标轴标签 -->
+  <text x="300" y="450" font-size="12" text-anchor="middle" fill="#555">滑点 (基点)</text>
+  <text x="30" y="250" font-size="12" text-anchor="middle" fill="#555" transform="rotate(-90 30 250)">频率</text>
+  
+  <!-- 右上图：订单状态分布饼图 -->
+  <rect x="650" y="80" width="500" height="350" fill="white" stroke="#50C878" stroke-width="2" rx="5"/>
+  <text x="900" y="110" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">订单状态分布</text>
+  
+  <!-- 饼图 (模拟) -->
+  <circle cx="900" cy="280" r="100" fill="#4A90E2" opacity="0.8"/>
+  <path d="M 900 280 L 900 180 A 100 100 0 0 1 950 220 Z" fill="#50C878" opacity="0.8"/>
+  <path d="M 900 280 L 950 220 A 100 100 0 0 1 870 160 Z" fill="#FF6B6B" opacity="0.8"/>
+  <path d="M 900 280 L 870 160 A 100 100 0 0 1 850 200 Z" fill="#FFA500" opacity="0.8"/>
+  
+  <!-- 图例 -->
+  <rect x="750" y="380" width="15" height="15" fill="#4A90E2"/>
+  <text x="770" y="393" font-size="12">已成交 (85%)</text>
+  
+  <rect x="850" y="380" width="15" height="15" fill="#50C878"/>
+  <text x="870" y="393" font-size="12">部分成交 (10%)</text>
+  
+  <rect x="950" y="380" width="15" height="15" fill="#FF6B6B"/>
+  <text x="970" y="393" font-size="12">已取消 (5%)</text>
+  
+  <!-- 左下图：执行时间分布 -->
+  <rect x="50" y="480" width="500" height="350" fill="white" stroke="#FF6B6B" stroke-width="2" rx="5"/>
+  <text x="300" y="510" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">订单执行时间分布 (秒)</text>
+  
+  <!-- 模拟直方图 -->
+  <rect x="80" y="600" width="30" height="150" fill="#FF6B6B" opacity="0.7"/>
+  <rect x="120" y="580" width="30" height="170" fill="#FF6B6B" opacity="0.7"/>
+  <rect x="160" y="550" width="30" height="200" fill="#FF6B6B" opacity="0.7"/>
+  <rect x="200" y="530" width="30" height="220" fill="#FF6B6B" opacity="0.7"/>
+  <rect x="240" y="520" width="30" height="230" fill="#FF6B6B" opacity="0.7"/>
+  <rect x="280" y="540" width="30" height="210" fill="#FF6B6B" opacity="0.7"/>
+  <rect x="320" y="570" width="30" height="180" fill="#FF6B6B" opacity="0.7"/>
+  <rect x="360" y="600" width="30" height="150" fill="#FF6B6B" opacity="0.7"/>
+  
+  <!-- 平均线 -->
+  <line x1="80" y1="630" x2="450" y2="630" stroke="#4169E1" stroke-width="2" stroke-dasharray="5,5"/>
+  <text x="460" y="635" font-size="12" fill="#4169E1">平均: 12.3秒</text>
+  
+  <text x="300" y="850" font-size="12" text-anchor="middle" fill="#555">执行时间 (秒)</text>
+  <text x="30" y="650" font-size="12" text-anchor="middle" fill="#555" transform="rotate(-90 30 650)">频率</text>
+  
+  <!-- 右下图：订单大小 vs 滑点散点图 -->
+  <rect x="650" y="480" width="500" height="350" fill="white" stroke="#FFA500" stroke-width="2" rx="5"/>
+  <text x="900" y="510" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">订单大小 vs 滑点</text>
+  
+  <!-- 散点 -->
+  <circle cx="700" cy="650" r="4" fill="#FFA500" opacity="0.6"/>
+  <circle cx="720" cy="640" r="4" fill="#FFA500" opacity="0.6"/>
+  <circle cx="750" cy="660" r="4" fill="#FFA500" opacity="0.6"/>
+  <circle cx="780" cy="630" r="4" fill="#FFA500" opacity="0.6"/>
+  <circle cx="810" cy="670" r="4" fill="#FFA500" opacity="0.6"/>
+  <circle cx="840" cy="620" r="4" fill="#FFA500" opacity="0.6"/>
+  <circle cx="870" cy="680" r="4" fill="#FFA500" opacity="0.6"/>
+  <circle cx="900" cy="610" r="4" fill="#FFA500" opacity="0.6"/>
+  <circle cx="930" cy="690" r="4" fill="#FFA500" opacity="0.6"/>
+  <circle cx="960" cy="600" r="4" fill="#FFA500" opacity="0.6"/>
+  <circle cx="990" cy="710" r="4" fill="#FFA500" opacity="0.6"/>
+  <circle cx="1020" cy="590" r="4" fill="#FFA500" opacity="0.6"/>
+  <circle cx="1050" cy="720" r="4" fill="#FFA500" opacity="0.6"/>
+  <circle cx="1080" cy="580" r="4" fill="#FFA500" opacity="0.6"/>
+  
+  <!-- 趋势线 -->
+  <line x1="700" y1="750" x2="1100" y2="550" stroke="#FF6347" stroke-width="2" stroke-dasharray="5,5"/>
+  <text x="900" y="560" font-size="12" fill="#FF6347" text-anchor="middle">趋势线：正相关</text>
+  
+  <text x="900" y="850" font-size="12" text-anchor="middle" fill="#555">订单大小 (股)</text>
+  <text x="620" y="650" font-size="12" text-anchor="middle" fill="#555" transform="rotate(-90 620 650)">滑点 (基点)</text>
+  
+  <!-- 底部总结 -->
+  <rect x="50" y="850" width="1100" height="30" fill="#E8F4FD" stroke="#4A90E2" stroke-width="1" rx="3"/>
+  <text x="600" y="872" font-size="14" text-anchor="middle" fill="#333">
+    执行质量分析：平均滑点 2.5 bps | 成交率 92% | 平均执行时间 12.3秒
+  </text>
+</svg>

@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2E8B57;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF6347;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="800" height="600" fill="#F8F9FA"/>
+  
+  <!-- 标题 -->
+  <text x="400" y="40" font-size="24" font-weight="bold" text-anchor="middle" fill="#333">
+    马科维茨均值方差模型：投资组合有效前沿
+  </text>
+  
+  <!-- 坐标轴 -->
+  <line x1="100" y1="500" x2="700" y2="500" stroke="#333" stroke-width="2"/>
+  <line x1="100" y1="500" x2="100" y2="100" stroke="#333" stroke-width="2"/>
+  
+  <!-- 轴标签 -->
+  <text x="400" y="550" font-size="16" text-anchor="middle" fill="#333">风险 (年化波动率)</text>
+  <text x="50" y="300" font-size="16" text-anchor="middle" fill="#333" transform="rotate(-90 50 300)">预期收益率 (年化)</text>
+  
+  <!-- 有效前沿曲线 -->
+  <path d="M 150 450 Q 300 350 450 250 Q 550 180 650 150" stroke="#FF6347" stroke-width="4" fill="none"/>
+  <text x="660" y="140" font-size="14" fill="#FF6347" font-weight="bold">有效前沿</text>
+  
+  <!-- 投资组合散点 -->
+  <circle cx="200" cy="420" r="4" fill="#4169E1" opacity="0.6"/>
+  <circle cx="250" cy="380" r="4" fill="#4169E1" opacity="0.6"/>
+  <circle cx="300" cy="350" r="4" fill="#4169E1" opacity="0.6"/>
+  <circle cx="350" cy="320" r="4" fill="#4169E1" opacity="0.6"/>
+  <circle cx="400" cy="300" r="4" fill="#4169E1" opacity="0.6"/>
+  <circle cx="450" cy="280" r="4" fill="#4169E1" opacity="0.6"/>
+  <circle cx="500" cy="260" r="4" fill="#4169E1" opacity="0.6"/>
+  <circle cx="550" cy="240" r="4" fill="#4169E1" opacity="0.6"/>
+  
+  <!-- 特殊点：全局最小方差 -->
+  <circle cx="150" cy="450" r="12" fill="#2E8B57" stroke="#1C5D3F" stroke-width="3"/>
+  <text x="150" y="480" font-size="12" text-anchor="middle" fill="#2E8B57" font-weight="bold">
+    全局最小方差
+  </text>
+  
+  <!-- 特殊点：最大夏普比率 -->
+  <circle cx="450" cy="250" r="12" fill="#4169E1" stroke="#2A4FB0" stroke-width="3"/>
+  <text x="450" y="230" font-size="12" text-anchor="middle" fill="#4169E1" font-weight="bold">
+    最大夏普比率
+  </text>
+  
+  <!-- 图例 -->
+  <rect x="550" y="80" width="200" height="100" fill="white" stroke="#333" stroke-width="1"/>
+  <circle cx="570" cy="100" r="6" fill="#4169E1" opacity="0.6"/>
+  <text x="590" y="105" font-size="12">投资组合</text>
+  
+  <line x1="570" y1="120" x2="590" y2="120" stroke="#FF6347" stroke-width="3"/>
+  <text x="600" y="125" font-size="12">有效前沿</text>
+  
+  <circle cx="570" cy="140" r="8" fill="#2E8B57" stroke="#1C5D3F" stroke-width="2"/>
+  <text x="590" y="145" font-size="12">最小方差组合</text>
+  
+  <circle cx="570" cy="160" r="8" fill="#4169E1" stroke="#2A4FB0" stroke-width="2"/>
+  <text x="590" y="165" font-size="12">最大夏普组合</text>
+</svg>

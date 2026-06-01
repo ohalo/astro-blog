@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" width="900" height="700">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#555"/>
+    </marker>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="900" height="700" fill="#F5F7FA"/>
+  
+  <!-- 标题 -->
+  <text x="450" y="40" font-size="24" font-weight="bold" text-anchor="middle" fill="#333">
+    实盘交易执行流程与滑点控制
+  </text>
+  
+  <!-- 流程框 -->
+  <rect x="50" y="100" width="150" height="80" fill="#4A90E2" rx="5"/>
+  <text x="125" y="135" font-size="16" fill="white" text-anchor="middle" font-weight="bold">策略信号生成</text>
+  <text x="125" y="160" font-size="12" fill="white" text-anchor="middle">产生买卖决策</text>
+  
+  <rect x="250" y="100" width="150" height="80" fill="#50C878" rx="5"/>
+  <text x="325" y="135" font-size="16" fill="white" text-anchor="middle" font-weight="bold">订单构建</text>
+  <text x="325" y="160" font-size="12" fill="white" text-anchor="middle">确定价格和数量</text>
+  
+  <rect x="450" y="100" width="150" height="80" fill="#FF6B6B" rx="5"/>
+  <text x="525" y="135" font-size="16" fill="white" text-anchor="middle" font-weight="bold">订单发送</text>
+  <text x="525" y="160" font-size="12" fill="white" text-anchor="middle">发送到交易所</text>
+  
+  <rect x="650" y="100" width="150" height="80" fill="#FFA500" rx="5"/>
+  <text x="725" y="135" font-size="16" fill="white" text-anchor="middle" font-weight="bold">成交回报</text>
+  <text x="725" y="160" font-size="12" fill="white" text-anchor="middle">接收成交确认</text>
+  
+  <!-- 箭头 -->
+  <line x1="200" y1="140" x2="250" y2="140" stroke="#555" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="400" y1="140" x2="450" y2="140" stroke="#555" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="600" y1="140" x2="650" y2="140" stroke="#555" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- 滑点来源框 -->
+  <rect x="100" y="250" width="600" height="200" fill="white" stroke="#DDD" stroke-width="2" rx="10"/>
+  <text x="400" y="280" font-size="18" font-weight="bold" text-anchor="middle" fill="#333">滑点产生的主要原因</text>
+  
+  <!-- 滑点原因列表 -->
+  <circle cx="130" cy="320" r="5" fill="#FF6B6B"/>
+  <text x="150" y="325" font-size="14">市场微观结构（买卖价差、订单簿深度）</text>
+  
+  <circle cx="130" cy="350" r="5" fill="#FF6B6B"/>
+  <text x="150" y="355" font-size="14">时间延迟（信号生成→订单发送→成交）</text>
+  
+  <circle cx="130" cy="380" r="5" fill="#FF6B6B"/>
+  <text x="150" y="385" font-size="14">市场波动性（高波动时段价格变动快）</text>
+  
+  <circle cx="130" cy="410" r="5" fill="#FF6B6B"/>
+  <text x="150" y="415" font-size="14">订单大小（大单冲击市场，推动价格不利变动）</text>
+  
+  <circle cx="130" cy="440" r="5" fill="#FF6B6B"/>
+  <text x="150" y="445" font-size="14">流动性不足（稀薄市场滑点更大）</text>
+  
+  <!-- 滑点计算公式 -->
+  <rect x="100" y="480" width="600" height="80" fill="#E8F4FD" stroke="#4A90E2" stroke-width="2" rx="5"/>
+  <text x="400" y="510" font-size="16" font-weight="bold" text-anchor="middle" fill="#333">滑点计算公式</text>
+  <text x="400" y="535" font-size="14" text-anchor="middle" fill="#555" font-family="monospace">
+    滑点 = |实际成交价格 - 决策参考价格|
+  </text>
+  <text x="400" y="555" font-size="12" text-anchor="middle" fill="#777">
+    正向滑点：实际价格更有利 | 负向滑点：实际价格更不利
+  </text>
+</svg>
