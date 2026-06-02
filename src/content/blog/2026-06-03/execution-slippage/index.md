@@ -18,7 +18,7 @@ language: Chinese
 | 维度 | 回测假设 | 实盘现实 |
 |------|----------|----------|
 | 成交价格 | 收盘价/开盘价 | 不确定的滑点 |
-| 成交量 | 无限流动性 | 深度有限，大单冲击 |
+| 成交量 | 无限流动性 | 深度有限 |
 | 交易延迟 | 0延迟 | 毫秒级甚至秒级 |
 | 手续费 | 固定费率 | 可能随成交量变化 |
 | 市场冲击 | 无 | 大单改变价格 |
@@ -262,7 +262,7 @@ def twap_execution(order, duration_minutes=60, num_slices=12):
         )
         execute_order(child_order)
         
-        # 等待下一个时间片
+        # 等待到下一个时间片
         time.sleep(time_interval * 60)
 ```
 
@@ -586,10 +586,10 @@ class TradeLogger:
 
 记住：**优秀的量化策略不仅需要聪明的alpha，更需要稳健的执行**。在实盘交易中，生存比暴利更重要。
 
-![交易执行流程](/images/2026-06-03-execution-slippage/execution_flow.jpg)
+![交易执行流程](/images/2026-06-03/execution-slippage/execution_flow.jpg)
 
 *实盘交易系统的核心执行流程*
 
-![滑点成本分析](/images/2026-06-03-execution-slippage/slippage_analysis.jpg)
+![滑点成本分析](/images/2026-06-03/execution-slippage/slippage_analysis.jpg)
 
 *不同市场条件下的滑点成本对比*
