@@ -1,0 +1,6 @@
+This directory contains images for the alternative data blog post.
+Actually downloading real images requires web access or image URLs.
+For now, this is a placeholder - in production you would:
+1. Download satellite image examples
+2. Add sentiment analysis charts
+3. Include data flow diagrams

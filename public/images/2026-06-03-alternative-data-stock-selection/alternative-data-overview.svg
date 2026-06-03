@@ -1,0 +1,20 @@
+<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="400" fill="#f0f8ff"/>
+  <text x="400" y="50" font-size="28" text-anchor="middle" font-weight="bold" fill="#333">另类数据在量化选股中的应用</text>
+  <rect x="50" y="100" width="220" height="120" fill="#4CAF50" rx="10"/>
+  <text x="160" y="140" font-size="18" text-anchor="middle" fill="white">卫星图像</text>
+  <text x="160" y="170" font-size="14" text-anchor="middle" fill="white">停车场监测</text>
+  <text x="160" y="200" font-size="14" text-anchor="middle" fill="white">油轮追踪</text>
+  <rect x="290" y="100" width="220" height="120" fill="#2196F3" rx="10"/>
+  <text x="400" y="140" font-size="18" text-anchor="middle" fill="white">社交情绪</text>
+  <text x="400" y="170" font-size="14" text-anchor="middle" fill="white">Twitter/雪球</text>
+  <text x="400" y="200" font-size="14" text-anchor="middle" fill="white">情感分析</text>
+  <rect x="530" y="100" width="220" height="120" fill="#FF9800" rx="10"/>
+  <text x="640" y="140" font-size="18" text-anchor="middle" fill="white">信用卡数据</text>
+  <text x="640" y="170" font-size="14" text-anchor="middle" fill="white">消费预测</text>
+  <text x="640" y="200" font-size="14" text-anchor="middle" fill="white">零售营收</text>
+  <rect x="50" y="250" width="700" height="120" fill="#9C27B0" rx="10"/>
+  <text x="400" y="290" font-size="18" text-anchor="middle" fill="white">量化建模流程</text>
+  <text x="400" y="320" font-size="14" text-anchor="middle" fill="white">数据采集 → 特征工程 → 因子构建 → 回测验证</text>
+  <text x="400" y="350" font-size="14" text-anchor="middle" fill="white">IC/IR测试 → 样本外测试 → 组合优化</text>
+</svg>

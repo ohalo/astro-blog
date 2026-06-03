@@ -1,0 +1,43 @@
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="500" fill="#f5f5f5"/>
+  <text x="400" y="40" font-size="24" text-anchor="middle" font-weight="bold" fill="#333">随机森林算法原理</text>
+  <rect x="50" y="80" width="150" height="80" fill="#4CAF50" rx="10"/>
+  <text x="125" y="110" font-size="14" text-anchor="middle" fill="white">Bootstrap</text>
+  <text x="125" y="130" font-size="12" text-anchor="middle" fill="white">有放回抽样</text>
+  <text x="125" y="150" font-size="12" text-anchor="middle" fill="white">每棵树不同数据</text>
+  <path d="M 200 120 L 250 120" stroke="#333" stroke-width="2" fill="none"/>
+  <path d="M 200 160 L 250 160" stroke="#333" stroke-width="2" fill="none"/>
+  <path d="M 200 200 L 250 200" stroke="#333" stroke-width="2" fill="none"/>
+  <rect x="250" y="80" width="150" height="80" fill="#2196F3" rx="10"/>
+  <text x="325" y="110" font-size="14" text-anchor="middle" fill="white">随机特征</text>
+  <text x="325" y="130" font-size="12" text-anchor="middle" fill="white">每节点选√n特征</text>
+  <text x="325" y="150" font-size="12" text-anchor="middle" fill="white">避免过拟合</text>
+  <path d="M 400 120 L 450 120" stroke="#333" stroke-width="2" fill="none"/>
+  <path d="M 400 160 L 450 160" stroke="#333" stroke-width="2" fill="none"/>
+  <path d="M 400 200 L 450 200" stroke="#333" stroke-width="2" fill="none"/>
+  <rect x="450" y="80" width="150" height="80" fill="#FF9800" rx="10"/>
+  <text x="525" y="110" font-size="14" text-anchor="middle" fill="white">决策树</text>
+  <text x="525" y="130" font-size="12" text-anchor="middle" fill="white">不剪枝完整生长</text>
+  <text x="525" y="150" font-size="12" text-anchor="middle" fill="white">N棵树集成</text>
+  <path d="M 600 120 L 650 120" stroke="#333" stroke-width="2" fill="none"/>
+  <path d="M 600 160 L 650 160" stroke="#333" stroke-width="2" fill="none"/>
+  <path d="M 600 200 L 650 200" stroke="#333" stroke-width="2" fill="none"/>
+  <rect x="650" y="80" width="120" height="80" fill="#9C27B0" rx="10"/>
+  <text x="710" y="110" font-size="14" text-anchor="middle" fill="white">聚合</text>
+  <text x="710" y="130" font-size="12" text-anchor="middle" fill="white">回归：平均值</text>
+  <text x="710" y="150" font-size="12" text-anchor="middle" fill="white">分类：投票</text>
+  <rect x="100" y="220" width="600" height="240" fill="white" stroke="#ddd" stroke-width="2" rx="5"/>
+  <text x="400" y="260" font-size="18" text-anchor="middle" fill="#333">随机森林优势（量化视角）</text>
+  <circle cx="180" cy="320" r="60" fill="#FFC107" opacity="0.8"/>
+  <text x="180" y="310" font-size="12" text-anchor="middle" fill="#333">非线性</text>
+  <text x="180" y="330" font-size="12" text-anchor="middle" fill="#333">捕捉</text>
+  <circle cx="320" cy="320" r="60" fill="#00BCD4" opacity="0.8"/>
+  <text x="320" y="310" font-size="12" text-anchor="middle" fill="#333">特征</text>
+  <text x="320" y="330" font-size="12" text-anchor="middle" fill="#333">重要性</text>
+  <circle cx="460" cy="320" r="60" fill="#8BC34A" opacity="0.8"/>
+  <text x="460" y="310" font-size="12" text-anchor="middle" fill="#333">异常值</text>
+  <text x="460" y="330" font-size="12" text-anchor="middle" fill="#333">鲁棒</text>
+  <circle cx="600" cy="320" r="60" fill="#E91E63" opacity="0.8"/>
+  <text x="600" y="310" font-size="12" text-anchor="middle" fill="#333">无需</text>
+  <text x="600" y="330" font-size="12" text-anchor="middle" fill="#333">归一化</text>
+</svg>

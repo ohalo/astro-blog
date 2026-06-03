@@ -1,0 +1,23 @@
+<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="400" fill="#fff8f0"/>
+  <text x="400" y="50" font-size="28" text-anchor="middle" font-weight="bold" fill="#333">另类数据回测绩效</text>
+  <rect x="100" y="100" width="600" height="250" fill="white" stroke="#ddd" stroke-width="2" rx="5"/>
+  <line x1="150" y1="320" x2="650" y2="320" stroke="#333" stroke-width="2"/>
+  <line x1="150" y1="120" x2="150" y2="320" stroke="#333" stroke-width="2"/>
+  <rect x="180" y="280" width="40" height="40" fill="#4CAF50"/>
+  <text x="200" y="310" font-size="12" text-anchor="middle" fill="white">年化</text>
+  <rect x="250" y="240" width="40" height="80" fill="#2196F3"/>
+  <text x="270" y="310" font-size="12" text-anchor="middle" fill="white">夏普</text>
+  <rect x="320" y="200" width="40" height="120" fill="#FF9800"/>
+  <text x="340" y="310" font-size="12" text-anchor="middle" fill="white">回撤</text>
+  <rect x="390" y="260" width="40" height="60" fill="#9C27B0"/>
+  <text x="410" y="310" font-size="12" text-anchor="middle" fill="white">IC</text>
+  <rect x="460" y="270" width="40" height="50" fill="#F44336"/>
+  <text x="480" y="310" font-size="12" text-anchor="middle" fill="white">IC_IR</text>
+  <text x="200" y="360" font-size="14" text-anchor="middle" fill="#333">12.3%</text>
+  <text x="270" y="360" font-size="14" text-anchor="middle" fill="#333">1.65</text>
+  <text x="340" y="360" font-size="14" text-anchor="middle" fill="#333">-18.7%</text>
+  <text x="410" y="360" font-size="14" text-anchor="middle" fill="#333">0.042</text>
+  <text x="480" y="360" font-size="14" text-anchor="middle" fill="#333">0.89</text>
+  <text x="400" y="390" font-size="16" text-anchor="middle" fill="#333">另类数据因子绩效指标（模拟数据）</text>
+</svg>

@@ -1,0 +1,30 @@
+<svg width="900" height="500" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="500" fill="#fafafa"/>
+  <text x="450" y="40" font-size="24" text-anchor="middle" font-weight="bold" fill="#333">随机森林 vs 线性模型：回测绩效对比（A股沪深300）</text>
+  <rect x="80" y="80" width="740" height="350" fill="white" stroke="#ddd" stroke-width="2" rx="5"/>
+  <line x1="120" y1="390" x2="780" y2="390" stroke="#333" stroke-width="2"/>
+  <line x1="120" y1="120" x2="120" y2="390" stroke="#333" stroke-width="2"/>
+  <text x="450" y="445" font-size="16" text-anchor="middle" fill="#333">策略类型</text>
+  <text x="60" y="255" font-size="16" text-anchor="middle" fill="#333" transform="rotate(-90 60 255)">绩效指标</text>
+  <rect x="160" y="200" width="80" height="190" fill="#4CAF50" opacity="0.8"/>
+  <text x="200" y="380" font-size="12" text-anchor="middle" fill="#333">随机森林</text>
+  <text x="200" y="220" font-size="14" text-anchor="middle" fill="white">18.7%</text>
+  <rect x="280" y="250" width="80" height="140" fill="#2196F3" opacity="0.8"/>
+  <text x="320" y="380" font-size="12" text-anchor="middle" fill="#333">线性回归</text>
+  <text x="320" y="270" font-size="14" text-anchor="middle" fill="white">14.2%</text>
+  <rect x="400" y="270" width="80" height="120" fill="#FF9800" opacity="0.8"/>
+  <text x="440" y="380" font-size="12" text-anchor="middle" fill="#333">等权多因子</text>
+  <text x="440" y="290" font-size="14" text-anchor="middle" fill="white">12.9%</text>
+  <rect x="520" y="340" width="80" height="50" fill="#9C27B0" opacity="0.8"/>
+  <text x="560" y="380" font-size="12" text-anchor="middle" fill="#333">沪深300</text>
+  <text x="560" y="360" font-size="14" text-anchor="middle" fill="white">6.8%</text>
+  <text x="200" y="470" font-size="14" text-anchor="middle" fill="#333">年化收益率对比</text>
+  <rect x="680" y="150" width="180" height="200" fill="#f9f9f9" stroke="#ddd" stroke-width="1" rx="5"/>
+  <text x="770" y="180" font-size="14" text-anchor="middle" fill="#333" font-weight="bold">关键发现</text>
+  <text x="690" y="210" font-size="12" fill="#333">• RF年化收益高34%</text>
+  <text x="690" y="235" font-size="12" fill="#333">• 夏普比率提升31%</text>
+  <text x="690" y="260" font-size="12" fill="#333">• IC均值提升37%</text>
+  <text x="690" y="285" font-size="12" fill="#333">• 最大回撤减少17%</text>
+  <text x="690" y="320" font-size="11" fill="#666">数据区间：2018-2025</text>
+  <text x="690" y="340" font-size="11" fill="#666">月度调仓，交易成本0.3%</text>
+</svg>
