@@ -3,7 +3,7 @@ title: "协整检验与配对交易进阶：从理论到量化实战"
 publishDate: '2026-06-07'
 description: "协整检验与配对交易进阶：从理论到量化实战 - halo的技术博客"
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
 ---
 
@@ -39,6 +39,7 @@ $$
 在检验协整之前，必须先确认两个序列都是 **I(1) 过程**（一阶单整），即它们本身是非平稳的，但一阶差分后是平稳的。
 
 **Augmented Dickey-Fuller (ADF) 检验**的原假设是"存在单位根（非平稳）"。我们需要：
+
 - 对原始价格序列做ADF检验 → 不能拒绝原假设（非平稳）
 - 对一阶差分后的序列做ADF检验 → 拒绝原假设（平稳）
 
@@ -60,8 +61,9 @@ def adf_test(series, title=''):
 最经典的协整检验是 **Engle-Granger 两步法**：
 
 1. **第一步**：用OLS估计协整向量 $\beta$
-   $$
-   P_t^A = \alpha + \beta P_t^B + \epsilon_t
+
+$$
+P_t^A = \alpha + \beta P_t^B + \epsilon_t
 $$
 
 2. **第二步**：对残差 $\epsilon_t$ 做ADF检验
@@ -113,9 +115,11 @@ def johansen_test(data, det_order=0, k_ar_diff=1):
 
 1. 计算价差的滚动均值和标准差
 2. 计算 **z-score**：
-   $$
-   z_t = \frac{\epsilon_t - \mu_{\epsilon}}{\sigma_{\epsilon}}
+
 $$
+z_t = \frac{\epsilon_t - \mu_{\epsilon}}{\sigma_{\epsilon}}
+$$
+
 3. 交易信号：
    - $z_t > 2$：做空价差（卖出A，买入B）
    - $z_t < -2$：做多价差（买入A，卖出B）
@@ -158,13 +162,13 @@ class PairsTradingBacktest:
         self.exit_z = exit_z
         self.spread = None
         self.z_score = None
-        
+    
     def calculate_spread(self, window=60):
         # 用滚动窗口估计协整关系
         beta = self.estimate_beta(window)
         self.spread = self.data_a - beta * self.data_b
         self.z_score = (self.spread - self.spread.rolling(window).mean()) / self.spread.rolling(window).std()
-        
+    
     def estimate_beta(self, window):
         # 简化：使用滚动回归
         beta_list = []
@@ -221,8 +225,8 @@ df_maotai = pro.daily(ts_code='600519.SH', start_date='20200101', end_date='2025
 df_wuliangye = pro.daily(ts_code='000858.SZ', start_date='20200101', end_date='20250601')
 
 # 合并数据
-data = pd.merge(df_maotai[['trade_date', 'close']], 
-                df_wuliangye[['trade_date', 'close']], 
+data = pd.merge(df_maotai[['trade_date', 'close']],
+                df_wuliangye[['trade_date', 'close']],
                 on='trade_date', suffixes=('_maotai', '_wuliangye'))
 data = data.sort_values('trade_date')
 ```
@@ -250,10 +254,13 @@ data = data.sort_values('trade_date')
 ### 6.1 状态空间模型
 
 将协整关系表示为：
+
 $$
 P_t^A = \alpha_t + \beta_t P_t^B + \epsilon_t
 $$
+
 其中 $\alpha_t$ 和 $\beta_t$ 是**状态变量**，服从随机游走：
+
 $$
 \begin{bmatrix} \alpha_t \\ \beta_t \end{bmatrix} = \begin{bmatrix} \alpha_{t-1} \\ \beta_{t-1} \end{bmatrix} + \eta_t
 $$
