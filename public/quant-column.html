@@ -3,21 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>量化交易实战专栏 - 从入门到精通</title>
+  <title>量化交易实战专栏 - 从零开始学量化</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 1200px; margin: 0 auto; padding: 2rem; background: #f8f9fa; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 1200px; margin: 0 auto; padding: 2rem; background: #f8f9fa; line-height: 1.6; }
     
-    .column-header { text-align: center; margin-bottom: 3rem; padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white; }
-    .column-header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
-    .column-subtitle { font-size: 1.2rem; opacity: 0.9; margin-bottom: 1.5rem; }
-    .column-stats { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
-    .stat-item { background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; }
+    .column-header { text-align: center; margin-bottom: 3rem; padding: 3rem 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white; }
+    .column-header h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+    .column-subtitle { font-size: 1.3rem; opacity: 0.95; margin-bottom: 2rem; }
     
-    .column-toc { background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 3rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .column-toc h2 { margin-bottom: 1rem; color: #333; }
+    .intro-section { background: white; padding: 2.5rem; border-radius: 12px; margin-bottom: 3rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .intro-section h2 { color: #333; margin-bottom: 1.5rem; font-size: 1.8rem; }
+    .intro-section p { color: #555; margin-bottom: 1rem; font-size: 1.05rem; }
+    .intro-section ul { margin: 1rem 0 1rem 2rem; color: #555; }
+    .intro-section li { margin-bottom: 0.5rem; }
+    .highlight-box { background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0; border-left: 4px solid #667eea; }
+    
+    .column-stats { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-top: 2rem; }
+    .stat-item { background: rgba(255,255,255,0.2); padding: 0.75rem 1.5rem; border-radius: 20px; font-size: 1rem; }
+    
+    .column-toc { background: white; padding: 2rem; border-radius: 8px; margin-bottom: 3rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .column-toc h2 { margin-bottom: 1.5rem; color: #333; font-size: 1.5rem; }
     .column-toc ul { list-style: none; padding: 0; display: flex; gap: 2rem; flex-wrap: wrap; }
-    .column-toc a { color: #667eea; text-decoration: none; font-weight: 500; }
+    .column-toc a { color: #667eea; text-decoration: none; font-weight: 500; font-size: 1.05rem; }
     .column-toc a:hover { text-decoration: underline; }
     
     .difficulty-section { margin-bottom: 4rem; }
@@ -26,29 +34,32 @@
     .intermediate .section-header { border-color: #ff922b; }
     .advanced .section-header { border-color: #fa5252; }
     .section-header h2 { font-size: 1.8rem; margin-bottom: 0.5rem; color: #333; }
-    .section-description { color: #666; font-size: 1rem; }
+    .section-description { color: #666; font-size: 1.05rem; }
     
     .articles-list { display: flex; flex-direction: column; gap: 1.5rem; }
     .article-item { display: flex; gap: 1.5rem; padding: 1.5rem; border: 1px solid #e9ecef; border-radius: 8px; background: white; transition: all 0.3s ease; }
     .article-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: translateY(-2px); }
     .article-index { font-size: 2rem; font-weight: bold; color: #dee2e6; min-width: 50px; display: flex; align-items: center; }
     .article-info { flex: 1; }
-    .difficulty-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; font-weight: 500; margin-bottom: 0.75rem; }
+    .difficulty-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.75rem; }
     .beginner-badge { background: #d3f9d8; color: #2b8a3e; }
     .intermediate-badge { background: #fff3bf; color: #e67700; }
     .advanced-badge { background: #ffe3e3; color: #c92a2a; }
-    .article-info h3 { margin-bottom: 0.75rem; font-size: 1.2rem; }
+    .article-info h3 { margin-bottom: 0.75rem; font-size: 1.15rem; }
     .article-info h3 a { color: #333; text-decoration: none; }
     .article-info h3 a:hover { color: #667eea; }
     .article-info p { color: #666; margin-bottom: 0.75rem; line-height: 1.5; }
-    .read-time { color: #868e96; font-size: 0.85rem; }
+    .read-time { color: #868e96; font-size: 0.9rem; }
     
-    .learning-tips { margin-top: 4rem; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .learning-tips h2 { text-align: center; margin-bottom: 2rem; color: #333; }
+    .learning-tips { margin-top: 4rem; padding: 2.5rem; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .learning-tips h2 { text-align: center; margin-bottom: 2rem; color: #333; font-size: 1.8rem; }
     .tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
     .tip-card { background: #f8f9fa; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #667eea; }
-    .tip-card h3 { margin-bottom: 0.75rem; color: #333; }
+    .tip-card h3 { margin-bottom: 0.75rem; color: #333; font-size: 1.1rem; }
     .tip-card p { color: #666; line-height: 1.5; }
+    
+    footer { text-align: center; margin-top: 3rem; padding: 2rem; color: #999; font-size: 0.9rem; }
+    footer a { color: #667eea; }
     
     @media (max-width: 768px) {
       body { padding: 1rem; }
@@ -65,7 +76,7 @@
     <!-- 专栏标题区 -->
     <header class="column-header">
       <h1>📊 量化交易实战专栏</h1>
-      <p class="column-subtitle">从入门到精通：系统化的量化投资学习路径</p>
+      <p class="column-subtitle">从零开始，系统学习量化投资</p>
       <div class="column-stats">
         <span class="stat-item">📚 共 25 篇文章</span>
         <span class="stat-item">⏱️ 预计阅读 558 分钟</span>
@@ -73,13 +84,47 @@
       </div>
     </header>
 
+    <!-- 引言：量化是什么？为什么要做量化？ -->
+    <section class="intro-section">
+      <h2>🤔 量化交易是什么？为什么要学它？</h2>
+      
+      <p><strong>想象一下：</strong></p>
+      <p>你是一个基金经理，每天要面对海量的市场数据：股价、成交量、财报、新闻... 靠人工分析，根本看不过来。更糟的是，人性是情绪化的——恐惧、贪婪、侥幸心理，往往导致追涨杀跌、割肉在地板。</p>
+      
+      <p><strong>量化交易就是答案：</strong></p>
+      <p>用量化的方法（数学、统计、编程）来研究市场、制定策略、自动执行交易。它不靠感觉，不靠小道消息，只相信数据和回测结果。</p>
+      
+      <div class="highlight-box">
+        <p><strong>📈 量化的核心优势：</strong></p>
+        <ul>
+          <li><strong>纪律性</strong>：严格执行策略，不受情绪干扰</li>
+          <li><strong>系统性</strong>：可以同时监控上千只股票，发现人工看不到的规律</li>
+          <li><strong>可验证</strong>：用历史数据回测，策略好不好，数据说了算</li>
+          <li><strong>可扩展</strong>：策略写好后，可以7×24小时自动运行</li>
+        </ul>
+      </div>
+      
+      <p><strong>🎯 这个专栏能帮你什么？</strong></p>
+      <p>本专栏系统梳理了量化交易的核心知识体系，从基础概念到实战策略，从因子研究到机器学习应用。无论你是：</p>
+      <ul>
+        <li>📖 <strong>完全新手</strong>：想了解量化交易是什么</li>
+        <li>📊 <strong>有一定基础</strong>：想系统学习量化策略</li>
+        <li>💻 <strong>程序员</strong>：想把编程技能应用到金融</li>
+        <li>📈 <strong>交易员</strong>：想用量化方法提升业绩</li>
+      </ul>
+      <p>都能在这里找到适合自己的学习路径。</p>
+      
+      <p><strong>📚 学习建议：</strong></p>
+      <p>建议按照<strong>入门→中级→高级</strong>的顺序学习。每篇文章都包含Python代码示例，建议边学边敲代码，用历史数据回测验证。记住：<strong>量化不是圣杯，风险管理和资金安全永远是第一位的</strong>。</p>
+    </section>
+
     <!-- 目录导航 -->
     <nav class="column-toc">
       <h2>📑 快速导航</h2>
       <ul>
-        <li><a href="#beginner">入门级：基础概念 (5 篇)</a></li>
-        <li><a href="#intermediate">中级：策略与应用 (18 篇)</a></li>
-        <li><a href="#advanced">高级：技术与实战 (7 篇)</a></li>
+        <li><a href="#beginner">🌱 入门级：基础概念 (5 篇)</a></li>
+        <li><a href="#intermediate">🚀 中级：策略与应用 (18 篇)</a></li>
+        <li><a href="#advanced">💎 高级：技术与实战 (7 篇)</a></li>
       </ul>
     </nav>
 
@@ -87,7 +132,7 @@
     <section id="beginner" class="difficulty-section beginner">
       <div class="section-header">
         <h2>🌱 入门级：基础概念</h2>
-        <p class="section-description">适合量化交易新手，建立基础认知框架</p>
+        <p class="section-description">适合量化交易新手，建立基础认知框架。学完这部分，你会明白：因子是什么、风险如何度量、行为金融如何应用于量化。</p>
       </div>
       <div class="articles-list">
         <div class="article-item">
@@ -146,7 +191,7 @@
     <section id="intermediate" class="difficulty-section intermediate">
       <div class="section-header">
         <h2>🚀 中级：策略与应用</h2>
-        <p class="section-description">掌握核心策略，开始实盘应用</p>
+        <p class="section-description">掌握核心策略，开始实盘应用。学完这部分，你会掌握：配对交易、期权策略、投资组合优化、另类数据应用。</p>
       </div>
       <div class="articles-list">
         <div class="article-item">
@@ -199,7 +244,6 @@
           </div>
         </div>
         
-        <!-- 继续添加其他中级文章... -->
         <div class="article-item">
           <div class="article-index">06</div>
           <div class="article-info">
@@ -326,7 +370,7 @@
     <section id="advanced" class="difficulty-section advanced">
       <div class="section-header">
         <h2>💎 高级：技术与实战</h2>
-        <p class="section-description">深入技术细节，掌握实战核心</p>
+        <p class="section-description">深入技术细节，掌握实战核心。学完这部分，你会掌握：机器学习量化、小波变换、高频交易、实盘系统搭建。</p>
       </div>
       <div class="articles-list">
         <div class="article-item">
@@ -423,6 +467,11 @@
         </div>
       </div>
     </section>
+    
+    <footer>
+      <p>📊 量化交易实战专栏 | 持续更新中...</p>
+      <p style="margin-top: 0.5rem;">想要完整PDF版本？<a href="/quant-column.pdf">点击下载</a></p>
+    </footer>
   </div>
 </body>
 </html>
