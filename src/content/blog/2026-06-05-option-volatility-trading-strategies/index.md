@@ -4,6 +4,8 @@ publishDate: '2026-06-05'
 description: "期权波动率交易实战：跨式、宽跨式与波动率微笑的量化策略 - halo的技术博客"
 tags:
  - 量化交易
+ - 量化专栏
+ - 量化交易
 language: Chinese
 ---
 

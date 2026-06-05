@@ -4,6 +4,8 @@ publishDate: '2026-06-05'
 description: "量化风险管理：VaR、CVaR与压力测试的实战指南 - halo的技术博客"
 tags:
  - 量化交易
+ - 量化专栏
+ - 量化交易
 language: Chinese
 ---
 

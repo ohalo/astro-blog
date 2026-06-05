@@ -4,6 +4,8 @@ publishDate: '2026-06-05'
 description: "LSTM在量化预测中的实战应用：从理论到部署 - halo的技术博客"
 tags:
  - 量化交易
+ - 量化专栏
+ - 量化交易
 language: Chinese
 ---
 

@@ -4,6 +4,8 @@ publishDate: '2026-06-05'
 description: "期权策略实战：Delta中性与备兑开仓的深度解析 - halo的技术博客"
 tags:
  - 量化交易
+ - 量化专栏
+ - 量化交易
 language: Chinese
 ---
 

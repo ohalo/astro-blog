@@ -4,6 +4,8 @@ publishDate: '2026-06-05'
 description: "小波变换在量化交易中的多尺度信号提取实战 - halo的技术博客"
 tags:
  - 量化交易
+ - 量化专栏
+ - 量化交易
 language: Chinese
 ---
 

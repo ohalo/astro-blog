@@ -4,6 +4,8 @@ publishDate: '2026-06-05'
 description: "Black-Litterman模型实战：从先验收益到后验收益的投资组合优化 - halo的技术博客"
 tags:
  - 量化交易
+ - 量化专栏
+ - 量化交易
 language: Chinese
 ---
 

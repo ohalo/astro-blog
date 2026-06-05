@@ -4,6 +4,8 @@ publishDate: '2026-06-05'
 description: "机器学习在量化中的应用：随机森林因子合成实战 - halo的技术博客"
 tags:
  - 量化交易
+ - 量化专栏
+ - 量化交易
 language: Chinese
 ---
 

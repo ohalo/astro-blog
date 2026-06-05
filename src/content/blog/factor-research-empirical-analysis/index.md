@@ -4,6 +4,8 @@ publishDate: '2026-06-05'
 description: "因子研究实证分析：价值、动量、质量与低波因子的实战表现 - halo的技术博客"
 tags:
  - 量化交易
+ - 量化专栏
+ - 量化交易
 language: Chinese
 ---
 

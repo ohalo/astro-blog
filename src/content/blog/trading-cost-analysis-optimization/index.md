@@ -4,6 +4,8 @@ publishDate: '2026-06-05'
 description: "交易成本分析：量化交易中的隐性成本与优化方法 - halo的技术博客"
 tags:
  - 量化交易
+ - 量化专栏
+ - 量化交易
 language: Chinese
 ---
 

@@ -4,6 +4,8 @@ publishDate: '2026-06-05'
 description: "配对交易与统计套利：从协整到实战 - halo的技术博客"
 tags:
  - 量化交易
+ - 量化专栏
+ - 量化交易
 language: Chinese
 ---
 
