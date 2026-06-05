@@ -49,6 +49,15 @@ export const quantColumnArticles: ColumnArticle[] = [
     publishDate: '2026-06-05',
     estimatedReadTime: 18
   },
+  {
+    slug: 'risk-management-var-cvar',
+    title: '风险管理实战：VaR与CVaR的计算与应用',
+    difficulty: 'beginner',
+    difficultyLabel: '入门',
+    description: '风险价值（VaR）和条件风险价值（CVaR）的计算方法与实战应用',
+    publishDate: '2026-06-05',
+    estimatedReadTime: 16
+  },
 
   // ==================== 中级 (Intermediate) ====================
   {
@@ -59,6 +68,15 @@ export const quantColumnArticles: ColumnArticle[] = [
     description: '统计套利核心：协整检验、配对选择、交易信号生成',
     publishDate: '2026-06-05',
     estimatedReadTime: 22
+  },
+  {
+    slug: 'pairs-trading-cointegration',
+    title: '统计套利实战：配对交易与协整分析',
+    difficulty: 'intermediate',
+    difficultyLabel: '中级',
+    description: '协整理论基础与配对交易策略的实战实现',
+    publishDate: '2026-06-05',
+    estimatedReadTime: 20
   },
   {
     slug: 'cointegration-changepoint-detection',
@@ -77,6 +95,15 @@ export const quantColumnArticles: ColumnArticle[] = [
     description: '因子研究进阶：理解因子衰减的原因、生命周期与应对方法',
     publishDate: '2026-06-05',
     estimatedReadTime: 20
+  },
+  {
+    slug: 'factor-crowding-identification',
+    title: '因子拥挤度：多因子策略的隐形风险与识别技术',
+    difficulty: 'intermediate',
+    difficultyLabel: '中级',
+    description: '识别因子拥挤的方法与因子投资策略的风险管理',
+    publishDate: '2026-06-05',
+    estimatedReadTime: 22
   },
   {
     slug: 'risk-parity-model',
@@ -124,6 +151,15 @@ export const quantColumnArticles: ColumnArticle[] = [
     estimatedReadTime: 22
   },
   {
+    slug: 'option-volatility-trading',
+    title: '期权波动率交易实战：隐含波动率曲面交易与Delta对冲',
+    difficulty: 'intermediate',
+    difficultyLabel: '中级',
+    description: '期权波动率交易的高级技术：波动率曲面构造与交易',
+    publishDate: '2026-06-05',
+    estimatedReadTime: 26
+  },
+  {
     slug: '2026-06-05-alternative-data-quant',
     title: '另类数据：量化交易的下一个阿尔法源泉',
     difficulty: 'intermediate',
@@ -133,6 +169,15 @@ export const quantColumnArticles: ColumnArticle[] = [
     estimatedReadTime: 20
   },
   {
+    slug: 'alternative-data-quant-trading',
+    title: '另类数据在量化交易中的应用：从卫星图像到社交情绪',
+    difficulty: 'intermediate',
+    difficultyLabel: '中级',
+    description: '另类数据源的获取、处理与在量化策略中的应用案例',
+    publishDate: '2026-06-05',
+    estimatedReadTime: 22
+  },
+  {
     slug: 'portfolio-transaction-cost-opt',
     title: '带交易成本的投资组合优化：从理论到实战',
     difficulty: 'intermediate',
@@ -140,6 +185,33 @@ export const quantColumnArticles: ColumnArticle[] = [
     description: '实战优化：将交易成本纳入投资组合构建框架',
     publishDate: '2026-06-05',
     estimatedReadTime: 23
+  },
+  {
+    slug: 'trading-cost-analysis-optimization',
+    title: '交易成本分析：量化交易中的隐性成本与优化方法',
+    difficulty: 'intermediate',
+    difficultyLabel: '中级',
+    description: '实战细节：交易成本分解、Market Impact模型与最优执行',
+    publishDate: '2026-06-05',
+    estimatedReadTime: 22
+  },
+  {
+    slug: 'statistical-arbitrage-pairs-trading',
+    title: '统计套利：配对交易与协整策略实战',
+    difficulty: 'intermediate',
+    difficultyLabel: '中级',
+    description: '统计套利理论基础与配对交易策略的完整实现流程',
+    publishDate: '2026-06-05',
+    estimatedReadTime: 24
+  },
+  {
+    slug: 'behavioral-finance-quant-strategy',
+    title: '行为金融视角下的量化策略优化：利用散户心理偏差获取阿尔法',
+    difficulty: 'intermediate',
+    difficultyLabel: '中级',
+    description: '行为金融学进阶：如何利用散户心理偏差构建量化策略',
+    publishDate: '2026-06-05',
+    estimatedReadTime: 21
   },
 
   // ==================== 高级 (Advanced) ====================
@@ -207,13 +279,13 @@ export const quantColumnArticles: ColumnArticle[] = [
     estimatedReadTime: 24
   },
   {
-    slug: 'trading-cost-analysis-optimization',
-    title: '交易成本分析：量化交易中的隐性成本与优化方法',
+    slug: 'live-trading-execution-slippage',
+    title: '实盘交易系统核心技术：执行算法与滑点控制',
     difficulty: 'advanced',
     difficultyLabel: '高级',
-    description: '实盘细节：交易成本分解、Market Impact模型与最优执行',
+    description: '实盘交易系统深度解析：算法执行、滑点控制、订单管理',
     publishDate: '2026-06-05',
-    estimatedReadTime: 22
+    estimatedReadTime: 26
   }
 ];
 

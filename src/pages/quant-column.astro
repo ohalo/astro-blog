@@ -1,9 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { quantColumnArticles, getArticlesByDifficulty, getTotalReadTime } from '../data/quant-column';
+import { getArticlesByDifficulty, getTotalReadTime } from '../data/quant-column.js';
 
 const title = '量化交易实战专栏 - 从入门到精通';
-const description = '系统化的量化交易学习路径：从基础因子研究到高频交易实战，22篇精选文章带你掌握量化投资核心技术。';
+const description = '系统化的量化交易学习路径：从基础因子研究到高频交易实战，25篇精选文章带你掌握量化投资核心技术。';
 
 const { beginner, intermediate, advanced, total } = getArticlesByDifficulty();
 const totalReadTime = getTotalReadTime();
@@ -11,7 +11,6 @@ const totalReadTime = getTotalReadTime();
 
 <BaseLayout title={title} description={description}>
   <div class="quant-column-container">
-    <!-- 专栏标题区 -->
     <header class="column-header">
       <h1>📊 量化交易实战专栏</h1>
       <p class="column-subtitle">从入门到精通：系统化的量化投资学习路径</p>
@@ -20,13 +19,8 @@ const totalReadTime = getTotalReadTime();
         <span class="stat-item">⏱️ 预计阅读 {totalReadTime} 分钟</span>
         <span class="stat-item">🎯 从入门到实战</span>
       </div>
-      <div class="column-description">
-        <p>本专栏系统梳理了量化交易的核心知识体系，从基础概念到实战策略，从因子研究到机器学习应用，帮助你建立完整的量化投资框架。</p>
-        <p class="learning-path"><strong>学习路径：</strong>入门级（基础概念）→ 中级（策略应用）→ 高级（技术实战）</p>
-      </div>
     </header>
 
-    <!-- 目录导航 -->
     <nav class="column-toc">
       <h2>📑 快速导航</h2>
       <ul>
@@ -36,98 +30,51 @@ const totalReadTime = getTotalReadTime();
       </ul>
     </nav>
 
-    <!-- 入门级文章 -->
-    <section id="beginner" class="difficulty-section beginner">
-      <div class="section-header">
-        <h2>🌱 入门级：基础概念</h2>
-        <p class="section-description">适合量化交易新手，建立基础认知框架</p>
-      </div>
-      <div class="articles-grid">
+    <section id="beginner" class="difficulty-section">
+      <h2>🌱 入门级：基础概念</h2>
+      <div class="articles-list">
         {beginner.map((article, index) => (
-          <div class="article-card">
-            <div class="article-number">{String(index + 1).padStart(2, '0')}</div>
-            <div class="article-content">
-              <span class="difficulty-badge beginner-badge">入门</span>
+          <div class="article-item">
+            <span class="article-index">{index + 1}</span>
+            <div class="article-info">
               <h3><a href={`/blog/${article.slug}/`}>{article.title}</a></h3>
-              <p class="article-description">{article.description}</p>
-              <div class="article-meta">
-                <span class="read-time">⏱️ {article.estimatedReadTime} 分钟</span>
-                <span class="publish-date">📅 {article.publishDate}</span>
-              </div>
+              <p>{article.description}</p>
+              <span class="read-time">⏱️ {article.estimatedReadTime} 分钟</span>
             </div>
           </div>
         ))}
       </div>
     </section>
 
-    <!-- 中级文章 -->
-    <section id="intermediate" class="difficulty-section intermediate">
-      <div class="section-header">
-        <h2>🚀 中级：策略与应用</h2>
-        <p class="section-description">掌握核心策略，开始实盘应用</p>
-      </div>
-      <div class="articles-grid">
+    <section id="intermediate" class="difficulty-section">
+      <h2>🚀 中级：策略与应用</h2>
+      <div class="articles-list">
         {intermediate.map((article, index) => (
-          <div class="article-card">
-            <div class="article-number">{String(index + 1).padStart(2, '0')}</div>
-            <div class="article-content">
-              <span class="difficulty-badge intermediate-badge">中级</span>
+          <div class="article-item">
+            <span class="article-index">{index + 1}</span>
+            <div class="article-info">
               <h3><a href={`/blog/${article.slug}/`}>{article.title}</a></h3>
-              <p class="article-description">{article.description}</p>
-              <div class="article-meta">
-                <span class="read-time">⏱️ {article.estimatedReadTime} 分钟</span>
-                <span class="publish-date">📅 {article.publishDate}</span>
-              </div>
+              <p>{article.description}</p>
+              <span class="read-time">⏱️ {article.estimatedReadTime} 分钟</span>
             </div>
           </div>
         ))}
       </div>
     </section>
 
-    <!-- 高级文章 -->
-    <section id="advanced" class="difficulty-section advanced">
-      <div class="section-header">
-        <h2>💎 高级：技术与实战</h2>
-        <p class="section-description">深入技术细节，掌握实战核心</p>
-      </div>
-      <div class="articles-grid">
+    <section id="advanced" class="difficulty-section">
+      <h2>💎 高级：技术与实战</h2>
+      <div class="articles-list">
         {advanced.map((article, index) => (
-          <div class="article-card">
-            <div class="article-number">{String(index + 1).padStart(2, '0')}</div>
-            <div class="article-content">
-              <span class="difficulty-badge advanced-badge">高级</span>
+          <div class="article-item">
+            <span class="article-index">{index + 1}</span>
+            <div class="article-info">
               <h3><a href={`/blog/${article.slug}/`}>{article.title}</a></h3>
-              <p class="article-description">{article.description}</p>
-              <div class="article-meta">
-                <span class="read-time">⏱️ {article.estimatedReadTime} 分钟</span>
-                <span class="publish-date">📅 {article.publishDate}</span>
-              </div>
+              <p>{article.description}</p>
+              <span class="read-time">⏱️ {article.estimatedReadTime} 分钟</span>
             </div>
           </div>
         ))}
-      </div>
-    </section>
-
-    <!-- 学习建议 -->
-    <section class="learning-tips">
-      <h2>💡 学习建议</h2>
-      <div class="tips-grid">
-        <div class="tip-card">
-          <h3>📖 循序渐进</h3>
-          <p>建议按照入门→中级→高级的顺序学习，每篇文章都建立在前文基础上。</p>
-        </div>
-        <div class="tip-card">
-          <h3>💻 动手实践</h3>
-          <p>每篇文章都包含Python代码示例，建议边学边敲代码加深理解。</p>
-        </div>
-        <div class="tip-card">
-          <h3>📊 回测验证</h3>
-          <p>不要盲目相信策略，用历史数据回测验证每个策略的有效性。</p>
-        </div>
-        <div class="tip-card">
-          <h3>⚠️ 风险第一</h3>
-          <p>量化交易不是圣杯，始终将风险管理和资金安全放在首位。</p>
-        </div>
       </div>
     </section>
   </div>
@@ -135,7 +82,7 @@ const totalReadTime = getTotalReadTime();
 
 <style>
   .quant-column-container {
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 2rem;
   }
@@ -157,14 +104,13 @@ const totalReadTime = getTotalReadTime();
   .column-subtitle {
     font-size: 1.2rem;
     opacity: 0.9;
-    margin-bottom: 1.5rem;
   }
 
   .column-stats {
     display: flex;
     justify-content: center;
     gap: 2rem;
-    margin-bottom: 1.5rem;
+    margin-top: 1.5rem;
     flex-wrap: wrap;
   }
 
@@ -172,28 +118,6 @@ const totalReadTime = getTotalReadTime();
     background: rgba(255, 255, 255, 0.2);
     padding: 0.5rem 1rem;
     border-radius: 20px;
-    font-size: 0.9rem;
-  }
-
-  .column-description {
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: left;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 1.5rem;
-    border-radius: 8px;
-  }
-
-  .column-description p {
-    margin-bottom: 1rem;
-    line-height: 1.6;
-  }
-
-  .learning-path {
-    background: rgba(255, 255, 255, 0.15);
-    padding: 1rem;
-    border-radius: 6px;
-    margin-top: 1rem;
   }
 
   .column-toc {
@@ -201,11 +125,6 @@ const totalReadTime = getTotalReadTime();
     padding: 1.5rem;
     border-radius: 8px;
     margin-bottom: 3rem;
-  }
-
-  .column-toc h2 {
-    margin-bottom: 1rem;
-    color: #333;
   }
 
   .column-toc ul {
@@ -219,164 +138,83 @@ const totalReadTime = getTotalReadTime();
   .column-toc a {
     color: #667eea;
     text-decoration: none;
-    font-weight: 500;
-  }
-
-  .column-toc a:hover {
-    text-decoration: underline;
   }
 
   .difficulty-section {
     margin-bottom: 4rem;
   }
 
-  .section-header {
+  .difficulty-section h2 {
+    font-size: 1.8rem;
     margin-bottom: 2rem;
     padding-bottom: 1rem;
     border-bottom: 3px solid;
   }
 
-  .beginner .section-header {
+  #beginner h2 {
     border-color: #51cf66;
   }
 
-  .intermediate .section-header {
+  #intermediate h2 {
     border-color: #ff922b;
   }
 
-  .advanced .section-header {
+  #advanced h2 {
     border-color: #fa5252;
   }
 
-  .section-header h2 {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .section-description {
-    color: #666;
-    font-size: 1rem;
-  }
-
-  .articles-grid {
-    display: grid;
+  .articles-list {
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem;
   }
 
-  .article-card {
+  .article-item {
     display: flex;
     gap: 1.5rem;
     padding: 1.5rem;
     border: 1px solid #e9ecef;
     border-radius: 8px;
-    transition: all 0.3s ease;
     background: white;
+    transition: all 0.3s ease;
   }
 
-  .article-card:hover {
+  .article-item:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
   }
 
-  .article-number {
+  .article-index {
     font-size: 2rem;
     font-weight: bold;
     color: #dee2e6;
     min-width: 50px;
     display: flex;
     align-items: center;
-    justify-content: center;
   }
 
-  .article-content {
-    flex: 1;
-  }
-
-  .difficulty-badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 500;
+  .article-info h3 {
     margin-bottom: 0.75rem;
   }
 
-  .beginner-badge {
-    background: #d3f9d8;
-    color: #2b8a3e;
-  }
-
-  .intermediate-badge {
-    background: #fff3bf;
-    color: #e67700;
-  }
-
-  .advanced-badge {
-    background: #ffe3e3;
-    color: #c92a2a;
-  }
-
-  .article-content h3 {
-    margin-bottom: 0.75rem;
-    font-size: 1.2rem;
-  }
-
-  .article-content h3 a {
+  .article-info h3 a {
     color: #333;
     text-decoration: none;
   }
 
-  .article-content h3 a:hover {
+  .article-info h3 a:hover {
     color: #667eea;
   }
 
-  .article-description {
+  .article-info p {
     color: #666;
     margin-bottom: 0.75rem;
     line-height: 1.5;
   }
 
-  .article-meta {
-    display: flex;
-    gap: 1.5rem;
-    font-size: 0.85rem;
+  .read-time {
     color: #868e96;
-  }
-
-  .learning-tips {
-    margin-top: 4rem;
-    padding: 2rem;
-    background: #f8f9fa;
-    border-radius: 12px;
-  }
-
-  .learning-tips h2 {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #333;
-  }
-
-  .tips-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .tip-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    border-left: 4px solid #667eea;
-  }
-
-  .tip-card h3 {
-    margin-bottom: 0.75rem;
-    color: #333;
-  }
-
-  .tip-card p {
-    color: #666;
-    line-height: 1.5;
+    font-size: 0.85rem;
   }
 
   @media (max-width: 768px) {
@@ -395,15 +233,10 @@ const totalReadTime = getTotalReadTime();
 
     .column-toc ul {
       flex-direction: column;
-      gap: 0.75rem;
     }
 
-    .article-card {
+    .article-item {
       flex-direction: column;
-    }
-
-    .article-number {
-      font-size: 1.5rem;
     }
   }
 </style>
