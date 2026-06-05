@@ -1,29 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
 import { quantColumnArticles, getArticlesByDifficulty, getTotalReadTime } from '../data/quant-column';
 
 const title = '量化交易实战专栏 - 从入门到精通';
-const description = '系统化的量化交易学习路径：从基础因子研究到高频交易实战，25篇精选文章带你掌握量化投资核心技术。';
-
-// 获取所有博客文章以获取实际的publishDate和description
-const blogPosts = await getCollection('blog');
-
-// 构建slug到博客文章的映射
-const blogMap = new Map();
-blogPosts.forEach(post => {
-  blogMap.set(post.slug, post);
-});
-
-// 合并数据
-const articlesWithData = quantColumnArticles.map(article => {
-  const blogPost = blogMap.get(article.slug);
-  return {
-    ...article,
-    publishDate: blogPost?.data.publishDate || article.publishDate,
-    description: blogPost?.data.description || article.description
-  };
-});
+const description = '系统化的量化交易学习路径：从基础因子研究到高频交易实战，22篇精选文章带你掌握量化投资核心技术。';
 
 const { beginner, intermediate, advanced, total } = getArticlesByDifficulty();
 const totalReadTime = getTotalReadTime();
