@@ -1,0 +1,27 @@
+---
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+---
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title}</title>
+    <meta name="description" content={description}>
+  </head>
+  <body>
+    <header style="background: #667eea; color: white; padding: 2rem; text-align: center;">
+      <h1>量化交易专栏</h1>
+    </header>
+    <main style="max-width: 1000px; margin: 2rem auto; padding: 0 1rem;">
+      <slot />
+    </main>
+    <footer style="text-align: center; padding: 2rem; color: #666;">
+      <a href="/">← 返回首页</a>
+    </footer>
+  </body>
+</html>
