@@ -1,242 +1,284 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { getArticlesByDifficulty, getTotalReadTime } from '../data/quant-column.ts';
+import SimpleLayout from '../layouts/SimpleLayout.astro';
+import { getCollection } from 'astro:content';
+import config from '../site-config';
 
-const title = '量化交易实战专栏 - 从入门到精通';
-const description = '系统化的量化交易学习路径：从基础因子研究到高频交易实战，25篇精选文章带你掌握量化投资核心技术。';
+// 获取所有博客文章
+const allPosts = await getCollection('blog');
 
-const { beginner, intermediate, advanced, total } = getArticlesByDifficulty();
-const totalReadTime = getTotalReadTime();
+// 过滤量化相关文章（通过标签判断）
+const quantPosts = allPosts.filter(post => 
+  post.data.tags?.some(tag => 
+    tag.includes('量化') || 
+    tag.includes('quant') ||
+    tag.includes('交易') ||
+    tag.includes('投资')
+  )
+);
+
+// 按难度分类（需要在 frontmatter 中添加 difficulty 字段）
+const beginnerPosts = quantPosts.filter(post => post.data.difficulty === 'beginner');
+const intermediatePosts = quantPosts.filter(post => post.data.difficulty === 'intermediate');
+const advancedPosts = quantPosts.filter(post => post.data.difficulty === 'advanced');
+
+// 如果没有设置 difficulty，放到"未分类"
+const uncategorizedPosts = quantPosts.filter(post => !post.data.difficulty);
+
+const title = '量化交易专栏';
+const description = '系统化的量化投资学习路径：从入门到高阶';
 ---
 
-<BaseLayout title={title} description={description}>
-  <div class="quant-column-container">
-    <header class="column-header">
-      <h1>📊 量化交易实战专栏</h1>
-      <p class="column-subtitle">从入门到精通：系统化的量化投资学习路径</p>
-      <div class="column-stats">
-        <span class="stat-item">📚 共 {total} 篇文章</span>
-        <span class="stat-item">⏱️ 预计阅读 {totalReadTime} 分钟</span>
-        <span class="stat-item">🎯 从入门到实战</span>
-      </div>
-    </header>
+<SimpleLayout title={title} description={description}>
+  <div class="quant-column">
+    <div class="header">
+      <h1>📊 量化交易专栏</h1>
+      <p class="subtitle">系统化的量化投资学习路径</p>
+    </div>
 
-    <nav class="column-toc">
-      <h2>📑 快速导航</h2>
-      <ul>
-        <li><a href="#beginner">入门级：基础概念 ({beginner.length} 篇)</a></li>
-        <li><a href="#intermediate">中级：策略与应用 ({intermediate.length} 篇)</a></li>
-        <li><a href="#advanced">高级：技术与实战 ({advanced.length} 篇)</a></li>
-      </ul>
-    </nav>
-
-    <section id="beginner" class="difficulty-section">
-      <h2>🌱 入门级：基础概念</h2>
-      <div class="articles-list">
-        {beginner.map((article, index) => (
-          <div class="article-item">
-            <span class="article-index">{index + 1}</span>
-            <div class="article-info">
-              <h3><a href={`/blog/${article.slug}/`}>{article.title}</a></h3>
-              <p>{article.description}</p>
-              <span class="read-time">⏱️ {article.estimatedReadTime} 分钟</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-
-    <section id="intermediate" class="difficulty-section">
-      <h2>🚀 中级：策略与应用</h2>
-      <div class="articles-list">
-        {intermediate.map((article, index) => (
-          <div class="article-item">
-            <span class="article-index">{index + 1}</span>
-            <div class="article-info">
-              <h3><a href={`/blog/${article.slug}/`}>{article.title}</a></h3>
-              <p>{article.description}</p>
-              <span class="read-time">⏱️ {article.estimatedReadTime} 分钟</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-
-    <section id="advanced" class="difficulty-section">
-      <h2>💎 高级：技术与实战</h2>
-      <div class="articles-list">
-        {advanced.map((article, index) => (
-          <div class="article-item">
-            <span class="article-index">{index + 1}</span>
-            <div class="article-info">
-              <h3><a href={`/blog/${article.slug}/`}>{article.title}</a></h3>
-              <p>{article.description}</p>
-              <span class="read-time">⏱️ {article.estimatedReadTime} 分钟</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
+  <div class="stats">
+    <div class="stat-item">
+      <span class="stat-number">{quantPosts.length}</span>
+      <span class="stat-label">篇文章</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">{beginnerPosts.length}</span>
+      <span class="stat-label">入门</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">{intermediatePosts.length}</span>
+      <span class="stat-label">进阶</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">{advancedPosts.length}</span>
+      <span class="stat-label">高阶</span>
+    </div>
   </div>
-</BaseLayout>
+
+  {beginnerPosts.length > 0 && (
+    <section class="category">
+      <h2>🌱 入门：量化交易基础</h2>
+      <p class="category-desc">适合初学者的量化交易概念和工具</p>
+      <div class="article-list">
+        {beginnerPosts.map(post => (
+          <a href={`/blog/${post.slug}/`} class="article-item">
+            <h3>{post.data.title}</h3>
+            <p>{post.data.description}</p>
+            <div class="article-meta">
+              <span class="date">{post.data.pubDate.toISOString().split('T')[0]}</span>
+              {post.data.tags && (
+                <span class="tags">{post.data.tags.slice(0, 3).join(', ')}</span>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {intermediatePosts.length > 0 && (
+    <section class="category">
+      <h2>📈 进阶：策略开发与回测</h2>
+      <p class="category-desc">因子挖掘、策略设计、风险控制</p>
+      <div class="article-list">
+        {intermediatePosts.map(post => (
+          <a href={`/blog/${post.slug}/`} class="article-item">
+            <h3>{post.data.title}</h3>
+            <p>{post.data.description}</p>
+            <div class="article-meta">
+              <span class="date">{post.data.pubDate.toISOString().split('T')[0]}</span>
+              {post.data.tags && (
+                <span class="tags">{post.data.tags.slice(0, 3).join(', ')}</span>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {advancedPosts.length > 0 && (
+    <section class="category">
+      <h2>🚀 高阶：实盘交易与高级策略</h2>
+      <p class="category-desc">高频交易、机器学习、组合优化</p>
+      <div class="article-list">
+        {advancedPosts.map(post => (
+          <a href={`/blog/${post.slug}/`} class="article-item">
+            <h3>{post.data.title}</h3>
+            <p>{post.data.description}</p>
+            <div class="article-meta">
+              <span class="date">{post.data.pubDate.toISOString().split('T')[0]}</span>
+              {post.data.tags && (
+                <span class="tags">{post.data.tags.slice(0, 3).join(', ')}</span>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {uncategorizedPosts.length > 0 && (
+    <section class="category">
+      <h2>📚 未分类</h2>
+      <p class="category-desc">等待分类的量化文章</p>
+      <div class="article-list">
+        {uncategorizedPosts.map(post => (
+          <a href={`/blog/${post.slug}/`} class="article-item">
+            <h3>{post.data.title}</h3>
+            <p>{post.data.description}</p>
+            <div class="article-meta">
+              <span class="date">{post.data.pubDate.toISOString().split('T')[0]}</span>
+              {post.data.tags && (
+                <span class="tags">{post.data.tags.slice(0, 3).join(', ')}</span>
+              )}
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  {quantPosts.length === 0 && (
+    <div class="empty">
+      <p>暂无量化相关文章。</p>
+      <p>请在文章的 frontmatter 中添加标签：量化交易、quant、交易、投资</p>
+    </div>
+  )}
+  </div>
+</SimpleLayout>
 
 <style>
-  .quant-column-container {
+  .quant-column {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 2rem 1rem;
   }
 
-  .column-header {
+  .header {
     text-align: center;
-    margin-bottom: 3rem;
-    padding: 2rem;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 12px;
     color: white;
+    padding: 3rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 3rem;
   }
 
-  .column-header h1 {
+  .header h1 {
     font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
   }
 
-  .column-subtitle {
+  .subtitle {
     font-size: 1.2rem;
     opacity: 0.9;
   }
 
-  .column-stats {
+  .stats {
     display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin-top: 1.5rem;
-    flex-wrap: wrap;
-  }
-
-  .stat-item {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-  }
-
-  .column-toc {
-    background: #f8f9fa;
-    padding: 1.5rem;
-    border-radius: 8px;
+    justify-content: space-around;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     margin-bottom: 3rem;
   }
 
-  .column-toc ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
+  .stat-item {
+    text-align: center;
   }
 
-  .column-toc a {
+  .stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
     color: #667eea;
-    text-decoration: none;
   }
 
-  .difficulty-section {
-    margin-bottom: 4rem;
+  .stat-label {
+    color: #666;
+    font-size: 0.9rem;
   }
 
-  .difficulty-section h2 {
-    font-size: 1.8rem;
+  .category {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     margin-bottom: 2rem;
+  }
+
+  .category h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
     padding-bottom: 1rem;
-    border-bottom: 3px solid;
+    border-bottom: 3px solid #667eea;
   }
 
-  #beginner h2 {
-    border-color: #51cf66;
+  .category-desc {
+    color: #666;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
   }
 
-  #intermediate h2 {
-    border-color: #ff922b;
-  }
-
-  #advanced h2 {
-    border-color: #fa5252;
-  }
-
-  .articles-list {
+  .article-list {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
   }
 
   .article-item {
-    display: flex;
-    gap: 1.5rem;
+    display: block;
     padding: 1.5rem;
     border: 1px solid #e9ecef;
     border-radius: 8px;
-    background: white;
-    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s;
   }
 
   .article-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
     transform: translateY(-2px);
   }
 
-  .article-index {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #dee2e6;
-    min-width: 50px;
-    display: flex;
-    align-items: center;
-  }
-
-  .article-info h3 {
-    margin-bottom: 0.75rem;
-  }
-
-  .article-info h3 a {
+  .article-item h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
     color: #333;
-    text-decoration: none;
   }
 
-  .article-info h3 a:hover {
+  .article-item p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 0.8rem;
+  }
+
+  .article-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: #999;
+  }
+
+  .tags {
     color: #667eea;
   }
 
-  .article-info p {
+  .empty {
+    text-align: center;
+    padding: 3rem;
     color: #666;
-    margin-bottom: 0.75rem;
-    line-height: 1.5;
-  }
-
-  .read-time {
-    color: #868e96;
-    font-size: 0.85rem;
   }
 
   @media (max-width: 768px) {
-    .quant-column-container {
-      padding: 1rem;
-    }
-
-    .column-header h1 {
-      font-size: 1.8rem;
-    }
-
-    .column-stats {
+    .stats {
       flex-direction: column;
-      align-items: center;
+      gap: 1.5rem;
     }
 
-    .column-toc ul {
-      flex-direction: column;
-    }
-
-    .article-item {
-      flex-direction: column;
+    .header h1 {
+      font-size: 2rem;
     }
   }
 </style>
