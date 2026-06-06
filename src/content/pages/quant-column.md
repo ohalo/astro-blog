@@ -10,6 +10,9 @@ layout: page
 
 ## 最新文章
 
+- [2026-06-06 - LSTM神经网络在股票价格预测中的应用与局限](/blog/lstm-stock-prediction-deep-learning/) - 深入探讨LSTM的原理、在量化投资中的应用场景，以及实际操作中需要注意的陷阱
+- [2026-06-06 - 行为金融学：散户心理偏差如何制造市场异象](/blog/behavioral-finance-retail-investor/) - 深入探讨散户常见的心理偏差，以及量化投资者如何利用这些市场异象获取超额收益
+
 - [2026-06-06 - 高频交易与微结构：订单流与限价订单簿的深度解析](/blog/high-frequency-trading-microstructure/) - 深入探讨订单流、限价订单簿和价格发现机制，解析高频交易策略与实盘注意事项
 - [2026-06-06 - 另类数据在量化投资中的应用：从卫星图像到社交媒体](/blog/alternative-data-quant-investing/) - 从卫星图像分析零售停车场车流，到社交媒体情绪挖掘，另类数据为投资者提供了独特的阿尔法来源
 
