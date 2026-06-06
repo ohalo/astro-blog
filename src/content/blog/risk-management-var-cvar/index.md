@@ -1,10 +1,11 @@
 ---
-title: "风险管理实战：VaR与CVaR的计算与应用"
+title: 风险管理实战：VaR与CVaR的计算与应用
 publishDate: '2026-06-05'
-description: "风险管理实战：VaR与CVaR的计算与应用 - halo的技术博客"
+description: 风险管理实战：VaR与CVaR的计算与应用 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 为什么风险管理比策略更重要？

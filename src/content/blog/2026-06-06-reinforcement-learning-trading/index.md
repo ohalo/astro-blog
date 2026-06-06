@@ -1,10 +1,11 @@
 ---
-title: "强化学习交易Agent：从DQN到PPO的完整实战"
+title: 强化学习交易Agent：从DQN到PPO的完整实战
 publishDate: '2026-06-06'
-description: "强化学习交易Agent实战 - halo的技术博客"
+description: 强化学习交易Agent实战 - halo的技术博客
 tags:
   - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言

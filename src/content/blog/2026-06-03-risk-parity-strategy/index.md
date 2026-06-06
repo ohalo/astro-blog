@@ -1,10 +1,11 @@
 ---
-title: "风险平价策略：平衡风险而非资本"
+title: 风险平价策略：平衡风险而非资本
 publishDate: '2026-06-03'
-description: "风险平价策略：平衡风险而非资本 - halo的技术博客"
+description: 风险平价策略：平衡风险而非资本 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ![风险平价权重比较](/images/2026-06-03-risk-parity-strategy/risk_parity_weights.svg)

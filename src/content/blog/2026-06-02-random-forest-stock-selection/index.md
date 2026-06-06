@@ -1,10 +1,11 @@
 ---
-title: "随机森林在量化选股中的实战应用"
+title: 随机森林在量化选股中的实战应用
 publishDate: '2026-06-02'
-description: "随机森林在量化选股中的实战应用 - halo的技术博客"
+description: 随机森林在量化选股中的实战应用 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 为什么选择随机森林？

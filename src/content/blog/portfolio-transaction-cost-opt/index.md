@@ -1,12 +1,13 @@
 ---
-title: "带交易成本的投资组合优化：从理论到实战"
+title: 带交易成本的投资组合优化：从理论到实战
 publishDate: '2026-06-05'
-description: "带交易成本的投资组合优化：从理论到实战 - halo的技术博客"
+description: 带交易成本的投资组合优化：从理论到实战 - halo的技术博客
 tags:
- - 量化交易
- - 量化专栏
- - 量化交易
+  - 量化交易
+  - 量化专栏
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：被忽视的"隐形杀手"

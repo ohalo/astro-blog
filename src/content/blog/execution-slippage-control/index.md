@@ -1,10 +1,11 @@
 ---
-title: "实盘交易滑点控制与订单管理实战"
+title: 实盘交易滑点控制与订单管理实战
 publishDate: '2026-06-02'
-description: "实盘交易滑点控制与订单管理实战 - halo的技术博客"
+description: 实盘交易滑点控制与订单管理实战 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 从回测到实盘的鸿沟

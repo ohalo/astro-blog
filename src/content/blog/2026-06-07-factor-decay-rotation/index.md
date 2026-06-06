@@ -1,10 +1,11 @@
 ---
-title: "因子衰减与因子轮动：量化投资中的时间维度"
+title: 因子衰减与因子轮动：量化投资中的时间维度
 publishDate: '2026-06-07'
-description: "因子衰减与因子轮动：量化投资中的时间维度 - halo的技术博客"
+description: 因子衰减与因子轮动：量化投资中的时间维度 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言：因子的"半衰期"

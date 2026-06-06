@@ -1,10 +1,11 @@
 ---
-title: "多因子模型中的因子正交化：剔除多重共线性的关键技术"
+title: 多因子模型中的因子正交化：剔除多重共线性的关键技术
 publishDate: '2026-06-05'
-description: "多因子模型中的因子正交化：剔除多重共线性的关键技术 - halo的技术博客"
+description: 多因子模型中的因子正交化：剔除多重共线性的关键技术 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 为什么因子正交化至关重要？

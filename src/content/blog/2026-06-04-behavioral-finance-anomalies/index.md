@@ -1,10 +1,11 @@
 ---
-title: "行为金融学量化实战：捕捉散户情绪驱动的股价异象"
+title: 行为金融学量化实战：捕捉散户情绪驱动的股价异象
 publishDate: '2026-06-04'
-description: "行为金融学量化实战：捕捉散户情绪驱动的股价异象 - halo的技术博客"
+description: 行为金融学量化实战：捕捉散户情绪驱动的股价异象 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 当理性人假设失效

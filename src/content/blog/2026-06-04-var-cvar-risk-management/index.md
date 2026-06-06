@@ -1,10 +1,11 @@
 ---
-title: "VaR与CVaR：量化风险管理的双刃剑"
+title: VaR与CVaR：量化风险管理的双刃剑
 publishDate: '2026-06-04'
-description: "VaR与CVaR：量化风险管理的双刃剑 - halo的技术博客"
+description: VaR与CVaR：量化风险管理的双刃剑 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 风险管理的核心问题

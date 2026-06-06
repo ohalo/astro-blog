@@ -1,10 +1,11 @@
 ---
-title: "限价订单簿微观结构：高频交易的核心"
+title: 限价订单簿微观结构：高频交易的核心
 publishDate: '2026-06-03'
-description: "限价订单簿微观结构：高频交易的核心 - halo的技术博客"
+description: 限价订单簿微观结构：高频交易的核心 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ![限价订单簿深度](/images/2026-06-03-lob-microstructure/lob_depth.jpg)

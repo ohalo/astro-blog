@@ -1,10 +1,11 @@
 ---
-title: "高频交易中的订单流与微结构分析"
+title: 高频交易中的订单流与微结构分析
 publishDate: '2026-06-05'
-description: "高频交易中的订单流与微结构分析 - halo的技术博客"
+description: 高频交易中的订单流与微结构分析 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 高频交易的核心：订单流与微结构

@@ -1,12 +1,13 @@
 ---
-title: "限价订单簿微观结构：高频交易的秘密武器"
+title: 限价订单簿微观结构：高频交易的秘密武器
 publishDate: '2026-06-05'
-description: "限价订单簿微观结构：高频交易的秘密武器 - halo的技术博客"
+description: 限价订单簿微观结构：高频交易的秘密武器 - halo的技术博客
 tags:
- - 量化交易
- - 量化专栏
- - 量化交易
+  - 量化交易
+  - 量化专栏
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 限价订单簿（LOB）基础架构

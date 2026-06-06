@@ -1,10 +1,11 @@
 ---
-title: "算法交易执行优化：VWAP、TWAP与降低交易成本的实战技巧"
+title: 算法交易执行优化：VWAP、TWAP与降低交易成本的实战技巧
 publishDate: '2026-06-06'
-description: "算法交易执行优化 - halo的技术博客"
+description: 算法交易执行优化 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 为什么交易执行如此重要？

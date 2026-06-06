@@ -1,10 +1,11 @@
 ---
-title: "特质波动率因子：A股异象的另类解读"
+title: 特质波动率因子：A股异象的另类解读
 publishDate: '2026-06-03'
-description: "特质波动率因子：A股异象的另类解读 - halo的技术博客"
+description: 特质波动率因子：A股异象的另类解读 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：被忽视的波动率异象

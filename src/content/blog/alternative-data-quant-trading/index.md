@@ -1,10 +1,11 @@
 ---
-title: "另类数据：量化交易的秘密武器"
+title: 另类数据：量化交易的秘密武器
 publishDate: '2026-06-06'
-description: "另类数据：量化交易的秘密武器 - halo的技术博客"
+description: 另类数据：量化交易的秘密武器 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 什么是另类数据？

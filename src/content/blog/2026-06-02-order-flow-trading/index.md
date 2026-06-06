@@ -1,10 +1,11 @@
 ---
-title: "订单流交易：解码市场微结构的量化方法"
+title: 订单流交易：解码市场微结构的量化方法
 publishDate: '2026-06-02'
-description: "订单流交易：解码市场微结构的量化方法 - halo的技术博客"
+description: 订单流交易：解码市场微结构的量化方法 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 订单流交易的核心逻辑

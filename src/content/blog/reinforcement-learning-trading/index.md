@@ -1,10 +1,11 @@
 ---
-title: "强化学习在量化交易中的应用：从理论到实践"
+title: 强化学习在量化交易中的应用：从理论到实践
 publishDate: '2026-06-05'
-description: "强化学习在量化交易中的应用 - halo的技术博客"
+description: 强化学习在量化交易中的应用 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言

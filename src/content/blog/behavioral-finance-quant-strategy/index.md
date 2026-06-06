@@ -1,10 +1,11 @@
 ---
-title: "行为金融视角下的量化策略优化：利用散户心理偏差获取阿尔法"
+title: 行为金融视角下的量化策略优化：利用散户心理偏差获取阿尔法
 publishDate: '2026-06-05'
-description: "行为金融视角下的量化策略优化：利用散户心理偏差获取阿尔法 - halo的技术博客"
+description: 行为金融视角下的量化策略优化：利用散户心理偏差获取阿尔法 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 行为金融的核心逻辑：打破有效市场假说

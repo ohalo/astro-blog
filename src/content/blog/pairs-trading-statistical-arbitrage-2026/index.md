@@ -1,10 +1,11 @@
 ---
-title: "配对交易与统计套利：从协整检验到实盘执行的完整指南"
+title: 配对交易与统计套利：从协整检验到实盘执行的完整指南
 publishDate: '2026-06-06'
-description: "配对交易与统计套利：从协整检验到实盘执行的完整指南 - halo的技术博客"
+description: 配对交易与统计套利：从协整检验到实盘执行的完整指南 - halo的技术博客
 tags:
   - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言

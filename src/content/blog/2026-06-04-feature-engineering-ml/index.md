@@ -1,10 +1,11 @@
 ---
-title: "机器学习特征工程：构建有效的量化因子"
+title: 机器学习特征工程：构建有效的量化因子
 publishDate: '2026-06-04'
-description: "机器学习特征工程 - halo的技术博客"
+description: 机器学习特征工程 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 机器学习特征工程：构建有效的量化因子

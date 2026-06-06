@@ -1,10 +1,11 @@
 ---
-title: "做市商策略与高频交易实战：库存管理与报价优化"
+title: 做市商策略与高频交易实战：库存管理与报价优化
 publishDate: '2026-06-05'
-description: "做市商策略与高频交易实战：库存管理与报价优化 - halo的技术博客"
+description: 做市商策略与高频交易实战：库存管理与报价优化 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 # 做市商策略与高频交易实战：库存管理与报价优化

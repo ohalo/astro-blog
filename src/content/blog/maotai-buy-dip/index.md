@@ -1,10 +1,11 @@
 ---
-title: "贵州茅台跌破1400可以抄底吗？一位老股民的实在话"
+title: 贵州茅台跌破1400可以抄底吗？一位老股民的实在话
 publishDate: '2026-04-08'
-description: "贵州茅台跌破1400可以抄底吗？一位老股民的实在话 - halo的技术博客"
+description: 贵州茅台跌破1400可以抄底吗？一位老股民的实在话 - halo的技术博客
 tags:
   - 投资理财
 language: Chinese
+difficulty: beginner
 ---
 
 贵州茅台股票白酒投资A股

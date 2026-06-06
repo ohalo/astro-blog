@@ -1,10 +1,11 @@
 ---
-title: "订单执行算法实战：VWAP与TWAP如何减少滑点？"
+title: 订单执行算法实战：VWAP与TWAP如何减少滑点？
 publishDate: '2026-06-02'
-description: "订单执行算法实战：VWAP与TWAP如何减少滑点？ - halo的技术博客"
+description: 订单执行算法实战：VWAP与TWAP如何减少滑点？ - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 执行才是真正的挑战

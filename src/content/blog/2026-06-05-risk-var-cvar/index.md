@@ -1,10 +1,11 @@
 ---
-title: "风险价值(VaR)与条件风险价值(CVaR)在量化投资中的应用"
+title: 风险价值(VaR)与条件风险价值(CVaR)在量化投资中的应用
 publishDate: '2026-06-05'
-description: "风险价值(VaR)与条件风险价值(CVaR)在量化投资中的应用 - halo的技术博客"
+description: 风险价值(VaR)与条件风险价值(CVaR)在量化投资中的应用 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 风险管理是量化投资的基石

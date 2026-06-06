@@ -1,10 +1,11 @@
 ---
-title: "因子衰减效应：量化多因子策略的时间陷阱与应对方法"
+title: 因子衰减效应：量化多因子策略的时间陷阱与应对方法
 publishDate: '2026-06-04'
-description: "因子衰减效应：量化多因子策略的时间陷阱与应对方法 - halo的技术博客"
+description: 因子衰减效应：量化多因子策略的时间陷阱与应对方法 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 当你发现因子越来越不灵的时候

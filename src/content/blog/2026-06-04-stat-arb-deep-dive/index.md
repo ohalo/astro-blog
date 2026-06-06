@@ -1,10 +1,11 @@
 ---
-title: "统计套利深度解析：配对交易与协整分析的量化实践"
+title: 统计套利深度解析：配对交易与协整分析的量化实践
 publishDate: '2026-06-04'
-description: "统计套利深度解析：配对交易与协整分析的量化实践 - halo的技术博客"
+description: 统计套利深度解析：配对交易与协整分析的量化实践 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 统计套利的核心逻辑

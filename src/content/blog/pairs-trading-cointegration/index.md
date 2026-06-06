@@ -1,10 +1,11 @@
 ---
-title: "统计套利实战：配对交易与协整分析"
+title: 统计套利实战：配对交易与协整分析
 publishDate: '2026-06-05'
-description: "统计套利实战：配对交易与协整分析 - halo的技术博客"
+description: 统计套利实战：配对交易与协整分析 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 什么是配对交易？

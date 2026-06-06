@@ -1,10 +1,11 @@
 ---
-title: "实盘交易系统：量化策略的成本控制与执行优化"
+title: 实盘交易系统：量化策略的成本控制与执行优化
 publishDate: '2026-06-04'
-description: "实盘交易系统：量化策略的成本控制与执行优化 - halo的技术博客"
+description: 实盘交易系统：量化策略的成本控制与执行优化 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 策略回测很美好，实盘很骨感

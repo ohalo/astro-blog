@@ -1,10 +1,11 @@
 ---
-title: "行为金融学在量化投资中的应用：从心理偏差到量化因子"
+title: 行为金融学在量化投资中的应用：从心理偏差到量化因子
 publishDate: '2026-06-02'
-description: "行为金融学在量化投资中的应用：从心理偏差到量化因子 - halo的技术博客"
+description: 行为金融学在量化投资中的应用：从心理偏差到量化因子 - halo的技术博客
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 当有效市场假说遇到人类非理性

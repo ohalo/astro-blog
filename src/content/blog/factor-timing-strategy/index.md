@@ -1,10 +1,11 @@
 ---
-title: "因子择时策略：动态调整因子暴露的量化方法"
+title: 因子择时策略：动态调整因子暴露的量化方法
 publishDate: '2026-06-05'
-description: "因子择时策略 - halo的技术博客"
+description: 因子择时策略 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

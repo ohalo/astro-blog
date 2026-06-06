@@ -1,12 +1,13 @@
 ---
-title: "因子衰减效应与因子投资生命周期：量化投资的残酷真相"
+title: 因子衰减效应与因子投资生命周期：量化投资的残酷真相
 publishDate: '2026-06-05'
-description: "因子衰减效应与因子投资生命周期 - halo的技术博客"
+description: 因子衰减效应与因子投资生命周期 - halo的技术博客
 tags:
- - 量化交易
- - 量化专栏
- - 量化交易
+  - 量化交易
+  - 量化专栏
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言：因子的宿命

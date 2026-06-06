@@ -1,10 +1,11 @@
 ---
-title: "高频交易核心：限价订单簿(LOB)深度解析与量化策略"
+title: 高频交易核心：限价订单簿(LOB)深度解析与量化策略
 publishDate: '2026-06-02'
-description: "限价订单簿(LOB)是高频交易的战场 - halo的技术博客"
+description: 限价订单簿(LOB)是高频交易的战场 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 什么是限价订单簿(LOB)？

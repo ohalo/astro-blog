@@ -1,10 +1,11 @@
 ---
-title: "LSTM与Transformer在股价预测中的对决：量化视角"
+title: LSTM与Transformer在股价预测中的对决：量化视角
 publishDate: '2026-06-04'
-description: "LSTM与Transformer在股价预测中的对决 - halo的技术博客"
+description: LSTM与Transformer在股价预测中的对决 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言：序列模型的范式转变

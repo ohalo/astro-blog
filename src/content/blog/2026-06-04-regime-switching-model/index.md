@@ -1,10 +1,11 @@
 ---
-title: "状态切换模型：让量化策略适应不同市场环境"
+title: 状态切换模型：让量化策略适应不同市场环境
 publishDate: '2026-06-04'
-description: "状态切换模型 - halo的技术博客"
+description: 状态切换模型 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 为什么需要状态切换模型

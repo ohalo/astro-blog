@@ -1,10 +1,11 @@
 ---
-title: "CVaR条件风险价值：超越VaR的尾部风险管理"
+title: CVaR条件风险价值：超越VaR的尾部风险管理
 publishDate: '2026-06-01'
-description: "CVaR条件风险价值 - halo的技术博客"
+description: CVaR条件风险价值 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 为什么VaR不够用？

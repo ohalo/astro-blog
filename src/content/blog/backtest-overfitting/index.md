@@ -1,10 +1,11 @@
 ---
-title: "回测过拟合：量化策略死亡的99%原因"
+title: 回测过拟合：量化策略死亡的99%原因
 publishDate: '2026-06-02'
-description: "回测过拟合：量化策略死亡的99%原因 - halo的技术博客"
+description: 回测过拟合：量化策略死亡的99%原因 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 你看到的夏普比率2.0，可能是幻觉

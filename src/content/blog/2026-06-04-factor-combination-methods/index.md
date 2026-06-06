@@ -1,10 +1,11 @@
 ---
-title: "多因子组合方法比较：加权、IC、回归与机器学习融合"
+title: 多因子组合方法比较：加权、IC、回归与机器学习融合
 publishDate: '2026-06-04'
-description: "多因子组合方法比较：加权、IC、回归与机器学习融合 - halo的技术博客"
+description: 多因子组合方法比较：加权、IC、回归与机器学习融合 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 多因子组合的四大门派

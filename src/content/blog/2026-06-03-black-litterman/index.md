@@ -1,10 +1,11 @@
 ---
-title: "Black-Litterman 模型：把主观观点融入量化配置"
+title: Black-Litterman 模型：把主观观点融入量化配置
 publishDate: '2026-06-03'
-description: "Black-Litterman 模型：把主观观点融入量化配置 - halo的技术博客"
+description: Black-Litterman 模型：把主观观点融入量化配置 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 现代投资组合理论的困境

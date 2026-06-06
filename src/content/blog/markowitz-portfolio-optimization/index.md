@@ -1,10 +1,11 @@
 ---
-title: "马科维茨均值方差优化实战：用Python构建高效投资组合"
+title: 马科维茨均值方差优化实战：用Python构建高效投资组合
 publishDate: '2026-06-02'
-description: "马科维茨均值方差优化实战：用Python构建高效投资组合 - halo的技术博客"
+description: 马科维茨均值方差优化实战：用Python构建高效投资组合 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 现代投资组合理论的基石

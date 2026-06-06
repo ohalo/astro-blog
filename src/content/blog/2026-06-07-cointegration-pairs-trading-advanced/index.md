@@ -1,10 +1,11 @@
 ---
-title: "协整检验与配对交易进阶：从理论到量化实战"
+title: 协整检验与配对交易进阶：从理论到量化实战
 publishDate: '2026-06-07'
-description: "协整检验与配对交易进阶：从理论到量化实战 - halo的技术博客"
+description: 协整检验与配对交易进阶：从理论到量化实战 - halo的技术博客
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：当"均值回归"遇上数学严谨性

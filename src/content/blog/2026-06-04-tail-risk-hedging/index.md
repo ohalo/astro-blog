@@ -1,10 +1,11 @@
 ---
-title: "尾部风险对冲：极端市场中的量化防御策略"
+title: 尾部风险对冲：极端市场中的量化防御策略
 publishDate: '2026-06-04'
-description: "构建量化尾部风险对冲组合，利用期权、VIX衍生品和替代资产保护投资组合免受极端损失"
+description: 构建量化尾部风险对冲组合，利用期权、VIX衍生品和替代资产保护投资组合免受极端损失
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 理解尾部风险：当"黑天鹅"来袭

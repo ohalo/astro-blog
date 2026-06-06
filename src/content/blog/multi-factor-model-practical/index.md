@@ -1,10 +1,11 @@
 ---
-title: "多因子模型实战指南：从理论到Python实现"
+title: 多因子模型实战指南：从理论到Python实现
 publishDate: '2026-06-02'
-description: "多因子模型实战指南：从理论到Python实现 - halo的技术博客"
+description: 多因子模型实战指南：从理论到Python实现 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 多因子模型的核心逻辑

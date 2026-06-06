@@ -1,10 +1,11 @@
 ---
-title: "深度强化学习在量化交易中的应用：从DQN到PPO的完整实战"
+title: 深度强化学习在量化交易中的应用：从DQN到PPO的完整实战
 publishDate: '2026-06-05'
-description: "深度强化学习在量化交易中的应用：从DQN到PPO的完整实战 - halo的技术博客"
+description: 深度强化学习在量化交易中的应用：从DQN到PPO的完整实战 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 # 深度强化学习在量化交易中的应用：从DQN到PPO的完整实战

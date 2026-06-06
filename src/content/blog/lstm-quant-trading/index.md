@@ -1,10 +1,11 @@
 ---
-title: "LSTM神经网络在量化交易中的实践与应用"
+title: LSTM神经网络在量化交易中的实践与应用
 publishDate: '2026-06-02'
-description: "LSTM神经网络在量化交易中的实践与应用 - halo的技术博客"
+description: LSTM神经网络在量化交易中的实践与应用 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 深度学习在金融时序预测中的崛起

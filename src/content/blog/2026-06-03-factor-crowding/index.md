@@ -1,10 +1,11 @@
 ---
-title: "因子拥挤与拥挤崩塌：当量化策略同质化引发市场风暴"
+title: 因子拥挤与拥挤崩塌：当量化策略同质化引发市场风暴
 publishDate: '2026-06-03'
-description: "因子拥挤与拥挤崩塌：当量化策略同质化引发市场风暴 - halo的技术博客"
+description: 因子拥挤与拥挤崩塌：当量化策略同质化引发市场风暴 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言：量化世界的"羊群效应"

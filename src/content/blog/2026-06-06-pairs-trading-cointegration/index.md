@@ -1,10 +1,11 @@
 ---
-title: "配对交易协整检验：用数学锁定市场中的'隐形天平'"
+title: 配对交易协整检验：用数学锁定市场中的'隐形天平'
 publishDate: '2026-06-03'
-description: "配对交易协整检验：用数学锁定市场中的'隐形天平' - halo的技术博客"
+description: 配对交易协整检验：用数学锁定市场中的'隐形天平' - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 当两只股票"形影不离"时

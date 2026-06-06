@@ -1,10 +1,11 @@
 ---
-title: "因子衰减效应：识别、成因与应对策略"
+title: 因子衰减效应：识别、成因与应对策略
 publishDate: '2026-06-06'
-description: "因子衰减效应：识别、成因与应对策略 - halo的技术博客"
+description: 因子衰减效应：识别、成因与应对策略 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 什么是因子衰减效应

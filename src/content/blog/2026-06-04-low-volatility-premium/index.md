@@ -1,10 +1,11 @@
 ---
-title: "低波动因子溢价效应：高风险并不等于高收益"
+title: 低波动因子溢价效应：高风险并不等于高收益
 publishDate: '2026-06-04'
-description: "低波动因子溢价效应：高风险并不等于高收益 - halo的技术博客"
+description: 低波动因子溢价效应：高风险并不等于高收益 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 违背传统金融理论的发现

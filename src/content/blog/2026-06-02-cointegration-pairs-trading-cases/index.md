@@ -1,10 +1,11 @@
 ---
-title: "协整配对交易实战：A股统计套利10个经典案例"
+title: 协整配对交易实战：A股统计套利10个经典案例
 publishDate: '2026-06-02'
-description: "协整配对交易实战：A股统计套利10个经典案例 - halo的技术博客"
+description: 协整配对交易实战：A股统计套利10个经典案例 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 什么是协整配对交易？

@@ -1,10 +1,11 @@
 ---
-title: "Python量化工具链全景指南：Backtrader vs Zipline vs vnpy"
+title: Python量化工具链全景指南：Backtrader vs Zipline vs vnpy
 publishDate: '2026-06-01'
-description: "Python量化工具链全景指南：Backtrader vs Zipline vs vnpy - halo的技术博客"
+description: Python量化工具链全景指南：Backtrader vs Zipline vs vnpy - halo的技术博客
 tags:
   - 量化交易
 language: Chinese
+difficulty: beginner
 ---
 
 选择合适的量化框架，是做策略开发的第一步也是最容易被忽视的一步。一个得心应手的框架能让你专注于策略逻辑，而不是浪费时间在底层基础设施上。今天我们来全面对比 Python 生态中最主流的三个量化框架：Backtrader、Zipline 和 vnpy。

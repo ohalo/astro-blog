@@ -1,10 +1,11 @@
 ---
-title: "波动率曲面建模：从隐含波动率到动态对冲"
+title: 波动率曲面建模：从隐含波动率到动态对冲
 publishDate: '2026-06-04'
-description: "波动率曲面建模 - halo的技术博客"
+description: 波动率曲面建模 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：波动率的微笑与扭曲

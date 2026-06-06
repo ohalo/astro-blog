@@ -1,10 +1,11 @@
 ---
-title: "凯利公式在量化投资中的实战应用：从赌博到投资组合的仓位管理"
+title: 凯利公式在量化投资中的实战应用：从赌博到投资组合的仓位管理
 publishDate: '2026-06-05'
-description: "凯利公式在量化投资中的实战应用：从赌博到投资组合的仓位管理 - halo的技术博客"
+description: 凯利公式在量化投资中的实战应用：从赌博到投资组合的仓位管理 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 凯利公式：从信息论到量化投资

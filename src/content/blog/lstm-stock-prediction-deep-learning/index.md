@@ -1,10 +1,11 @@
 ---
-title: "LSTM神经网络在股票价格预测中的应用与局限"
+title: LSTM神经网络在股票价格预测中的应用与局限
 publishDate: '2026-06-06'
-description: "LSTM神经网络在股票价格预测中的应用与局限 - halo的技术博客"
+description: LSTM神经网络在股票价格预测中的应用与局限 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言

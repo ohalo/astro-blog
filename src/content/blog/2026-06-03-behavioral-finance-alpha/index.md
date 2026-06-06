@@ -1,10 +1,11 @@
 ---
-title: "行为金融学实证：散户心理偏差如何创造量化Alpha"
+title: 行为金融学实证：散户心理偏差如何创造量化Alpha
 publishDate: '2026-06-03'
-description: "行为金融学实证：散户心理偏差如何创造量化Alpha - halo的技术博客"
+description: 行为金融学实证：散户心理偏差如何创造量化Alpha - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：当学术理论遇见A股现实

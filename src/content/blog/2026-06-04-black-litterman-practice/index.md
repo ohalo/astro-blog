@@ -1,10 +1,11 @@
 ---
-title: "Black-Litterman模型实战：融合市场均衡与主观观点的资产配置"
+title: Black-Litterman模型实战：融合市场均衡与主观观点的资产配置
 publishDate: '2026-06-04'
-description: "Black-Litterman模型实战：融合市场均衡与主观观点的资产配置 - halo的技术博客"
+description: Black-Litterman模型实战：融合市场均衡与主观观点的资产配置 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## Black-Litterman模型的核心思想

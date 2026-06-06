@@ -1,10 +1,11 @@
 ---
-title: "配对交易与协整：统计套利的核心逻辑"
+title: 配对交易与协整：统计套利的核心逻辑
 publishDate: '2026-06-02'
-description: "配对交易与协整：统计套利的核心逻辑 - halo的技术博客"
+description: 配对交易与协整：统计套利的核心逻辑 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 统计套利的基本原理

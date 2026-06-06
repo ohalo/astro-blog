@@ -1,10 +1,11 @@
 ---
-title: "多因子选股实战：从因子构建到组合优化的完整流程"
+title: 多因子选股实战：从因子构建到组合优化的完整流程
 publishDate: '2026-06-06'
-description: "多因子选股实战：从因子构建到组合优化的完整流程 - halo的技术博客"
+description: 多因子选股实战：从因子构建到组合优化的完整流程 - halo的技术博客
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

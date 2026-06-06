@@ -1,10 +1,11 @@
 ---
-title: "回测过拟合：量化策略开发中的隐形陷阱与防范指南"
+title: 回测过拟合：量化策略开发中的隐形陷阱与防范指南
 publishDate: '2026-06-04'
-description: "回测过拟合：量化策略开发中的隐形陷阱与防范指南 - halo的技术博客"
+description: 回测过拟合：量化策略开发中的隐形陷阱与防范指南 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：当历史完美遇见现实骨感

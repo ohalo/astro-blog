@@ -1,10 +1,11 @@
 ---
-title: "波动率目标策略：动态风险控制实战"
+title: 波动率目标策略：动态风险控制实战
 publishDate: '2026-06-02'
-description: "波动率目标策略 - halo的技术博客"
+description: 波动率目标策略 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：为什么需要波动率目标策略

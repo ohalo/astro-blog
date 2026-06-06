@@ -1,10 +1,11 @@
 ---
-title: "Delta中性策略：用期权构建市场中性组合"
+title: Delta中性策略：用期权构建市场中性组合
 publishDate: '2026-06-03'
-description: "Delta中性策略：用期权构建市场中性组合 - halo的技术博客"
+description: Delta中性策略：用期权构建市场中性组合 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

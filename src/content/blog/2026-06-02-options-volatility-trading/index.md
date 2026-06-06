@@ -1,10 +1,11 @@
 ---
-title: "期权波动率交易核心策略：隐含波动率溢价提取与Delta对冲实战"
+title: 期权波动率交易核心策略：隐含波动率溢价提取与Delta对冲实战
 publishDate: '2026-06-02'
-description: "期权波动率交易核心策略：隐含波动率溢价提取与Delta对冲实战 - halo的技术博客"
+description: 期权波动率交易核心策略：隐含波动率溢价提取与Delta对冲实战 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 期权波动率交易的核心逻辑

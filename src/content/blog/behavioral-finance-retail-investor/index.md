@@ -1,10 +1,11 @@
 ---
-title: "行为金融学：散户心理偏差如何制造市场异象"
+title: 行为金融学：散户心理偏差如何制造市场异象
 publishDate: '2026-06-06'
-description: "行为金融学：散户心理偏差如何制造市场异象 - halo的技术博客"
+description: 行为金融学：散户心理偏差如何制造市场异象 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

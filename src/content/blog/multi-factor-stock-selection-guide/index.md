@@ -1,10 +1,11 @@
 ---
-title: "多因子选股模型实战搭建：从理论到代码"
+title: 多因子选股模型实战搭建：从理论到代码
 publishDate: '2026-06-01'
-description: "多因子选股模型实战搭建：从理论到代码 - halo的技术博客"
+description: 多因子选股模型实战搭建：从理论到代码 - halo的技术博客
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 多因子选股是量化投资中最经典、最广泛应用的策略框架。从 Fama-French 三因子模型到如今的几十个因子，多因子模型经历了数十年的学术研究和实战检验。本文将带你从零开始，搭建一个完整的多因子选股模型。

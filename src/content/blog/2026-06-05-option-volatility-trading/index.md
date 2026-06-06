@@ -1,10 +1,11 @@
 ---
-title: "期权波动率交易实战：从隐含波动率曲面到Delta中性策略"
+title: 期权波动率交易实战：从隐含波动率曲面到Delta中性策略
 publishDate: '2026-06-05'
-description: "期权波动率交易实战：从隐含波动率曲面到Delta中性策略 - halo的技术博客"
+description: 期权波动率交易实战：从隐含波动率曲面到Delta中性策略 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 期权波动率交易的核心逻辑

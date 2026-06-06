@@ -1,12 +1,13 @@
 ---
-title: "另类数据：量化交易的下一个阿尔法源泉"
+title: 另类数据：量化交易的下一个阿尔法源泉
 publishDate: '2026-06-05'
-description: "另类数据：量化交易的下一个阿尔法源泉 - halo的技术博客"
+description: 另类数据：量化交易的下一个阿尔法源泉 - halo的技术博客
 tags:
- - 量化交易
- - 量化专栏
- - 量化交易
+  - 量化交易
+  - 量化专栏
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 当传统数据不再够用时

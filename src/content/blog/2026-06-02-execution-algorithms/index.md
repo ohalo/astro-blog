@@ -1,10 +1,11 @@
 ---
-title: "实盘交易执行算法：VWAP、TWAP与POV实战指南"
+title: 实盘交易执行算法：VWAP、TWAP与POV实战指南
 publishDate: '2026-06-02'
-description: "交易执行算法实战：如何降低冲击成本 - halo的技术博客"
+description: 交易执行算法实战：如何降低冲击成本 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 为什么需要交易执行算法？

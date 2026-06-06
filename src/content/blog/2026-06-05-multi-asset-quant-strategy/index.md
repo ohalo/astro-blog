@@ -1,10 +1,11 @@
 ---
-title: "跨资产量化策略：当股票信号遇见加密货币"
+title: 跨资产量化策略：当股票信号遇见加密货币
 publishDate: '2026-06-04'
-description: "跨资产量化策略：当股票信号遇见加密货币 - halo的技术博客"
+description: 跨资产量化策略：当股票信号遇见加密货币 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：量化策略的"跨界"机遇

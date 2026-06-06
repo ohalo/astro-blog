@@ -1,10 +1,11 @@
 ---
-title: "凯利公式与仓位管理：用数学优化你的每次下注"
+title: 凯利公式与仓位管理：用数学优化你的每次下注
 publishDate: '2026-06-04'
-description: "凯利公式与仓位管理：用数学优化你的每次下注 - halo的技术博客"
+description: 凯利公式与仓位管理：用数学优化你的每次下注 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 一个困扰交易者的千年难题

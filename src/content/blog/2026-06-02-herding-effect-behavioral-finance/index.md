@@ -1,10 +1,11 @@
 ---
-title: "羊群效应与过度反应：行为金融在量化投资中的应用"
+title: 羊群效应与过度反应：行为金融在量化投资中的应用
 publishDate: '2026-06-02'
-description: "羊群效应与过度反应：行为金融在量化投资中的应用 - halo的技术博客"
+description: 羊群效应与过度反应：行为金融在量化投资中的应用 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 行为金融学：挑战有效市场假说

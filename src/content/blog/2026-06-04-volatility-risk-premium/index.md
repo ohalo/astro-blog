@@ -1,10 +1,11 @@
 ---
-title: "波动率风险溢价：期权卖方如何赚取隐形收益"
+title: 波动率风险溢价：期权卖方如何赚取隐形收益
 publishDate: '2026-06-04'
-description: "波动率风险溢价 - halo的技术博客"
+description: 波动率风险溢价 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 什么是波动率风险溢价

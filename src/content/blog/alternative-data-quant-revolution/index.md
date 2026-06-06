@@ -1,10 +1,11 @@
 ---
-title: "另类数据在量化投资中的革命性应用"
+title: 另类数据在量化投资中的革命性应用
 publishDate: '2026-06-02'
-description: "另类数据在量化投资中的革命性应用 - halo的技术博客"
+description: 另类数据在量化投资中的革命性应用 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 另类数据：量化投资的新蓝海

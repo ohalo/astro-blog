@@ -1,10 +1,11 @@
 ---
-title: "Black-Litterman模型实战：超越风险平价的资产配置进阶"
+title: Black-Litterman模型实战：超越风险平价的资产配置进阶
 publishDate: '2026-06-05'
-description: "Black-Litterman模型实战：超越风险平价的资产配置进阶 - halo的技术博客"
+description: Black-Litterman模型实战：超越风险平价的资产配置进阶 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 为什么需要Black-Litterman模型？

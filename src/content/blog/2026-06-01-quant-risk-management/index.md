@@ -1,10 +1,11 @@
 ---
-title: "量化交易的风险管理：止损、仓位控制与最大回撤"
+title: 量化交易的风险管理：止损、仓位控制与最大回撤
 publishDate: '2026-06-01'
-description: "量化交易的风险管理：止损、仓位控制与最大回撤 - halo的技术博客"
+description: 量化交易的风险管理：止损、仓位控制与最大回撤 - halo的技术博客
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 很多人问我："量化交易最重要的是什么？"

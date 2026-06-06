@@ -1,10 +1,11 @@
 ---
-title: "Black-Litterman模型：融合市场均衡与投资者观点的资产配置革命"
+title: Black-Litterman模型：融合市场均衡与投资者观点的资产配置革命
 publishDate: '2026-06-02'
-description: "Black-Litterman模型：融合市场均衡与投资者观点的资产配置革命 - halo的技术博客"
+description: Black-Litterman模型：融合市场均衡与投资者观点的资产配置革命 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 当马科维茨遇到现实：传统均值方差优化的困境

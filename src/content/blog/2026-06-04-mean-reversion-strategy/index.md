@@ -1,10 +1,11 @@
 ---
-title: "均值回归策略：捕捉价格偏离后的回归机会"
+title: 均值回归策略：捕捉价格偏离后的回归机会
 publishDate: '2026-06-04'
-description: "均值回归策略 - halo的技术博客"
+description: 均值回归策略 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 均值回归的数学基础

@@ -1,12 +1,13 @@
 ---
-title: "层次风险平价：用机器学习重构投资组合优化"
+title: 层次风险平价：用机器学习重构投资组合优化
 publishDate: '2026-06-05'
-description: "层次风险平价：用机器学习重构投资组合优化 - halo的技术博客"
+description: 层次风险平价：用机器学习重构投资组合优化 - halo的技术博客
 tags:
- - 量化交易
- - 量化专栏
- - 量化交易
+  - 量化交易
+  - 量化专栏
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 传统投资组合优化的困境

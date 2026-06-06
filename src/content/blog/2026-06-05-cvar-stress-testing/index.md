@@ -1,12 +1,13 @@
 ---
-title: "风险管理实战：CVaR计算与压力测试方法"
+title: 风险管理实战：CVaR计算与压力测试方法
 publishDate: '2026-06-05'
-description: "风险管理实战：CVaR计算与压力测试方法 - halo的技术博客"
+description: 风险管理实战：CVaR计算与压力测试方法 - halo的技术博客
 tags:
- - 量化交易
- - 量化专栏
- - 量化交易
+  - 量化交易
+  - 量化专栏
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 为什么传统VaR不够用？

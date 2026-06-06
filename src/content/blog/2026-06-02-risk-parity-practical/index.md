@@ -1,10 +1,11 @@
 ---
-title: "风险平价模型实战：超越马科维茨的配置革命"
+title: 风险平价模型实战：超越马科维茨的配置革命
 publishDate: '2026-06-02'
-description: "风险平价模型实战 - halo的技术博客"
+description: 风险平价模型实战 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：传统资产配置的困境

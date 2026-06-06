@@ -1,10 +1,11 @@
 ---
-title: "Black-Litterman模型：融合市场观点与量化投资"
+title: Black-Litterman模型：融合市场观点与量化投资
 publishDate: '2026-06-06'
-description: "Black-Litterman模型：融合市场观点与量化投资 - halo的技术博客"
+description: Black-Litterman模型：融合市场观点与量化投资 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 现代投资组合理论的局限

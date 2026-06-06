@@ -1,10 +1,11 @@
 ---
-title: "算法交易执行策略：VWAP、TWAP与POV"
+title: 算法交易执行策略：VWAP、TWAP与POV
 publishDate: '2026-06-05'
-description: "算法交易执行策略：VWAP、TWAP与POV - halo的技术博客"
+description: 算法交易执行策略：VWAP、TWAP与POV - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 算法交易执行：从理想到现实

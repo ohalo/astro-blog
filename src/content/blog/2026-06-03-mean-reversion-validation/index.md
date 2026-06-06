@@ -1,10 +1,11 @@
 ---
-title: "统计套利中的均值回归验证：ADF检验、Hurst指数与协整分析实战"
+title: 统计套利中的均值回归验证：ADF检验、Hurst指数与协整分析实战
 publishDate: '2026-06-03'
-description: "统计套利中的均值回归验证：ADF检验、Hurst指数与协整分析实战 - halo的技术博客"
+description: 统计套利中的均值回归验证：ADF检验、Hurst指数与协整分析实战 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：均值回归的量化验证

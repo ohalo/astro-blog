@@ -1,10 +1,11 @@
 ---
-title: "跨资产统计套利：股票、债券、商品的均值回归机会"
+title: 跨资产统计套利：股票、债券、商品的均值回归机会
 publishDate: '2026-06-02'
-description: "跨资产统计套利 - halo的技术博客"
+description: 跨资产统计套利 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 传统统计套利的局限

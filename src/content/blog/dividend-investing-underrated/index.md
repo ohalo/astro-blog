@@ -1,10 +1,11 @@
 ---
-title: "股息投资被低估了：一个被A股投资者忽视的收益来源"
+title: 股息投资被低估了：一个被A股投资者忽视的收益来源
 publishDate: '2026-05-19'
-description: "A股投资者普遍忽视股息收益。本文从行为金融学角度，聊聊为什么收息策略是普通人最容易执行的长期投资方式。"
+description: A股投资者普遍忽视股息收益。本文从行为金融学角度，聊聊为什么收息策略是普通人最容易执行的长期投资方式。
 tags:
   - 投资理财
 language: Chinese
+difficulty: beginner
 ---
 
 ![股息投资](/images/dividend-investing-underrated/01.jpg)

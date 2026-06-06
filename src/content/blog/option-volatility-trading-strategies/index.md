@@ -1,10 +1,11 @@
 ---
-title: "期权波动率交易策略：从Delta中性到备兑开仓"
+title: 期权波动率交易策略：从Delta中性到备兑开仓
 publishDate: '2026-06-06'
-description: "期权波动率交易策略：从Delta中性到备兑开仓 - halo的技术博客"
+description: 期权波动率交易策略：从Delta中性到备兑开仓 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 期权波动率交易的核心逻辑

@@ -1,12 +1,12 @@
 ---
-title: "行为金融学在量化策略中的应用：捕捉散户情绪与认知偏差"
-publishDate: 2026-06-05
-description: "行为金融学在量化策略中的应用：捕捉散户情绪与认知偏差 - halo的技术博客"
+title: 行为金融学在量化策略中的应用：捕捉散户情绪与认知偏差
+publishDate: 2026-06-05T00:00:00.000Z
+description: 行为金融学在量化策略中的应用：捕捉散户情绪与认知偏差 - halo的技术博客
 tags:
- - 量化交易
- - 量化专栏
   - 量化交易
+  - 量化专栏 - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：当学术理论遇见真金白银

@@ -1,10 +1,11 @@
 ---
-title: "高频交易与微结构：订单流与限价订单簿的深度解析"
+title: 高频交易与微结构：订单流与限价订单簿的深度解析
 publishDate: '2026-06-06'
-description: "高频交易与微结构：订单流与限价订单簿的深度解析 - halo的技术博客"
+description: 高频交易与微结构：订单流与限价订单簿的深度解析 - halo的技术博客
 tags:
   - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言

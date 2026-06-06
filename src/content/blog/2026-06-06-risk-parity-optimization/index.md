@@ -1,10 +1,11 @@
 ---
-title: "风险平价策略的实战优化：从理论到A股实盘"
+title: 风险平价策略的实战优化：从理论到A股实盘
 publishDate: '2026-06-06'
-description: "风险平价策略实战优化 - halo的技术博客"
+description: 风险平价策略实战优化 - halo的技术博客
 tags:
   - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言

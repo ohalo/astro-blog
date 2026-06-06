@@ -1,10 +1,11 @@
 ---
-title: "风险平价策略：超越传统资产配置的量化解决方案"
+title: 风险平价策略：超越传统资产配置的量化解决方案
 publishDate: '2026-06-04'
-description: "风险平价策略 - halo的技术博客"
+description: 风险平价策略 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 风险平价策略：超越传统资产配置的量化解决方案

@@ -1,10 +1,11 @@
 ---
-title: "另类数据在量化投资中的应用：从卫星图像到社交媒体"
+title: 另类数据在量化投资中的应用：从卫星图像到社交媒体
 publishDate: '2026-06-06'
-description: "另类数据在量化投资中的应用：从卫星图像到社交媒体 - halo的技术博客"
+description: 另类数据在量化投资中的应用：从卫星图像到社交媒体 - halo的技术博客
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

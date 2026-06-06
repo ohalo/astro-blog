@@ -1,10 +1,11 @@
 ---
-title: "XGBoost vs LightGBM：梯度提升在量化选股中的巅峰对决"
+title: XGBoost vs LightGBM：梯度提升在量化选股中的巅峰对决
 publishDate: '2026-06-03'
-description: "XGBoost vs LightGBM：梯度提升在量化选股中的巅峰对决 - halo的技术博客"
+description: XGBoost vs LightGBM：梯度提升在量化选股中的巅峰对决 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：树模型双雄的量化之争

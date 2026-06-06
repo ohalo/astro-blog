@@ -1,10 +1,11 @@
 ---
-title: "机器学习在量化交易中的应用：从LSTM到集成学习"
+title: 机器学习在量化交易中的应用：从LSTM到集成学习
 publishDate: '2026-06-02'
-description: "机器学习在量化交易中的应用：从LSTM到集成学习 - halo的技术博客"
+description: 机器学习在量化交易中的应用：从LSTM到集成学习 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 机器学习重塑量化投资

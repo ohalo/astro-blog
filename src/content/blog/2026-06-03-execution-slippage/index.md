@@ -1,10 +1,11 @@
 ---
-title: "交易执行中的滑点控制：从限价单到智能路由"
+title: 交易执行中的滑点控制：从限价单到智能路由
 publishDate: '2026-06-03'
-description: "交易执行中的滑点控制：从限价单到智能路由 - halo的技术博客"
+description: 交易执行中的滑点控制：从限价单到智能路由 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 滑点：量化交易的隐形杀手

@@ -1,10 +1,11 @@
 ---
-title: "风险平价策略在中国A股的实证与优化"
+title: 风险平价策略在中国A股的实证与优化
 publishDate: '2026-06-06'
-description: "风险平价策略在中国A股的实证与优化 - halo的技术博客"
+description: 风险平价策略在中国A股的实证与优化 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 风险平价策略的核心逻辑

@@ -1,10 +1,11 @@
 ---
-title: "VaR与CVaR实战：量化风险管理的双剑合璧"
+title: VaR与CVaR实战：量化风险管理的双剑合璧
 publishDate: '2026-06-02'
-description: "VaR与CVaR实战：量化风险管理的双剑合璧 - halo的技术博客"
+description: VaR与CVaR实战：量化风险管理的双剑合璧 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 风险管理的核心命题

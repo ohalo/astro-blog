@@ -1,10 +1,11 @@
 ---
-title: "算法交易执行实战：VWAP、TWAP与智能路由的深度解析"
+title: 算法交易执行实战：VWAP、TWAP与智能路由的深度解析
 publishDate: '2026-06-07'
-description: "算法交易执行实战：VWAP、TWAP与智能路由的深度解析 - halo的技术博客"
+description: 算法交易执行实战：VWAP、TWAP与智能路由的深度解析 - halo的技术博客
 tags:
   - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言

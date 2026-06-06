@@ -1,10 +1,11 @@
 ---
-title: "备兑开仓策略：用期权增强收益的稳健之道"
+title: 备兑开仓策略：用期权增强收益的稳健之道
 publishDate: '2026-06-04'
-description: "备兑开仓策略：用期权增强收益的稳健之道 - halo的技术博客"
+description: 备兑开仓策略：用期权增强收益的稳健之道 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 什么是备兑开仓（Covered Call）？

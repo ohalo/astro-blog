@@ -1,10 +1,11 @@
 ---
-title: "Python量化工具链全景：Backtrader、Zipline、vnpy该选哪个？"
+title: Python量化工具链全景：Backtrader、Zipline、vnpy该选哪个？
 publishDate: '2026-06-01'
-description: "深入对比Backtrader、Zipline、vnpy等主流Python量化框架的优缺点，帮助你根据使用场景选择合适的工具链。"
+description: 深入对比Backtrader、Zipline、vnpy等主流Python量化框架的优缺点，帮助你根据使用场景选择合适的工具链。
 tags:
   - 量化交易
 language: Chinese
+difficulty: beginner
 ---
 
 如果你刚入门量化交易，第一个问题很可能是："我用哪个框架？"

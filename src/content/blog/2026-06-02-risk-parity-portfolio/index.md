@@ -1,10 +1,11 @@
 ---
-title: "风险平价策略：超越马科维茨的投资组合革命"
+title: 风险平价策略：超越马科维茨的投资组合革命
 publishDate: '2026-06-02'
-description: "风险平价策略：超越马科维茨的投资组合革命 - halo的技术博客"
+description: 风险平价策略：超越马科维茨的投资组合革命 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 从马科维茨到风险平价

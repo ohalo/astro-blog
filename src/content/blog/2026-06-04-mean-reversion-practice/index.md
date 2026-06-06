@@ -1,10 +1,11 @@
 ---
-title: "均值回归统计套利：从理论到实战的完整流程"
+title: 均值回归统计套利：从理论到实战的完整流程
 publishDate: '2026-06-04'
-description: "均值回归统计套利：从理论到实战的完整流程 - halo的技术博客"
+description: 均值回归统计套利：从理论到实战的完整流程 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 什么是均值回归？

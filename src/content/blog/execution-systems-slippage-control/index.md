@@ -1,12 +1,13 @@
 ---
-title: "实盘交易系统：执行算法与滑点控制"
+title: 实盘交易系统：执行算法与滑点控制
 publishDate: '2026-06-05'
-description: "实盘交易系统：执行算法与滑点控制 - halo的技术博客"
+description: 实盘交易系统：执行算法与滑点控制 - halo的技术博客
 tags:
- - 量化交易
- - 量化专栏
- - 量化交易
+  - 量化交易
+  - 量化专栏
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 从回测到实盘：残酷的现实

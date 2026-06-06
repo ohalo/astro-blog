@@ -1,10 +1,11 @@
 ---
-title: "Transformer股价预测实战：Attention机制能否捕捉市场时序依赖？"
+title: Transformer股价预测实战：Attention机制能否捕捉市场时序依赖？
 publishDate: '2026-06-04'
-description: "Transformer股价预测实战：Attention机制能否捕捉市场时序依赖？ - halo的技术博客"
+description: Transformer股价预测实战：Attention机制能否捕捉市场时序依赖？ - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 当Transformer遇见股价预测

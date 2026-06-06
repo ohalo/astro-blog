@@ -1,10 +1,11 @@
 ---
-title: "行为金融学量化应用：捕捉市场非理性带来的Alpha机会"
+title: 行为金融学量化应用：捕捉市场非理性带来的Alpha机会
 publishDate: '2026-06-04'
-description: "行为金融学量化应用：捕捉市场非理性带来的Alpha机会 - halo的技术博客"
+description: 行为金融学量化应用：捕捉市场非理性带来的Alpha机会 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 当量化遇见行为金融

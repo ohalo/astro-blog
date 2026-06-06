@@ -1,10 +1,11 @@
 ---
-title: "期权策略进阶：Delta中性与备兑开仓实战"
+title: 期权策略进阶：Delta中性与备兑开仓实战
 publishDate: '2026-06-02'
-description: "期权策略进阶：Delta中性与备兑开仓实战 - halo的技术博客"
+description: 期权策略进阶：Delta中性与备兑开仓实战 - halo的技术博客
 tags:
- - 量化交易
+  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 期权不是赌博，是数学
