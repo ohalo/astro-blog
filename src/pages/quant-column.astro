@@ -1,19 +1,14 @@
 ---
-import SimpleLayout from '../layouts/SimpleLayout.astro';
 import { getCollection } from 'astro:content';
 
-let allPosts = [];
-let quantPosts = [];
 let uncategorizedPosts = [];
 let errorMsg = null;
 
 try {
-  // 获取所有博客文章
-  allPosts = await getCollection('blog');
+  const allPosts = await getCollection('blog');
   console.log('Total posts:', allPosts.length);
   
-  // 过滤量化相关文章（通过标签判断）
-  quantPosts = allPosts.filter(post => 
+  const quantPosts = allPosts.filter(post => 
     post.data.tags?.some(tag => 
       tag.includes('量化') || 
       tag.includes('quant') ||
@@ -23,22 +18,31 @@ try {
   );
   console.log('Quant posts:', quantPosts.length);
   
-  // 只获取未分类文章
   uncategorizedPosts = quantPosts.filter(post => !post.data.difficulty);
-  
   console.log('Uncategorized:', uncategorizedPosts.length);
 } catch (e) {
   errorMsg = e.message;
   console.error('Error:', e);
 }
-
-const title = '量化专栏 - 简化版 v16';
-const description = '只显示一个分类（未分类）';
 ---
 
-<SimpleLayout title={title} description={description}>
-  <h1>量化专栏 - 简化版 v16</h1>
-  <p>测试：只显示一个分类，减少复杂度</p>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>量化专栏 - 无 Layout 测试</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 0 auto; padding: 2rem 1rem; }
+    h1 { color: #333; }
+    .article { padding: 1rem; border: 1px solid #e9ecef; border-radius: 8px; margin-bottom: 1rem; }
+    .article a { color: #667eea; text-decoration: none; font-weight: bold; }
+    .desc { color: #666; font-size: 0.9rem; margin: 0.5rem 0; }
+    .date { color: #999; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <h1>📊 量化专栏 - 无 Layout 测试 v17</h1>
+  <p>测试：不使用 SimpleLayout，直接用纯 HTML</p>
   
   {errorMsg && (
     <div style="background: #fee; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
@@ -48,23 +52,19 @@ const description = '只显示一个分类（未分类）';
   )}
   
   {!errorMsg && (
-    <div style="background: #efe; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+    <div>
       <h2>✅ 数据获取成功</h2>
-      <p>总文章数: {allPosts.length}</p>
-      <p>量化相关文章: {quantPosts.length}</p>
-      <p>未分类文章: {uncategorizedPosts.length}</p>
+      <p>未分类文章数: {uncategorizedPosts.length}</p>
       
       <hr style="margin: 1rem 0;" />
       
-      <h3>未分类文章列表</h3>
-      <div style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+      <h3>未分类文章列表（前10篇）</h3>
+      <div>
         {uncategorizedPosts.slice(0, 10).map(post => (
-          <div style="padding: 1rem; border: 1px solid #e9ecef; border-radius: 8px;">
-            <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">
-              <a href={`/blog/${post.id}/`} style="color: #333; text-decoration: none;">{post.data.title}</a>
-            </h3>
-            <p style="color: #666; font-size: 0.9rem; margin-bottom: 0.5rem;">{post.data.description}</p>
-            <small style="color: #999;">{post.data.pubDate.toISOString().split('T')[0]}</small>
+          <div class="article">
+            <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+            <p class="desc">{post.data.description}</p>
+            <small class="date">{post.data.pubDate.toISOString().split('T')[0]}</small>
           </div>
         ))}
       </div>
@@ -72,4 +72,5 @@ const description = '只显示一个分类（未分类）';
   )}
   
   <a href="/" style="display: inline-block; margin-top: 2rem;">← 返回首页</a>
-</SimpleLayout>
+</body>
+</html>
