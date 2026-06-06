@@ -5,7 +5,7 @@
 export interface ColumnArticle {
   slug: string;
   title: string;
-  difficulty: "beginner' | 'intermediate' | 'advanced";
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
   difficultyLabel: string;
   description: string;
   publishDate: string;
