@@ -1,4 +1,5 @@
 ---
+difficulty: intermediate
 title: "量化研究员的一天：从因子挖掘到实盘风控的完整链路"
 publishDate: '2026-06-06'
 description: "量化研究员的一天：从因子挖掘到实盘风控的完整链路 - halo的技术博客"

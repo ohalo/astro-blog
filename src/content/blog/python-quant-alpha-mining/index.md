@@ -1,4 +1,5 @@
 ---
+difficulty: beginner
 title: "Python量化实战：用机器学习挖掘Alpha因子"
 publishDate: '2026-06-06'
 description: "Python量化实战：用机器学习挖掘Alpha因子 - halo的技术博客"
