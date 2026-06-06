@@ -74,9 +74,10 @@ const description = '简化模板，只显示统计';
       <h3>未分类文章（前5篇）</h3>
       <ul>
         {uncategorizedPosts.slice(0, 5).map(post => (
-          <li>
-            <a href={`/blog/${post.id}/`}>{post.data.title}</a>
-            <br /><small>ID: {post.id}</small>
+          <li style="margin-bottom: 1rem; padding: 1rem; border: 1px solid #e9ecef; border-radius: 8px;">
+            <a href={`/blog/${post.id}/`} style="font-size: 1.1rem; font-weight: bold; color: #333; text-decoration: none;">{post.data.title}</a>
+            <p style="color: #666; margin: 0.5rem 0; font-size: 0.9rem;">{post.data.description}</p>
+            <small style="color: #999;">发布日期: {post.data.pubDate.toISOString().split('T')[0]}</small>
           </li>
         ))}
       </ul>
