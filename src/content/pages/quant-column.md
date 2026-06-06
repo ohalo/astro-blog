@@ -10,6 +10,9 @@ layout: page
 
 ## 最新文章
 
+- [2026-06-06 - 风险平价策略的实战优化：从理论到A股实盘](/blog/2026-06-06-risk-parity-optimization/) - 深入探讨风险平价策略在A股的实战优化方案，包括动态波动率目标、相关性断裂处理和流动性约束
+- [2026-06-06 - 强化学习交易Agent：从DQN到PPO的完整实战](/blog/2026-06-06-reinforcement-learning-trading/) - 手把手教你构建基于PPO算法的交易Agent，并在A股市场中验证其性能
+
 - [2026-06-06 - LSTM神经网络在股票价格预测中的应用与局限](/blog/lstm-stock-prediction-deep-learning/) - 深入探讨LSTM的原理、在量化投资中的应用场景，以及实际操作中需要注意的陷阱
 - [2026-06-06 - 行为金融学：散户心理偏差如何制造市场异象](/blog/behavioral-finance-retail-investor/) - 深入探讨散户常见的心理偏差，以及量化投资者如何利用这些市场异象获取超额收益
 
