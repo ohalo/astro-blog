@@ -41,12 +41,13 @@ try {
   console.error('Error:', e);
 }
 
-const title = '量化专栏 - 完整版（调试中）';
-const description = '逐步调试完整模板';
+const title = '量化专栏 - 测试 v10';
+const description = '简化模板，只显示统计';
 ---
 
 <SimpleLayout title={title} description={description}>
-  <h1>量化专栏 - 完整版（调试中）</h1>
+  <h1>量化专栏 - 测试 v10</h1>
+  <p>简化模板：只显示统计，不渲染文章列表</p>
   
   {errorMsg && (
     <div style="background: #fee; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
@@ -56,32 +57,19 @@ const description = '逐步调试完整模板';
   )}
   
   {!errorMsg && (
-    <>
+    <div style="background: #efe; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
       <h2>✅ 数据获取成功</h2>
       <p>总文章数: {allPosts.length}</p>
       <p>量化相关文章: {quantPosts.length}</p>
-      <hr />
-      <h3>分类统计</h3>
-      <ul>
-        <li>🌱 入门: {beginnerPosts.length} 篇</li>
-        <li>📈 进阶: {intermediatePosts.length} 篇</li>
-        <li>🚀 高阶: {advancedPosts.length} 篇</li>
-        <li>📚 未分类: {uncategorizedPosts.length} 篇</li>
-      </ul>
+      <hr style="margin: 1rem 0;" />
+      <p>🌱 入门: {beginnerPosts.length} 篇</p>
+      <p>📈 进阶: {intermediatePosts.length} 篇</p>
+      <p>🚀 高阶: {advancedPosts.length} 篇</p>
+      <p>📚 未分类: {uncategorizedPosts.length} 篇</p>
       
-      <hr />
-      <h3>未分类文章列表（前10篇）</h3>
-      <ul>
-        {uncategorizedPosts.slice(0, 10).map(post => (
-          <li>
-            <strong>{post.data.title}</strong><br />
-            <small>发布日期: {post.data.pubDate.toISOString().split('T')[0]}</small><br />
-            <small>标签: {post.data.tags?.join(', ')}</small><br />
-            <small>difficulty字段: {post.data.difficulty || '未设置'}</small>
-          </li>
-        ))}
-      </ul>
-    </>
+      <hr style="margin: 1rem 0;" />
+      <p><strong>下一步：</strong>如果此页面正常显示，再逐步添加文章列表。</p>
+    </div>
   )}
   
   <a href="/" style="display: inline-block; margin-top: 2rem;">← 返回首页</a>
