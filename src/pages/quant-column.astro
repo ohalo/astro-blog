@@ -1,20 +1,37 @@
 ---
 import SimpleLayout from '../layouts/SimpleLayout.astro';
+import { getCollection } from 'astro:content';
 
-const title = '量化专栏 - 调试 v6';
-const description = '测试页面渲染';
+let allPosts = [];
+let errorMsg = null;
+
+try {
+  allPosts = await getCollection('blog');
+} catch (e) {
+  errorMsg = e.message;
+}
+
+const title = '量化专栏 - 调试 v7';
+const description = '测试 getCollection';
 ---
 
 <SimpleLayout title={title} description={description}>
-  <h1>量化专栏 - 调试版本 v6</h1>
-  <p>如果你看到这个页面，说明基础渲染正常。</p>
+  <h1>量化专栏 - 调试版本 v7</h1>
+  <p>测试 getCollection('blog')...</p>
   
-  <div style="background: #f0f0f0; padding: 1rem; margin: 1rem 0; border-radius: 8px;">
-    <h2>调试信息</h2>
-    <p>✅ SimpleLayout 导入成功</p>
-    <p>✅ 页面渲染成功</p>
-    <p>⏳ 等待添加 getCollection...</p>
-  </div>
+  {errorMsg && (
+    <div style="background: #fee; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+      <h2>❌ 错误</h2>
+      <p>{errorMsg}</p>
+    </div>
+  )}
+  
+  {!errorMsg && (
+    <div style="background: #efe; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+      <h2>✅ getCollection 成功</h2>
+      <p>获取到 {allPosts.length} 篇文章</p>
+    </div>
+  )}
   
   <a href="/" style="display: inline-block; margin-top: 2rem;">← 返回首页</a>
 </SimpleLayout>
