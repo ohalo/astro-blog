@@ -3,21 +3,36 @@ import SimpleLayout from '../layouts/SimpleLayout.astro';
 import { getCollection } from 'astro:content';
 
 let allPosts = [];
+let quantPosts = [];
 let errorMsg = null;
 
 try {
+  // 获取所有博客文章
   allPosts = await getCollection('blog');
+  console.log('Total posts:', allPosts.length);
+  
+  // 过滤量化相关文章（通过标签判断）
+  quantPosts = allPosts.filter(post => 
+    post.data.tags?.some(tag => 
+      tag.includes('量化') || 
+      tag.includes('quant') ||
+      tag.includes('交易') ||
+      tag.includes('投资')
+    )
+  );
+  console.log('Quant posts:', quantPosts.length);
 } catch (e) {
   errorMsg = e.message;
+  console.error('Error:', e);
 }
 
-const title = '量化专栏 - 调试 v7';
-const description = '测试 getCollection';
+const title = '量化专栏 - 调试 v8';
+const description = '测试过滤量化文章';
 ---
 
 <SimpleLayout title={title} description={description}>
-  <h1>量化专栏 - 调试版本 v7</h1>
-  <p>测试 getCollection('blog')...</p>
+  <h1>量化专栏 - 调试版本 v8</h1>
+  <p>测试过滤量化相关文章...</p>
   
   {errorMsg && (
     <div style="background: #fee; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
@@ -28,8 +43,9 @@ const description = '测试 getCollection';
   
   {!errorMsg && (
     <div style="background: #efe; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-      <h2>✅ getCollection 成功</h2>
-      <p>获取到 {allPosts.length} 篇文章</p>
+      <h2>✅ 过滤成功</h2>
+      <p>总文章数: {allPosts.length}</p>
+      <p>量化相关文章: {quantPosts.length}</p>
     </div>
   )}
   
