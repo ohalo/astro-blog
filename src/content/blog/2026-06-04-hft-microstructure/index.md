@@ -5,6 +5,7 @@ description: "深入解析高频交易中的订单簿微观结构，探讨限价
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 订单簿：市场的"心跳监测仪"

@@ -8,6 +8,7 @@ const blog = defineCollection({
     description: z.string(),
     tags: z.array(z.string()),
     language: z.string(),
+    difficulty: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
   }),
 });
 
