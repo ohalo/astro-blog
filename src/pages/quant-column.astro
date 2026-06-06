@@ -63,8 +63,8 @@ try {
         {uncategorizedPosts.slice(0, 10).map(post => (
           <div class="article">
             <a href={`/blog/${post.id}/`}>{post.data.title}</a>
-            <p class="desc">{post.data.description}</p>
-            <small class="date">{post.data.pubDate.toISOString().split('T')[0]}</small>
+            <p class="desc">{post.data.description || '暂无描述'}</p>
+            <small class="date">{post.data.pubDate?.toISOString().split('T')[0] || '未知日期'}</small>
           </div>
         ))}
       </div>
