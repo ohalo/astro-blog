@@ -4,6 +4,10 @@ import { getCollection } from 'astro:content';
 
 let allPosts = [];
 let quantPosts = [];
+let beginnerPosts = [];
+let intermediatePosts = [];
+let advancedPosts = [];
+let uncategorizedPosts = [];
 let errorMsg = null;
 
 try {
@@ -21,18 +25,29 @@ try {
     )
   );
   console.log('Quant posts:', quantPosts.length);
+  
+  // 按难度分类
+  beginnerPosts = quantPosts.filter(post => post.data.difficulty === 'beginner');
+  intermediatePosts = quantPosts.filter(post => post.data.difficulty === 'intermediate');
+  advancedPosts = quantPosts.filter(post => post.data.difficulty === 'advanced');
+  uncategorizedPosts = quantPosts.filter(post => !post.data.difficulty);
+  
+  console.log('Beginner:', beginnerPosts.length);
+  console.log('Intermediate:', intermediatePosts.length);
+  console.log('Advanced:', advancedPosts.length);
+  console.log('Uncategorized:', uncategorizedPosts.length);
 } catch (e) {
   errorMsg = e.message;
   console.error('Error:', e);
 }
 
-const title = '量化专栏 - 调试 v8';
-const description = '测试过滤量化文章';
+const title = '量化专栏 - 调试 v9';
+const description = '测试分类逻辑';
 ---
 
 <SimpleLayout title={title} description={description}>
-  <h1>量化专栏 - 调试版本 v8</h1>
-  <p>测试过滤量化相关文章...</p>
+  <h1>量化专栏 - 调试版本 v9</h1>
+  <p>测试按难度分类...</p>
   
   {errorMsg && (
     <div style="background: #fee; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
@@ -43,9 +58,14 @@ const description = '测试过滤量化文章';
   
   {!errorMsg && (
     <div style="background: #efe; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-      <h2>✅ 过滤成功</h2>
+      <h2>✅ 分类成功</h2>
       <p>总文章数: {allPosts.length}</p>
       <p>量化相关文章: {quantPosts.length}</p>
+      <hr style="margin: 1rem 0;" />
+      <p>🌱 入门: {beginnerPosts.length} 篇</p>
+      <p>📈 进阶: {intermediatePosts.length} 篇</p>
+      <p>🚀 高阶: {advancedPosts.length} 篇</p>
+      <p>📚 未分类: {uncategorizedPosts.length} 篇</p>
     </div>
   )}
   
