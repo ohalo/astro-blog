@@ -69,6 +69,14 @@ const description = '简化模板，只显示统计';
       
       <hr style="margin: 1rem 0;" />
       <p><strong>下一步：</strong>如果此页面正常显示，再逐步添加文章列表。</p>
+      
+      <hr style="margin: 1rem 0;" />
+      <h3>未分类文章（前5篇）</h3>
+      <ul>
+        {uncategorizedPosts.slice(0, 5).map(post => (
+          <li>{post.data.title}</li>
+        ))}
+      </ul>
     </div>
   )}
   
