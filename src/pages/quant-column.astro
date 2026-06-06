@@ -41,48 +41,266 @@ try {
   console.error('Error:', e);
 }
 
-const title = '量化专栏 - 测试 v10';
-const description = '简化模板，只显示统计';
+const title = '量化交易专栏';
+const description = '系统化的量化投资学习路径：从入门到高阶';
 ---
 
 <SimpleLayout title={title} description={description}>
-  <h1>量化专栏 - 测试 v10</h1>
-  <p>简化模板：只显示统计，不渲染文章列表</p>
-  
-  {errorMsg && (
-    <div style="background: #fee; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-      <h2>❌ 错误</h2>
-      <p>{errorMsg}</p>
+  <div class="quant-column">
+    <div class="header">
+      <h1>📊 量化交易专栏</h1>
+      <p class="subtitle">系统化的量化投资学习路径</p>
     </div>
-  )}
-  
-  {!errorMsg && (
-    <div style="background: #efe; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-      <h2>✅ 数据获取成功</h2>
-      <p>总文章数: {allPosts.length}</p>
-      <p>量化相关文章: {quantPosts.length}</p>
-      <hr style="margin: 1rem 0;" />
-      <p>🌱 入门: {beginnerPosts.length} 篇</p>
-      <p>📈 进阶: {intermediatePosts.length} 篇</p>
-      <p>🚀 高阶: {advancedPosts.length} 篇</p>
-      <p>📚 未分类: {uncategorizedPosts.length} 篇</p>
-      
-      <hr style="margin: 1rem 0;" />
-      <p><strong>下一步：</strong>如果此页面正常显示，再逐步添加文章列表。</p>
-      
-      <hr style="margin: 1rem 0;" />
-      <h3>未分类文章（前5篇）</h3>
-      <ul>
-        {uncategorizedPosts.slice(0, 5).map(post => (
-          <li style="margin-bottom: 1rem; padding: 1rem; border: 1px solid #e9ecef; border-radius: 8px;">
-            <a href={`/blog/${post.id}/`} style="font-size: 1.1rem; font-weight: bold; color: #333; text-decoration: none;">{post.data.title}</a>
-            <p style="color: #666; margin: 0.5rem 0; font-size: 0.9rem;">{post.data.description}</p>
-            <small style="color: #999;">发布日期: {post.data.pubDate.toISOString().split('T')[0]}</small>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )}
-  
-  <a href="/" style="display: inline-block; margin-top: 2rem;">← 返回首页</a>
+
+    {errorMsg && (
+      <div class="error-box">
+        <h2>❌ 错误</h2>
+        <p>{errorMsg}</p>
+      </div>
+    )}
+
+    {!errorMsg && (
+      <>
+        <div class="stats">
+          <div class="stat-item">
+            <span class="stat-number">{quantPosts.length}</span>
+            <span class="stat-label">篇文章</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{beginnerPosts.length}</span>
+            <span class="stat-label">入门</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{intermediatePosts.length}</span>
+            <span class="stat-label">进阶</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number">{advancedPosts.length}</span>
+            <span class="stat-label">高阶</span>
+          </div>
+        </div>
+
+        {beginnerPosts.length > 0 && (
+          <section class="category">
+            <h2>🌱 入门：量化交易基础</h2>
+            <p class="category-desc">适合初学者的量化交易概念和工具</p>
+            <div class="article-list">
+              {beginnerPosts.map(post => (
+                <a href={`/blog/${post.id}/`} class="article-item">
+                  <h3>{post.data.title}</h3>
+                  <p>{post.data.description}</p>
+                  <div class="article-meta">
+                    <span class="date">{post.data.pubDate.toISOString().split('T')[0]}</span>
+                    {post.data.tags && (
+                      <span class="tags">{post.data.tags.slice(0, 3).join(', ')}</span>
+                    )}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {intermediatePosts.length > 0 && (
+          <section class="category">
+            <h2>📈 进阶：策略开发与回测</h2>
+            <p class="category-desc">因子挖掘、策略设计、风险控制</p>
+            <div class="article-list">
+              {intermediatePosts.map(post => (
+                <a href={`/blog/${post.id}/`} class="article-item">
+                  <h3>{post.data.title}</h3>
+                  <p>{post.data.description}</p>
+                  <div class="article-meta">
+                    <span class="date">{post.data.pubDate.toISOString().split('T')[0]}</span>
+                    {post.data.tags && (
+                      <span class="tags">{post.data.tags.slice(0, 3).join(', ')}</span>
+                    )}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {advancedPosts.length > 0 && (
+          <section class="category">
+            <h2>🚀 高阶：实盘交易与高级策略</h2>
+            <p class="category-desc">高频交易、机器学习、组合优化</p>
+            <div class="article-list">
+              {advancedPosts.map(post => (
+                <a href={`/blog/${post.id}/`} class="article-item">
+                  <h3>{post.data.title}</h3>
+                  <p>{post.data.description}</p>
+                  <div class="article-meta">
+                    <span class="date">{post.data.pubDate.toISOString().split('T')[0]}</span>
+                    {post.data.tags && (
+                      <span class="tags">{post.data.tags.slice(0, 3).join(', ')}</span>
+                    )}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {uncategorizedPosts.length > 0 && (
+          <section class="category">
+            <h2>📚 未分类</h2>
+            <p class="category-desc">等待分类的量化文章（请在 frontmatter 中添加 difficulty 字段）</p>
+            <div class="article-list">
+              {uncategorizedPosts.map(post => (
+                <a href={`/blog/${post.id}/`} class="article-item">
+                  <h3>{post.data.title}</h3>
+                  <p>{post.data.description}</p>
+                  <div class="article-meta">
+                    <span class="date">{post.data.pubDate.toISOString().split('T')[0]}</span>
+                    {post.data.tags && (
+                      <span class="tags">{post.data.tags.slice(0, 3).join(', ')}</span>
+                    )}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+      </>
+    )}
+  </div>
 </SimpleLayout>
+
+<style>
+  .quant-column {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  .header {
+    text-align: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 3rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 3rem;
+  }
+
+  .header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+
+  .stats {
+    display: flex;
+    justify-content: space-around;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 3rem;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #667eea;
+  }
+
+  .stat-label {
+    color: #666;
+    font-size: 0.9rem;
+  }
+
+  .category {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+  }
+
+  .category h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid #667eea;
+  }
+
+  .category-desc {
+    color: #666;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+  }
+
+  .article-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .article-item {
+    display: block;
+    padding: 1.5rem;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s;
+  }
+
+  .article-item:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .article-item h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+
+  .article-item p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 0.8rem;
+  }
+
+  .article-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: #999;
+  }
+
+  .tags {
+    color: #667eea;
+  }
+
+  .error-box {
+    background: #fee;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
+
+  @media (max-width: 768px) {
+    .stats {
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+    }
+  }
+</style>
