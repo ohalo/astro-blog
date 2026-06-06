@@ -5,7 +5,7 @@
 export interface ColumnArticle {
   slug: string;
   title: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: "beginner' | 'intermediate' | 'advanced";
   difficultyLabel: string;
   description: string;
   publishDate: string;
@@ -789,10 +789,10 @@ export const quantColumnArticles: ColumnArticle[] = [
   },
   {
     slug: '2026-06-03-market-microstructure-noise',
-    title: '市场微观结构噪声：高频数据中的'不完美'真相',
+    title: "市场微观结构噪声：高频数据中的\'不完美\'真相",
     difficulty: 'advanced',
     difficultyLabel: '高级',
-    description: '市场微观结构噪声：高频数据中的'不完美'真相',
+    description: "市场微观结构噪声：高频数据中的\'不完美\'真相",
     publishDate: '2026-06-03',
     estimatedReadTime: 10
   },
@@ -834,19 +834,19 @@ export const quantColumnArticles: ColumnArticle[] = [
   },
   {
     slug: '2026-06-06-order-flow-strategy',
-    title: '订单流交易策略：读懂市场的'心跳图谱'',
+    title: "订单流交易策略：读懂市场的'心跳图谱'",
     difficulty: 'advanced',
     difficultyLabel: '高级',
-    description: '订单流交易策略：读懂市场的'心跳图谱'',
+    description: "订单流交易策略：读懂市场的'心跳图谱'",
     publishDate: '2026-06-03',
     estimatedReadTime: 10
   },
   {
     slug: '2026-06-06-pairs-trading-cointegration',
-    title: '配对交易协整检验：用数学锁定市场中的'隐形天平'',
+    title: "配对交易协整检验：用数学锁定市场中的'隐形天平'",
     difficulty: 'advanced',
     difficultyLabel: '高级',
-    description: '配对交易协整检验：用数学锁定市场中的'隐形天平'',
+    description: "配对交易协整检验：用数学锁定市场中的'隐形天平'",
     publishDate: '2026-06-03',
     estimatedReadTime: 10
   },
@@ -1239,10 +1239,10 @@ export const quantColumnArticles: ColumnArticle[] = [
   },
   {
     slug: 'llm-small-model-strategies',
-    title: '大模型太贵？8种''大+小''组合策略，教你省下80%推理成本',
+    title: "大模型太贵？8种''大+小''组合策略，教你省下80%推理成本",
     difficulty: 'beginner',
     difficultyLabel: '入门',
-    description: '大模型太贵？8种''大+小''组合策略，教你省下80%推理成本',
+    description: "大模型太贵？8种''大+小''组合策略，教你省下80%推理成本",
     publishDate: '2026-04-22',
     estimatedReadTime: 10
   }
