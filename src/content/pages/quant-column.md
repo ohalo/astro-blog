@@ -10,6 +10,9 @@ layout: page
 
 ## 最新文章
 
+- [2026-06-09 - 配对交易实战：协整检验与价差交易策略构建](/blog/2026-06-09-pairs-trading-cointegration/) - 🟡 详解配对交易的协整检验方法、A股实战案例与风险注意事项（进阶）
+- [2026-06-09 - Black-Litterman模型在中国量化组合的改良应用](/blog/2026-06-09-black-litterman-china-improvement/) - 🟡 针对A股特性改良Black-Litterman模型，提升组合收益风险比（进阶）
+
 - [2026-06-10 - 交易执行算法实战：VWAP与TWAP策略详解](/blog/2026-06-10-execution-algo-vwap-twap/) - 🟡 深入解析VWAP和TWAP交易执行算法原理与实战应用（进阶）
 - [2026-06-10 - 强化学习在量化交易中的应用：从理论到实战](/blog/2026-06-10-rl-quant-trading/) - 🔴 探索强化学习如何革命性改变量化交易策略，从DQN到实盘部署（高阶）
 
