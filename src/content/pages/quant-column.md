@@ -10,11 +10,14 @@ layout: page
 
 ## 最新文章
 
-- [2026-06-09 - 配对交易实战：协整检验与价差交易策略构建](/blog/2026-06-09-pairs-trading-cointegration/) - 🟡 详解配对交易的协整检验方法、A股实战案例与风险注意事项（进阶）
-- [2026-06-09 - Black-Litterman模型在中国量化组合的改良应用](/blog/2026-06-09-black-litterman-china-improvement/) - 🟡 针对A股特性改良Black-Litterman模型，提升组合收益风险比（进阶）
+- [2026-06-10 - 期权波动率交易实战：从GARCH预测到Vega对冲](/blog/2026-06-10-option-volatility-trading/) - 🟡 详解GARCH模型预测波动率、Vega对冲实战步骤与实盘注意事项（进阶）
+- [2026-06-10 - 高频做市商策略：库存管理与损益归因分析](/blog/2026-06-10-high-frequency-market-making/) - 🔴 深入解析做市商收益来源、Avellaneda-Stoikov库存管理模型与损益归因方法（高阶）
 
 - [2026-06-10 - 交易执行算法实战：VWAP与TWAP策略详解](/blog/2026-06-10-execution-algo-vwap-twap/) - 🟡 深入解析VWAP和TWAP交易执行算法原理与实战应用（进阶）
 - [2026-06-10 - 强化学习在量化交易中的应用：从理论到实战](/blog/2026-06-10-rl-quant-trading/) - 🔴 探索强化学习如何革命性改变量化交易策略，从DQN到实盘部署（高阶）
+
+- [2026-06-09 - 配对交易实战：协整检验与价差交易策略构建](/blog/2026-06-09-pairs-trading-cointegration/) - 🟡 详解配对交易的协整检验方法、A股实战案例与风险注意事项（进阶）
+- [2026-06-09 - Black-Litterman模型在中国量化组合的改良应用](/blog/2026-06-09-black-litterman-china-improvement/) - 🟡 针对A股特性改良Black-Litterman模型，提升组合收益风险比（进阶）
 
 - [2026-06-09 - 高频交易核心：订单流分析与限价订单簿解读](/blog/2026-06-09-hft-order-flow/) - 🔴 深入解析高频交易中的订单流分析技术，揭秘限价订单簿(LOB)的微结构特征（高阶）
 - [2026-06-09 - 另类数据：量化投资的新Alpha源泉](/blog/2026-06-09-alternative-data/) - 🟡 探索另类数据在量化投资中的应用，从卫星图像、社交媒体到信用卡数据（进阶）
