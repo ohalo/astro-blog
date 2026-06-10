@@ -10,6 +10,9 @@ layout: page
 
 ## 最新文章
 
+- [2026-06-11 - 行为偏差与量化策略：利用散户心理反转获利](/blog/behavioral-finance-quant-strategy/) - 🟡 深入探讨行为金融学中的过度自信、羊群效应、损失厌恶等偏差，以及如何构建量化策略利用这些心理陷阱获利（进阶）
+- [2026-06-11 - 社交媒体情绪在量化投资中的应用：从Twitter到投资决策](/blog/social-media-sentiment-quant-investment/) - 🟡 详解社交媒体情绪数据的获取、FinBERT情绪分析方法，以及基于Twitter/Reddit情绪的量化策略构建（进阶）
+
 - [2026-06-10 - 技术指标入门：威廉指标（W&R）完全指南](/blog/2026-06-10-williams-r-indicator-guide/) - 🟢 详细介绍威廉指标的含义、计算公式、基本用法和实战案例，帮助新手快速掌握这个超买超卖指标（入门）
 
 - [2026-02-26 - EMA计算公式详解：指数移动平均线完全指南](/blog/2026-02-26-ema-calculation-formula/) - 🟢 深入理解EMA计算公式、权重分配规律、Python实现及实战应用（入门）
