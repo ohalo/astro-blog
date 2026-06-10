@@ -8,6 +8,7 @@ tags:
   - 量化入门
   - 交易工具
 language: Chinese
+difficulty: beginner
 ---
 
 ## 为什么你需要量化工具？
