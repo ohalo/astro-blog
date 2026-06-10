@@ -14,6 +14,22 @@ language: Chinese
 
 ---
 
+## 📥 下载PDF版本
+
+为了方便离线阅读，我已将全文整理为PDF文件，你可以下载到本地：
+
+<div style="text-align: center; margin: 20px 0;">
+  <a href="/股票入门知识大全.pdf" download style="display: inline-block; padding: 12px 24px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold;">
+    📄 点击下载《股票入门知识大全》PDF
+  </a>
+</div>
+
+> **文件信息**：约2.2万字，30+表格，PDF大小约1.2MB
+
+---
+
+> **温馨提示**：PDF版本适合打印或在平板上阅读，排版更精美。
+
 ## 📚 学习路径建议
 
 **第一阶段：基础认知** → **第二阶段：交易规则** → **第三阶段：看懂界面** → **第四阶段：技术分析** → **第五阶段：投资策略** → **第六阶段：风险管理**
