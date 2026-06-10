@@ -10,6 +10,9 @@ layout: page
 
 ## 最新文章
 
+- [2026-06-11 - 配对交易与协整分析：统计套利的核心技术](/blog/2026-06-11-pairs-trading-cointegration/) - 🟡 深入探讨配对交易原理、协整检验方法、Z-Score信号生成及Python实战（进阶）
+- [2026-06-11 - LSTM神经网络在量化选股中的应用](/blog/2026-06-11-lstm-stock-selection/) - 🔴 详解LSTM原理、门控机制、量化选股实战及防止过拟合技巧（高阶）
+
 - [2026-06-11 - 低波因子在中国A股市场的有效性检验：防御性选股实战](/blog/2026-06-11-low-volatility-factor-china-empirical/) - 🟡 检验低波因子在A股的有效性，提供防御性选股实战框架（进阶）
 - [2026-06-11 - 另类数据新前沿：信用卡消费数据在量化投资中的应用](/blog/2026-06-11-credit-card-alternative-data-quant/) - 🟡 介绍信用卡消费数据的类型、处理方法与量化实战案例（进阶）
 - [2026-06-11 - 马科维茨均值方差模型：在中国A股市场的实证应用与改进](/blog/2026-06-11-portfolio-theory-markowitz/) - 🟡 深入探讨均值方差模型的核心原理、在中国A股市场的实证应用、改进方案（收缩估计、Black-Litterman、风险平价）及Python实现（进阶）
