@@ -10,6 +10,9 @@ layout: page
 
 ## 最新文章
 
+- [2026-06-10 - 社交媒体情绪因子构建：另类数据量化实践](/blog/social-media-sentiment-factor/) - 🟡 详解社交媒体情绪因子构建流程、FinBERT模型应用与实盘落地难点（进阶）
+- [2026-06-10 - 散户心理的量化应用：行为金融因子构建](/blog/retail-investor-psychology-quant-strategy/) - 🟡 解析羊群效应、过度反应、处置效应三类行为金融因子的量化方法与实盘注意事项（进阶）
+
 - [2026-06-10 - 期权波动率交易实战：从GARCH预测到Vega对冲](/blog/2026-06-10-option-volatility-trading/) - 🟡 详解GARCH模型预测波动率、Vega对冲实战步骤与实盘注意事项（进阶）
 - [2026-06-10 - 高频做市商策略：库存管理与损益归因分析](/blog/2026-06-10-high-frequency-market-making/) - 🔴 深入解析做市商收益来源、Avellaneda-Stoikov库存管理模型与损益归因方法（高阶）
 
