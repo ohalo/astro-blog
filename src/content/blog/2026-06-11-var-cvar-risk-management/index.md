@@ -30,9 +30,9 @@ P(L > VaR_\alpha) = 1 - \alpha
 $$
 
 其中：
-- $L$ 是投资组合的损失
-- $\alpha$ 是置信水平（通常取95%或99%）
-- $VaR_\alpha$ 表示在 $\alpha$ 置信水平下的最大损失
+- \(L\) 是投资组合的损失
+- \(\alpha\) 是置信水平（通常取95%或99%）
+- \(VaR_\alpha\) 表示在 \(\alpha\) 置信水平下的最大损失
 
 **例子**：如果你的组合1天95% VaR是10万元，意味着有95%的把握，明天的损失不会超过10万元；但有5%的概率损失会超过10万元。
 
@@ -43,10 +43,10 @@ $$
 **核心思想**：用历史收益率数据直接模拟未来。
 
 **步骤**：
-1. 收集过去 $T$ 天的历史收益率 $r_1, r_2, \ldots, r_T$
-2. 计算组合价值变化：$\Delta V_t = V_0 \times r_t$
+1. 收集过去 \(T\) 天的历史收益率 \(r_1, r_2, \ldots, r_T\)
+2. 计算组合价值变化：\(\Delta V_t = V_0 \times r_t\)
 3. 将损失从小到大排序
-4. 取第 $(1-\alpha) \times T$ 分位数作为 VaR
+4. 取第 \((1-\alpha) \times T\) 分位数作为 VaR
 
 **Python实现**：
 
@@ -100,10 +100,10 @@ VaR_\alpha = -(\mu + \sigma \times z_\alpha) \times V_0
 $$
 
 其中：
-- $\mu$ 是期望收益率
-- $\sigma$ 是收益率标准差
-- $z_\alpha$ 是标准正态分布的 $\alpha$ 分位数（95%对应1.645，99%对应2.326）
-- $V_0$ 是初始组合价值
+- \(\mu\) 是期望收益率
+- \(\sigma\) 是收益率标准差
+- \(z_\alpha\) 是标准正态分布的 \(\alpha\) 分位数（95%对应1.645，99%对应2.326）
+- \(V_0\) 是初始组合价值
 
 **Python实现**：
 
@@ -222,7 +222,7 @@ $$
 ### 2.2 为什么CVaR比VaR更好？
 
 1. **满足一致性风险度量（Coherent Risk Measure）**：
-   - 次可加性：$\rho(A + B) \leq \rho(A) + \rho(B)$
+   - 次可加性：\(\rho(A + B) \leq \rho(A) + \rho(B)\)
    - 单调性、正齐次性、平移不变性
 
 2. **对尾部风险更敏感**：
@@ -263,7 +263,7 @@ $$
 CVaR_\alpha = \frac{\phi(z_\alpha)}{1-\alpha} \sigma \sqrt{T} - \mu T
 $$
 
-其中 $\phi(\cdot)$ 是标准正态密度函数。
+其中 \(\phi(\cdot)\) 是标准正态密度函数。
 
 ```python
 def parametric_cvar(returns, confidence_level=0.95, portfolio_value=1000000):
@@ -398,7 +398,7 @@ plot_var_cvar(returns)
 
 ### 3.4 回测：验证VaR的准确性
 
-**回测思想**：如果VaR模型准确，那么实际损失超过VaR的频率应该接近 $1-\alpha$。
+**回测思想**：如果VaR模型准确，那么实际损失超过VaR的频率应该接近 \(1-\alpha\)。
 
 ```python
 def var_backtest(returns, var_series, confidence_level=0.95):
