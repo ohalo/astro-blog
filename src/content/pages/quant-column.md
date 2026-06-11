@@ -10,6 +10,9 @@ layout: page
 
 ## 最新文章
 
+- [2026-06-11 - 风险管理利器：VaR与CVaR在量化投资中的应用](/blog/2026-06-11-var-cvar-risk-management/) - 🟡 深入解析VaR/CVaR计算方法、回测框架、压力测试及在量化组合风险管理中的实战应用（进阶）
+- [2026-06-11 - 动量因子在中国A股市场的有效性检验：趋势跟踪与反转效应](/blog/2026-06-11-momentum-factor-china/) - 🟡 检验动量因子在A股的有效性，探讨时间窗口选择、牛熊市差异及改进方案（进阶）
+
 - [2026-06-11 - 价值因子（Value Factor）在中国A股市场的有效性检验：PB、PE与选股实战](/blog/value-factor-china-empirical/) - 🟡 检验价值因子在A股的有效性，探讨PB/PE指标、价值陷阱识别及动态价值策略（进阶）
 - [2026-06-11 - 备兑开仓策略（Covered Call）在A股期权市场的实战应用](/blog/covered-call-strategy-options/) - 🟡 详解备兑开仓原理、收益风险特征、在A股期权市场的实战应用与动态优化（进阶）
 
