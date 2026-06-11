@@ -112,6 +112,7 @@ def vwap_execution(order_size, duration_minutes):
 
 ```python
 def linear_impact_model(order_size, avg_daily_volume, impact_coef=0.1):
+    """线性冲击模型"""
     participation_rate = order_size / avg_daily_volume
     slippage = impact_coef * participation_rate
     return slippage

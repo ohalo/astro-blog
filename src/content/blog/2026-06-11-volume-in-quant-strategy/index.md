@@ -1,9 +1,11 @@
 ---
 title: "成交量在股票量化策略中的应用 - 精华提炼"
-date: 2026-06-11
-tags: ["量化交易", "成交量", "技术分析", "量价关系", "趋势跟踪", "OBV", "机器学习"]
-difficulty: "Intermediate"
+publishDate: '2026-06-11'
 description: "从理论基础、实证分析、指标体系、策略设计到A股回测，全面解析成交量在量化策略中的应用方法与实战效果"
+tags:
+ - 量化交易
+language: Chinese
+difficulty: intermediate
 ---
 
 # 成交量在股票量化策略中的应用 - 精华提炼
