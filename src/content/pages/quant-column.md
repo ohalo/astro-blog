@@ -10,6 +10,9 @@ layout: page
 
 ## 最新文章
 
+- [2026-06-12 - Black-Litterman 模型：桥接市场均衡与投资者观点的资产配置框架](/blog/black-litterman-model/) - 🟡 详细介绍Black-Litterman模型理论、贝叶斯观点融合、Python实现及在中国A股市场的应用实践（进阶）
+- [2026-06-12 - 另类数据：量化投资的新阿尔法源泉——从卫星图像到社交情绪](/blog/alternative-data-quant/) - 🟡 深入探讨另类数据的分类、获取方法、量化建模及在A股市场的应用挑战与前景（进阶）
+
 - [2026-06-12 - 波动率目标策略：动态仓位管理的风险预算框架](/blog/volatility-targeting-dynamic-position/) - 🟡 详解波动率目标策略原理、动态仓位调整公式、EWMA/GARCH波动率预测及Python实战代码（进阶）
 - [2026-06-12 - 配对交易实战：基于协整关系的均值回归策略](/blog/pairs-trading-cointegration-strategy/) - 🟡 深入探讨配对交易原理、协整检验方法、Z-Score信号生成、对冲比率计算及A股实战案例（进阶）
 
