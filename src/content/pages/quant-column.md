@@ -10,6 +10,9 @@ layout: page
 
 ## 最新文章
 
+- [2026-06-11 - 机器学习在量化交易中的实盘应用：从理论到实践](/blog/ml-quant-trading-practical/) - 🟡 深入探讨机器学习在量化交易中的实盘应用经验，涵盖特征工程、模型选择、风险控制和部署架构（进阶）
+- [2026-06-11 - 量化风险管理实战：VaR与CVaR计算及压力测试框架](/blog/risk-management-var-cvar/) - 🟡 深入解析VaR/CVaR计算方法、实盘应用、压力测试框架及Python实战代码（进阶）
+
 - [2026-06-11 - Delta中性期权策略：波动率交易与对冲实务](/blog/delta-neutral-options-strategy/) - 🔴 详解Delta中性原理、希腊字母管理、波动率交易实战及动态对冲技巧（高阶）
 - [2026-06-11 - 强化学习在量化交易中的应用：从DQN到PPO的策略优化](/blog/reinforcement-learning-quant-trading/) - 🔴 详解DQN、PPO等强化学习算法在量化交易中的应用、环境构建、奖励函数设计及实盘部署（高阶）
 
