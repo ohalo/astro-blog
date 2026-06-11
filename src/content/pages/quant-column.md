@@ -10,6 +10,8 @@ layout: page
 
 ## 最新文章
 
+- [2026-06-11 - 随机森林在量化选股中的应用：从特征工程到实盘部署](/blog/random-forest-quant-stock-selection/) - 🟡 探讨随机森林模型在A股选股中的特征工程、模型训练与过拟合防范策略（进阶）
+- [2026-06-11 - Black-Litterman模型在中国组合配置中的实战应用](/blog/black-litterman-china-portfolio/) - 🟡 结合中国市场特性优化组合配置，提升夏普比率的实证分析（进阶）
 - [2026-06-11 - 配对交易与协整分析：统计套利的核心技术](/blog/2026-06-11-pairs-trading-cointegration/) - 🟡 深入探讨配对交易原理、协整检验方法、Z-Score信号生成及Python实战（进阶）
 - [2026-06-11 - LSTM神经网络在量化选股中的应用](/blog/2026-06-11-lstm-stock-selection/) - 🔴 详解LSTM原理、门控机制、量化选股实战及防止过拟合技巧（高阶）
 
