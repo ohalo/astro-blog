@@ -11,7 +11,7 @@ layout: page
 ## 最新文章
 
 - [2026-06-11 - 价值因子（Value Factor）在中国A股市场的有效性检验：PB、PE与选股实战](/blog/value-factor-china-empirical/) - 🟡 检验价值因子在A股的有效性，探讨PB/PE指标、价值陷阱识别及动态价值策略（进阶）
-- [2026-06-11 - 风险平价策略（Risk Parity）在中国市场的实证应用：从理论到实战](/blog/risk-parity-china-empirical/) - 🟡 深入探讨风险平价理论、在中国市场的实证表现、杠杆化方案及中国化改良（进阶）
+- [2026-06-11 - 备兑开仓策略（Covered Call）在A股期权市场的实战应用](/blog/covered-call-strategy-options/) - 🟡 详解备兑开仓原理、收益风险特征、在A股期权市场的实战应用与动态优化（进阶）
 
 - [2026-06-11 - 随机森林在量化选股中的应用：从特征工程到实盘部署](/blog/random-forest-quant-stock-selection/) - 🟡 探讨随机森林模型在A股选股中的特征工程、模型训练与过拟合防范策略（进阶）
 - [2026-06-11 - Black-Litterman模型在中国组合配置中的实战应用](/blog/black-litterman-china-portfolio/) - 🟡 结合中国市场特性优化组合配置，提升夏普比率的实证分析（进阶）
