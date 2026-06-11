@@ -10,6 +10,9 @@ layout: page
 
 ## 最新文章
 
+- [2026-06-12 - 多因子模型中的因子正交化：从理论到Python实战](/blog/factor-orthogonalization-methods/) - 🟡 深入探讨因子共线性问题、三种正交化方法(Gram-Schmidt/对称正交化/PCA)及实战代码（进阶）
+- [2026-06-12 - 基于LSTM的股价预测实战：从数据预处理到模型部署](/blog/lstm-stock-prediction-practical/) - 🔴 从零实现LSTM股价预测系统，涵盖数据预处理、模型训练、回测框架及实盘部署注意事项（高阶）
+
 - [2026-06-12 - 期权波动率策略详解：从Vega到实盘交易](/blog/options-volatility-strategies/) - 🔴 详解期权波动率交易的核心原理、常见策略(Straddle/Strangle/Iron Condor)、Vega对冲及A股50ETF期权实证（高阶）
 - [2026-06-12 - 配对交易与统计套利：从协整到实盘](/blog/statistical-arbitrage-pairs-trading/) - 🟡 深入探讨配对交易原理、协整检验方法、Z-Score信号生成、风险管理及招商银行vs平安银行实证案例（进阶）
 
@@ -150,6 +153,7 @@ layout: page
 
 ### 🟡 进阶（Intermediate）
 适合有基础的量化爱好者，内容涉及策略实现、回测、因子研究、风险管理等，需要掌握Python和基础量化概念：
+- [2026-06-12 - 多因子模型中的因子正交化：从理论到Python实战](/blog/factor-orthogonalization-methods/) - 🟡 深入探讨因子共线性问题、三种正交化方法(Gram-Schmidt/对称正交化/PCA)及实战代码（进阶）
 - [2026-06-12 - 配对交易与统计套利：从协整到实盘](/blog/statistical-arbitrage-pairs-trading/) - 🟡 深入探讨配对交易原理、协整检验方法、Z-Score信号生成、风险管理及招商银行vs平安银行实证案例（进阶）
 - [2026-06-12 - 低波动异象：为何低风险股票带来高收益？——中国市场实证](/blog/low-volatility-anomaly-china/) - 🟡 深入探讨低波动因子在A股市场的有效性、实证结果、策略实现及与质量因子结合的增强方案（进阶）
 - [2026-06-12 - 因子择时策略：动态切换因子暴露的量化实战](/blog/factor-timing-strategy/) - 🟡 通过宏观经济指标、市场状态变量或机器学习模型，动态调整组合对不同因子的暴露程度，从而在因子表现周期中获取超额收益（进阶）
@@ -201,6 +205,7 @@ layout: page
 
 ### 🔴 高阶（Advanced）
 适合专业量化从业者/研究者，内容涉及机器学习/深度学习、高频交易、复杂数学、实盘系统架构等，需要深厚的量化基础和编程能力：
+- [2026-06-12 - 基于LSTM的股价预测实战：从数据预处理到模型部署](/blog/lstm-stock-prediction-practical/) - 🔴 从零实现LSTM股价预测系统，涵盖数据预处理、模型训练、回测框架及实盘部署注意事项（高阶）
 - [2026-06-12 - 期权波动率策略详解：从Vega到实盘交易](/blog/options-volatility-strategies/) - 🔴 详解期权波动率交易的核心原理、常见策略(Straddle/Strangle/Iron Condor)、Vega对冲及A股50ETF期权实证（高阶）
 - [2026-06-12 - 订单流毒性与LPPL模型：高频交易中的逆向选择与市场崩盘预测](/blog/order-flow-toxicity-lppl/) - 🔴 深入探讨订单流毒性(VPIN)指标、LPPL崩盘预测模型及两者结合的预警系统，涵盖高频交易微结构与临界现象物理学（高阶）
 - [2026-06-12 - 高频交易中的市场微结构：订单流与限价订单簿分析](/blog/hft-market-microstructure/) - 🔴 深入探讨高频交易核心——市场微结构，包括限价订单簿动力学、订单流不平衡(OFI)、VPIN指标及低延迟技术实现（高阶）
