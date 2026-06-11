@@ -10,6 +10,9 @@ layout: page
 
 ## 最新文章
 
+- [2026-06-12 - 波动率目标策略：动态仓位管理的风险预算框架](/blog/volatility-targeting-dynamic-position/) - 🟡 详解波动率目标策略原理、动态仓位调整公式、EWMA/GARCH波动率预测及Python实战代码（进阶）
+- [2026-06-12 - 配对交易实战：基于协整关系的均值回归策略](/blog/pairs-trading-cointegration-strategy/) - 🟡 深入探讨配对交易原理、协整检验方法、Z-Score信号生成、对冲比率计算及A股实战案例（进阶）
+
 - [2026-06-11 - 机器学习在量化交易中的实盘应用：从理论到实践](/blog/ml-quant-trading-practical/) - 🟡 深入探讨机器学习在量化交易中的实盘应用经验，涵盖特征工程、模型选择、风险控制和部署架构（进阶）
 - [2026-06-11 - 量化风险管理实战：VaR与CVaR计算及压力测试框架](/blog/risk-management-var-cvar/) - 🟡 深入解析VaR/CVaR计算方法、实盘应用、压力测试框架及Python实战代码（进阶）
 
@@ -129,6 +132,8 @@ layout: page
 
 ### 🟡 进阶（Intermediate）
 适合有基础的量化爱好者，内容涉及策略实现、回测、因子研究、风险管理等，需要掌握Python和基础量化概念：
+- [2026-06-12 - 波动率目标策略：动态仓位管理的风险预算框架](/blog/volatility-targeting-dynamic-position/) - 🟡 详解波动率目标策略原理、动态仓位调整公式、EWMA/GARCH波动率预测及Python实战代码（进阶）
+- [2026-06-12 - 配对交易实战：基于协整关系的均值回归策略](/blog/pairs-trading-cointegration-strategy/) - 🟡 深入探讨配对交易原理、协整检验方法、Z-Score信号生成、对冲比率计算及A股实战案例（进阶）
 - [2026-06-11 - 成交量在股票量化策略中的应用 - 精华提炼](/blog/2026-06-11-volume-in-quant-strategy/) - 🟡 从理论基础、实证分析、指标体系、策略设计到A股回测，全面解析成交量在量化策略中的应用方法与实战效果（进阶）
 - [2026-06-11 - 因子衰减效应与因子轮动策略](/blog/2026-06-11-factor-decay-rotation/) - 🟡 深入分析因子衰减规律、构建因子轮动策略以提升夏普比率（进阶）
 - [2026-06-11 - 风险平价策略在中国市场的实证分析](/blog/2026-06-11-risk-parity-china/) - 🟡 探讨风险平价策略在中国市场的实证表现、参数优化及实务挑战（进阶）
