@@ -10,6 +10,9 @@ layout: page
 
 ## 最新文章
 
+- [2026-06-12 - 行业动量因子研究：捕捉板块轮动的阿尔法](/blog/2026-06-12-sector-momentum-factor/) - 🟡 深入探讨行业动量因子的理论基础、构建方法、A股实证及与宏观周期的关联（进阶）
+- [2026-06-12 - 实盘交易执行系统研究：从订单管理到滑点控制](/blog/2026-06-12-execution-system-research/) - 🔴 聚焦实盘交易执行系统的核心模块：订单管理、执行算法(VWAP/TWAP/POV)、滑点建模与成本控制（高阶）
+
 - [2026-06-12 - 多因子模型中的因子正交化：从理论到Python实战](/blog/factor-orthogonalization-methods/) - 🟡 深入探讨因子共线性问题、三种正交化方法(Gram-Schmidt/对称正交化/PCA)及实战代码（进阶）
 - [2026-06-12 - 基于LSTM的股价预测实战：从数据预处理到模型部署](/blog/lstm-stock-prediction-practical/) - 🔴 从零实现LSTM股价预测系统，涵盖数据预处理、模型训练、回测框架及实盘部署注意事项（高阶）
 
