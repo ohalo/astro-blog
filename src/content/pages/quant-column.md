@@ -10,6 +10,9 @@ layout: page
 
 ## 最新文章
 
+- [2026-06-13 - 强化学习在量化交易中的应用：从Q-Learning到深度强化学习实战](/blog/2026-06-13-reinforcement-learning-trading/) - 🔴 深入探讨强化学习在量化交易中的应用，从Q-Learning、DQN到PPO/Actor-Critic，提供完整Python实战代码及实盘挑战分析（高阶）
+- [2026-06-13 - 最优执行算法详解：从VWAP到强化学习驱动的现代交易系统](/blog/2026-06-13-optimal-execution-algorithms/) - 🔴 详解最优执行算法(VWAP/TWAP/POV/IS)、机器学习成交量预测、强化学习执行智能体及实盘中的隐藏单/冰山单处理（高阶）
+
 - [2026-06-12 - 另类数据在量化选股中的应用](/blog/2026-06-12-alternative-data-quant/) - 🟡 详解另类数据类型(卫星图像/社交媒体/信用卡)、因子构建方法与回测绩效，提供A股实战案例（进阶）
 - [2026-06-12 - 行为金融因子：捕捉市场非理性波动](/blog/2026-06-12-behavioral-finance-factor/) - 🟡 介绍散户情绪/过度反应/羊群效应三类行为金融因子，提供因子合成方法与实盘注意事项（进阶）
 
@@ -214,6 +217,8 @@ layout: page
 
 ### 🔴 高阶（Advanced）
 适合专业量化从业者/研究者，内容涉及机器学习/深度学习、高频交易、复杂数学、实盘系统架构等，需要深厚的量化基础和编程能力：
+- [2026-06-13 - 强化学习在量化交易中的应用：从Q-Learning到深度强化学习实战](/blog/2026-06-13-reinforcement-learning-trading/) - 🔴 深入探讨强化学习在量化交易中的应用，从Q-Learning、DQN到PPO/Actor-Critic，提供完整Python实战代码及实盘挑战分析（高阶）
+- [2026-06-13 - 最优执行算法详解：从VWAP到强化学习驱动的现代交易系统](/blog/2026-06-13-optimal-execution-algorithms/) - 🔴 详解最优执行算法(VWAP/TWAP/POV/IS)、机器学习成交量预测、强化学习执行智能体及实盘中的隐藏单/冰山单处理（高阶）
 - [2026-06-12 - 基于LSTM的股价预测实战：从数据预处理到模型部署](/blog/lstm-stock-prediction-practical/) - 🔴 从零实现LSTM股价预测系统，涵盖数据预处理、模型训练、回测框架及实盘部署注意事项（高阶）
 - [2026-06-12 - 期权波动率策略详解：从Vega到实盘交易](/blog/options-volatility-strategies/) - 🔴 详解期权波动率交易的核心原理、常见策略(Straddle/Strangle/Iron Condor)、Vega对冲及A股50ETF期权实证（高阶）
 - [2026-06-12 - 订单流毒性与LPPL模型：高频交易中的逆向选择与市场崩盘预测](/blog/order-flow-toxicity-lppl/) - 🔴 深入探讨订单流毒性(VPIN)指标、LPPL崩盘预测模型及两者结合的预警系统，涵盖高频交易微结构与临界现象物理学（高阶）

@@ -1,0 +1,9 @@
+Sector,Market_Cap_Weight,BL_Weight
+Banking,0.25,0.30
+Tech,0.20,0.15
+Healthcare,0.15,0.18
+Energy,0.10,0.08
+Consumer,0.12,0.15
+Industrial,0.10,0.08
+Utilities,0.05,0.04
+Materials,0.03,0.02

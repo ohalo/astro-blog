@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+  <rect x="250" y="50" width="300" height="80" fill="#87CEEB" stroke="black" rx="10"/>
+  <text x="400" y="90" text-anchor="middle" font-size="18">市场均衡收益</text>
+  
+  <rect x="100" y="250" width="200" height="80" fill="#FFFFE0" stroke="black" rx="10"/>
+  <text x="200" y="290" text-anchor="middle" font-size="16">投资者观点</text>
+  
+  <rect x="350" y="250" width="200" height="80" fill="#90EE90" stroke="black" rx="10"/>
+  <text x="450" y="290" text-anchor="middle" font-size="16">贝叶斯融合</text>
+  
+  <rect x="300" y="450" width="300" height="80" fill="#FFB6C1" stroke="black" rx="10"/>
+  <text x="450" y="490" text-anchor="middle" font-size="18">后验收益与最优组合</text>
+  
+  <line x1="400" y1="130" x2="450" y2="250" stroke="black" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="200" y1="290" x2="350" y2="290" stroke="blue" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <line x1="450" y1="330" x2="450" y2="450" stroke="black" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="black"/>
+    </marker>
+  </defs>
+</svg>
