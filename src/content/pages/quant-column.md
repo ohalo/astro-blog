@@ -12,6 +12,8 @@ layout: page
 
 ### 2026-06-14 新发布
 
+- [2026-06-14 - 期权波动率交易实战：隐含波动率曲面与Delta中性策略](/blog/2026-06-14-volatility-trading-options/) - 🔴 深入讲解隐含波动率与历史波动率关系、波动率曲面构建、Delta中性策略(Straddle/Gamma Scalping)及Python实战代码（高阶）
+- [2026-06-14 - 卫星图像另类数据：用卫星图像预测公司业绩与股价](/blog/2026-06-14-satellite-alternative-data/) - 🔴 详解卫星图像数据获取与处理、停车场车流/油田库存/农田产量监测、机器学习因子构建及沃尔玛营收预测案例（高阶）
 - [2026-06-14 - LSTM神经网络股价预测：深度学习在量化交易中的实战指南](/blog/2026-06-14-lstm-stock-prediction/) - 🔴 详解LSTM核心机制、Python实战代码、超参数调优、过拟合防范及从预测到交易的完整流程（高阶）
 - [2026-06-14 - Markowitz均值方差模型实战：用Python构建最优投资组合](/blog/2026-06-14-markowitz-portfolio-optimization/) - 🟡 深入讲解现代投资组合理论、有效前沿构建、Python实战代码、中国市场特殊考虑及动态再平衡策略（进阶）
 - [2026-06-14 - 质量因子与低波动因子：防守反击的量化之道](/blog/quality-lowvol-factor-strategy/) - 🟡 深入探讨质量因子和低波动因子的理论基础、实证表现、双因子组合构建及A股实战回测（进阶）
