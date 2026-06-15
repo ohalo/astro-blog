@@ -12,6 +12,9 @@ layout: page
 
 ### 2026-06-15 新发布
 
+- [2026-06-15 - 因子拥挤度监测与规避](/blog/factor-crowding/) - 🆕 🟡 深入解析因子拥挤度的成因与监测方法，提供Python实现方案和实战规避策略，帮助投资者在量化交易中有效管理因子失效风险。（进阶）
+- [2026-06-15 - 配对交易与协整分析](/blog/pair-trading-cointegration/) - 🆕 🟡 深入探讨配对交易策略的核心原理，学习如何使用协整分析和ADF检验寻找稳定配对，掌握Z-score信号生成与风险管理方法。（进阶）
+
 - [2026-06-15 - VIX衍生品交易策略](/blog/vix-derivatives-trading/) - 🆕 🔴 深入探讨VIX指数及其衍生品的交易策略，包括VIX期货期限结构交易、VIX期权波动率套利、VIX ETN交易等高级策略，以及风险管理和实战案例分析。（高阶）
 - [2026-06-15 - 因子择时：动态调整因子暴露](/blog/factor-timing/) - 🆕 🟡 深入探讨因子择时的理论基础与实践方法，介绍如何根据市场状态动态调整因子暴露，提升量化策略的风险调整收益。包含完整的Python实现代码和回测分析。（进阶）
 - [2026-06-15 - 高频交易监管与合规：全球监管框架与中国实践](/blog/hft-regulation-compliance/) - 🆕 🔴 深入剖析全球主要市场的高频交易监管框架，解读中国证监会和交易所的合规要求，提供高频交易合规监控系统的Python实现方案，帮助量化机构建立完善的合规体系。（高阶）
@@ -22,6 +25,8 @@ layout: page
 - [2026-06-15 - PCA与因子模型在统计套利中的应用](/blog/pca-statistical-arbitrage/) - 🆕 🔴 深入探讨主成分分析(PCA)在统计套利策略中的应用，从数学原理到Python实战，构建基于PCA的市场中性套利组合（高阶）
 - [2026-06-15 - Transformer模型股价预测](/blog/transformer-stock-prediction/) - 🆕 🔴 深入探讨Transformer模型在股价预测中的应用，从Attention机制到时间序列建模，带你用PyTorch构建端到端的股价预测系统（高阶）
 - [2026-06-15 - XGBoost与LightGBM在量化选股中的应用](/blog/xgboost-lightgbm-stock-selection/) - 🆕 🔴 深入探讨XGBoost和LightGBM两大梯度提升框架在量化选股中的实战应用，从特征工程、模型训练到组合构建，提供完整的Python代码示例（高阶）
+- [2026-06-15 - 因子拥挤度监测与规避](/blog/factor-crowding/) - 🆕 🟡 深入解析因子拥挤度的成因与监测方法，提供Python实现方案和实战规避策略，帮助投资者在量化交易中有效管理因子失效风险
+- [2026-06-15 - 配对交易与协整分析](/blog/pair-trading-cointegration/) - 🆕 🟡 深入探讨配对交易策略的核心原理，学习如何使用协整分析和ADF检验寻找稳定配对，掌握Z-score信号生成与风险管理方法
 - [2026-06-15 - 统计套利：均值回归策略](/blog/statistical-arbitrage-mean-reversion/) - 🆕 🟡 深入解析统计套利的核心原理——均值回归策略，从理论基础到Python实战，涵盖配对交易、协整检验、Z-score建模等关键技术（进阶）
 
 - [2026-06-15 - 多因子模型风险分解：量化投资中的风险归因与绩效管理](/blog/multi-factor-risk-decomposition/) - 🆕 🔴 深入解析多因子模型的风险分解方法，学习如何使用Python进行风险归因分析，实现投资组合的精细化风险管理与绩效评估（高阶）
