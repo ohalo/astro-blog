@@ -1,7 +1,7 @@
 ---
 title: "因子拥挤度监测与规避：识别量化策略的隐形风险"
 description: "深入探讨因子拥挤度的成因、监测指标和规避策略，帮助量化投资者在因子失效前识别风险，保护投资组合收益。"
-pubDate: 2026-06-15
+publishDate: '2026-06-15'
 tags: ["因子投资", "风险管理", "量化策略", "因子拥挤度"]
 image: "/images/factor-crowding/cover.jpg"
 ---
