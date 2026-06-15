@@ -12,6 +12,8 @@ layout: page
 
 ### 2026-06-15 新发布
 
+- [2026-06-15 - PCA与因子模型在统计套利中的应用](/blog/pca-statistical-arbitrage/) - 🆕 🔴 深入探讨主成分分析(PCA)在统计套利策略中的应用，从数学原理到Python实战，构建基于PCA的市场中性套利组合（高阶）
+- [2026-06-15 - Transformer模型股价预测](/blog/transformer-stock-prediction/) - 🆕 🔴 深入探讨Transformer模型在股价预测中的应用，从Attention机制到时间序列建模，带你用PyTorch构建端到端的股价预测系统（高阶）
 - [2026-06-15 - XGBoost与LightGBM在量化选股中的应用](/blog/xgboost-lightgbm-stock-selection/) - 🆕 🔴 深入探讨XGBoost和LightGBM两大梯度提升框架在量化选股中的实战应用，从特征工程、模型训练到组合构建，提供完整的Python代码示例（高阶）
 - [2026-06-15 - 统计套利：均值回归策略](/blog/statistical-arbitrage-mean-reversion/) - 🆕 🟡 深入解析统计套利的核心原理——均值回归策略，从理论基础到Python实战，涵盖配对交易、协整检验、Z-score建模等关键技术（进阶）
 
@@ -100,6 +102,8 @@ layout: page
 
 ### 🔴 高阶（Advanced）
 适合专业量化从业者/研究者，内容涉及机器学习/深度学习、高频交易、复杂数学、实盘系统架构等：
+- [2026-06-15 - PCA与因子模型在统计套利中的应用](/blog/pca-statistical-arbitrage/) - 🆕 深入探讨主成分分析(PCA)在统计套利策略中的应用，从数学原理到Python实战，构建基于PCA的市场中性套利组合
+- [2026-06-15 - Transformer模型股价预测](/blog/transformer-stock-prediction/) - 🆕 深入探讨Transformer模型在股价预测中的应用，从Attention机制到时间序列建模，带你用PyTorch构建端到端的股价预测系统
 - [2026-06-15 - XGBoost与LightGBM在量化选股中的应用](/blog/xgboost-lightgbm-stock-selection/) - 🆕 深入探讨XGBoost和LightGBM两大梯度提升框架在量化选股中的实战应用，从特征工程、模型训练到组合构建，提供完整的Python代码示例
 - [2026-06-15 - 因子择时：动态调整因子暴露的量化策略](/blog/factor-timing/) - 🆕 深入探讨因子择时的理论基础、方法论框架（宏观经济变量/HMM/机器学习）、实证研究与性能评估、实践中的挑战与应对
 - [2026-06-14 - 压力测试与极端风险管理：构建量化投资的防火墙](/blog/2026-06-14-stress-testing-risk-management/) - 🆕 构建量化投资的防火墙：压力测试方法（情景分析/历史模拟/蒙特卡洛）、极端事件案例、A股实战代码、VaR/CVaR风险指标及组合优化
