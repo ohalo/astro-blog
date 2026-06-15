@@ -12,6 +12,8 @@ layout: page
 
 ### 2026-06-15 新发布
 
+- [2026-06-15 - 强化学习算法交易：从Q-Learning到深度强化学习的量化实践](/blog/reinforcement-learning-algo-trading/) - 🆕 🟡 深入探讨强化学习在量化交易中的应用，从传统的Q-Learning算法到现代深度强化学习方法（DQN、PPO、A3C），包含完整的Python实战代码和回测框架（进阶）
+- [2026-06-15 - FPGA在量化交易中的应用：硬件加速与低延迟交易系统实战](/blog/fpga-quant-trading/) - 🆕 🔴 深入探讨FPGA（现场可编程门阵列）在量化交易中的应用，涵盖低延迟交易系统架构、硬件加速原理、Verilog/VHDL开发流程，以及Python协同设计方案（高阶）
 - [2026-06-15 - PCA与因子模型在统计套利中的应用](/blog/pca-statistical-arbitrage/) - 🆕 🔴 深入探讨主成分分析(PCA)在统计套利策略中的应用，从数学原理到Python实战，构建基于PCA的市场中性套利组合（高阶）
 - [2026-06-15 - Transformer模型股价预测](/blog/transformer-stock-prediction/) - 🆕 🔴 深入探讨Transformer模型在股价预测中的应用，从Attention机制到时间序列建模，带你用PyTorch构建端到端的股价预测系统（高阶）
 - [2026-06-15 - XGBoost与LightGBM在量化选股中的应用](/blog/xgboost-lightgbm-stock-selection/) - 🆕 🔴 深入探讨XGBoost和LightGBM两大梯度提升框架在量化选股中的实战应用，从特征工程、模型训练到组合构建，提供完整的Python代码示例（高阶）
