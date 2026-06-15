@@ -1,11 +1,10 @@
 ---
 title: "FPGA在量化交易中的应用：硬件加速与低延迟交易系统实战"
 description: "深入探讨FPGA（现场可编程门阵列）在量化交易中的应用，涵盖低延迟交易系统架构、硬件加速原理、Verilog/VHDL开发流程，以及Python协同设计方案。"
-pubDate: 2026-06-15
+publishDate: 2026-06-15
 tags: ["FPGA", "量化交易", "硬件加速", "低延迟", "HFT", "Verilog", "VHDL", "量化投资"]
-category: "量化交易"
-difficulty: "高阶"
-featured: false
+language: "zh"
+difficulty: "advanced"
 ---
 
 # FPGA在量化交易中的应用：硬件加速与低延迟交易系统实战
