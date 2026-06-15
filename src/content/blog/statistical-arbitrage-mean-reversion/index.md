@@ -1,7 +1,7 @@
 ---
 title: "统计套利：均值回归策略"
 description: "深入解析统计套利的核心原理——均值回归策略，从理论基础到Python实战，涵盖配对交易、协整检验、Z-score建模等关键技术"
-pubDate: 2026-06-15
+publishDate: 2026-06-15
 tags: ["统计套利", "均值回归", "配对交易", "协整检验", "量化策略"]
 category: "量化交易"
 cover: "/images/statistical-arbitrage-mean-reversion/cover.png"
