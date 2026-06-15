@@ -1,7 +1,7 @@
 ---
 title: "VIX衍生品交易策略"
 description: "深入探讨VIX指数及其衍生品的交易策略，包括VIX期货期限结构交易、VIX期权波动率套利、VIX ETN交易等高级策略，以及风险管理和实战案例分析。"
-pubDate: 2026-06-15
+publishDate: 2026-06-15
 tags: ["VIX", "波动率交易", "VIX期权", "VIX期货", "恐慌指数"]
 category: "quant"
 difficulty: "高阶"

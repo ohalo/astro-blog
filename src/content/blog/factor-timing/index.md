@@ -1,7 +1,7 @@
 ---
 title: "因子择时：动态调整因子暴露"
 description: "深入探讨因子择时策略，学习如何根据市场状态动态调整因子暴露，提升投资组合的的风险调整后收益。包含Value、Momentum、Quality等因子的择时模型与Python实战代码。"
-pubDate: 2026-06-15
+publishDate: 2026-06-15
 tags: ["因子投资", "因子择时", "动态资产配置", "风险溢价", "量化策略"]
 category: "quant"
 difficulty: "进阶"
