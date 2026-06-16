@@ -4,6 +4,7 @@ description: "深入探讨因子拥挤度的成因、监测指标和规避策略
 date: "2026-06-16"
 tags: ["因子投资", "风险管理", "因子拥挤", "量化策略"]
 categories: ["量化交易"]
+cover: "/images/factor-crowding/cover.jpg"
 ---
 
 # 因子拥挤度监测与规避：量化投资中的风险管理新维度

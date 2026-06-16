@@ -4,6 +4,7 @@ description: "深入探讨配对交易策略的理论基础、协整检验方法
 date: "2026-06-16"
 tags: ["配对交易", "协整分析", "市场中性", "统计套利"]
 categories: ["量化交易"]
+cover: "/images/pair-trading-cointegration/cover.jpg"
 ---
 
 # 配对交易与协整分析：市场中性策略的理论与实践
