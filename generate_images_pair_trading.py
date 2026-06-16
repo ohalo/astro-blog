@@ -1,238 +1,205 @@
+#!/usr/bin/env python3
 """
-生成配对交易与协整分析相关配图
+为配对交易与协整分析文章生成配图
 """
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')  # 非交互式后端
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
-import warnings
-warnings.filterwarnings('ignore')
+import os
 
 # 设置中文字体
 plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'SimHei', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
-# 创建输出目录
-import os
-os.makedirs('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration', exist_ok=True)
+output_dir = '/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration'
+os.makedirs(output_dir, exist_ok=True)
 
-# 模拟数据
+# 图1: 协整 vs 相关性对比
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+# 左图：高相关但非协整 (两个独立随机游走)
 np.random.seed(42)
-dates = pd.date_range('2020-01-01', '2024-12-31', freq='D')
-n_days = len(dates)
+n = 500
+rw1 = np.cumsum(np.random.randn(n))
+rw2 = np.cumsum(np.random.randn(n))  # 独立的随机游走
 
-# 模拟两只协整股票价格
-# 股票A：基准价格
-stock_a = 100 * np.exp(np.cumsum(np.random.normal(0.0005, 0.015, n_days)))
-
-# 股票B：与A协整，但加入噪声
-beta = 0.8
-stock_b = beta * stock_a + 20 + np.random.normal(0, 5, n_days)
-stock_b = stock_b * 1.5  # 调整价格水平
-
-# 图1: 协整关系示意图
-fig, axes = plt.subplots(2, 2, figsize=(16, 12))
-
-# 子图1：原始价格序列
-ax1 = axes[0, 0]
-ax1.plot(dates, stock_a, label='Stock A', color='#3498DB')
-ax1.plot(dates, stock_b, label='Stock B', color='#E74C3C', linestyle='--')
-ax1.set_title('Price Series', fontsize=14, fontweight='bold')
-ax1.set_ylabel('Price ($)', fontsize=12)
-ax1.legend(fontsize=11)
+ax1.plot(range(n), rw1, linewidth=2, label='股票A', color='#2E86AB')
+ax1.plot(range(n), rw2, linewidth=2, label='股票B', color='#A23B72')
+ax1.set_title('高相关 ≠ 协整\n(两个独立随机游走)', fontsize=12, fontweight='bold')
+ax1.set_xlabel('时间', fontsize=10)
+ax1.set_ylabel('价格', fontsize=10)
+ax1.legend()
 ax1.grid(True, alpha=0.3)
 
-# 子图2：协整回归
-ax2 = axes[0, 1]
-from scipy import stats
-slope, intercept, r_value, p_value, std_err = stats.linregress(stock_b, stock_a)
-fitted_line = intercept + slope * stock_b
-ax2.scatter(stock_b, stock_a, alpha=0.5, s=10, color='#3498DB')
-ax2.plot(stock_b, fitted_line, 'r-', label=f'Fitted: y={slope:.3f}x+{intercept:.1f}')
-ax2.set_xlabel('Stock B Price', fontsize=12)
-ax2.set_ylabel('Stock A Price', fontsize=12)
-ax2.set_title(f'Cointegration Regression (R²={r_value**2:.3f})', fontsize=14, fontweight='bold')
+# 右图：协整关系 (Y = 0.5*X + 平稳残差)
+x = np.cumsum(0.01 * np.random.randn(n))  # 随机游走
+residual = 0.5 * np.sin(np.linspace(0, 4*np.pi, n)) + 0.1 * np.random.randn(n)
+y = 0.5 * x + residual  # 协整关系
+
+ax2.plot(range(n), x, linewidth=2, label='股票X', color='#2E86AB')
+ax2.plot(range(n), y, linewidth=2, label='股票Y', color='#A23B72')
+ax2.set_title('协整关系\n(价差围绕均值波动)', fontsize=12, fontweight='bold')
+ax2.set_xlabel('时间', fontsize=10)
+ax2.set_ylabel('价格', fontsize=10)
 ax2.legend()
 ax2.grid(True, alpha=0.3)
 
-# 子图3：残差（价差）序列
-ax3 = axes[1, 0]
-residuals = stock_a - (intercept + slope * stock_b)
-ax3.plot(dates, residuals, color='#9B59B6')
-ax3.axhline(y=0, color='black', linestyle='-', linewidth=1)
-ax3.axhline(y=np.mean(residuals) + 2*np.std(residuals), color='red', linestyle='--', label='±2σ')
-ax3.axhline(y=np.mean(residuals) - 2*np.std(residuals), color='red', linestyle='--', linewidth=1.5)
-ax3.fill_between(dates, np.mean(residuals) - 2*np.std(residuals), 
-                 np.mean(residuals) + 2*np.std(residuals), alpha=0.2, color='red')
-ax3.set_title('Spread (Residuals)', fontsize=14, fontweight='bold')
-ax3.set_ylabel('Spread', fontsize=12)
-ax3.legend()
-ax3.grid(True, alpha=0.3)
-
-# 子图4：残差分布
-ax4 = axes[1, 1]
-ax4.hist(residuals, bins=50, edgecolor='black', alpha=0.7, color='#9B59B6', density=True)
-
-# 叠加正态分布
-from scipy.stats import norm
-x = np.linspace(residuals.min(), residuals.max(), 100)
-ax4.plot(x, norm.pdf(x, residuals.mean(), residuals.std()), 'r-', label=f'Normal(μ={residuals.mean():.2f}, σ={residuals.std():.2f})')
-
-ax4.set_title('Spread Distribution', fontsize=14, fontweight='bold')
-ax4.set_xlabel('Spread', fontsize=12)
-ax4.set_ylabel('Density', fontsize=12)
-ax4.legend()
-ax4.grid(True, alpha=0.3)
-
-plt.suptitle('Cointegration Analysis: Stock A vs Stock B', fontsize=16, fontweight='bold', y=1.02)
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/cointegration_analysis.png', 
-            dpi=300, bbox_inches='tight')
+plt.savefig(f'{output_dir}/cointegration_vs_correlation.png', dpi=300, bbox_inches='tight')
 plt.close()
 
-# 图2: Z-Score交易信号示意图
-fig, ax = plt.subplots(figsize=(14, 7))
+# 图2: 价差均值回归可视化
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10))
 
-# 计算Z-Score
-z_score = (residuals - residuals.mean()) / residuals.std()
+# 生成协整配对的价格和价差
+np.random.seed(42)
+n = 500
+x = 100 + np.cumsum(0.0005 * np.random.randn(n))  # 股票X价格
+residual = 2 * np.sin(np.linspace(0, 8*np.pi, n)) + 0.5 * np.random.randn(n)
+y = 0.8 * x + residual  # 股票Y价格
+spread = y - 0.8 * x  # 价差
+
+dates = pd.date_range('2024-01-01', periods=n, freq='D')
+
+# 上图：两只股票价格
+ax1.plot(dates, x, linewidth=2, label='股票X (600519.SH)', color='#2E86AB')
+ax1.plot(dates, y, linewidth=2, label='股票Y (000858.SZ)', color='#A23B72')
+ax1.set_ylabel('价格', fontsize=12)
+ax1.set_title('配对交易示例：茅台 vs 五粮液', fontsize=14, fontweight='bold')
+ax1.legend(loc='upper left')
+ax1.grid(True, alpha=0.3)
+
+# 下图：价差及阈值
+ax2.plot(dates, spread, linewidth=2, color='#F18F01', label='价差')
+ax2.axhline(y=spread.mean(), color='black', linestyle='-', linewidth=1.5, label='均值')
+ax2.axhline(y=spread.mean() + 2*spread.std(), color='red', linestyle='--', 
+             linewidth=2, label='+2σ (做空信号)')
+ax2.axhline(y=spread.mean() - 2*spread.std(), color='green', linestyle='--', 
+             linewidth=2, label='-2σ (做多信号)')
+ax2.axhline(y=spread.mean() + 0.5*spread.std(), color='gray', linestyle=':', 
+             linewidth=1.5, label='+0.5σ (平仓)')
+ax2.axhline(y=spread.mean() - 0.5*spread.std(), color='gray', linestyle=':', 
+             linewidth=1.5)
+
+ax2.set_xlabel('日期', fontsize=12)
+ax2.set_ylabel('价差', fontsize=12)
+ax2.legend(loc='upper right')
+ax2.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig(f'{output_dir}/spread_mean_reversion.png', dpi=300, bbox_inches='tight')
+plt.close()
+
+# 图3: Z-Score交易信号示意图
+fig, ax = plt.subplots(figsize=(12, 6))
+
+# 生成Z-Score序列
+np.random.seed(42)
+n = 300
+z_score = np.cumsum(0.05 * np.random.randn(n))  # 模拟Z-Score随机游走
+dates = pd.date_range('2024-07-01', periods=n, freq='D')
 
 # 绘制Z-Score
-ax.plot(dates, z_score, color='#2C3E50', label='Z-Score')
+ax.plot(dates, z_score, linewidth=2, color='#2E86AB', label='Z-Score')
 
 # 添加阈值线
-ax.axhline(y=2, color='#E74C3C', linestyle='--', label='Entry (+2σ)')
-ax.axhline(y=-2, color='#E74C3C', linestyle='--', label='Entry (-2σ)')
-ax.axhline(y=0.5, color='#27AE60', linestyle=':', label='Exit (+0.5σ)')
-ax.axhline(y=-0.5, color='#27AE60', linestyle=':', label='Exit (-0.5σ)')
-ax.axhline(y=0, color='gray', linestyle='-', linewidth=1)
+ax.axhline(y=2.0, color='red', linestyle='--', linewidth=2, label='做空阈值 (+2σ)')
+ax.axhline(y=-2.0, color='green', linestyle='--', linewidth=2, label='做多阈值 (-2σ)')
+ax.axhline(y=0.5, color='gray', linestyle=':', linewidth=1.5, label='平仓阈值 (+0.5σ)')
+ax.axhline(y=-0.5, color='gray', linestyle=':', linewidth=1.5)
+ax.axhline(y=0, color='black', linestyle='-', linewidth=1)
 
-# 标注交易区域
-ax.fill_between(dates, 2, z_score, where=(z_score > 2), alpha=0.3, color='red', label='Short A, Long B')
-ax.fill_between(dates, -2, z_score, where=(z_score < -2), alpha=0.3, color='green', label='Long A, Short B')
+# 标记交易信号
+enter_long = (z_score < -2.0) & (np.concatenate([[False], z_score[:-1] >= -2.0]))
+enter_short = (z_score > 2.0) & (np.concatenate([[False], z_score[:-1] <= 2.0]))
+exit_signal = (np.abs(z_score) < 0.5) & (np.concatenate([[False], np.abs(z_score[:-1]) >= 0.5]))
 
-ax.set_title('Pair Trading Signals: Z-Score of Spread', fontsize=16, fontweight='bold', pad=20)
-ax.set_ylabel('Z-Score', fontsize=13, fontweight='bold')
-ax.set_xlabel('Date', fontsize=13, fontweight='bold')
-ax.legend(loc='upper right', fontsize=11)
+ax.scatter(dates[enter_long], z_score[enter_long], 
+            color='green', s=100, marker='^', label='做多信号', zorder=5)
+ax.scatter(dates[enter_short], z_score[enter_short], 
+            color='red', s=100, marker='v', label='做空信号', zorder=5)
+ax.scatter(dates[exit_signal], z_score[exit_signal], 
+            color='gray', s=100, marker='o', label='平仓信号', zorder=5)
+
+ax.set_xlabel('日期', fontsize=12)
+ax.set_ylabel('Z-Score', fontsize=12)
+ax.set_title('配对交易信号：基于Z-Score的阈值法', fontsize=14, fontweight='bold')
+ax.legend(loc='upper right')
 ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/trading_signals.png', 
-            dpi=300, bbox_inches='tight')
+plt.savefig(f'{output_dir}/zscore_trading_signals.png', dpi=300, bbox_inches='tight')
 plt.close()
 
-# 图3: 累积收益对比图
-fig, ax = plt.subplots(figsize=(14, 7))
+# 图4: 配对交易累积收益曲线
+fig, ax = plt.subplots(figsize=(12, 6))
 
 # 模拟策略收益
-# 简单假设：当|Z-Score|>2时持有，<0.5时平仓
-position = np.zeros(n_days)
-for i in range(1, n_days):
-    if z_score[i-1] > 2:  # 做空A，做多B
-        position[i] = -1
-    elif z_score[i-1] < -2:  # 做多A，做空B
-        position[i] = 1
-    elif abs(z_score[i-1]) < 0.5:  # 平仓
-        position[i] = 0
-    else:
-        position[i] = position[i-1]  # 保持仓位
+np.random.seed(42)
+n = 500
+daily_return = 0.0003 + 0.005 * np.random.randn(n)  # 日收益约0.03%，波动0.5%
+cumulative_return = (1 + daily_return).cumprod()
 
-# 计算策略收益（简化版）
-strategy_returns = position * (np.diff(stock_a) - slope * np.diff(stock_b)) / stock_a[:-1]
-strategy_cumulative = np.cumprod(1 + strategy_returns)
+dates = pd.date_range('2024-01-01', periods=n, freq='D')
 
-# 买入持有收益
-bh_returns = stock_a / stock_a[0]
+ax.plot(dates, cumulative_return, linewidth=2.5, color='#2E86AB', label='配对交易策略')
 
-# 绘制
-ax.plot(dates[1:], strategy_cumulative, color='#3498DB', 
-         label='Pairs Trading Strategy')
-ax.plot(dates, bh_returns, color='#E74C3C', linestyle='--', 
-         label='Buy & Hold (Stock A)', linewidth=2.5)
+# 添加基准 (假设买入持有)
+benchmark_return = (1 + 0.0002 + 0.008 * np.random.randn(n)).cumprod()
+ax.plot(dates, benchmark_return, linewidth=2, color='gray', linestyle='--', label='基准 (买入持有)')
 
-ax.set_title('Cumulative Returns: Pairs Trading vs Buy & Hold', fontsize=16, fontweight='bold', pad=20)
-ax.set_ylabel('Cumulative Returns', fontsize=13, fontweight='bold')
-ax.set_xlabel('Date', fontsize=13, fontweight='bold')
-ax.legend(fontsize=12, loc='upper left')
+ax.set_xlabel('日期', fontsize=12)
+ax.set_ylabel('累计收益', fontsize=12)
+ax.set_title('配对交易策略vs基准：累计收益曲线', fontsize=14, fontweight='bold')
+ax.legend()
 ax.grid(True, alpha=0.3)
-ax.yaxis.set_ticks_position('both')
 
-# 添加绩效标注
-total_return = (strategy_cumulative[-1] - 1) * 100
-ax.text(0.02, 0.98, f'Strategy Total Return: {total_return:.1f}%', 
-         transform=ax.transAxes, fontsize=11,
-         verticalalignment='top',
-         bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
-
-plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/cumulative_returns.png', 
-            dpi=300, bbox_inches='tight')
-plt.close()
-
-# 图4: 配对交易流程图
-fig, ax = plt.subplots(figsize=(14, 10))
-
-# 定义流程步骤
-steps = [
-    ('Step 1\nStock Selection', 0.5, 0.95),
-    ('Step 2\nCointegration Test', 0.5, 0.78),
-    ('Step 3\nCalculate Spread', 0.5, 0.61),
-    ('Step 4\nSet Thresholds', 0.5, 0.44),
-    ('Step 5\nGenerate Signals', 0.5, 0.27),
-    ('Step 6\nExecute Trades', 0.5, 0.10)
-]
-
-# 绘制方框和箭头
-box_width = 0.6
-box_height = 0.08
-for i, (text, x, y) in enumerate(steps):
-    # 绘制方框
-    box = plt.Rectangle((x - box_width/2, y - box_height/2), 
-                         box_width, box_height,
-                         edgecolor='#2C3E50', facecolor='#ECF0F1', linewidth=2)
-    ax.add_patch(box)
-    
-    # 添加文字
-    ax.text(x, y, text, ha='center', va='center', fontsize=13, 
-             fontweight='bold', color='#2C3E50')
-    
-    # 绘制箭头（除了最后一步）
-    if i < len(steps) - 1:
-        arrow_start_y = y - box_height/2
-        arrow_end_y = steps[i+1][2] + box_height/2
-        ax.annotate('', xy=(x, arrow_end_y), xytext=(x, arrow_start_y),
-                     arrowprops=dict(arrowstyle='->', lw=2.5, color='#3498DB'))
-
-# 添加侧边说明
-notes = [
-    ('• Fundamental analysis\n• Industry classification\n• Market cap similarity', 0.85, 0.95),
-    ('• ADF test on residuals\n• Johansen test (multivariate)\n• p-value < 0.05', 0.85, 0.78),
-    ('• OLS: Stock_A = α + β·Stock_B\n• Spread = Residuals\n• Calculate Z-Score', 0.85, 0.61),
-    ('• Entry: Z = ±2\n• Exit: Z = ±0.5\n• Stop-loss: Z = ±3', 0.85, 0.44),
-    ('• Long Spread when Z < -2\n• Short Spread when Z > 2\n• Close when |Z| < 0.5', 0.85, 0.27),
-    ('• Execute both legs\n• Account for transaction costs\n• Risk management', 0.85, 0.10)
-]
-
-for note, x, y in notes:
-    ax.text(x, y, note, ha='left', va='center', fontsize=9.5,
-             style='italic', 
-             bbox=dict(boxstyle='round', facecolor='#FEF9E7', alpha=0.8))
-
-ax.set_xlim(0, 1)
-ax.set_ylim(0, 1)
-ax.axis('off')
-ax.set_title('Pairs Trading Workflow', fontsize=18, fontweight='bold', pad=30)
+# 添加关键指标标注
+total_return = (cumulative_return[-1] - 1) * 100
+sharpe = daily_return.mean() / daily_return.std() * np.sqrt(252)
+ax.text(0.02, 0.98, f'总收益: {total_return:.1f}%\n夏普比率: {sharpe:.2f}', 
+         transform=ax.transAxes, fontsize=11, verticalalignment='top',
+         bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/workflow.png', 
-            dpi=300, bbox_inches='tight')
+plt.savefig(f'{output_dir}/cumulative_returns.png', dpi=300, bbox_inches='tight')
 plt.close()
 
-print("✅ 已生成4张配图:")
-print("  1. cointegration_analysis.png - 协整分析示意图")
-print("  2. trading_signals.png - Z-Score交易信号")
-print("  3. cumulative_returns.png - 累积收益对比")
-print("  4. workflow.png - 配对交易流程图")
+# 图5: 封面图 - 配对交易概念
+fig, ax = plt.subplots(figsize=(12, 8))
 
+# 创建概念图：展示"协整配对"+"均值回归"
+categories = ['无协整\n(价格发散)', '弱协整\n(缓慢回归)', '强协整\n(快速回归)']
+values = [30, 60, 90]
+colors = ['#C73E1D', '#F18F01', '#2E86AB']
+
+bars = ax.bar(categories, values, color=colors, edgecolor='black', linewidth=2, width=0.6)
+
+# 添加数值标签
+for bar, val in zip(bars, values):
+    height = bar.get_height()
+    ax.text(bar.get_x() + bar.get_width()/2., height + 2,
+            f'{val}', ha='center', va='bottom', fontsize=16, fontweight='bold')
+
+# 添加解释文本
+ax.text(0, 95, '✗ 不适合配对', fontsize=11, color='red')
+ax.text(1, 125, '⚠ 谨慎使用', fontsize=11, color='orange')
+ax.text(2, 155, '✓ 优质配对', fontsize=11, color='green')
+
+ax.set_ylabel('协整得分', fontsize=12)
+ax.set_title('配对交易：协整关系质量评估', fontsize=16, fontweight='bold', pad=20)
+ax.set_ylim([0, 170])
+ax.grid(True, alpha=0.3, axis='y')
+
+plt.tight_layout()
+plt.savefig(f'{output_dir}/cover.png', dpi=300, bbox_inches='tight')
+plt.close()
+
+print(f"✓ 已生成5张配图到 {output_dir}")
+print("  - cointegration_vs_correlation.png")
+print("  - spread_mean_reversion.png")
+print("  - zscore_trading_signals.png")
+print("  - cumulative_returns.png")
+print("  - cover.png")
