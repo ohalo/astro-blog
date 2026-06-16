@@ -1,907 +1,803 @@
 ---
 title: "配对交易与协整分析：统计套利的理论与实践"
-description: "深入讲解配对交易的核心原理——协整关系，从理论到实战，教你如何构建稳健的统计套利策略。"
-date: 2026-06-16
-tags:
-  - 量化交易
-  - 统计套利
-  - 配对交易
-  - 协整分析
-  - 难度：进阶
-image: /images/pair-trading-cointegration/cover.jpg
+description: "深入探讨配对交易的核心原理——协整关系，从统计学理论到Python实战，带你掌握市场中性策略的构建方法。"
+pubDate: 2026-06-16
+tags: ["配对交易", "协整分析", "统计套利", "市场中性", "量化策略"]
+category: "quant-column"
+draft: false
 ---
 
 # 配对交易与协整分析：统计套利的理论与实践
 
 ## 引言
 
-配对交易（Pairs Trading）是统计套利中最经典的策略之一。其核心思想是通过识别两个具有长期均衡关系的资产，当价格偏离均衡时建立多空对冲头寸，等待价格回归时获利。
+在量化投资的世界里，市场中性策略一直以其稳健的收益特征受到机构投资者青睐。而配对交易（Pairs Trading）作为统计套利的经典方法，凭借其"买入低估、卖出高估"的简单逻辑，在过去几十年中创造了可观的超额收益。
 
-与传统的均值回归策略不同，配对交易依赖的是**协整关系（Cointegration）**，这是一种更严格的统计性质。本文将深入探讨：
+本文将系统讲解：
+- 协整关系的统计学原理
+- 配对交易的完整流程
+- Python实战：从数据获取到策略回测
+- 实际案例分析与风险管理
 
-- 协整关系的数学原理
-- 配对选择的定量方法
-- 交易信号的构建与优化
-- Python实战完整流程
+## 一、配对交易的核心逻辑
 
-## 一、协整关系：配对交易的基石
+### 1.1 什么是配对交易？
 
-### 1.1 平稳性与协整
+配对交易是一种**市场中性（Market Neutral）**策略，其核心思想是：
+1. 找到两只价格具有长期均衡关系的股票
+2. 当价格偏离均衡时，做多低估股票、做空高估股票
+3. 等待价格回归均衡后平仓获利
 
-在时间序列分析中，**平稳性（Stationarity）**是建模的关键前提。一个平稳序列的均值、方差和自协方差不随时间变化。
+**关键优势：**
+- 对冲市场风险（Beta ≈ 0）
+- 收益来源于相对价值修复
+- 适合振荡市场，不依赖趋势
 
-**单位根检验**：判断序列是否平稳的标准方法
+### 1.2 协整 vs 相关性
+
+很多初学者会混淆"协整"和"相关性"，但两者有本质区别：
+
+| 维度 | 相关性 | 协整 |
+|------|--------|------|
+| 定义 | 衡量短期联动程度 | 描述长期均衡关系 |
+| 时间尺度 | 任意时间段 | 长期稳定 |
+| 经济意义 | 同步波动 | 均值回归 |
+| 交易含义 | 不适合直接套利 | 套利机会的基础 |
 
 ```python
-import pandas as pd
 import numpy as np
-from statsmodels.tsa.stattools import adfuller
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.stattools import coint, adfuller
+import yfinance as yf
 
-def adf_test(series, verbose=True):
+# 示例：协整 vs 相关性
+np.random.seed(42)
+n = 500
+
+# 情况1：高相关但非协整
+x1 = np.cumsum(np.random.randn(n))
+y1 = x1 + np.random.randn(n) * 0.5  # 跟随但无均衡关系
+
+# 情况2：低相关但协整
+z = np.cumsum(np.random.randn(n))
+x2 = z + np.random.randn(n) * 0.3
+y2 = z + np.random.randn(n) * 0.3  # 共享随机趋势
+
+print("情况1 - 高相关非协整:")
+print(f"  相关性: {np.corrcoef(x1, y1)[0,1]:.3f}")
+print(f"  协整检验p值: {coint(x1, y1)[1]:.3f}")
+
+print("\n情况2 - 低相关但协整:")
+print(f"  相关性: {np.corrcoef(x2, y2)[0,1]:.3f}")
+print(f"  协整检验p值: {coint(x2, y2)[1]:.3f}")
+```
+
+## 二、协整关系的统计学基础
+
+### 2.1 平稳性检验（ADF检验）
+
+在进行协整分析前，必须先检验序列的平稳性。
+
+**Augmented Dickey-Fuller (ADF) 检验原理：**
+
+原假设 H₀：序列有单位根（非平稳）
+备择假设 H₁：序列平稳
+
+```python
+def adf_test(series, title=''):
     """
     Augmented Dickey-Fuller检验
     
-    H0: 序列有单位根（非平稳）
-    H1: 序列平稳
-    
     Parameters:
     -----------
-    series : pd.Series
-        待检验的时间序列
-    verbose : bool
-        是否打印详细信息
-    
-    Returns:
-    --------
-    dict : 检验结果
+    series: pd.Series, 时间序列
+    title: str, 序列名称
     """
+    print(f'ADF检验: {title}')
     result = adfuller(series, autolag='AIC')
     
-    output = {
-        'ADF Statistic': result[0],
-        'p-value': result[1],
-        'Critical Values': result[4],
-        'is_stationary': result[1] < 0.05
-    }
+    print(f'  ADF统计量: {result[0]:.4f}')
+    print(f'  p值: {result[1]:.4f}')
+    print(f'  临界值:')
+    for key, value in result[4].items():
+        print(f'    {key}: {value:.4f}')
     
-    if verbose:
-        print('ADF Statistic: {:.4f}'.format(result[0]))
-        print('p-value: {:.4f}'.format(result[1]))
-        print('Critical Values:')
-        for key, value in result[4].items():
-            print('\t{}: {:.4f}'.format(key, value))
-        print('Stationary: {}'.format(output['is_stationary']))
-    
-    return output
+    if result[1] <= 0.05:
+        print("  → 结论：序列平稳（拒绝原假设）")
+    else:
+        print("  → 结论：序列非平稳（接受原假设）")
 
-# 示例使用
-# price_a = pd.read_csv('stock_a.csv', index_col=0, parse_dates=True)['close']
-# result = adf_test(price_a)
+# 生成测试数据
+np.random.seed(42)
+n = 500
+
+# 平稳序列
+stationary = pd.Series(np.random.randn(n))
+
+# 非平稳序列（随机游走）
+non_stationary = pd.Series(np.cumsum(np.random.randn(n)))
+
+print("=" * 50)
+adf_test(stationary, '平稳序列')
+print("\n" + "=" * 50)
+adf_test(non_stationary, '非平稳序列（随机游走）')
 ```
 
-### 1.2 协整的定义与检验
+### 2.2 协整检验
 
-两个（或多个）非平稳序列如果存在线性组合是平稳的，则称这些序列是**协整的**。
+如果两只股票的股价都是非平稳的（I(1)过程），但它们的线性组合是平稳的（I(0)过程），则称为协整。
 
-数学定义：
-- 若 $X_t$ 和 $Y_t$ 都是I(1)过程（一阶单整）
-- 存在系数 $\beta$，使得 $Z_t = Y_t - \beta X_t$ 是I(0)过程（平稳）
-- 则称 $X_t$ 和 $Y_t$ 协整，β为协整系数
+**Engle-Granger两步法：**
 
-**Engle-Granger两步法**：
+1. 用OLS估计长期均衡关系：$y_t = \alpha + \beta x_t + \epsilon_t$
+2. 检验残差 $\epsilon_t$ 的平稳性
 
 ```python
-from statsmodels.regression.linear_model import OLS
-from statsmodels.tsa.stattools import coint
-
-def engle_granger_test(price_a, price_b, verbose=True):
+def engle_granger_test(y, x, print_results=True):
     """
     Engle-Granger协整检验
     
     Parameters:
     -----------
-    price_a, price_b : pd.Series
-        两个价格序列
-    verbose : bool
-        是否打印详细信息
+    y: pd.Series, 因变量
+    x: pd.Series, 自变量
+    print_results: bool, 是否打印结果
     
     Returns:
     --------
-    dict : 检验结果
+    residuals: pd.Series, 残差序列
+    beta: float, 协整系数
+    p_value: float, ADF检验p值
     """
     # 第一步：OLS回归
-    model = OLS(price_b, price_a, missing='drop').fit()
-    hedge_ratio = model.params[0]
-    spread = price_b - hedge_ratio * price_a
+    X = sm.add_constant(x)
+    model = sm.OLS(y, X).fit()
+    residuals = model.resid
+    beta = model.params[1]
     
-    # 第二步：检验残差的平稳性
-    adf_result = adfuller(spread, autolag='AIC')
+    # 第二步：残差平稳性检验
+    adf_stat, p_value, *_ = adfuller(residuals)
     
-    # 使用statsmodels内置的协整检验（更严格）
-    coint_result = coint(price_a, price_b)
+    if print_results:
+        print("Engle-Granger协整检验")
+        print("=" * 50)
+        print(f"协整方程: y = {model.params[0]:.4f} + {beta:.4f} * x")
+        print(f"R²: {model.rsquared:.4f}")
+        print(f"\n残差ADF检验:")
+        print(f"  ADF统计量: {adf_stat:.4f}")
+        print(f"  p值: {p_value:.4f}")
+        
+        if p_value <= 0.05:
+            print("  → 结论：存在协整关系（拒绝原假设）")
+        else:
+            print("  → 结论：不存在协整关系（接受原假设）")
     
-    output = {
-        'hedge_ratio': hedge_ratio,
-        'adf_statistic': adf_result[0],
-        'adf_pvalue': adf_result[1],
-        'coint_statistic': coint_result[0],
-        'coint_pvalue': coint_result[1],
-        'is_cointegrated': coint_result[1] < 0.05
-    }
-    
-    if verbose:
-        print('Hedge Ratio: {:.4f}'.format(hedge_ratio))
-        print('ADF Statistic: {:.4f}'.format(adf_result[0]))
-        print('ADF p-value: {:.4f}'.format(adf_result[1]))
-        print('Cointegration p-value: {:.4f}'.format(coint_result[1]))
-        print('Cointegrated: {}'.format(output['is_cointegrated']))
-    
-    return output
+    return residuals, beta, p_value
 
 # 示例使用
-# result = engle_granger_test(price_a, price_b)
+np.random.seed(42)
+n = 1000
+t = np.arange(n)
+
+# 生成协整序列
+z = np.cumsum(np.random.randn(n)) * 0.5  # 共同趋势
+x = z + np.random.randn(n) * 0.3
+y = 0.8 * z + np.random.randn(n) * 0.2
+
+residuals, beta, p_value = engle_granger_test(y, x)
 ```
 
-### 1.3 Johansen检验：多变量协整
+### 2.3 Johansen检验（多变量协整）
 
-当处理多资产组合时，Johansen检验更合适。
+当需要处理多个资产（如三组配对）时，Johansen检验更合适。
 
 ```python
 from statsmodels.tsa.vector_ar.vecm import coint_johansen
 
-def johansen_test(price_matrix, det_order=0, k_ar_diff=1):
+def johansen_test(data, det_order=0, k_ar_diff=1):
     """
-    Johansen协整检验（适用于多变量）
+    Johansen协整检验
     
     Parameters:
     -----------
-    price_matrix : pd.DataFrame
-        价格矩阵（每行是一个时间点，每列是一个资产）
-    det_order : int
-        确定性项的顺序（0: 无常数项，1: 有常数项，-1: 有常数项和趋势项）
-    k_ar_diff : int
-        VAR模型中的滞后阶数
-    
-    Returns:
-    --------
-    dict : 检验结果
+    data: pd.DataFrame, 多变量时间序列
+    det_order: int, 确定性项
+        -1: 无确定性项
+         0: 仅有截距
+         1: 截距和线性趋势
+    k_ar_diff: int, 滞后阶数
     """
-    result = coint_johansen(price_matrix, det_order, k_ar_diff)
+    result = coint_johansen(data, det_order, k_ar_diff)
     
-    # 提取特征值和迹统计量
-    eigenvalues = result.eig
-    trace_stat = result.lr1
-    max_stat = result.lr2
+    print("Johansen协整检验")
+    print("=" * 50)
+    print(f"迹统计量 (Trace Statistic):")
+    for i in range(len(result.lr1)):
+        print(f"  r≤{i}: {result.lr1[i]:.4f} (临界值5%: {result.cvt[i,1]:.4f})")
     
-    # 临界值（5%显著性水平）
-    critical_values = result.cvt
+    print(f"\n最大特征值统计量 (Max Eigenvalue):")
+    for i in range(len(result.lr2)):
+        print(f"  r={i}: {result.lr2[i]:.4f} (临界值5%: {result.cvm[i,1]:.4f})")
     
-    output = {
-        'eigenvalues': eigenvalues,
-        'trace_statistic': trace_stat,
-        'max_statistic': max_stat,
-        'critical_values': critical_values,
-        'num_cointegrating_vectors': np.sum(trace_stat > critical_values[:, 1])
-    }
-    
-    return output
+    # 判断协整关系个数
+    n_coint = sum(result.lr1 > result.cvt[:,1])
+    print(f"\n→ 结论：存在 {n_coint} 个协整关系")
+
+# 示例：三组配对
+np.random.seed(42)
+n = 500
+z = np.cumsum(np.random.randn(n))
+
+data = pd.DataFrame({
+    'Asset1': z + np.random.randn(n) * 0.2,
+    'Asset2': 0.8 * z + np.random.randn(n) * 0.15,
+    'Asset3': 1.2 * z + np.random.randn(n) * 0.25
+})
+
+johansen_test(data)
 ```
 
-## 二、配对选择：如何找到好的配对？
+## 三、配对交易的实战流程
 
-### 2.1 距离法（Distance Approach）
+### 3.1 步骤1：筛选候选配对
 
-最简单的方法：计算价格序列的标准化距离。
+寻找潜在协整配对的方法：
+
+1. **行业匹配**：同行业股票更可能有协整关系
+2. **市值相似**：避免流动性差异过大
+3. **业务相关**：供应链上下游、替代品等
 
 ```python
-from scipy.spatial.distance import pdist, squareform
-
-def distance_method(price_data, lookback=252):
+def screen_potential_pairs(stock_data, sector_data, correlation_threshold=0.6):
     """
-    距离法筛选配对
+    筛选潜在配对
     
     Parameters:
     -----------
-    price_data : pd.DataFrame
-        价格数据（股票×时间）
-    lookback : int
-        滚动窗口
+    stock_data: pd.DataFrame, 股票价格数据
+    sector_data: pd.Series, 行业分类
+    correlation_threshold: float, 相关性阈值
     
     Returns:
     --------
-    pd.DataFrame : 距离矩阵
+    potential_pairs: list, 潜在配对列表
     """
-    # 标准化价格
-    normalized_prices = price_data.apply(
-        lambda x: x / x.iloc[0] * 100, axis=0
-    )
-    
-    # 计算SSD（平方和距离）
-    ssd_matrix = pd.DataFrame(
-        index=price_data.columns,
-        columns=price_data.columns
-    )
-    
-    for i, stock_i in enumerate(price_data.columns):
-        for j, stock_j in enumerate(price_data.columns):
-            if i < j:
-                # 计算SSD
-                ssd = np.sum(
-                    (normalized_prices[stock_i] - normalized_prices[stock_j]) ** 2
-                )
-                ssd_matrix.loc[stock_i, stock_j] = ssd
-                ssd_matrix.loc[stock_j, stock_i] = ssd
-    
-    return ssd_matrix
-```
-
-### 2.2 相关性法
-
-高相关性不一定意味着协整，但可以作为初筛。
-
-```python
-def correlation_screening(price_data, threshold=0.8):
-    """
-    相关性筛选
-    
-    Parameters:
-    -----------
-    price_data : pd.DataFrame
-        价格数据
-    threshold : float
-        相关性阈值
-    
-    Returns:
-    --------
-    list : 高相关性配对列表
-    """
-    # 计算收益率相关性
-    returns = price_data.pct_change().dropna()
-    corr_matrix = returns.corr()
-    
-    # 找出高相关性配对
-    pairs = []
-    for i in range(len(corr_matrix.columns)):
-        for j in range(i+1, len(corr_matrix.columns)):
-            corr = corr_matrix.iloc[i, j]
-            if abs(corr) > threshold:
-                pairs.append({
-                    'stock_a': corr_matrix.columns[i],
-                    'stock_b': corr_matrix.columns[j],
-                    'correlation': corr
-                })
-    
-    return pairs
-```
-
-### 2.3 协整评分法（推荐）
-
-结合协整检验和基本面信息。
-
-```python
-def cointegration_screening(price_data, sectors=None):
-    """
-    协整评分法筛选配对
-    
-    Parameters:
-    -----------
-    price_data : pd.DataFrame
-        价格数据
-    sectors : dict
-        股票所属行业（可选）
-    
-    Returns:
-    --------
-    pd.DataFrame : 配对评分表
-    """
-    pairs_scores = []
-    
-    stocks = price_data.columns
+    potential_pairs = []
+    stocks = stock_data.columns
     
     for i in range(len(stocks)):
         for j in range(i+1, len(stocks)):
-            stock_a = stocks[i]
-            stock_b = stocks[j]
+            s1, s2 = stocks[i], stocks[j]
             
-            # 协整检验
-            try:
-                coint_result = coint(
-                    price_data[stock_a].dropna(),
-                    price_data[stock_b].dropna()
-                )
-                
-                # 计算评分
-                pvalue = coint_result[1]
-                
-                # 基本面评分（如果提供行业信息）
-                sector_score = 0
-                if sectors is not None:
-                    if sectors[stock_a] == sectors[stock_b]:
-                        sector_score = 1  # 同行业加分
-                
-                # 综合评分（p-value越小越好）
-                score = -np.log(pvalue) + sector_score
-                
-                pairs_scores.append({
-                    'stock_a': stock_a,
-                    'stock_b': stock_b,
-                    'p_value': pvalue,
-                    'sector_score': sector_score,
-                    'total_score': score
-                })
-            
-            except Exception as e:
-                # 数据不足或其他错误，跳过
+            # 检查是否同行业
+            if sector_data[s1] != sector_data[s2]:
                 continue
+            
+            # 计算相关性
+            corr = stock_data[s1].corr(stock_data[s2])
+            if corr < correlation_threshold:
+                continue
+            
+            # 初步协整检验
+            _, _, p_value = engle_granger_test(stock_data[s1], 
+                                                stock_data[s2], 
+                                                print_results=False)
+            
+            if p_value <= 0.05:
+                potential_pairs.append({
+                    'stock1': s1,
+                    'stock2': s2,
+                    'correlation': corr,
+                    'cointegration_pvalue': p_value
+                })
     
-    # 转换为DataFrame并排序
-    pairs_df = pd.DataFrame(pairs_scores)
-    if len(pairs_df) > 0:
-        pairs_df = pairs_df.sort_values('total_score', ascending=False)
-    
-    return pairs_df
+    return sorted(potential_pairs, key=lambda x: x['cointegration_pvalue'])
+
+# 模拟数据
+np.random.seed(42)
+dates = pd.date_range('2020-01-01', '2025-12-31', freq='D')
+stocks = [f'STOCK_{i}' for i in range(20)]
+stock_data = pd.DataFrame(np.random.randn(len(dates), 20) + 0.0002, 
+                         index=dates, columns=stocks)
+
+# 人为制造几对协整关系
+z1 = np.cumsum(np.random.randn(len(dates))) * 0.01
+stock_data['STOCK_0'] = z1 + np.random.randn(len(dates)) * 0.005
+stock_data['STOCK_1'] = 0.9 * z1 + np.random.randn(len(dates)) * 0.004
+
+sector_data = pd.Series(['Tech'] * 10 + ['Finance'] * 10, index=stocks)
+
+pairs = screen_potential_pairs(stock_data, sector_data)
+print(f"找到 {len(pairs)} 个潜在配对")
+if pairs:
+    print("\n前3个最佳配对:")
+    for p in pairs[:3]:
+        print(f"  {p['stock1']} - {p['stock2']}: p值={p['cointegration_pvalue']:.4f}")
 ```
 
-## 三、交易信号构建
+### 3.2 步骤2：估计交易信号
 
-### 3.1 简单Z-Score法
+基于协整关系构建交易信号。
 
 ```python
-def calculate_zscore(spread, window=20):
-    """
-    计算价差的Z-Score
+class PairsTradingStrategy:
+    """配对交易策略类"""
     
-    Parameters:
-    -----------
-    spread : pd.Series
-        价差序列
-    window : int
-        滚动窗口
+    def __init__(self, s1, s2, entry_z=2.0, exit_z=0.5, lookback=60):
+        """
+        初始化
+        
+        Parameters:
+        -----------
+        s1, s2: pd.Series, 两只股票的价格序列
+        entry_z: float, 入场z-score阈值
+        exit_z: float, 出场z-score阈值
+        lookback: int, 滚动窗口
+        """
+        self.s1 = s1
+        self.s2 = s2
+        self.entry_z = entry_z
+        self.exit_z = exit_z
+        self.lookback = lookback
+        
+        self.spread = None
+        self.zscore = None
+        self.positions = None
+        
+    def calculate_spread(self):
+        """计算价差（残差）"""
+        # OLS回归
+        X = sm.add_constant(self.s2)
+        model = sm.OLS(self.s1, X).fit()
+        self.beta = model.params[1]
+        self.intercept = model.params[0]
+        
+        # 计算价差
+        self.spread = self.s1 - (self.intercept + self.beta * self.s2)
+        
+        return self.spread
     
-    Returns:
-    --------
-    pd.Series : Z-Score序列
-    """
-    mean = spread.rolling(window=window).mean()
-    std = spread.rolling(window=window).std()
+    def calculate_zscore(self):
+        """计算z-score"""
+        if self.spread is None:
+            self.calculate_spread()
+        
+        # 滚动均值和标准差
+        rolling_mean = self.spread.rolling(window=self.lookback).mean()
+        rolling_std = self.spread.rolling(window=self.lookback).std()
+        
+        self.zscore = (self.spread - rolling_mean) / rolling_std
+        
+        return self.zscore
     
-    zscore = (spread - mean) / std
+    def generate_signals(self):
+        """生成交易信号"""
+        if self.zscore is None:
+            self.calculate_zscore()
+        
+        self.positions = pd.Series(0, index=self.s1.index)
+        
+        # 入场信号
+        self.positions[self.zscore > self.entry_z] = -1  # 做空价差
+        self.positions[self.zscore < -self.entry_z] = 1   # 做多价差
+        
+        # 出场信号
+        self.positions[(self.zscore > -self.exit_z) & 
+                       (self.zscore < self.exit_z)] = 0
+        
+        # 填充持仓
+        self.positions = self.positions.replace(to_replace=0, method='ffill')
+        
+        return self.positions
     
-    return zscore
+    def backtest(self, transaction_cost=0.001):
+        """回测策略"""
+        if self.positions is None:
+            self.generate_signals()
+        
+        # 计算每日收益
+        s1_returns = self.s1.pct_change()
+        s2_returns = self.s2.pct_change()
+        
+        # 策略收益（市场中性）
+        strategy_returns = (self.positions.shift(1) * 
+                           (s1_returns - self.beta * s2_returns))
+        
+        # 扣除交易成本
+        position_change = self.positions.diff().abs()
+        transaction_costs = position_change * transaction_cost
+        strategy_returns -= transaction_costs
+        
+        return strategy_returns.dropna()
 
-def generate_signals(zscore, entry_threshold=2.0, exit_threshold=0.5):
-    """
-    生成交易信号
-    
-    Parameters:
-    -----------
-    zscore : pd.Series
-        Z-Score序列
-    entry_threshold : float
-        入场阈值
-    exit_threshold : float
-        出场阈值
-    
-    Returns:
-    --------
-    pd.DataFrame : 交易信号（1: 多， -1: 空， 0: 平仓）
-    """
-    signals = pd.DataFrame(index=zscore.index)
-    signals['zscore'] = zscore
-    signals['position'] = 0
-    
-    # 入场信号
-    signals.loc[signals['zscore'] > entry_threshold, 'position'] = -1  # 做空价差
-    signals.loc[signals['zscore'] < -entry_threshold, 'position'] = 1  # 做多价差
-    
-    # 出场信号（向均值回归）
-    signals['position'] = signals['position'].replace(0, np.nan)
-    signals['position'] = signals['position'].fillna(method='ffill')
-    
-    # 当Z-Score回归到出场阈值时平仓
-    exit_long = (signals['position'] == 1) & (signals['zscore'] > -exit_threshold)
-    exit_short = (signals['position'] == -1) & (signals['zscore'] < exit_threshold)
-    
-    signals.loc[exit_long | exit_short, 'position'] = 0
-    signals['position'] = signals['position'].fillna(0)
-    
-    return signals
+# 示例使用
+np.random.seed(42)
+dates = pd.date_range('2022-01-01', '2025-12-31', freq='D')
+n = len(dates)
+
+# 生成协整价格序列
+z = np.cumsum(np.random.randn(n)) * 0.01
+s1_price = 100 + z + np.random.randn(n) * 0.5
+s2_price = 50 + 0.8 * z + np.random.randn(n) * 0.3
+
+s1 = pd.Series(s1_price, index=dates)
+s2 = pd.Series(s2_price, index=dates)
+
+# 初始化策略
+strategy = PairsTradingStrategy(s1, s2, entry_z=2.0, exit_z=0.5, lookback=60)
+returns = strategy.backtest(transaction_cost=0.001)
+
+# 计算绩效指标
+cumulative_returns = (1 + returns).cumprod()
+total_return = cumulative_returns.iloc[-1] - 1
+sharpe_ratio = returns.mean() / returns.std() * np.sqrt(252)
+max_drawdown = (cumulative_returns / cumulative_returns.cummax() - 1).min()
+
+print("配对交易策略回测结果")
+print("=" * 50)
+print(f"总收益率: {total_return:.2%}")
+print(f"年化收益率: {returns.mean() * 252:.2%}")
+print(f"年化波动率: {returns.std() * np.sqrt(252):.2%}")
+print(f"夏普比率: {sharpe_ratio:.2f}")
+print(f"最大回撤: {max_drawdown:.2%}")
+print(f"胜率: {(returns > 0).sum() / len(returns):.2%}")
 ```
 
-### 3.2 卡尔曼滤波法（高级）
+### 3.3 步骤3：风险管理
 
-卡尔曼滤波可以动态调整对冲比例。
+配对交易虽然市场中性，但仍需注意以下风险：
+
+1. **协整关系断裂**：基本面发生重大变化
+2. **流动性风险**：无法及时平仓
+3. **模型风险**：参数选择不当
 
 ```python
-from pykalman import KalmanFilter
-
-def kalman_filter_hedge_ratio(price_a, price_b):
+def risk_management(prices_s1, prices_s2, positions, max_holding_period=20,
+                   stop_loss_z=3.0):
     """
-    使用卡尔曼滤波动态估计对冲比例
+    风险管理模块
     
     Parameters:
     -----------
-    price_a, price_b : pd.Series
-        两个价格序列
+    prices_s1, prices_s2: pd.Series, 价格序列
+    positions: pd.Series, 持仓信号
+    max_holding_period: int, 最大持仓周期
+    stop_loss_z: float, 止损z-score
     
     Returns:
     --------
-    dict : 包含动态对冲比例和价差
+    adjusted_positions: pd.Series, 调整后的持仓
     """
-    # 准备观测矩阵
-    X = price_a.values.reshape(-1, 1)
-    Y = price_b.values
+    adjusted_positions = positions.copy()
     
-    # 初始化卡尔曼滤波
-    kf = KalmanFilter(
-        transition_matrices=np.eye(1),
-        observation_matrices=X.reshape(-1, 1, 1),
-        initial_state_mean=1.0,
-        initial_state_covariance=1.0,
-        observation_covariance=1.0,
-        transition_covariance=0.01
-    )
+    # 1. 强制平仓：持仓时间过长
+    holding_period = positions.diff().ne(0).cumsum()
+    adjusted_positions[holding_period > max_holding_period] = 0
     
-    # 滤波
-    state_means, state_covariances = kf.filter(Y)
+    # 2. 止损：z-score突破止损线
+    spread = prices_s1 - prices_s2
+    zscore = (spread - spread.rolling(60).mean()) / spread.rolling(60).std()
     
-    # 提取动态对冲比例
-    dynamic_hedge_ratio = state_means.flatten()
+    adjusted_positions[zscore.abs() > stop_loss_z] = 0
     
-    # 计算动态价差
-    spread = price_b - dynamic_hedge_ratio * price_a
+    # 3. 协整关系监测：滚动检验
+    for i in range(120, len(prices_s1), 20):
+        window_data1 = prices_s1.iloc[i-120:i]
+        window_data2 = prices_s2.iloc[i-120:i]
+        
+        _, _, p_value = engle_granger_test(window_data1, window_data2, 
+                                           print_results=False)
+        
+        if p_value > 0.10:  # 协整关系失效
+            adjusted_positions.iloc[i:] = 0
+            print(f"警告：在第 {i} 期检测到协整关系断裂")
+            break
     
-    return {
-        'hedge_ratio': pd.Series(dynamic_hedge_ratio, index=price_a.index),
-        'spread': spread
-    }
+    return adjusted_positions
+
+# 应用风险管理
+adjusted_pos = risk_management(s1, s2, strategy.positions)
+
+# 对比调整前后
+original_returns = strategy.backtest()
+adjusted_returns = (adjusted_pos.shift(1) * 
+                    (s1.pct_change() - strategy.beta * s2.pct_change())).dropna()
+
+print("\n风险管理效果对比:")
+print(f"  原始策略夏普比率: {original_returns.mean() / original_returns.std() * np.sqrt(252):.2f}")
+print(f"  调整后夏普比率: {adjusted_returns.mean() / adjusted_returns.std() * np.sqrt(252):.2f}")
 ```
 
-### 3.3 机器学习优化（前沿）
+## 四、实际案例分析
 
-使用机器学习模型预测价差的方向。
+### 4.1 可口可乐 vs 百事可乐
+
+这是配对交易的经典案例。让我们用模拟数据演示。
+
+```python
+# 模拟可口可乐和百事可乐的股价（2020-2025）
+np.random.seed(42)
+dates = pd.date_range('2020-01-01', '2025-12-31', freq='D')
+n = len(dates)
+
+# 共同趋势（行业因子）
+industry_trend = np.cumsum(np.random.randn(n)) * 0.005
+
+# 个体差异
+ko_specific = np.random.randn(n) * 0.002
+pep_specific = np.random.randn(n) * 0.002
+
+# 构建价格序列
+ko_price = 50 + industry_trend + ko_specific
+pep_price = 45 + 0.9 * industry_trend + pep_specific
+
+KO = pd.Series(ko_price, index=dates)
+PEP = pd.Series(pep_price, index=dates)
+
+# 协整检验
+residuals, beta, p_value = engle_granger_test(KO, PEP)
+
+# 可视化
+fig, axes = plt.subplots(3, 1, figsize=(14, 10))
+
+# 子图1：价格序列
+ax1 = axes[0]
+ax1.plot(KO.index, KO.values, label='KO (Coca-Cola)', linewidth=2)
+ax1.plot(PEP.index, PEP.values, label='PEP (PepsiCo)', linewidth=2)
+ax1.set_title('KO vs PEP 价格走势', fontsize=14, fontweight='bold')
+ax1.legend()
+ax1.grid(True, alpha=0.3)
+
+# 子图2：价差
+ax2 = axes[1]
+spread = KO - beta * PEP
+ax2.plot(spread.index, spread.values, color='green', linewidth=1.5)
+ax2.axhline(y=spread.mean(), color='red', linestyle='--', 
+            label=f'均值: {spread.mean():.2f}')
+ax2.fill_between(spread.index, 
+                 spread.mean() - 2*spread.std(),
+                 spread.mean() + 2*spread.std(),
+                 alpha=0.2, color='green', label='±2倍标准差')
+ax2.set_title('价差（残差）序列', fontsize=14, fontweight='bold')
+ax2.legend()
+ax2.grid(True, alpha=0.3)
+
+# 子图3：z-score
+ax3 = axes[2]
+zscore = (spread - spread.rolling(60).mean()) / spread.rolling(60).std()
+ax3.plot(zscore.index, zscore.values, color='purple', linewidth=1.5)
+ax3.axhline(y=2, color='red', linestyle='--', label='入场阈值 (±2)')
+ax3.axhline(y=-2, color='red', linestyle='--')
+ax3.axhline(y=0.5, color='orange', linestyle=':', label='出场阈值 (±0.5)')
+ax3.axhline(y=-0.5, color='orange', linestyle=':')
+ax3.set_title('Z-Score交易信号', fontsize=14, fontweight='bold')
+ax3.legend()
+ax3.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/pairs-analysis.png', 
+            dpi=300, bbox_inches='tight')
+print("图表已保存: pairs-analysis.png")
+```
+
+### 4.2 参数优化与鲁棒性检验
+
+```python
+def parameter_optimization(s1, s2, entry_z_range, exit_z_range, lookback_range):
+    """
+    参数优化：寻找最佳参数组合
+    
+    Parameters:
+    -----------
+    s1, s2: pd.Series, 价格序列
+    entry_z_range: list, 入场阈值候选
+    exit_z_range: list, 出场阈值候选
+    lookback_range: list, 滚动窗口候选
+    
+    Returns:
+    --------
+    best_params: dict, 最佳参数
+    performance_grid: pd.DataFrame, 绩效矩阵
+    """
+    results = []
+    
+    for entry_z in entry_z_range:
+        for exit_z in exit_z_range:
+            for lookback in lookback_range:
+                if exit_z >= entry_z:
+                    continue
+                
+                # 初始化策略
+                strategy = PairsTradingStrategy(s1, s2, entry_z, exit_z, lookback)
+                returns = strategy.backtest()
+                
+                if len(returns) == 0:
+                    continue
+                
+                # 计算绩效
+                sharpe = returns.mean() / returns.std() * np.sqrt(252)
+                total_ret = (1 + returns).cumprod().iloc[-1] - 1
+                
+                results.append({
+                    'entry_z': entry_z,
+                    'exit_z': exit_z,
+                    'lookback': lookback,
+                    'sharpe': sharpe,
+                    'total_return': total_ret,
+                    'n_trades': strategy.positions.diff().abs().sum() / 2
+                })
+    
+    performance_grid = pd.DataFrame(results)
+    best_params = performance_grid.loc[performance_grid['sharpe'].idxmax()]
+    
+    return best_params, performance_grid
+
+# 参数优化示例
+entry_range = [1.5, 2.0, 2.5, 3.0]
+exit_range = [0.0, 0.5, 1.0]
+lookback_range = [30, 60, 90, 120]
+
+best_params, perf_grid = parameter_optimization(s1, s2, 
+                                                entry_range, 
+                                                exit_range, 
+                                                lookback_range)
+
+print("参数优化结果:")
+print("=" * 50)
+print(f"最佳参数组合:")
+print(f"  入场阈值: {best_params['entry_z']}")
+print(f"  出场阈值: {best_params['exit_z']}")
+print(f"  滚动窗口: {best_params['lookback']}")
+print(f"  夏普比率: {best_params['sharpe']:.2f}")
+print(f"  总收益率: {best_params['total_return']:.2%}")
+print(f"  交易次数: {best_params['n_trades']:.0f}")
+```
+
+## 五、高级话题与扩展
+
+### 5.1 多因子配对交易
+
+传统的配对交易只使用价格信息，可以扩展至多因子模型。
+
+```python
+def multifactor_pairs_trading(s1, s2, factor_data, n_factors=3):
+    """
+    多因子配对交易
+    
+    Parameters:
+    -----------
+    s1, s2: pd.Series, 价格序列
+    factor_data: pd.DataFrame, 因子数据（如市值、PB、动量等）
+    n_factors: int, 使用的因子数量
+    """
+    # 合并价格与因子数据
+    data = pd.concat([s1, s2, factor_data], axis=1)
+    data.columns = ['s1', 's2'] + list(factor_data.columns)
+    
+    # 用因子解释价格差异
+    X = sm.add_constant(data[factor_data.columns[:n_factors]])
+    model = sm.OLS(data['s1'], X).fit()
+    
+    # 残差包含因子无法解释的部分
+    residuals = model.resid
+    
+    # 基于残差构建交易信号
+    zscore = (residuals - residuals.rolling(60).mean()) / residuals.rolling(60).std()
+    
+    # ...（后续交易逻辑类似）
+    
+    return residuals, zscore
+
+# 示例因子数据
+np.random.seed(42)
+factor_data = pd.DataFrame({
+    'MarketCap': np.random.lognormal(10, 1, len(dates)),
+    'PB': np.random.lognormal(0, 0.5, len(dates)),
+    'Momentum': np.random.randn(len(dates)),
+    'Volatility': np.random.uniform(0.1, 0.5, len(dates))
+}, index=dates)
+
+residuals, zscore = multifactor_pairs_trading(s1, s2, factor_data, n_factors=3)
+```
+
+### 5.2 机器学习在配对交易中的应用
+
+使用机器学习方法改进配对选择和风险预测。
 
 ```python
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
-def ml_signal_generation(spread, lookback=20, forecast_horizon=5):
+def ml_enhanced_pairs_trading(s1, s2, additional_features):
     """
-    使用随机森林生成交易信号
+    机器学习增强的配对交易
     
     Parameters:
     -----------
-    spread : pd.Series
-        价差序列
-    lookback : int
-        特征回溯期
-    forecast_horizon : int
-        预测周期
-    
-    Returns:
-    --------
-    pd.DataFrame : 包含预测信号的DataFrame
+    s1, s2: pd.Series, 价格序列
+    additional_features: pd.DataFrame, 额外特征（技术指标、宏观变量等）
     """
-    # 构建特征
-    features = pd.DataFrame(index=spread.index)
-    features['spread'] = spread
-    features['mean_5'] = spread.rolling(window=5).mean()
-    features['mean_20'] = spread.rolling(window=20).mean()
-    features['std_20'] = spread.rolling(window=20).std()
-    features['zscore'] = (spread - features['mean_20']) / features['std_20']
-    features['momentum_5'] = spread.diff(5)
-    features['volatility'] = spread.rolling(window=20).std()
+    # 构建特征矩阵
+    spread = s1 - s2
+    features = pd.DataFrame({
+        'zscore': (spread - spread.rolling(60).mean()) / spread.rolling(60).std(),
+        'volatility': spread.rolling(20).std(),
+        'volume_ratio': s1.pct_change().abs() / s2.pct_change().abs()
+    })
+    features = pd.concat([features, additional_features], axis=1).dropna()
     
-    # 构建标签（未来价差方向）
-    future_spread = spread.shift(-forecast_horizon)
-    labels = np.sign(future_spread - spread)
+    # 构建标签：未来5日收益是否为正
+    future_returns = spread.pct_change(5).shift(-5)
+    labels = (future_returns > 0).astype(int)
     
-    # 合并数据
-    data = pd.concat([features, labels.rename('label')], axis=1).dropna()
-    
-    # 训练测试分割
-    X = data[features.columns]
-    y = data['label']
-    
+    # 训练随机森林
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.3, random_state=42
+        features[:-100], labels[:-100], test_size=0.3, random_state=42
     )
     
-    # 训练模型
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
-    model.fit(X_train, y_train)
+    rf = RandomForestClassifier(n_estimators=100, random_state=42)
+    rf.fit(X_train, y_train)
     
-    # 预测
-    predictions = model.predict(X_test)
+    # 预测信号
+    predictions = rf.predict(features[-100:])
+    signal_strength = rf.predict_proba(features[-100:])[:, 1]
     
-    # 评估
-    accuracy = model.score(X_test, y_test)
-    print('Model Accuracy: {:.2%}'.format(accuracy))
-    
-    return predictions, model
+    return predictions, signal_strength
+
+# 示例使用
+additional_features = pd.DataFrame({
+    'rsi': np.random.uniform(30, 70, len(dates)),
+    'macd': np.random.randn(len(dates))
+}, index=dates)
+
+predictions, proba = ml_enhanced_pairs_trading(s1, s2, additional_features[-200:])
+print(f"ML预测准确率: {(predictions == (s1.pct_change(5).shift(-5)[-100:] > 0).astype(int)).mean():.2%}")
 ```
 
-## 四、风险管理与仓位控制
+## 六、总结与实践建议
 
-### 4.1 止损策略
+### 6.1 核心要点回顾
 
-```python
-def add_stop_loss(signals, spread, max_loss=0.05, max_holding_period=20):
-    """
-    添加止损逻辑
-    
-    Parameters:
-    -----------
-    signals : pd.DataFrame
-        交易信号
-    spread : pd.Series
-        价差序列
-    max_loss : float
-        最大亏损比例
-    max_holding_period : int
-        最大持有期（交易日）
-    
-    Returns:
-    --------
-    pd.DataFrame : 更新后的信号
-    """
-    signals = signals.copy()
-    entry_price = None
-    holding_days = 0
-    
-    for i, date in enumerate(signals.index):
-        if signals.loc[date, 'position'] != 0:
-            if entry_price is None:
-                # 新入场
-                entry_price = spread.loc[date]
-                holding_days = 0
-            else:
-                # 持有中
-                holding_days += 1
-                current_price = spread.loc[date]
-                
-                # 计算亏损比例
-                if signals.loc[date, 'position'] == 1:
-                    loss = (entry_price - current_price) / entry_price
-                else:  # position == -1
-                    loss = (current_price - entry_price) / entry_price
-                
-                # 止损或止时
-                if loss > max_loss or holding_days > max_holding_period:
-                    signals.loc[date, 'position'] = 0
-                    entry_price = None
-                    holding_days = 0
-        else:
-            # 平仓状态
-            entry_price = None
-            holding_days = 0
-    
-    return signals
-```
+1. **理论基础**：协整是配对交易的核心，确保长期均衡关系存在
+2. **实战流程**：筛选配对 → 估计信号 → 回测验证 → 风险管理
+3. **风险控制**：协整断裂、流动性风险、模型风险不可忽视
 
-### 4.2 仓位管理
+### 6.2 实践建议
 
-```python
-def position_sizing(zscore, base_position=10000, max_position=50000):
-    """
-    根据Z-Score动态调整仓位
-    
-    Parameters:
-    -----------
-    zscore : pd.Series
-        Z-Score序列
-    base_position : float
-        基础仓位金额
-    max_position : float
-        最大仓位金额
-    
-    Returns:
-    --------
-    pd.Series : 建议仓位序列
-    """
-    # Z-Score绝对值越大，仓位越高（但不超过上限）
-    position_size = base_position * np.abs(zscore)
-    position_size = position_size.clip(upper=max_position)
-    
-    return position_size
-```
+**配对选择：**
+- 优先选择同行业、业务模式相似的公司
+- 使用多种协整检验方法交叉验证
+- 避免过度优化的参数
 
-## 五、实战案例：A股配对交易
+**交易执行：**
+- 使用限价单降低冲击成本
+- 动态调整仓位大小（根据价差波动率）
+- 设置合理的止损和止盈
 
-### 5.1 数据获取与预处理
+**持续监控：**
+- 定期重新估计协整关系
+- 监测基本面变化（财报、重大事件）
+- 记录交易日志，持续优化策略
 
-```python
-import tushare as ts
+### 6.3 未来展望
 
-# 设置tushare pro token
-ts.set_token('your_token_here')
-pro = ts.pro_api()
+随着市场有效性提升，传统配对交易的超额收益正在下降。未来的方向包括：
 
-def get_stock_data(stock_code, start_date, end_date):
-    """
-    获取股票数据
-    """
-    df = pro.daily(
-        ts_code=stock_code,
-        start_date=start_date,
-        end_date=end_date
-    )
-    df['trade_date'] = pd.to_datetime(df['trade_date'])
-    df = df.set_index('trade_date').sort_index()
-    
-    return df['close']
-
-# 示例：获取茅台和五粮液的数据
-moutai = get_stock_data('600519.SH', '20200101', '20241231')
-wuliangye = get_stock_data('000858.SZ', '20200101', '20241231')
-
-# 对齐数据
-prices = pd.concat(
-    [moutai.rename('moutai'), wuliangye.rename('wuliangye')],
-    axis=1
-).dropna()
-```
-
-### 5.2 协整检验与信号生成
-
-```python
-# 协整检验
-coint_result = engle_granger_test(
-    prices['moutai'], 
-    prices['wuliangye']
-)
-
-print('协整检验结果：')
-print('对冲比例: {:.4f}'.format(coint_result['hedge_ratio']))
-print('协整p-value: {:.4f}'.format(coint_result['coint_pvalue']))
-
-# 计算价差
-hedge_ratio = coint_result['hedge_ratio']
-spread = prices['wuliangye'] - hedge_ratio * prices['moutai']
-
-# 计算Z-Score
-zscore = calculate_zscore(spread, window=20)
-
-# 生成信号
-signals = generate_signals(zscore, entry_threshold=2.0, exit_threshold=0.5)
-
-# 添加止损
-signals = add_stop_loss(signals, spread, max_loss=0.05, max_holding_period=20)
-```
-
-### 5.3 回测与绩效分析
-
-```python
-def backtest_pair_trading(prices, signals, hedge_ratio):
-    """
-    回测配对交易策略
-    
-    Parameters:
-    -----------
-    prices : pd.DataFrame
-        价格数据
-    signals : pd.DataFrame
-        交易信号
-    hedge_ratio : float
-        对冲比例
-    
-    Returns:
-    --------
-    pd.DataFrame : 回测结果
-    """
-    # 计算策略收益
-    stock_a_ret = prices.iloc[:, 0].pct_change()
-    stock_b_ret = prices.iloc[:, 1].pct_change()
-    
-    # 策略收益 = 信号 * (股票B收益 - 对冲比例 * 股票A收益)
-    strategy_ret = signals['position'].shift(1) * \
-                   (stock_b_ret - hedge_ratio * stock_a_ret)
-    
-    # 累积收益
-    cumulative_ret = (1 + strategy_ret).cumprod()
-    
-    # 计算绩效指标
-    total_return = cumulative_ret.iloc[-1] - 1
-    annual_return = strategy_ret.mean() * 252
-    annual_vol = strategy_ret.std() * np.sqrt(252)
-    sharpe = annual_return / annual_vol if annual_vol != 0 else 0
-    max_dd = (cumulative_ret / cumulative_ret.cummax() - 1).min()
-    
-    performance = {
-        'Total Return': '{:.2%}'.format(total_return),
-        'Annual Return': '{:.2%}'.format(annual_return),
-        'Annual Volatility': '{:.2%}'.format(annual_vol),
-        'Sharpe Ratio': '{:.2f}'.format(sharpe),
-        'Max Drawdown': '{:.2%}'.format(max_dd),
-        'Win Rate': '{:.2%}'.format(
-            (strategy_ret > 0).sum() / (strategy_ret != 0).sum()
-        )
-    }
-    
-    return strategy_ret, cumulative_ret, performance
-
-# 执行回测
-strategy_ret, cumulative_ret, performance = backtest_pair_trading(
-    prices, signals, hedge_ratio
-)
-
-print('\n策略绩效：')
-for key, value in performance.items():
-    print('{}: {}'.format(key, value))
-```
-
-### 5.4 可视化
-
-```python
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-sns.set_style('whitegrid')
-
-fig, axes = plt.subplots(4, 1, figsize=(15, 16))
-
-# 1. 价格序列
-ax1 = axes[0]
-ax1.plot(prices.index, prices.iloc[:, 0], label=prices.columns[0])
-ax1.plot(prices.index, prices.iloc[:, 1], label=prices.columns[1])
-ax1.set_title('Price Series')
-ax1.legend()
-
-# 2. 价差与Z-Score
-ax2 = axes[1]
-ax2.plot(spread.index, spread, label='Spread', color='blue')
-ax2.set_title('Spread')
-ax2_twin = ax2.twinx()
-ax2_twin.plot(zscore.index, zscore, label='Z-Score', color='red', alpha=0.6)
-ax2_twin.axhline(y=2.0, color='black', linestyle='--', alpha=0.5)
-ax2_twin.axhline(y=-2.0, color='black', linestyle='--', alpha=0.5)
-ax2_twin.axhline(y=0.5, color='gray', linestyle=':', alpha=0.5)
-ax2_twin.axhline(y=-0.5, color='gray', linestyle=':', alpha=0.5)
-
-# 3. 交易信号
-ax3 = axes[2]
-ax3.plot(zscore.index, zscore, color='gray', alpha=0.5)
-for i in range(len(signals)):
-    if signals['position'].iloc[i] == 1:
-        ax3.scatter(signals.index[i], zscore.iloc[i], 
-                   color='green', marker='^', s=100, label='Long' if i==0 else '')
-    elif signals['position'].iloc[i] == -1:
-        ax3.scatter(signals.index[i], zscore.iloc[i], 
-                   color='red', marker='v', s=100, label='Short' if i==0 else '')
-ax3.set_title('Trading Signals')
-
-# 4. 累积收益
-ax4 = axes[3]
-ax4.plot(cumulative_ret.index, cumulative_ret, label='Strategy', color='blue')
-ax4.plot(cumulative_ret.index, 
-         (1 + prices.iloc[:, 1].pct_change()).cumprod(), 
-         label='Buy & Hold (Stock B)', color='gray', alpha=0.5)
-ax4.set_title('Cumulative Returns')
-ax4.legend()
-
-plt.tight_layout()
-plt.savefig('pair_trading_backtest.png', dpi=300, bbox_inches='tight')
-```
-
-## 六、实战中的注意事项
-
-### 6.1 数据质量问题
-
-- **幸存者偏差**：确保使用的数据包含已退市的股票
-- **前复权调整**：必须使用前复权价格，避免分红送股影响
-- **停牌处理**：停牌期间的信号需要向前填充或跳过
-
-### 6.2 交易成本
-
-```python
-def add_transaction_costs(strategy_ret, signals, commission=0.0003, 
-                         slippage=0.001):
-    """
-    加入交易成本
-    
-    Parameters:
-    -----------
-    strategy_ret : pd.Series
-        策略收益率
-    signals : pd.DataFrame
-        交易信号
-    commission : float
-        佣金比例
-    slippage : float
-        滑点比例
-    
-    Returns:
-    --------
-    pd.Series : 净收益
-    """
-    # 计算换手
-    position_change = signals['position'].diff().abs()
-    
-    # 交易成本 = 佣金 + 滑点
-    transaction_cost = position_change * (commission + slippage)
-    
-    # 净收益
-    net_ret = strategy_ret - transaction_cost
-    
-    return net_ret
-```
-
-### 6.3 风险控制
-
-**核心原则**：
-1. 单一配对持仓不超过总资金的10%
-2. 同时持有5-10个低相关性配对
-3. 设置配对级别止损（5%）和组合级别止损（15%）
-4. 定期重新检验协整关系（月度）
-
-## 七、总结与展望
-
-### 7.1 配对交易的优缺点
-
-**优点**：
-- 市场中性，降低系统性风险
-- 收益来源明确（均值回归）
-- 适合震荡市场
-
-**缺点**：
-- 趋势市场中表现差
-- 协整关系可能断裂
-- 交易成本敏感
-
-### 7.2 改进方向
-
-1. **多因子配对**：不只依赖价格，加入基本面、技术面因子
-2. **机器学习**：用深度学习模型捕捉非线性关系
-3. **高频数据**：利用分钟级或tick级数据提高频率
-4. **跨市场配对**：不同交易所、不同国家的同类资产
-
-### 7.3 实盘建议
-
-- **先模拟后实盘**：至少3个月模拟盘验证
-- **小资金起步**：初始资金不超过总资金的20%
-- **持续优化**：每月回顾策略表现，调整参数
-- **保持耐心**：配对交易是概率游戏，需要长期坚持
+1. **高频配对交易**：利用分钟级或秒级数据
+2. **跨市场配对**：股票-期货、股票-ETF套利
+3. **深度学习**：使用LSTM、Transformer捕捉非线性关系
 
 ---
 
-## 参考文献
+**附录：完整代码仓库**
 
-1. Vidyamurthy, G. (2004). "Pairs Trading: Quantitative Methods and Analysis." Wiley.
-2. Pole, A. (2007). "Statistical Arbitrage: Algorithmic Trading Insights and Techniques." Wiley.
-3. Engle, R. F., & Granger, C. W. (1987). "Co-integration and Error Correction: Representation, Estimation, and Testing." Econometrica.
-4. Johansen, S. (1991). "Estimation and Hypothesis Testing of Cointegration Vectors in Gaussian Vector Autoregressive Models." Econometrica.
-5. Elliott, G., Rothenberg, T. J., & Stock, J. H. (1996). "Efficient Tests for an Autoregressive Unit Root." Econometrica.
+本文所有代码示例已上传至GitHub：[链接]（包含数据获取、策略回测、风险管理的完整实现）
 
-## 代码仓库
+**参考文献：**
 
-完整代码已上传至GitHub：  
-[https://github.com/quantstrategy/pair-trading-cointegration](https://github.com/quantstrategy/pair-trading-cointegration)
+1. Vidyamurthy, G. (2004). "Pairs Trading: Quantitative Methods and Analysis."
+2. Elliott, R. J., et al. (2005). "Pairs trading." Quantitative Finance.
+3. Gatev, E., et al. (2006). "Pairs Trading: Performance of a Relative-Value Arbitrage Rule." Review of Financial Studies.
 
-## 附录：常用Python库
-
-```python
-# 数据处理
-import pandas as pd
-import numpy as np
-
-# 统计分析
-import statsmodels.api as sm
-from statsmodels.tsa.stattools import adfuller, coint
-from statsmodels.tsa.vector_ar.vecm import coint_johansen
-
-# 机器学习
-from sklearn.ensemble import RandomForestClassifier
-from pykalman import KalmanFilter
-
-# 可视化
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-# 金融数据
-import tushare as ts  # A股数据
-import yfinance as yf  # 美股数据
-```
-
----
-
-**免责声明**：本文仅供学术研究和教育目的，不构成投资建议。配对交易存在风险，历史表现不代表未来收益。在实际应用中，请结合专业投资顾问的意见，并进行充分的风险评估。
+*免责声明：本文仅供学术交流，不构成投资建议。实际投资需谨慎评估风险。*
