@@ -1,11 +1,11 @@
 ---
 title: "配对交易与协整分析：统计套利的理论与实践"
-description: "配对交易是最经典的统计套利策略之一。本文深入探讨协整理论、配对筛选方法、交易信号构建和风险管理，并提供完整的Python实现框架。"
-date: "2026-06-16"
-tags: ["配对交易", "协整分析", "统计套利", "市场中性"]
-topic: "quant"
-difficulty: "进阶"
-image: "/images/pair-trading-cointegration/cover.jpg"
+publishDate: '2026-06-16'
+description: "配对交易与协整分析 - halo的技术博客"
+tags:
+ - AI观察
+language: Chinese
+difficulty: intermediate
 ---
 
 # 配对交易与协整分析：统计套利的理论与实践

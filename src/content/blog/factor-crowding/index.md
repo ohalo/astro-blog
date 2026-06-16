@@ -1,11 +1,10 @@
 ---
 title: "因子拥挤度监测与规避：识别因子失效的早期信号"
-description: "因子拥挤是量化投资中的重要风险来源。本文深入探讨因子拥挤的形成机制、监测指标和规避策略，帮助投资者在因子失效前及时调整持仓。"
-date: "2026-06-16"
-tags: ["因子投资", "风险管理", "拥挤度", "量化策略"]
-topic: "quant"
-difficulty: "进阶"
-image: "/images/factor-crowding/cover.jpg"
+publishDate: '2026-06-16'
+description: "因子拥挤度监测与规避 - halo的技术博客"
+tags:
+ - AI观察
+language: Chinese
 ---
 
 # 因子拥挤度监测与规避：识别因子失效的早期信号
