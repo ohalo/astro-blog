@@ -1,6 +1,6 @@
 ---
 title: "配对交易与协整分析：市场中性策略的理论与实践"
-date: 2026-06-17
+publishDate: 2026-06-17
 description: "深入讲解配对交易的核心原理——协整关系，以及如何用Python实现完整的配对交易策略，包括股票对选取、信号生成、风险管理和绩效评估。"
 tags: ["配对交易", "协整分析", "市场中性", "统计套利", "量化策略"]
 image: "/images/pair-trading-cointegration/cover.jpg"
