@@ -10,8 +10,6 @@ heroImage: "/images/statistical-arbitrage-mean-reversion/hero.jpg"
 heroAlt: "统计套利策略示意图"
 ---
 
-# 统计套利：均值回归策略
-
 **统计套利（Statistical Arbitrage）**是量化投资中历史最悠久、理论最完备的策略之一。其核心思想是利用资产价格的统计关系（如协整、相关性），构建市场中性组合，从价格的均值回归中获取稳定收益。
 
 本文将系统介绍统计套利的理论基础、配对交易实务、Python实现，以及风险管理要点。
