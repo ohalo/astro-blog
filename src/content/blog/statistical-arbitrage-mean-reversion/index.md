@@ -1,8 +1,10 @@
 ---
 title: "统计套利：均值回归策略"
-description: "深入探讨统计套利理论与均值回归策略的实践应用，学习如何利用协整关系和配对交易捕捉市场定价偏差带来的收益机会。"
-date: "2026-06-17"
-tags: ["统计套利", "均值回归", "配对交易", "协整分析", "市场中性"]
+publishDate: '2026-06-17'
+description: "统计套利：均值回归策略 - halo的技术博客"
+tags:
+ - AI观察
+language: Chinese
 image: "/images/statistical-arbitrage-mean-reversion/cover.jpg"
 ---
 
