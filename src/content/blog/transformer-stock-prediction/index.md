@@ -1,6 +1,6 @@
 ---
 title: "Transformer模型股价预测"
-publishDate: 2026-06-15
+publishDate: '2026-06-15'
 description: "深入探讨Transformer模型在股价预测中的应用，从Attention机制到时间序列建模，带你用PyTorch构建端到端的股价预测系统。"
 tags: ["深度学习", "Transformer", "股价预测", "PyTorch", "时间序列"]
 cover: "/images/transformer-stock-prediction/cover.jpg"

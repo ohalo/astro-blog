@@ -1,7 +1,7 @@
 ---
 title: "多因子模型风险分解：从理论到实战的完整指南"
 description: "深入解析多因子模型的风险分解方法，包括因子暴露分析、特异性风险识别、组合风险归因，并提供完整的Python实现代码"
-publishDate: 2026-06-17
+publishDate: '2026-06-17'
 language: Chinese
 category: "量化交易"
 tags: ["多因子模型", "风险分解", "因子暴露", "投资组合管理", "Python量化"]

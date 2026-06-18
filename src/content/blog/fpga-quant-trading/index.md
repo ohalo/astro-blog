@@ -1,10 +1,10 @@
 ---
 title: "FPGA在量化交易中的应用"
-description: "深入探讨FPGA（现场可编程门阵列）在量化交易中的革命性应用，从硬件加速、低延迟交易到策略实现的完整技术栈。"
-pubDate: 2026-06-18
-tags: ["FPGA", "硬件加速", "低延迟交易", "高频交易", "量化基础设施"]
-category: "量化交易"
-cover: "/images/fpga-quant-trading/cover.jpg"
+publishDate: '2026-06-18'
+description: "FPGA在量化交易中的应用 - halo的技术博客"
+tags:
+ - 硬件数码
+language: Chinese
 ---
 
 # FPGA在量化交易中的应用

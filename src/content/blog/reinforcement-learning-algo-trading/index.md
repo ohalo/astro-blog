@@ -1,7 +1,7 @@
 ---
 title: "强化学习算法交易：从Q-Learning到深度强化学习的量化实践"
 description: "深入探讨强化学习在量化交易中的应用，从传统的Q-Learning算法到现代深度强化学习方法（DQN、PPO、A3C），包含完整的Python实战代码和回测框架。"
-publishDate: 2026-06-15
+publishDate: '2026-06-15'
 tags: ["强化学习", "算法交易", "Q-Learning", "深度强化学习", "DQN", "PPO", "量化投资"]
 language: "zh"
 difficulty: "intermediate"

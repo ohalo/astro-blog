@@ -1,7 +1,7 @@
 ---
 title: "因子拥挤度监测与规避：量化投资中的「踩踏风险」防范"
 description: "深入解析因子拥挤的形成机制、监测指标与规避策略，通过Python实盘级代码帮助量化交易者识别并防范因子拥挤风险，保护策略alpha。"
-publishDate: 2026-06-17
+publishDate: '2026-06-17'
 language: Chinese
 tags: ["因子投资", "风险管理", "因子拥挤", "量化策略", "alpha衰减"]
 category: "因子研究"

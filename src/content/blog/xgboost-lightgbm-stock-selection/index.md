@@ -1,10 +1,10 @@
 ---
 title: "XGBoost与LightGBM在量化选股中的应用"
-description: "深入探讨如何利用XGBoost和LightGBM这两大梯度提升框架构建量化选股模型，从特征工程、模型训练到实盘部署的完整流程。"
-pubDate: 2026-06-18
-tags: ["机器学习", "量化选股", "XGBoost", "LightGBM", "梯度提升"]
-category: "量化交易"
-cover: "/images/xgboost-lightgbm-stock-selection/cover.jpg"
+publishDate: '2026-06-18'
+description: "XGBoost与LightGBM在量化选股中的应用 - halo的技术博客"
+tags:
+ - AI工具
+language: Chinese
 ---
 
 # XGBoost与LightGBM在量化选股中的应用

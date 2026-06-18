@@ -1,6 +1,6 @@
 ---
 title: "期权波动率交易策略：从Vega到实战"
-publishDate: 2026-06-11
+publishDate: '2026-06-11'
 description: "期权波动率交易策略：从Vega到实战 - halo的技术博客"
 tags:
   - 量化交易

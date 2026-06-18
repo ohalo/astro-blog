@@ -1,7 +1,7 @@
 ---
 title: "统计套利：均值回归策略"
 description: "深入探讨统计套利的核心原理与均值回归策略的实践方法，从协整检验到配对交易，构建市场中性投资策略。"
-publishDate: 2026-06-17
+publishDate: '2026-06-17'
 language: Chinese
 updatedDate: 2026-06-17
 tags: ["统计套利", "均值回归", "配对交易", "协整分析"]

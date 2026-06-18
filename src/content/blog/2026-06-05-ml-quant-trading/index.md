@@ -1,6 +1,6 @@
 ---
 title: 机器学习在量化交易中的应用：从LSTM到 Transformer 的完整实战指南
-publishDate: 2026-06-05T00:00:00.000Z
+publishDate: '2026-06-05'
 description: 机器学习在量化交易中的应用：从LSTM到 Transformer 的完整实战指南 - halo的技术博客
 tags:
   - 量化交易

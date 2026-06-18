@@ -1,6 +1,6 @@
 ---
 title: "高频交易与订单流分析：揭秘微结构中的超额收益"
-publishDate: 2026-06-11
+publishDate: '2026-06-11'
 description: "高频交易与订单流分析：揭秘微结构中的超额收益 - halo的技术博客"
 tags:
   - 量化交易

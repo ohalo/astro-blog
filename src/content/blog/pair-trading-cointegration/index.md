@@ -1,7 +1,7 @@
 ---
 title: "配对交易与协整分析：统计套利实战指南"
 description: "深入讲解配对交易策略的原理、协整检验方法、交易信号构建和实战回测，提供完整的Python实现代码和风险控制方案"
-publishDate: 2026-06-17
+publishDate: '2026-06-17'
 language: Chinese
 category: "量化交易"
 tags: ["配对交易", "协整分析", "统计套利", "均值回归", "Python量化"]

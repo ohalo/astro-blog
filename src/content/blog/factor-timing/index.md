@@ -1,7 +1,7 @@
 ---
 title: "因子择时：动态调整因子暴露"
 description: "深入探讨因子择时的理论基础与实践方法，学习如何根据市场状态动态调整因子暴露，提升量化策略的适应性和收益能力。"
-publishDate: 2026-06-17
+publishDate: '2026-06-17'
 language: Chinese
 updatedDate: 2026-06-17
 tags: ["因子投资", "因子择时", "量化策略", "风险管理"]
