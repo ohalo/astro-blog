@@ -2,6 +2,7 @@
 title: "高频交易监管与合规：全球监管框架与中国实践"
 description: "深入剖析全球主要市场的高频交易监管框架，解读中国证监会和交易所的合规要求，提供高频交易合规监控系统的Python实现方案，帮助量化机构建立完善的合规体系。"
 publishDate: "2026-06-15"
+language: Chinese
 tags: ["高频交易", "监管合规", "算法交易", "MiFID II", "中国证监会"]
 categories: ["量化交易"]
 slug: "hft-regulation-compliance"

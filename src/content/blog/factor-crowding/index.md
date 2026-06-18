@@ -1,10 +1,10 @@
 ---
 title: "因子拥挤度监测与规避：识别因子失效的前兆"
-description: "深入探讨因子拥挤度的成因、监测指标和规避策略，帮助量化投资者在因子失效前及时调整，保护投资组合收益。"
-date: "2026-06-18"
-tags: ["因子投资", "风险管理", "量化策略", "拥挤度"]
-category: "因子研究"
-featured_image: "/images/factor-crowding/crowding_indicators.png"
+publishDate: '2026-06-18'
+description: "因子拥挤度监测与规避：识别因子失效的前兆 - halo的技术博客"
+tags:
+ - AI观察
+language: Chinese
 ---
 
 # 因子拥挤度监测与规避：识别因子失效的前兆

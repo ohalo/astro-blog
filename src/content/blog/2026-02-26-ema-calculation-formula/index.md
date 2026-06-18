@@ -2,6 +2,7 @@
 title: "EMA计算公式详解 - 指数移动平均线完全指南"
 description: "深入理解EMA（指数移动平均线）的计算公式、原理和应用，通过实例演示和Python代码帮助初学者掌握这一重要技术指标"
 publishDate: '2026-02-26'
+language: Chinese
 tags: ["量化交易", "技术指标", "EMA", "移动平均线", "Python"]
 difficulty: "入门"
 ---

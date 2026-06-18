@@ -1,10 +1,10 @@
 ---
 title: "XGBoost与LightGBM在量化选股中的应用：从特征工程到实盘部署"
-description: "全面比较XGBoost与LightGBM在量化选股中的性能差异，涵盖特征工程、模型调参、多因子融合和实盘部署的完整流程。"
-date: "2026-06-18"
-tags: ["机器学习", "XGBoost", "LightGBM", "量化选股", "特征工程"]
-category: "机器学习选股"
-featured_image: "/images/xgboost-lightgbm-stock-selection/model_comparison.png"
+publishDate: '2026-06-18'
+description: "XGBoost与LightGBM在量化选股中的应用 - halo的技术博客"
+tags:
+ - AI观察
+language: Chinese
 ---
 
 # XGBoost与LightGBM在量化选股中的应用：从特征工程到实盘部署
