@@ -1,11 +1,10 @@
 ---
 title: "统计套利：均值回归策略的完整实战指南"
-description: "深入解析统计套利的核心原理，涵盖配对交易、布林带策略、协整检验等实战技术，手把手用Python实现从理论到盈利的完整闭环。"
-date: "2026-06-18"
-tags: ["统计套利", "均值回归", "配对交易", "套利策略"]
-categories: ["量化交易"]
-slug: "statistical-arbitrage-mean-reversion"
-cover: "/images/statistical-arbitrage-mean-reversion/cover.jpg"
+publishDate: '2026-06-18'
+description: "统计套利：均值回归策略 - halo的技术博客"
+tags:
+ - AI观察
+language: Chinese
 ---
 
 # 统计套利：均值回归策略的完整实战指南
