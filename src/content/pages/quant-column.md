@@ -11,8 +11,8 @@ layout: page
 ## 最新文章
 
 ### 2026-06-18 新发布
-- [2026-06-18 - XGBoost与LightGBM在量化选股中的应用](/blog/xgboost-lightgbm-stock-selection/) - 🆕 🔴 深入探讨如何利用XGBoost和LightGBM两大梯度提升框架构建量化选股模型，从特征工程、模型训练到实盘部署的完整流程，包含Python代码与性能对比（高阶）
-- [2026-06-18 - FPGA在量化交易中的应用](/blog/fpga-quant-trading/) - 🆕 🔴 深入解析FPGA（现场可编程门阵列）在量化交易中的革命性应用，从硬件加速、低延迟交易到策略实现的完整技术栈，包含Verilog代码示例（高阶）
+- [2026-06-18 - 因子拥挤度监测与规避：识别因子失效的早期信号](/blog/factor-crowding/) - 🆕 🔴 深入探讨因子拥挤度的成因、监测指标和规避策略，帮助量化投资者在因子失效前及时调整持仓，保护投资组合收益。包含估值分位数、换手率、相关性等5大监测指标与完整Python代码（高阶）
+- [2026-06-18 - XGBoost与LightGBM在量化选股中的应用：从特征工程到实盘部署](/blog/xgboost-lightgbm-stock-selection/) - 🆕 🔴 深入探讨如何使用XGBoost和LightGBM构建量化选股模型，涵盖特征工程、模型训练、调参技巧和实盘部署的完整流程。包含完整的Python实现代码与性能对比（高阶）
 
 ### 2026-06-17 新发布
 - [2026-06-17 - XGBoost与LightGBM在量化选股中的应用](/blog/xgboost-lightgbm-stock-selection/) - 🆕 🔴 深入探讨如何利用XGBoost和LightGBM两大梯度提升框架构建量化选股模型，从特征工程、模型训练到实盘部署的完整实战指南。包含完整Python代码与性能对比（高阶）
