@@ -1,296 +1,206 @@
 #!/usr/bin/env python3
 """
-为因子择时文章生成配图
+生成因子择时文章的配图
 """
 
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from scipy import stats
-import warnings
-warnings.filterwarnings('ignore')
+from datetime import datetime, timedelta
+import os
 
 # 设置中文字体
 plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'SimHei', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
-# 创建输出目录
-import os
+# 创建图片保存目录
 os.makedirs('/Users/halo/workspace/astro-blog/public/images/factor-timing', exist_ok=True)
 
-print("开始生成因子择时文章配图...")
+# 生成日期范围（2015-2025）
+dates = pd.date_range(start='2015-01-01', end='2025-12-31', freq='D')
+dates = dates[dates.dayofweek < 5]  # 只保留工作日
 
-# ============================================================================
-# 图1：因子时变性分析
-# ============================================================================
-
-print("\n生成图1：因子时变性分析...")
-
-# 生成模拟数据
+# 设置随机种子以保证可重复性
 np.random.seed(42)
-dates = pd.date_range('2010-01-01', '2025-12-31', freq='ME')
-n_periods = len(dates)
 
-# 定义三种市场状态
-market_states = ['牛市', '熊市', '震荡']
-state_probs = [0.3, 0.2, 0.5]
+# 生成因子收益率数据（模拟真实因子表现）
+n_days = len(dates)
 
-# 不同状态下各因子的预期收益和波动率
-factor_performance = {
-    '牛市': {'价值': (0.8, 0.12), '动量': (1.2, 0.15), '低波': (0.5, 0.08)},
-    '熊市': {'价值': (-0.3, 0.18), '动量': (-0.8, 0.20), '低波': (0.6, 0.10)},
-    '震荡': {'价值': (0.4, 0.10), '动量': (0.3, 0.12), '低波': (0.4, 0.09)}
+# 价值因子（HML）- 有周期性
+hml = np.random.normal(0.0003, 0.012, n_days)
+hml = hml + 0.001 * np.sin(2 * np.pi * np.arange(n_days) / 252)  # 添加周期性
+
+# 动量因子（UMD）- 趋势性强
+umd = np.random.normal(0.0004, 0.015, n_days)
+umd = umd + 0.0002 * np.cumsum(np.random.choice([-1, 1], n_days))  # 添加趋势
+
+# 低波因子（BAB）- 负与市场相关性
+bab = np.random.normal(0.0002, 0.008, n_days)
+market_ret = np.random.normal(0.0003, 0.012, n_days)
+bab = bab - 0.3 * market_ret  # 与市场负相关
+
+# 质量因子（QMJ）- 稳健
+qmj = np.random.normal(0.0003, 0.010, n_days)
+
+# 构建 DataFrame
+factor_rets = pd.DataFrame({
+    'HML': hml,
+    'UMD': umd,
+    'BAB': bab,
+    'QMJ': qmj
+}, index=dates)
+
+# 生成动态权重（模拟因子择时策略）
+weights = pd.DataFrame(index=dates, columns=factor_rets.columns)
+
+# 初始等权
+weights.iloc[0] = [0.25, 0.25, 0.25, 0.25]
+
+# 模拟动态权重变化
+for i in range(1, len(dates)):
+    # 根据"市场状态"调整权重
+    if i < n_days // 3:  # 第一阶段：牛市，超配动量
+        weights.iloc[i] = [0.15, 0.45, 0.20, 0.20]
+    elif i < 2 * n_days // 3:  # 第二阶段：震荡市，超配低波和质量
+        weights.iloc[i] = [0.20, 0.20, 0.35, 0.25]
+    else:  # 第三阶段：熊市/恢复期，超配价值
+        weights.iloc[i] = [0.40, 0.15, 0.20, 0.25]
+
+# 添加一些随机扰动
+weights = weights + np.random.normal(0, 0.02, weights.shape)
+weights = weights.clip(0.05, 0.55)  # 限制权重范围
+weights = weights.div(weights.sum(axis=1), axis=0)  # 归一化
+
+# 计算策略收益
+strategy_returns = (weights.shift(1).fillna(0.25) * factor_rets).sum(axis=1)
+equal_weight_returns = factor_rets.mean(axis=1)
+
+# 计算累计收益
+cumulative_strategy = (1 + strategy_returns).cumprod()
+cumulative_benchmark = (1 + equal_weight_returns).cumprod()
+
+print(f"生成 {len(dates)} 个交易日的数据")
+print(f"策略最终累计收益: {cumulative_strategy.iloc[-1]:.2f}")
+print(f"基准最终累计收益: {cumulative_benchmark.iloc[-1]:.2f}")
+
+# 图1：因子择时策略框架示意图
+fig, ax = plt.subplots(figsize=(14, 8))
+
+# 创建流程图
+boxes = {
+    '宏观指标': (0.1, 0.8, 0.15, 0.1),
+    '市场状态': (0.1, 0.6, 0.15, 0.1),
+    '技术信号': (0.1, 0.4, 0.15, 0.1),
+    '机器学习\n模型': (0.4, 0.6, 0.2, 0.15),
+    '因子权重\n输出': (0.7, 0.6, 0.15, 0.1),
+    '组合构建': (0.9, 0.6, 0.15, 0.1),
 }
 
-# 生成模拟数据
-factor_returns = {'价值': [], '动量': [], '低波': []}
+for text, (x, y, w, h) in boxes.items():
+    ax.add_patch(plt.Rectangle((x, y), w, h, fill=True, color='lightblue', ec='black', linewidth=2))
+    ax.text(x + w/2, y + h/2, text, ha='center', va='center', fontsize=12, weight='bold')
 
-for i in range(n_periods):
-    state = np.random.choice(market_states, p=state_probs)
-    for factor in ['价值', '动量', '低波']:
-        mu, sigma = factor_performance[state][factor]
-        ret = np.random.normal(mu/12, sigma/np.sqrt(12))  # 月度收益
-        factor_returns[factor].append(ret)
-
-# 转换为DataFrame
-factor_df = pd.DataFrame(factor_returns, index=dates)
-
-# 计算累计收益
-cumulative_returns = (1 + factor_df).cumprod()
-
-# 可视化
-fig, axes = plt.subplots(2, 2, figsize=(15, 10))
-fig.suptitle('Factor Timing: Factor Time-Varying Characteristics', fontsize=16, fontweight='bold')
-
-# 子图1：累计收益曲线
-ax1 = axes[0, 0]
-for factor in factor_df.columns:
-    ax1.plot(cumulative_returns.index, cumulative_returns[factor], 
-             label=factor, linewidth=2)
-ax1.set_title('Cumulative Returns by Factor', fontsize=14)
-ax1.set_xlabel('Date')
-ax1.set_ylabel('Cumulative Return')
-ax1.legend()
-ax1.grid(True, alpha=0.3)
-
-# 子图2：滚动夏普比率
-ax2 = axes[0, 1]
-rolling_sharpe = factor_df.rolling(36).apply(
-    lambda x: x.mean() / x.std() * np.sqrt(12), raw=False
-)
-for factor in factor_df.columns:
-    ax2.plot(rolling_sharpe.index, rolling_sharpe[factor], 
-             label=factor, linewidth=2)
-ax2.set_title('Rolling Sharpe Ratio (36 Months)', fontsize=14)
-ax2.set_xlabel('Date')
-ax2.set_ylabel('Sharpe Ratio')
-ax2.legend()
-ax2.grid(True, alpha=0.3)
-
-# 子图3：因子收益率分布
-ax3 = axes[1, 0]
-for factor in factor_df.columns:
-    ax3.hist(factor_df[factor], bins=30, alpha=0.5, label=factor)
-ax3.set_title('Factor Return Distribution', fontsize=14)
-ax3.set_xlabel('Monthly Return')
-ax3.set_ylabel('Frequency')
-ax3.legend()
-ax3.grid(True, alpha=0.3)
-
-# 子图4：因子相关性热力图
-ax4 = axes[1, 1]
-overall_corr = factor_df.corr()
-im = ax4.imshow(overall_corr, cmap='RdBu_r', aspect='auto', vmin=-1, vmax=1)
-ax4.set_xticks(range(len(factor_df.columns)))
-ax4.set_yticks(range(len(factor_df.columns)))
-ax4.set_xticklabels(factor_df.columns, rotation=45)
-ax4.set_yticklabels(factor_df.columns)
-ax4.set_title('Factor Correlation Matrix', fontsize=14)
-plt.colorbar(im, ax=ax4)
-
-plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-timing/figure1_factor_analysis.png', 
-            dpi=300, bbox_inches='tight')
-plt.close()
-
-print("✅ 图1已保存：figure1_factor_analysis.png")
-print(f"   因子平均收益率（年化）：{(factor_df.mean() * 12).round(3).to_dict()}")
-
-# ============================================================================
-# 图2：实证研究结果的简化版（静态组合 vs 动态组合）
-# ============================================================================
-
-print("\n生成图2：实证研究...")
-
-# 简单的实证对比
-np.random.seed(42)
-dates = pd.date_range('2015-01-01', '2025-12-31', freq='ME')
-
-# 模拟静态组合收益
-static_return = pd.Series(np.random.normal(0.008, 0.03, len(dates)), index=dates)
-
-# 模拟动态组合收益（更好）
-dynamic_return = pd.Series(np.random.normal(0.010, 0.028, len(dates)), index=dates)
-
-# 计算累计收益
-static_cumret = (1 + static_return).cumprod()
-dynamic_cumret = (1 + dynamic_return).cumprod()
-
-fig, axes = plt.subplots(2, 2, figsize=(15, 10))
-fig.suptitle('Factor Timing: Empirical Study Results', fontsize=16, fontweight='bold')
-
-# 子图1：累计收益对比
-ax1 = axes[0, 0]
-ax1.plot(static_cumret.index, static_cumret, label='Static Factor Portfolio', linewidth=2)
-ax1.plot(dynamic_cumret.index, dynamic_cumret, label='Dynamic Factor Portfolio', linewidth=2)
-ax1.set_title('Cumulative Returns Comparison', fontsize=14)
-ax1.set_xlabel('Date')
-ax1.set_ylabel('Cumulative Return')
-ax1.legend()
-ax1.grid(True, alpha=0.3)
-
-# 子图2：滚动夏普比率
-ax2 = axes[0, 1]
-static_sharpe = static_return.rolling(36).apply(lambda x: x.mean() / x.std() * np.sqrt(12))
-dynamic_sharpe = dynamic_return.rolling(36).apply(lambda x: x.mean() / x.std() * np.sqrt(12))
-ax2.plot(static_sharpe.index, static_sharpe, label='Static', linewidth=2)
-ax2.plot(dynamic_sharpe.index, dynamic_sharpe, label='Dynamic', linewidth=2)
-ax2.set_title('Rolling Sharpe Ratio (36 Months)', fontsize=14)
-ax2.set_xlabel('Date')
-ax2.set_ylabel('Sharpe Ratio')
-ax2.legend()
-ax2.grid(True, alpha=0.3)
-
-# 子图3：回撤对比
-ax3 = axes[1, 0]
-static_dd = static_cumret.div(static_cumret.expanding().max()) - 1
-dynamic_dd = dynamic_cumret.div(dynamic_cumret.expanding().max()) - 1
-ax3.plot(static_dd.index, static_dd, label='Static', linewidth=2)
-ax3.plot(dynamic_dd.index, dynamic_dd, label='Dynamic', linewidth=2)
-ax3.set_title('Drawdown Comparison', fontsize=14)
-ax3.set_xlabel('Date')
-ax3.set_ylabel('Drawdown')
-ax3.legend()
-ax3.grid(True, alpha=0.3)
-
-# 子图4：因子权重变化（模拟）
-ax4 = axes[1, 1]
-weights = pd.DataFrame({
-    'Value': np.random.dirichlet(np.ones(3), size=len(dates))[:, 0],
-    'Momentum': np.random.dirichlet(np.ones(3), size=len(dates))[:, 1],
-    'Low Vol': np.random.dirichlet(np.ones(3), size=len(dates))[:, 2]
-}, index=dates)
-weights.plot(ax=ax4, linewidth=2)
-ax4.set_title('Dynamic Factor Weights', fontsize=14)
-ax4.set_xlabel('Date')
-ax4.set_ylabel('Weight')
-ax4.legend()
-ax4.grid(True, alpha=0.3)
-
-plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-timing/figure2_empirical_results.png',
-            dpi=300, bbox_inches='tight')
-plt.close()
-
-print("✅ 图2已保存：figure2_empirical_results.png")
-
-# ============================================================================
-# 图3：模型衰减监控（简化示意）
-# ============================================================================
-
-print("\n生成图3：模型衰减监控...")
-
-# 模拟模型预测准确性衰减
-dates = pd.date_range('2018-01-01', '2025-12-31', freq='ME')
-n_periods = len(dates)
-
-# 模拟预测准确性（随时间下降）
-base_accuracy = 0.55
-decay_rate = 0.002
-accuracy = base_accuracy - decay_rate * np.arange(n_periods) + np.random.normal(0, 0.02, n_periods)
-accuracy = np.clip(accuracy, 0.45, 0.65)  # 限制在合理范围
-
-# 模拟IC（信息系数）
-ic = 0.05 - 0.0005 * np.arange(n_periods) + np.random.normal(0, 0.03, n_periods)
-ic = np.clip(ic, -0.1, 0.15)
-
-fig, axes = plt.subplots(2, 1, figsize=(12, 8))
-
-# 子图1：预测准确性
-axes[0].plot(dates, accuracy, linewidth=2, label='Prediction Accuracy')
-axes[0].axhline(y=0.5, color='r', linestyle='--', label='Random Guess')
-axes[0].set_title('Model Prediction Accuracy Decay (Rolling 36 Months)', fontsize=14)
-axes[0].set_xlabel('Date')
-axes[0].set_ylabel('Accuracy')
-axes[0].legend()
-axes[0].grid(True, alpha=0.3)
-
-# 子图2：IC衰减
-axes[1].plot(dates, ic, linewidth=2, color='orange', label='Information Coefficient (IC)')
-axes[1].axhline(y=0, color='r', linestyle='--', label='No Predictive Power')
-axes[1].set_title('Information Coefficient (IC) Decay (Rolling 36 Months)', fontsize=14)
-axes[1].set_xlabel('Date')
-axes[1].set_ylabel('IC')
-axes[1].legend()
-axes[1].grid(True, alpha=0.3)
-
-plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-timing/figure3_model_decay.png',
-            dpi=300, bbox_inches='tight')
-plt.close()
-
-print("✅ 图3已保存：figure3_model_decay.png")
-
-# ============================================================================
-# 额外配图：因子择时流程图
-# ============================================================================
-
-print("\n生成额外配图：因子择时流程图...")
-
-fig, ax = plt.subplots(figsize=(14, 10))
-ax.axis('off')
-
-# 绘制流程图
-steps = [
-    {'text': '1. 数据准备\n(因子收益、宏观变量、市场状态)', 'x': 0.5, 'y': 0.9, 'box': True},
-    {'text': '2. 特征工程\n(滞后项、滚动统计、交互项)', 'x': 0.5, 'y': 0.75, 'box': True},
-    {'text': '3. 模型训练\n(机器学习/规则式)', 'x': 0.5, 'y': 0.6, 'box': True},
-    {'text': '4. 信号生成\n(预测因子未来表现)', 'x': 0.5, 'y': 0.45, 'box': True},
-    {'text': '5. 动态权重分配\n(根据信号调整因子暴露)', 'x': 0.5, 'y': 0.3, 'box': True},
-    {'text': '6. 风险管理\n(止损、仓位控制、交易成本)', 'x': 0.5, 'y': 0.15, 'box': True},
+# 添加箭头
+arrows = [
+    ((0.25, 0.85), (0.4, 0.65)),
+    ((0.25, 0.65), (0.4, 0.65)),
+    ((0.25, 0.45), (0.4, 0.65)),
+    ((0.6, 0.65), (0.7, 0.65)),
+    ((0.85, 0.65), (0.9, 0.65)),
 ]
 
-for step in steps:
-    if step['box']:
-        box = dict(boxstyle='round,pad=0.5', facecolor='lightblue', edgecolor='black', alpha=0.8)
-        ax.text(step['x'], step['y'], step['text'], 
-                transform=ax.transAxes,
-                fontsize=12, weight='bold',
-                verticalalignment='center',
-                horizontalalignment='center',
-                bbox=box)
-    
-    # 绘制箭头（除了最后一步）
-    idx = steps.index(step)
-    if idx < len(steps) - 1:
-        ax.annotate('', xy=(step['x'], steps[idx+1]['y'] + 0.05), 
-                    xytext=(step['x'], step['y'] - 0.05),
-                    arrowprops=dict(arrowstyle='->', lw=2, color='black'),
-                    transform=ax.transAxes)
+for (x1, y1), (x2, y2) in arrows:
+    ax.annotate('', xy=(x2, y2), xytext=(x1, y1),
+                arrowprops=dict(arrowstyle='->', lw=2, color='black'))
 
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-timing/process_flow.png',
-            dpi=300, bbox_inches='tight')
+ax.set_xlim(0, 1.1)
+ax.set_ylim(0.3, 1.0)
+ax.axis('off')
+ax.set_title('因子择时策略框架', fontsize=16, weight='bold', pad=20)
+
+plt.tight_layout()
+plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-timing/factor_timing_framework.png', dpi=300, bbox_inches='tight')
+print("✓ 生成图1：因子择时框架")
 plt.close()
 
-print("✅ 额外配图已保存：process_flow.png")
+# 图2：累计收益对比
+fig, ax = plt.subplots(figsize=(14, 7))
 
-print("\n" + "="*60)
-print("因子择时文章配图生成完成！")
-print("="*60)
-print("\n生成的图片：")
-print("  1. figure1_factor_analysis.png (因子时变性分析)")
-print("  2. figure2_empirical_results.png (实证研究结果)")
-print("  3. figure3_model_decay.png (模型衰减监控)")
-print("  4. process_flow.png (因子择时流程图)")
-print("\n所有图片已保存到：")
-print("  /Users/halo/workspace/astro-blog/public/images/factor-timing/")
+ax.plot(dates, cumulative_strategy.values, label='因子择时策略', linewidth=2.5, color='#2E86AB')
+ax.plot(dates, cumulative_benchmark.values, label='等权基准', linewidth=2.5, color='#A23B72', linestyle='--')
+
+ax.set_xlabel('日期', fontsize=12, weight='bold')
+ax.set_ylabel('累计收益 (净值)', fontsize=12, weight='bold')
+ax.set_title('因子择时策略 vs 等权基准：累计收益对比 (2015-2025)', fontsize=14, weight='bold')
+ax.legend(fontsize=11, loc='upper left')
+ax.grid(True, alpha=0.3, linestyle=':')
+
+# 添加绩效标注
+annual_ret_strategy = strategy_returns.mean() * 252
+annual_ret_benchmark = equal_weight_returns.mean() * 252
+sharpe_strategy = strategy_returns.mean() / strategy_returns.std() * np.sqrt(252)
+sharpe_benchmark = equal_weight_returns.mean() / equal_weight_returns.std() * np.sqrt(252)
+
+textstr = f'因子择时策略:\n  年化收益: {annual_ret_strategy*100:.1f}%\n  夏普比率: {sharpe_strategy:.2f}\n\n等权基准:\n  年化收益: {annual_ret_benchmark*100:.1f}%\n  夏普比率: {sharpe_benchmark:.2f}'
+props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=10,
+        verticalalignment='top', bbox=props)
+
+plt.tight_layout()
+plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-timing/factor_timing_performance.png', dpi=300, bbox_inches='tight')
+print("✓ 生成图2：累计收益对比")
+plt.close()
+
+# 图3：因子权重动态变化
+fig, ax = plt.subplots(figsize=(14, 7))
+
+colors = ['#264653', '#2A9D8F', '#E9C46A', '#F4A261']
+weight_data = weights.apply(pd.to_numeric)
+
+for i, col in enumerate(weight_data.columns):
+    ax.plot(dates, weight_data[col].values, label=col, linewidth=2, color=colors[i])
+
+ax.set_xlabel('日期', fontsize=12, weight='bold')
+ax.set_ylabel('因子权重', fontsize=12, weight='bold')
+ax.set_title('动态因子权重随时间的变化 (2015-2025)', fontsize=14, weight='bold')
+ax.legend(fontsize=11, loc='upper right')
+ax.grid(True, alpha=0.3, linestyle=':')
+ax.set_ylim(0, 0.6)
+
+# 添加阶段标注
+ax.axvspan(dates[0], dates[n_days//3], alpha=0.2, color='green', label='牛市阶段')
+ax.axvspan(dates[n_days//3], dates[2*n_days//3], alpha=0.2, color='yellow', label='震荡市阶段')
+ax.axvspan(dates[2*n_days//3], dates[-1], alpha=0.2, color='red', label='熊市阶段')
+
+plt.tight_layout()
+plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-timing/factor_weights_evolution.png', dpi=300, bbox_inches='tight')
+print("✓ 生成图3：因子权重动态变化")
+plt.close()
+
+# 图4：各因子单独表现
+fig, axes = plt.subplots(2, 2, figsize=(16, 10))
+axes = axes.flatten()
+
+for i, col in enumerate(factor_rets.columns):
+    ax = axes[i]
+    cumulative = (1 + factor_rets[col]).cumprod()
+    ax.plot(dates, cumulative.values, linewidth=2, color=colors[i])
+    ax.set_title(f'{col} 因子累计收益', fontsize=12, weight='bold')
+    ax.set_xlabel('日期', fontsize=10)
+    ax.set_ylabel('累计收益', fontsize=10)
+    ax.grid(True, alpha=0.3, linestyle=':')
+    
+    # 添加年化收益标注
+    annual_ret = factor_rets[col].mean() * 252
+    ax.text(0.05, 0.95, f'年化收益: {annual_ret*100:.1f}%', 
+            transform=ax.transAxes, fontsize=9, 
+            verticalalignment='top', bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+
+plt.suptitle('各因子单独表现 (2015-2025)', fontsize=16, weight='bold')
+plt.tight_layout()
+plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-timing/factor_individual_performance.png', dpi=300, bbox_inches='tight')
+print("✓ 生成图4：各因子单独表现")
+plt.close()
+
+print("\n✅ 所有配图已生成完成！")
+print(f"图片保存位置: /Users/halo/workspace/astro-blog/public/images/factor-timing/")
