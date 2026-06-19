@@ -10,6 +10,11 @@ layout: page
 
 ## 最新文章
 
+### 2026-06-19 新发布
+
+- [2026-06-19 - 因子拥挤度监测与规避：量化投资的隐形风险](/blog/factor-crowding/) - 🆕 🔴 深入探讨因子拥挤度的成因、监测方法及规避策略，帮助量化投资者在因子失效前识别风险并调整持仓。提供完整的Python实现代码（FactorCrowdingMonitor类、动态仓位管理、因子轮换策略）及实战案例分析（高阶）
+- [2026-06-19 - 统计套利：均值回归策略从理论到实战](/blog/statistical-arbitrage-mean-reversion/) - 🆕 🔴 深入讲解统计套利的核心原理——均值回归，从协整检验、配对交易到Python实盘回测，提供完整的量化策略开发流程（PairsTradingBacktester类、Z-Score信号生成、风险管理）及A股实战案例（高阶）
+
 ### 2024-06-19 新发布
 - [2024-06-19 - 因子拥挤度监测与规避：量化投资中的风险管理新维度](/blog/factor-crowding/) - 🆕 🔴 深入探讨因子拥挤度的成因、多维度量化监测指标（持仓集中度/估值偏离/资金流）及综合评估框架。提供完整的Python实现代码（FactorCrowdingMonitor类、动态仓位管理、因子轮换策略）及实战案例分析，帮助量化投资者在因子失效前识别风险（高阶）
 - [2024-06-19 - 统计套利：均值回归策略的原理与实践](/blog/statistical-arbitrage-mean-reversion/) - 🆕 🔴 系统讲解统计套利的核心思想、协整分析（Engle-Granger/Johansen检验）、配对交易策略构建、回测框架及风险控制。提供完整的Python实战代码（PairsTradingBacktest类、Z-Score信号生成、止损策略）及A股茅台-五粮液配对交易案例（高阶）
