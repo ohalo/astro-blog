@@ -11,7 +11,9 @@ layout: page
 ## 最新文章
 
 ### 2026-06-19 新发布
-- [2026-06-19 - 期权做市商策略详解：从Delta对冲到Gamma Scalping](/blog/option-market-making/) - 🆕 🔴 深入讲解期权做市商的核心策略，包括Delta动态对冲、Gamma Scalping、波动率套利、Greeks风险管理及库存管理，提供完整的Python实现代码（DeltaHedger/GammaScalper/VolatilityArbitrage/InventoryManager/PricingEngine）与实战案例（高阶）
+- [2026-06-19 - 因子拥挤度监测与规避：识别因子失效的早期信号](/blog/factor-crowding/) - 🆕 🔴 深入探讨因子拥挤度的成因、监测指标和规避策略，帮助投资者在因子失效前及时调整持仓。包含估值指标法、换手率指标法、波动率法等量化监测方法，以及动态因子权重调整、因子择时、分散化等规避策略的完整Python代码（高阶）
+- [2026-06-19 - 统计套利：均值回归策略的理论与实战](/blog/statistical-arbitrage-mean-reversion/) - 🆕 🔴 深入讲解统计套利的核心原理——均值回归，从平稳性检验、协整分析到配对交易实战，提供完整的Python实现代码、卡尔曼滤波动态对冲比率及风险管理系统（高阶）
+- [2026-06-19 - 期权做市商策略详解：从Delta对冲到Gamma Scalping](/blog/option-market-making/) - 🔴 深入讲解期权做市商的核心策略，包括Delta动态对冲、Gamma Scalping、波动率套利、Greeks风险管理及库存管理，提供完整的Python实现代码（DeltaHedger/GammaScalper/VolatilityArbitrage/InventoryManager/PricingEngine）与实战案例（高阶）
 - [2026-06-19 - 风险预算模型：超越风险平价的灵活配置框架](/blog/risk-budgeting-model/) - 🆕 🔴 系统讲解风险预算模型的理论基础（风险贡献、边际风险贡献）、Python完整实现、5种不同预算方案的实证比较（2015-2024回测），以及如何根据市场状态动态调整风险预算（高阶）
 - [2026-06-19 - 因子择时：动态调整因子暴露](/blog/factor-timing/) - 🆕 🔴 深入探讨因子择时的理论基础、预测变量（宏观经济/市场状态/因子特有）、实现方法（机器学习模型/规则式策略/动态因子配置）、实证研究及实战中的注意事项（数据窥探偏差/交易成本/模型衰减）。包含完整的Python代码实现，从数据准备、特征工程、模型训练到回测评估的全流程（高阶）
 - [2026-06-19 - 配对交易与协整分析](/blog/pair-trading-cointegration/) - 🆕 🔴 深入讲解配对交易策略的核心原理——协整关系，包括Engle-Granger两步法检验、Johansen检验、配对选择方法（距离法/协整扫描/聚类增强）、交易信号构建（Z-Score/卡尔曼滤波时变对冲比率/机器学习增强）及完整的风险管理系统（止损策略/动态仓位管理/交易成本分析）。包含完整Python实战代码与回测框架（高阶）
