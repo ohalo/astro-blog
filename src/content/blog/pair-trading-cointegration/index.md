@@ -1,16 +1,15 @@
 ---
 title: "配对交易与协整分析"
 description: "深入讲解配对交易策略的理论基础与实战实现，包括协整检验、对冲比率计算、交易信号生成等核心内容，附带完整的Python代码示例。"
-pubDate: 2026-06-19
-tags: ["配对交易", "协整分析", "统计套利", "市场中性", "Python"]
-category: "量化交易"
-featured: false
-toc: true
+publishDate: '2026-06-19'
+tags:
+ - AI观察
+language: Chinese
 ---
 
 # 配对交易与协整分析
 
-![配对交易价差与Z-Score信号](../..//public/images/pair-trading-cointegration/spread_zscore.png)
+![配对交易价差与Z-Score信号](/images/pair-trading-cointegration/spread_zscore.png)
 
 配对交易（Pairs Trading）是最经典的**统计套利**策略之一，凭借其市场中性、风险可控的特点，成为量化交易者的必备工具。本文将系统讲解配对交易的理论基础、协整分析方法，以及完整的Python实战实现。
 
@@ -37,7 +36,7 @@ toc: true
 
 ## 理论基础：协整与平稳性
 
-![AAPL vs MSFT 价格对比](../..//public/images/pair-trading-cointegration/price_comparison.png)
+![AAPL vs MSFT 价格对比](/images/pair-trading-cointegration/price_comparison.png)
 
 ### 平稳性检验
 
@@ -810,7 +809,7 @@ if __name__ == "__main__":
 
 ## 总结
 
-![配对交易累计收益曲线](../..//public/images/pair-trading-cointegration/cumulative_returns.png)
+![配对交易累计收益曲线](/images/pair-trading-cointegration/cumulative_returns.png)
 
 配对交易是量化交易入门的绝佳策略，核心要点：
 

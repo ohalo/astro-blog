@@ -1,22 +1,21 @@
 ---
 title: "因子择时：动态调整因子暴露"
 description: "深入探讨因子择时的理论基础与实践方法，学习如何根据市场状态动态调整因子暴露，提升量化策略的风险调整收益。包含完整的Python实现代码。"
-pubDate: 2026-06-19
-tags: ["因子投资", "因子择时", "量化策略", "风险管理", "Python"]
-category: "量化交易"
-featured: false
-toc: true
+publishDate: '2026-06-19'
+tags:
+ - AI观察
+language: Chinese
 ---
 
 # 因子择时：动态调整因子暴露
 
-![因子择时策略框架](../..//public/images/factor-timing/framework.png)
+![因子择时策略框架](/images/factor-timing/framework.png)
 
 因子投资已成为现代量化投资的核心范式。然而，大多数因子策略采用静态配置方式，忽视了因子表现随时间变化的特性。本文将深入探讨**因子择时（Factor Timing）**的理论基础与实践方法，帮助你动态调整因子暴露，在不同市场环境下获取更稳健的收益。
 
 ## 为什么需要因子择时？
 
-![经济周期与因子表现](../..//public/images/factor-timing/regime_heatmap.png)
+![经济周期与因子表现](/images/factor-timing/regime_heatmap.png)
 
 传统因子投资采用"买入并持有"策略，假设因子溢价长期存在。但实证研究表期，因子表现存在显著的**时变性**：
 
