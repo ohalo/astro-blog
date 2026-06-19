@@ -11,6 +11,8 @@ layout: page
 ## 最新文章
 
 ### 2026-06-19 新发布
+- [2026-06-19 - 流动性风险管理：量化投资中的隐形杀手](/blog/liquidity-risk-management/) - 🆕 🔴 深入探讨流动性风险的形成机制、度量方法和管理策略，提供完整的Python实现代码（Amihud指标、Kyle's Lambda、订单簿深度、VWAP/POV执行算法、流动性风险预警系统），帮助量化交易者识别、度量和控制流动性风险，保护投资组合价值（高阶）
+- [2026-06-19 - 波动率风险溢价捕捉：期权波动率交易的核心策略](/blog/volatility-risk-premium/) - 🆕 🔴 深入探讨波动率风险溢价（Volatility Risk Premium, VRP）的理论基础、度量方法和交易策略，提供完整的Python实现代码（高频实现波动率计算、隐含波动率反推、VRP策略回测、VIX期货期限结构交易、动态仓位管理），帮助期权交易者捕捉波动率定价偏差带来的超额收益（高阶）
 - [2026-06-19 - 因子拥挤度监测与规避：识别因子失效的早期信号](/blog/factor-crowding/) - 🆕 🔴 深入探讨因子拥挤度的成因、监测指标和规避策略，帮助投资者在因子失效前及时调整持仓。包含估值指标法、换手率指标法、波动率法等量化监测方法，以及动态因子权重调整、因子择时、分散化等规避策略的完整Python代码（高阶）
 - [2026-06-19 - 统计套利：均值回归策略的理论与实战](/blog/statistical-arbitrage-mean-reversion/) - 🆕 🔴 深入讲解统计套利的核心原理——均值回归，从平稳性检验、协整分析到配对交易实战，提供完整的Python实现代码、卡尔曼滤波动态对冲比率及风险管理系统（高阶）
 - [2026-06-19 - 期权做市商策略详解：从Delta对冲到Gamma Scalping](/blog/option-market-making/) - 🔴 深入讲解期权做市商的核心策略，包括Delta动态对冲、Gamma Scalping、波动率套利、Greeks风险管理及库存管理，提供完整的Python实现代码（DeltaHedger/GammaScalper/VolatilityArbitrage/InventoryManager/PricingEngine）与实战案例（高阶）
