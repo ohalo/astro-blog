@@ -12,8 +12,8 @@ layout: page
 
 ### 2026-06-20 新发布
 
-- [2026-06-20 - 因子择时：动态调整因子暴露](/blog/factor-timing/) - 🆕 🔴 深入探讨因子择时的理论基础与实践方法，学习如何根据市场状态动态调整因子暴露，提升量化策略的风险调整收益。包含完整的Python代码示例（高阶）
-- [2026-06-20 - 配对交易与协整分析](/blog/pair-trading-cointegration/) - 🆕 🔴 深入讲解配对交易策略的理论基础、协整检验方法、交易信号构建和实战回测，提供完整的Python实现代码和风险控制方案（高阶）
+- [2026-06-20 - 因子择时：动态调整因子暴露](/blog/factor-timing/) - 🆕 🔴 深入探讨因子择时的理论基础、实证方法（基于估值价差/宏观状态HMM识别/机器学习随机森林预测）及实战应用，包含动态因子组合构建（DynamicFactorStrategy类）、性能评估、风险管理（IC衰减监控/交易成本优化/Walk-Forward验证）的完整Python代码示例（高阶）
+- [2026-06-20 - 配对交易与协整分析](/blog/pair-trading-cointegration/) - 🆕 🔴 深入讲解配对交易策略的理论基础、协整检验方法（Engle-Granger两步法/Johansen检验/Hurst指数）、交易信号构建（Z-Score阈值/动态对冲比率/风险管理）及A股实战案例，包含股票对筛选（find_cointegrated_pairs）、回测框架（backtest_pair_trading）、协整断裂监控的完整Python实现（高阶）
 
 ### 2026-06-19 新发布
 
