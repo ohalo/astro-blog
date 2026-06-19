@@ -1,11 +1,10 @@
 ---
 title: "因子拥挤度监测与规避：量化投资中的风险管理新维度"
-date: 2024-06-19
+publishDate: '2024-06-19'
 description: "深入探讨因子拥挤度的成因、监测指标和规避策略，帮助量化投资者在因子失效前及时识别风险并调整持仓。"
-tags: ["因子投资", "风险管理", "因子拥挤度", "量化策略"]
-category: "因子投资"
-featured: false
-original: true
+tags:
+ - AI观察
+language: Chinese
 ---
 
 # 因子拥挤度监测与规避：量化投资中的风险管理新维度

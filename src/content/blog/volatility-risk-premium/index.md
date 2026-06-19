@@ -1,10 +1,10 @@
 ---
 title: "波动率风险溢价捕捉：期权波动率交易的核心策略"
-description: "深入探讨波动率风险溢价（Volatility Risk Premium, VRP）的理论基础、度量方法和交易策略，提供完整的Python实现代码，帮助期权交易者捕捉波动率定价偏差带来的超额收益。"
-layout: blog
-date: 2026-06-19
-tags: ["期权策略", "波动率", "风险溢价", "VIX", "隐含波动率", "期权定价"]
-difficulty: "高阶"
+publishDate: '2026-06-19'
+description: "深入探讨波动率风险溢价（VRP）的理论基础、度量方法和交易策略，帮助期权交易者捕捉波动率定价偏差带来的超额收益。"
+tags:
+ - AI观察
+language: Chinese
 ---
 
 # 波动率风险溢价捕捉：期权波动率交易的核心策略

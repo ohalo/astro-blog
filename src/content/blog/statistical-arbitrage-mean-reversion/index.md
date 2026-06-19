@@ -1,11 +1,10 @@
 ---
 title: "统计套利：均值回归策略的原理与实践"
-date: 2024-06-19
+publishDate: '2024-06-19'
 description: "深入讲解统计套利的核心思想、均值回归策略的构建方法、协整检验的实战技巧，以及风险控制的关键要点。"
-tags: ["统计套利", "均值回归", "配对交易", "协整分析", "量化策略"]
-category: "量化策略"
-featured: false
-original: true
+tags:
+ - AI观察
+language: Chinese
 ---
 
 # 统计套利：均值回归策略的原理与实践
