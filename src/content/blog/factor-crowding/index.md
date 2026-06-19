@@ -1,12 +1,13 @@
 ---
 title: "因子拥挤度监测与规避：识别因子失效的早期信号"
-date: 2026-06-19
+publishDate: '2026-06-19'
 description: "深入探讨因子拥挤度的成因、监测指标和规避策略，帮助投资者在因子失效前及时调整持仓，保护投资组合收益。"
 tags:
   - 因子投资
   - 风险管理
   - 量化策略
   - 因子拥挤度
+language: Chinese
 cover: /images/factor-crowding/cover.jpg
 ---
 
