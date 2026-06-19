@@ -2,7 +2,6 @@
 """
 为因子拥挤度文章生成配图
 """
-
 import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')  # 非交互式后端
@@ -14,206 +13,156 @@ from datetime import datetime, timedelta
 plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'SimHei', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
-# 确保输出目录存在
+# 创建图片保存目录
 import os
 os.makedirs('/Users/halo/workspace/astro-blog/public/images/factor-crowding', exist_ok=True)
 
-# 图1: 因子拥挤度示意图
-def generate_figure1():
-    """图1: 因子拥挤度与收益衰减的关系"""
-    fig, ax1 = plt.subplots(figsize=(12, 6))
-    
-    # 生成模拟数据
-    dates = pd.date_range('2020-01-01', '2025-12-31', freq='ME')
-    crowding = np.linspace(0.2, 0.9, len(dates)) + np.random.normal(0, 0.05, len(dates))
-    returns = -0.5 * crowding + np.random.normal(0.02, 0.05, len(dates))
-    
-    # 绘制拥挤度
-    color = 'tab:red'
-    ax1.set_xlabel('Date')
-    ax1.set_ylabel('Crowding Index', color=color)
-    ax1.plot(dates, crowding, color=color, linewidth=2, label='Crowding Index')
-    ax1.tick_params(axis='y', labelcolor=color)
-    ax1.axhline(y=0.8, color='darkred', linestyle='--', alpha=0.5, label='High Crowding Threshold')
-    
-    # 创建第二个y轴
-    ax2 = ax1.twinx()
-    color = 'tab:blue'
-    ax2.set_ylabel('Factor Return', color=color)
-    ax2.plot(dates, returns, color=color, linewidth=2, label='Factor Return')
-    ax2.tick_params(axis='y', labelcolor=color)
-    ax2.axhline(y=0, color='gray', linestyle='-', alpha=0.3)
-    
-    plt.title('Factor Crowding vs Returns (2020-2025)', fontsize=16, fontweight='bold')
-    fig.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/figure1.png', 
-                dpi=300, bbox_inches='tight')
-    plt.close()
-    print("✓ Figure 1 generated: factor-crowding/figure1.png")
+# 图1：因子拥挤度监测仪表盘
+fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+fig.suptitle('因子拥挤度多维度监测仪表盘', fontsize=16, fontweight='bold')
 
-# 图2: 赫芬达尔指数示例
-def generate_figure2():
-    """图2: 不同因子拥挤度对比（HHI指数）"""
-    factors = ['Momentum', 'Value', 'Size', 'Quality', 'Low Vol']
-    hhi_scores = [0.85, 0.72, 0.45, 0.68, 0.51]
-    colors = ['#ff6b6b' if x > 0.7 else '#4ecdc4' if x > 0.5 else '#95e1d3' for x in hhi_scores]
-    
-    fig, ax = plt.subplots(figsize=(10, 6))
-    bars = ax.bar(factors, hhi_scores, color=colors, edgecolor='black', linewidth=1.5)
-    
-    # 添加阈值线
-    ax.axhline(y=0.7, color='red', linestyle='--', linewidth=2, label='High Crowding (0.7)')
-    ax.axhline(y=0.5, color='orange', linestyle='--', linewidth=2, label='Medium Crowding (0.5)')
-    
-    # 添加数值标签
-    for bar, score in zip(bars, hhi_scores):
-        height = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width()/2., height,
-                f'{score:.2f}',
-                ha='center', va='bottom', fontsize=11, fontweight='bold')
-    
-    ax.set_ylabel('Herfindahl Index (HHI)', fontsize=12)
-    ax.set_title('Factor Crowding Comparison - HHI Scores', fontsize=15, fontweight='bold')
-    ax.legend(loc='upper right')
-    ax.grid(axis='y', alpha=0.3)
-    ax.set_ylim(0, 1.0)
-    
-    plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/figure2.png', 
-                dpi=300, bbox_inches='tight')
-    plt.close()
-    print("✓ Figure 2 generated: factor-crowding/figure2.png")
+# 子图1：综合拥挤度得分趋势
+dates = pd.date_range('2025-01-01', '2026-06-19', freq='D')
+composite_score = 0.3 + 0.4 * np.sin(np.linspace(0, 4*np.pi, len(dates))) + np.random.uniform(-0.05, 0.05, len(dates))
+composite_score = np.clip(composite_score, 0, 1)
 
-# 图3: 拥挤度感知策略 vs 传统策略
-def generate_figure3():
-    """图3: 策略累计收益对比"""
-    dates = pd.date_range('2018-01-01', '2025-12-31', freq='ME')
-    np.random.seed(42)
-    
-    # 传统价值因子
-    traditional_returns = np.random.normal(0.008, 0.04, len(dates))
-    traditional_cumulative = np.cumprod(1 + traditional_returns) - 1
-    
-    # 拥挤度感知策略
-    crowding_aware_returns = traditional_returns - 0.3 * np.random.normal(0.01, 0.02, len(dates))
-    crowding_aware_returns += np.random.normal(0.002, 0.01, len(dates))  # 超额收益
-    crowding_aware_cumulative = np.cumprod(1 + crowding_aware_returns) - 1
-    
-    fig, ax = plt.subplots(figsize=(12, 6))
-    ax.plot(dates, traditional_cumulative, linewidth=2.5, 
-            label='Traditional Value Factor', color='#ff6b6b')
-    ax.plot(dates, crowding_aware_cumulative, linewidth=2.5, 
-            label='Crowding-Aware Strategy', color='#4ecdc4')
-    
-    ax.set_xlabel('Date', fontsize=12)
-    ax.set_ylabel('Cumulative Return', fontsize=12)
-    ax.set_title('Crowding-Aware Strategy vs Traditional Factor', fontsize=15, fontweight='bold')
-    ax.legend(loc='best', fontsize=11)
-    ax.grid(True, alpha=0.3)
-    
-    # 添加注释
-    final_trad = traditional_cumulative[-1]
-    final_aware = crowding_aware_cumulative[-1]
-    ax.text(dates[-1], final_trad, f'{final_trad:.1%}', 
-            ha='right', va='bottom', fontsize=10, fontweight='bold')
-    ax.text(dates[-1], final_aware, f'{final_aware:.1%}', 
-            ha='right', va='bottom', fontsize=10, fontweight='bold')
-    
-    plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/figure3.png', 
-                dpi=300, bbox_inches='tight')
-    plt.close()
-    print("✓ Figure 3 generated: factor-crowding/figure3.png")
+axes[0, 0].plot(dates, composite_score, linewidth=2, color='#2E86AB')
+axes[0, 0].axhline(y=0.4, color='green', linestyle='--', linewidth=2, label='正常阈值')
+axes[0, 0].axhline(y=0.7, color='red', linestyle='--', linewidth=2, label='危险阈值')
+axes[0, 0].fill_between(dates, 0, composite_score, alpha=0.3, color='#2E86AB')
+axes[0, 0].set_title('综合拥挤度得分', fontsize=12, fontweight='bold')
+axes[0, 0].set_ylabel('得分 (0-1)', fontsize=10)
+axes[0, 0].legend(fontsize=9)
+axes[0, 0].grid(True, alpha=0.3)
 
-# 图4: 回撤对比
-def generate_figure4():
-    """图4: 最大回撤对比（2020-2021价值因子崩塌期）"""
-    dates = pd.date_range('2020-01-01', '2021-12-31', freq='ME')
-    np.random.seed(42)
-    
-    # 计算回撤
-    def calculate_drawdown(cumulative_returns):
-        cumulative = 1 + cumulative_returns
-        # 使用 numpy 的 cummax
-        running_max = np.maximum.accumulate(cumulative)
-        drawdown = (cumulative - running_max) / running_max
-        return drawdown
-    
-    traditional_returns = np.random.normal(0.005, 0.05, len(dates))
-    traditional_cumulative = np.cumprod(1 + traditional_returns) - 1
-    traditional_dd = calculate_drawdown(traditional_cumulative)
-    
-    crowding_aware_returns = np.random.normal(0.01, 0.04, len(dates))
-    crowding_aware_cumulative = np.cumprod(1 + crowding_aware_returns) - 1
-    crowding_aware_dd = calculate_drawdown(crowding_aware_cumulative)
-    
-    fig, ax = plt.subplots(figsize=(12, 6))
-    ax.fill_between(dates, traditional_dd * 100, 0, alpha=0.3, color='#ff6b6b', label='Traditional')
-    ax.plot(dates, traditional_dd * 100, linewidth=2, color='#ff6b6b')
-    
-    ax.fill_between(dates, crowding_aware_dd * 100, 0, alpha=0.3, color='#4ecdc4', label='Crowding-Aware')
-    ax.plot(dates, crowding_aware_dd * 100, linewidth=2, color='#4ecdc4')
-    
-    ax.set_xlabel('Date', fontsize=12)
-    ax.set_ylabel('Drawdown (%)', fontsize=12)
-    ax.set_title('Maximum Drawdown Comparison (2020-2021 Crash)', fontsize=15, fontweight='bold')
-    ax.legend(loc='best', fontsize=11)
-    ax.grid(True, alpha=0.3)
-    ax.set_ylim(-40, 5)
-    
-    # 添加最大回撤标注
-    max_dd_trad = traditional_dd.min() * 100
-    max_dd_aware = crowding_aware_dd.min() * 100
-    ax.axhline(y=max_dd_trad, color='#ff6b6b', linestyle='--', alpha=0.5, linewidth=1)
-    ax.axhline(y=max_dd_aware, color='#4ecdc4', linestyle='--', alpha=0.5, linewidth=1)
-    ax.text(dates[len(dates)//2], max_dd_trad - 2, f'Max DD: {max_dd_trad:.1f}%', 
-            ha='center', va='top', fontsize=10, color='#ff6b6b', fontweight='bold')
-    ax.text(dates[len(dates)//2], max_dd_aware - 2, f'Max DD: {max_dd_aware:.1f}%', 
-            ha='center', va='top', fontsize=10, color='#4ecdc4', fontweight='bold')
-    
-    plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/figure4.png', 
-                dpi=300, bbox_inches='tight')
-    plt.close()
-    print("✓ Figure 4 generated: factor-crowding/figure4.png")
+# 子图2：各维度得分热力图
+dimensions = ['资金流', '离散度', '换手率', '自相关']
+scores_matrix = np.random.uniform(0.2, 0.8, (6, 4))
+im = axes[0, 1].imshow(scores_matrix, cmap='RdYlGn_r', aspect='auto')
+axes[0, 1].set_xticks(range(len(dimensions)))
+axes[0, 1].set_xticklabels(dimensions, fontsize=9)
+axes[0, 1].set_yticks(range(6))
+axes[0, 1].set_yticklabels([f'T-{i}' for i in range(5, -1, -1)], fontsize=9)
+axes[0, 1].set_title('各维度得分热力图', fontsize=12, fontweight='bold')
+plt.colorbar(im, ax=axes[0, 1], fraction=0.046, pad=0.04)
 
-# 生成封面图
-def generate_cover():
-    """生成文章封面图"""
-    fig, ax = plt.subplots(figsize=(16, 9))
-    
-    # 创建拥挤度的视觉化表示
-    np.random.seed(42)
-    x = np.random.randn(1000)
-    y = np.random.randn(1000)
-    
-    # 绘制散点图，用颜色表示拥挤度
-    scatter = ax.scatter(x, y, c=np.sqrt(x**2 + y**2), 
-                        cmap='RdYlBu_r', s=50, alpha=0.6, edgecolors='black', linewidth=0.5)
-    
-    ax.set_xlim(-4, 4)
-    ax.set_ylim(-4, 4)
-    ax.set_xlabel('Factor Exposure 1', fontsize=14)
-    ax.set_ylabel('Factor Exposure 2', fontsize=14)
-    ax.set_title('Factor Crowding Visualization', fontsize=20, fontweight='bold', pad=20)
-    
-    # 添加颜色条
-    cbar = plt.colorbar(scatter, ax=ax)
-    cbar.set_label('Crowding Intensity', fontsize=12)
-    
-    ax.grid(True, alpha=0.3)
-    
-    plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/cover.jpg', 
-                dpi=300, bbox_inches='tight', format='jpg')
-    plt.close()
-    print("✓ Cover generated: factor-crowding/cover.jpg")
+# 子图3：因子收益率离散度
+dispersion = 0.5 + 0.3 * np.cos(np.linspace(0, 3*np.pi, len(dates))) + np.random.uniform(-0.05, 0.05, len(dates))
+dispersion = np.clip(dispersion, 0.1, 1.0)
 
-if __name__ == '__main__':
-    print("Generating images for Factor Crowding article...")
-    generate_figure1()
-    generate_figure2()
-    generate_figure3()
-    generate_figure4()
-    generate_cover()
-    print("\n✅ All images generated successfully!")
+axes[1, 0].plot(dates, dispersion, linewidth=2, color='#A23B72')
+axes[1, 0].axhline(y=0.3, color='orange', linestyle='--', linewidth=2, label='拥挤阈值')
+axes[1, 0].set_title('因子收益率离散度', fontsize=12, fontweight='bold')
+axes[1, 0].set_ylabel('离散度', fontsize=10)
+axes[1, 0].legend(fontsize=9)
+axes[1, 0].grid(True, alpha=0.3)
+
+# 子图4：预警信号时间线
+alert_dates = ['2025-03-15', '2025-07-20', '2025-11-10', '2026-03-05']
+alert_levels = ['WARNING', 'DANGER', 'WARNING', 'DANGER']
+colors = ['orange', 'red', 'orange', 'red']
+
+for date, level, color in zip(alert_dates, alert_levels, colors):
+    axes[1, 1].axvline(x=pd.Timestamp(date), color=color, linewidth=3, alpha=0.7)
+    axes[1, 1].text(pd.Timestamp(date), 0.5, level, rotation=90, 
+                      verticalalignment='center', fontsize=9, color=color, fontweight='bold')
+
+axes[1, 1].set_xlim(pd.Timestamp('2025-01-01'), pd.Timestamp('2026-06-19'))
+axes[1, 1].set_ylim(0, 1)
+axes[1, 1].set_title('预警信号时间线', fontsize=12, fontweight='bold')
+axes[1, 1].set_ylabel('预警级别', fontsize=10)
+axes[1, 1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/dashboard.png', dpi=300, bbox_inches='tight')
+plt.close()
+
+# 图2：2019年动量因子崩盘示意图
+fig, ax = plt.subplots(figsize=(14, 8))
+
+# 模拟动量因子指数表现
+dates_mtum = pd.date_range('2019-01-01', '2020-12-31', freq='D')
+mtum_returns = np.random.normal(0.0008, 0.015, len(dates_mtum))
+mtum_returns[200:220] = -0.02  # 模拟崩盘期
+mtum_cumulative = (1 + pd.Series(mtum_returns)).cumprod()
+
+ax.plot(dates_mtum, mtum_cumulative, linewidth=3, color='#2E86AB', label='动量因子指数')
+ax.axvspan(pd.Timestamp('2019-08-01'), pd.Timestamp('2019-09-30'), 
+           alpha=0.3, color='red', label='动量崩盘期')
+ax.axhline(y=1.0, color='black', linestyle='-', linewidth=1)
+ax.set_title('2019年动量因子崩盘示意图', fontsize=16, fontweight='bold', pad=20)
+ax.set_xlabel('日期', fontsize=12)
+ax.set_ylabel('累计收益 (基准=1.0)', fontsize=12)
+ax.legend(fontsize=12, loc='best')
+ax.grid(True, alpha=0.3)
+
+# 添加注释
+ax.annotate('崩盘开始\n收益回撤-10%', 
+            xy=(pd.Timestamp('2019-08-15'), 1.15),
+            xytext=(pd.Timestamp('2019-06-01'), 1.25),
+            arrowprops=dict(arrowstyle='->', color='red', lw=2),
+            fontsize=11, color='red', fontweight='bold')
+
+plt.tight_layout()
+plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/momentum_crash.png', dpi=300, bbox_inches='tight')
+plt.close()
+
+# 图3：因子拥挤度与收益的负相关关系
+fig, ax = plt.subplots(figsize=(12, 8))
+
+# 模拟数据
+np.random.seed(42)
+n_samples = 100
+crowding = np.random.uniform(0, 1, n_samples)
+expected_return = 0.1 - 0.08 * crowding + np.random.normal(0, 0.02, n_samples)
+
+ax.scatter(crowding, expected_return, alpha=0.6, s=50, color='#A23B72', edgecolors='black', linewidth=0.5)
+ax.set_xlabel('因子拥挤度得分', fontsize=12)
+ax.set_ylabel('预期年化收益', fontsize=12)
+ax.set_title('因子拥挤度与预期收益的负相关关系', fontsize=14, fontweight='bold', pad=20)
+ax.grid(True, alpha=0.3)
+
+# 添加拟合线
+z = np.polyfit(crowding, expected_return, 1)
+p = np.poly1d(z)
+ax.plot(np.sort(crowding), p(np.sort(crowding)), color='red', linewidth=2, linestyle='--', label=f'拟合线: y = {z[0]:.3f}x + {z[1]:.3f}')
+ax.legend(fontsize=11)
+
+plt.tight_layout()
+plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/crowding_return_relation.png', dpi=300, bbox_inches='tight')
+plt.close()
+
+# 图4：动态因子配置权重变化
+fig, ax = plt.subplots(figsize=(14, 8))
+
+dates_alloc = pd.date_range('2025-01-01', '2026-06-19', freq='D')
+n_factors = 5
+factor_names = ['Momentum', 'Value', 'Size', 'Quality', 'LowVol']
+
+# 模拟权重变化
+weights = np.random.dirichlet(np.ones(n_factors), len(dates_alloc))
+weights = pd.DataFrame(weights, index=dates_alloc, columns=factor_names)
+
+# 模拟拥挤度上升时权重调整
+crowding_signal = 0.3 + 0.5 * (dates_alloc > pd.Timestamp('2025-09-01')).astype(int) + np.random.uniform(-0.1, 0.1, len(dates_alloc))
+crowding_signal = np.clip(crowding_signal, 0, 1)
+
+for i, factor in enumerate(factor_names):
+    ax.plot(dates_alloc, weights[factor], linewidth=2, label=factor, alpha=0.7)
+
+ax.set_xlabel('日期', fontsize=12)
+ax.set_ylabel('因子权重', fontsize=12)
+ax.set_title('动态因子配置权重变化（考虑拥挤度）', fontsize=14, fontweight='bold', pad=20)
+ax.legend(fontsize=11, loc='upper right')
+ax.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/dynamic_allocation.png', dpi=300, bbox_inches='tight')
+plt.close()
+
+print("✅ 因子拥挤度文章配图生成完成！")
+print("生成文件：")
+print("  1. dashboard.png - 多维度监测仪表盘")
+print("  2. momentum_crash.png - 2019年动量因子崩盘示意图")
+print("  3. crowding_return_relation.png - 拥挤度与收益关系")
+print("  4. dynamic_allocation.png - 动态因子配置")
