@@ -10,8 +10,8 @@ layout: page
 
 ## 最新文章
 ### 2026-06-21 新发布
-- [2026-06-21 - 多因子模型风险分解：理解投资组合风险的源头](/blog/multi-factor-risk-decomposition/) - 🆕 🔴 深入探讨多因子模型中的风险分解方法，帮助你识别、量化和管理因子风险。包含因子暴露计算、风险方差分解、条件风险分解等完整Python实现和实战案例（高阶）
-- [2026-06-21 - 配对交易与协整分析：均值回归策略的理论与实战](/blog/pair-trading-cointegration/) - 🆕 🔴 深入探讨配对交易的核心理论——协整关系，学习如何识别、测试和交易协整对，包含完整的Python实现和实战案例分析（高阶）
+- [2026-06-21 - 多因子模型风险分解：理解投资组合风险的来源](/blog/multi-factor-risk-decomposition/) - 🔴 深入解析多因子模型风险分解的 Euler 定理基础、边际风险贡献(MRC)计算、风险预算配置方法，含完整 Python 实现（MultiFactorRiskDecomposer 类）与 A 股实证考量：因子高相关性、Ledoit-Wolf 压缩估计、时变 Beta 处理（高阶）
+- [2026-06-21 - 配对交易与协整分析：均值回归策略的理论与实践](/blog/pair-trading-cointegration/) - 🔴 从协整理论到 Python 实战，完整解析 Engle-Granger 检验、Johansen 检验、Z-score 信号构建、PairsTradingStrategy 回测框架，含 A 股保险股实证案例、协整关系断裂风险管理、交易成本侵蚀应对（高阶）
 - [2026-06-21 - 因子择时：动态调整因子暴露](/blog/factor-timing/) - 🔴 深入探讨因子择时的理论基础与实践方法，学习如何根据市场状态动态调整因子暴露，提升投资组合的风险调整收益。包含因子周期性分析、宏观变量预测、Python实战代码与风险提示（高阶）
 
 ### 2026-06-19 新发布
