@@ -1,1148 +1,840 @@
 ---
 title: "XGBoost与LightGBM在量化选股中的应用"
-description: "深入探讨XGBoost和LightGBM两大梯度提升框架在量化选股中的实战应用，从特征工程到模型融合，包含完整的Python代码示例和回测验证。"
-pubDate: 2026-06-21
-tags: ["机器学习", "XGBoost", "LightGBM", "量化选股", "Python", "梯度提升"]
-category: "量化交易"
-cover: "/images/xgboost-lightgbm-stock-selection/cover.png"
+description: "深入探讨XGBoost和LightGBM在量化选股中的实战应用，从特征工程到模型训练，从因子合成到组合优化，提供完整的Python代码示例"
+publishDate: 2026-06-21
+category: quant
+tags:
+  - 机器学习
+  - XGBoost
+  - LightGBM
+  - 量化选股
+  - 因子模型
+  - Python实战
+  - 梯度提升树
+cover: /images/xgboost-lightgbm-stock-selection/cover.png
 ---
 
 # XGBoost与LightGBM在量化选股中的应用
 
 ## 引言
 
-在传统量化选股中，多因子模型（如Fama-French、BARRA）依赖于线性假设和人工设定的因子权重。然而，股票收益的**非线性、时变性和高噪音特性**，使得线性模型往往力不从心。
+在传统量化选股中，**多因子模型**（Multiple Factor Model）一直是主流方法。通过筛选有价值的因子（如价值、动量、质量等），构建线性模型预测股票收益。
 
-**梯度提升决策树（Gradient Boosting Decision Tree, GBDT）** 的出现，为量化选股带来了新的可能。其中，**XGBoost**（eXtreme Gradient Boosting）和**LightGBM**（Light Gradient Boosting Machine）凭借其优异的性能和效率，成为量化从业者手中的利器。
+然而，现实中因子与收益之间的关系往往是**非线性**的，且存在复杂的**因子交互效应**。这时候，**梯度提升树（Gradient Boosting Trees）** 算法就展现出强大优势。
 
-本文将系统讲解：
-- XGBoost与LightGBM的原理与差异
-- 量化选股的特征工程技巧
-- 完整的模型训练与验证框架
-- 实战中的关键陷阱与解决方案
-- 模型融合与策略实盘部署
+**XGBoost**（Extreme Gradient Boosting）和**LightGBM**（Light Gradient Boosting Machine）作为两大主流梯度提升框架，在Kaggle竞赛和工业界都取得了巨大成功。
 
-## 一、梯度提升算法原理
+本文将深入探讨：
+1. 梯度提升树的基本原理
+2. XGBoost vs LightGBM：算法对比
+3. 量化选股的特征工程（因子构建）
+4. 模型训练与调参实战
+5. 完整的Python量化选股系统
+6. 性能评估与实盘部署
+
+---
+
+## 一、梯度提升树原理
 
 ### 1.1 从决策树到梯度提升
 
-**决策树（Decision Tree）**：
-- 通过递归二分特征空间，构建树形结构
-- 优点：可解释性强、对特征尺度不敏感
-- 缺点：容易过拟合、高方差
+**决策树**通过递归分割特征空间，构建if-then规则。但单棵树容易过拟合，泛化能力差。
 
-**集成学习（Ensemble Learning）**：
-- **Bagging**（如随机森林）：并行训练多个模型，降低方差
-- **Boosting**：串行训练多个模型，降低偏差
+**Boosting思想**：
+- 训练多棵弱分类器（浅层决策树）
+- 每棵树修正前一棵树的错误
+- 最终预测 = 所有树的加权求和
 
 **梯度提升（Gradient Boosting）**：
-核心思想：每次拟合**负梯度**（即损失函数的下降方向）
+- 第 $t$ 棵树拟合的是**负梯度**（残差的近似）
+- 损失函数：$L(y, F(x)) = \frac{1}{2}(y - F(x))^2$（回归）
+- 更新：$F_t(x) = F_{t-1}(x) + \eta \cdot h_t(x)$
 
-数学模型：
+### 1.2 XGBoost的目标函数
 
-$$
-\hat{y} = \sum_{m=1}^M \alpha_m h_m(x)
-$$
-
-其中：
-- $h_m(x)$：第m个弱学习器（通常是浅层决策树）
-- $\alpha_m$：第m个学习器的权重
-- $M$：总的学习器数量
-
-训练过程：
-
-1. 初始化：$\hat{y}_0 = \arg\min_{\gamma} \sum_{i=1}^n L(y_i, \gamma)$
-2. 对于 $m = 1$ 到 $M$：
-   - 计算伪残差：$r_{im} = -\left[\frac{\partial L(y_i, \hat{y}_i)}{\partial \hat{y}_i}\right]_{\hat{y}_i = \hat{y}_{i,m-1}}$
-   - 训练弱学习器 $h_m(x)$ 拟合 $r_{im}$
-   - 计算步长 $\alpha_m$（线搜索）
-   - 更新：$\hat{y}_m = \hat{y}_{m-1} + \alpha_m h_m(x)$
-
-### 1.2 XGBoost：极致优化的梯度提升
-
-**XGBoost（eXtreme Gradient Boosting）** 由陈天奇于2016年提出，在GBDT基础上做了系统性优化。
-
-**目标函数**：
+XGBoost在损失函数中加入了**正则化项**：
 
 $$
-\mathcal{L}^{(t)} = \sum_{i=1}^n L(y_i, \hat{y}_i^{(t-1)} + f_t(x_i)) + \Omega(f_t)
+\text{Obj} = \sum_{i=1}^n L(y_i, \hat{y}_i) + \sum_{k=1}^K \Omega(f_k)
 $$
 
 其中：
-- $f_t(x_i)$：第t轮加入的树
-- $\Omega(f) = \gamma T + \frac{1}{2}\lambda \|w\|^2$：正则化项
-  - $T$：叶子节点数量
-  - $w$：叶子权重向量
+- $L(y_i, \hat{y}_i)$：损失函数（如均方误差）
+- $\Omega(f_k) = \gamma T + \frac{1}{2}\lambda \|\omega\|^2$：正则化项
+  - $T$：叶子节点数
+  - $\omega$：叶子权重
+  - $\gamma, \lambda$：超参数
 
 **二阶泰勒展开**：
+XGBoost利用损失函数的**一阶和二阶导数**进行优化，收敛更快。
 
-$$
-\mathcal{L}^{(t)} \approx \sum_{i=1}^n \left[ g_i f_t(x_i) + \frac{1}{2} h_i f_t^2(x_i) \right] + \Omega(f_t)
-$$
+### 1.3 LightGBM的改进
 
-其中：
-- $g_i = \frac{\partial L(y_i, \hat{y}_i^{(t-1)})}{\partial \hat{y}_i^{(t-1)}}$：一阶梯度
-- $h_i = \frac{\partial^2 L(y_i, \hat{y}_i^{(t-1)})}{\partial^2 \hat{y}_i^{(t-1)}}$：二阶梯度
+LightGBM在XGBoost基础上做了两大创新：
 
-**最优权重与分裂增益**：
+1. **Histogram-based算法**：
+   - 将连续特征离散化为直方图（如255个bin）
+   - 大幅减少计算复杂度：从 $O(\text{#data} \times \text{#features})$ 降到 $O(\text{#bins} \times \text{#features})$
 
-对于叶子节点 $j$，最优权重：
+2. **Leaf-wise生长策略**：
+   - 传统：Level-wise（按层生长）
+   - LightGBM：选择**损失下降最大**的叶子进行分裂
+   - 优点：收敛更快；缺点：容易过拟合（需用 `max_depth` 限制）
 
-$$
-w_j^* = -\frac{\sum_{i \in I_j} g_i}{\sum_{i \in I_j} h_i + \lambda}
-$$
+---
 
-分裂增益：
-
-$$
-\text{Gain} = \frac{1}{2} \left[ \frac{(\sum_{i \in I_L} g_i)^2}{\sum_{i \in I_L} h_i + \lambda} + \frac{(\sum_{i \in I_R} g_i)^2}{\sum_{i \in I_R} h_i + \lambda} - \frac{(\sum_{i \in I} g_i)^2}{\sum_{i \in I} h_i + \lambda} \right] - \gamma
-$$
-
-**XGBoost的核心创新**：
-1. **二阶优化**：利用海森矩阵加速收敛
-2. **正则化**：同时控制叶子数量和权重，防止过拟合
-3. **稀疏感知**：自动处理缺失值
-4. **并行化**：特征粒度并行，加速训练
-
-### 1.3 LightGBM：更快更准
-
-**LightGBM** 由微软于2017年提出，针对XGBoost的不足做了改进。
-
-**两大核心技术**：
-
-**1. GOSS（Gradient-based One-Side Sampling）**：
-- 保留梯度大的样本（对增益贡献大）
-- 随机采样梯度小的样本
-- 理论保证：牺牲少量精度，换取显著加速
-
-**2. EFB（Exclusive Feature Bundling）**：
-- 将互斥特征（很少同时取非零值）捆绑成一个特征
-- 减少特征维度，加速训练
-
-**直方图上分割搜索**：
-- 将连续特征离散化为直方图
-- 在直方图上搜索最优分裂点（O(bins)复杂度）
-
-**LightGBM vs XGBoost**：
-
-| 特性 | XGBoost | LightGBM |
-|------|---------|----------|
-| 训练速度 | 较慢 | 快3-10倍 |
-| 内存消耗 | 高 | 低 |
-| 准确率 | 略高（小数据集） | 相当或略高 |
-| 处理大规模数据 | 一般 | 优秀 |
-| 参数调优难度 | 中等 | 较低 |
-
-## 二、量化选股特征工程
+## 二、量化选股的特征工程
 
 ### 2.1 因子体系构建
 
-在应用XGBoost/LightGBM前，需构建系统的因子体系。
+在量化选股中，**因子（Factor）** 是模型的输入特征。一个完整的因子体系通常包括：
 
-**因子分类**：
+| 因子类别 | 具体因子 | 计算方式 |
+|---------|---------|---------|
+| **价值因子** | 市盈率（PE） | 市值 / 净利润 |
+|  | 市净率（PB） | 市值 / 净资产 |
+|  | 市销率（PS） | 市值 / 营业收入 |
+| **动量因子** | 过去N日收益率 | $r_{t-N:t}$ |
+|  | 动量加速度 | $r_{t-5:t} - r_{t-20:t-5}$ |
+| **质量因子** | ROE | 净利润 / 净资产 |
+|  | 资产周转率 | 营业收入 / 总资产 |
+|  | 财务杠杆 | 总资产 / 净资产 |
+| **波动率因子** | 历史波动率 | $\sigma(r_{t-N:t})$ |
+|  | 下行波动率 | $\sigma(r_{r<0})$ |
+| **流动性因子** | 换手率 | 成交量 / 流通股本 |
+|  | Amihud非流动性 | $|r_t| / \text{Volume}_t$ |
 
-**1. 价值类因子**
-- 市盈率（PE）、市净率（PB）、市销率（PS）
-- 企业价值倍数（EV/EBITDA）
-- 现金流折现指标
-
-**2. 成长类因子**
-- 营收增长率、净利润增长率
-- ROE增长率、资产增长率
-- 分析师预期修正
-
-**3. 动量类因子**
-- 过去1/3/6/12个月收益率
-- 动量反转指标
-- 波动率调整后收益
-
-**4. 质量类因子**
-- ROE、ROA、毛利率
-- 资产负债率、利息保障倍数
-- 应计项占比
-
-**5. 技术类因子**
-- 成交量、换手率
-- 相对强弱指标（RSI）
-- 布林带位置
-
-**6. 情绪类因子**
-- 分析师评级变化
-- 资金流向（北向/机构）
-- 社交媒体情绪
-
-### 2.2 特征预处理
-
-**1. 异常值处理**
+### 2.2 Python实现：因子计算
 
 ```python
 import numpy as np
 import pandas as pd
+import tushare as ts  # 或使用akshare、yfinance
 
-def winsorize(series, lower=0.01, upper=0.99):
+# ========== 1. 获取价格数据 ==========
+def get_price_data(tickers, start_date, end_date):
     """
-    Winsorize处理：将极端值截断到分位数
-    
-    Parameters:
-    -----------
-    series : pd.Series
-        输入序列
-    lower : float
-        下限分位数
-    upper : float
-        上限分位数
-    
-    Returns:
-    --------
-    pd.Series : 处理后的序列
+    获取股票ADJUSTED收盘价
+    推荐数据源：Tushare Pro (A股), yfinance (美股), akshare (免费A股)
     """
-    lower_bound = series.quantile(lower)
-    upper_bound = series.quantile(upper)
+    data = {}
+    for ticker in tickers:
+        # 示例：使用yfinance获取美股数据
+        df = yf.download(ticker, start=start_date, end=end_date)
+        data[ticker] = df['Adj Close']
     
-    return series.clip(lower_bound, upper_bound)
-```
+    prices = pd.DataFrame(data)
+    return prices
 
-**2. 标准化**
+# ========== 2. 计算收益率因子 ==========
+def calculate_momentum_factors(prices, periods=[5, 20, 60]):
+    """计算动量因子"""
+    returns = prices.pct_change()
+    factors = pd.DataFrame(index=returns.index)
+    
+    for period in periods:
+        factors[f'momentum_{period}d'] = returns.rolling(period).sum()
+    
+    # 动量加速度
+    factors['momentum_accel'] = factors['momentum_5d'] - factors['momentum_20d']
+    
+    return factors
 
-```python
-def standardize(series, method='zscore'):
-    """
-    标准化处理
+# ========== 3. 计算波动率因子 ==========
+def calculate_volatility_factors(returns, windows=[20, 60]):
+    """计算波动率因子"""
+    factors = pd.DataFrame(index=returns.index)
     
-    Parameters:
-    -----------
-    series : pd.Series
-        输入序列
-    method : str
-        'zscore'：Z-Score标准化
-        'minmax'：最小-最大缩放
-        'robust'：基于分位数的缩放
+    for window in windows:
+        # 历史波动率
+        factors[f'volatility_{window}d'] = returns.rolling(window).std() * np.sqrt(252)
+        
+        # 下行波动率 (只考虑负收益)
+        downside_returns = returns.copy()
+        downside_returns[returns > 0] = 0
+        factors[f'downside_vol_{window}d'] = downside_returns.rolling(window).std() * np.sqrt(252)
     
-    Returns:
-    --------
-    pd.Series : 标准化后的序列
-    """
-    if method == 'zscore':
-        return (series - series.mean()) / series.std()
-    
-    elif method == 'minmax':
-        return (series - series.min()) / (series.max() - series.min())
-    
-    elif method == 'robust':
-        median = series.median()
-        iqr = series.quantile(0.75) - series.quantile(0.25)
-        return (series - median) / iqr
-```
+    return factors
 
-**3. 中性化**
-
-```python
-def neutralize(factor, industry_dummy, log_market_cap):
-    """
-    因子中性化：剔除行业和市场市值的影响
+# ========== 4. 计算技术指标 ==========
+def calculate_technical_factors(prices):
+    """计算技术指标因子"""
+    factors = pd.DataFrame(index=prices.index)
     
-    Parameters:
-    -----------
-    factor : pd.Series
-        因子值
-    industry_dummy : pd.DataFrame
-        行业哑变量矩阵
-    log_market_cap : pd.Series
-        对数市值
-    
-    Returns:
-    --------
-    pd.Series : 中性化后的因子
-    """
-    # 构建回归矩阵
-    X = pd.concat([industry_dummy, log_market_cap], axis=1)
-    X['intercept'] = 1
-    
-    # 正交化
-    from numpy.linalg import lstsq
-    residuals = factor - X @ lstsq(X, factor, rcond=None)[0]
-    
-    return residuals
-```
-
-### 2.3 标签构建
-
-**回归标签**（预测收益率）：
-
-```python
-def create_regression_label(returns, horizon=5):
-    """
-    构建回归标签：未来N天收益率
-    
-    Parameters:
-    -----------
-    returns : pd.DataFrame
-        日收益率矩阵（股票×日期）
-    horizon : int
-        预测期限（交易日）
-    
-    Returns:
-    --------
-    pd.DataFrame : 标签矩阵
-    """
-    future_returns = returns.shift(-horizon)
-    return future_returns
-```
-
-**分类标签**（预测涨跌）：
-
-```python
-def create_classification_label(returns, horizon=5, n_classes=3):
-    """
-    构建分类标签：未来N天收益率分档
-    
-    Parameters:
-    -----------
-    returns : pd.DataFrame
-        日收益率矩阵
-    horizon : int
-        预测期限
-    n_classes : int
-        分类数量（3：跌/平/涨；5： quintile）
-    
-    Returns:
-    --------
-    pd.DataFrame : 标签矩阵（0, 1, 2...）
-    """
-    future_returns = returns.shift(-horizon)
-    
-    # 按横截面分位数分类
-    labels = pd.DataFrame(0, index=returns.index, columns=returns.columns)
-    
-    for date in future_returns.index:
-        ret = future_returns.loc[date]
-        quantiles = ret.quantile(np.linspace(0, 1, n_classes + 1))
-        
-        for i in range(n_classes):
-            if i == 0:
-                labels.loc[date, ret <= quantiles.iloc[1]] = 0
-            elif i == n_classes - 1:
-                labels.loc[date, ret > quantiles.iloc[-2]] = i
-            else:
-                mask = (ret > quantiles.iloc[i]) & (ret <= quantiles.iloc[i+1])
-                labels.loc[date, mask] = i
-    
-    return labels
-```
-
-## 三、Python实战：完整选股框架
-
-### 3.1 数据准备与特征工程
-
-```python
-import numpy as np
-import pandas as pd
-import lightgbm as lgb
-import xgboost as xgb
-from sklearn.model_selection import TimeSeriesSplit
-from sklearn.metrics import accuracy_score, f1_score
-import matplotlib.pyplot as plt
-import warnings
-warnings.filterwarnings('ignore')
-
-class QuantStockSelection:
-    """量化选股框架"""
-    
-    def __init__(self, model_type='lightgbm', task='classification'):
-        """
-        初始化
-        
-        Parameters:
-        -----------
-        model_type : str
-            'xgboost' 或 'lightgbm'
-        task : str
-            'classification' 或 'regression'
-        """
-        self.model_type = model_type
-        self.task = task
-        self.model = None
-        self.feature_names = None
-        
-    def prepare_features(self, price_data, fundamental_data, technical_data):
-        """
-        准备特征矩阵
-        
-        Parameters:
-        -----------
-        price_data : pd.DataFrame
-            价格数据（收益率、成交量等）
-        fundamental_data : pd.DataFrame
-            基本面数据（财务比率等）
-        technical_data : pd.DataFrame
-            技术指标数据
-        
-        Returns:
-        --------
-        pd.DataFrame : 特征矩阵
-        """
-        print("开始特征工程...")
-        
-        features = pd.DataFrame(index=price_data.index)
-        
-        # 1. 动量因子
-        for period in [5, 10, 20, 60]:
-            features[f'momentum_{period}'] = price_data['close'].pct_change(period)
-        
-        # 2. 波动率因子
-        for period in [20, 60]:
-            features[f'volatility_{period}'] = price_data['returns'].rolling(period).std()
-        
-        # 3. 成交量因子
-        features['volume_change'] = price_data['volume'].pct_change(20)
-        features['turnover'] = price_data['volume'] / price_data['float_shares']
-        
-        # 4. 技术指标
-        features['rsi_14'] = self.compute_rsi(price_data['close'], 14)
-        features['macd'] = self.compute_macd(price_data['close'])
-        
-        # 5. 基本面因子（示例）
-        if fundamental_data is not None:
-            features['pe_ratio'] = self.winsorize(fundamental_data['pe'])
-            features['pb_ratio'] = self.winsorize(fundamental_data['pb'])
-            features['roe'] = self.winsorize(fundamental_data['roe'])
-        
-        # 6. 时空特征
-        features['day_of_week'] = features.index.dayofweek
-        features['month'] = features.index.month
-        
-        # 处理缺失值
-        features = features.fillna(method='ffill').fillna(0)
-        
-        # 异常值处理
-        numeric_cols = features.select_dtypes(include=[np.number]).columns
-        features[numeric_cols] = features[numeric_cols].apply(self.winsorize)
-        
-        # 标准化
-        features[numeric_cols] = features[numeric_cols].apply(self.standardize)
-        
-        self.feature_names = features.columns.tolist()
-        
-        print(f"特征工程完成：{len(self.feature_names)} 个特征")
-        print(f"特征列表：{self.feature_names[:10]}...")
-        
-        return features
-    
-    @staticmethod
-    def compute_rsi(prices, period=14):
-        """计算RSI指标"""
+    # RSI (相对强弱指数)
+    def calculate_rsi(prices, period=14):
         delta = prices.diff()
-        gain = delta.where(delta > 0, 0).rolling(period).mean()
-        loss = -delta.where(delta < 0, 0).rolling(period).mean()
+        gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
         rs = gain / loss
         rsi = 100 - (100 / (1 + rs))
         return rsi
     
-    @staticmethod
-    def compute_macd(prices, fast=12, slow=26, signal=9):
-        """计算MACD指标"""
+    for ticker in prices.columns:
+        factors[f'RSI_{ticker}'] = calculate_rsi(prices[ticker])
+    
+    # MACD
+    def calculate_macd(prices, fast=12, slow=26, signal=9):
         ema_fast = prices.ewm(span=fast, adjust=False).mean()
         ema_slow = prices.ewm(span=slow, adjust=False).mean()
         macd = ema_fast - ema_slow
         signal_line = macd.ewm(span=signal, adjust=False).mean()
-        return macd - signal_line
+        return macd, signal_line
     
-    @staticmethod
-    def winsorize(series, lower=0.01, upper=0.99):
-        """Winsorize处理"""
-        lower_bound = series.quantile(lower)
-        upper_bound = series.quantile(upper)
-        return series.clip(lower_bound, upper_bound)
+    # 为简洁，这里只展示单个标的
+    macd, signal_line = calculate_macd(prices.iloc[:, 0])
+    factors['MACD'] = macd
+    factors['MACD_signal'] = signal_line
     
-    @staticmethod
-    def standardize(series):
-        """Z-Score标准化"""
-        return (series - series.mean()) / series.std()
-    
-    def prepare_labels(self, returns, horizon=5, method='classification'):
-        """
-        准备标签
-        
-        Parameters:
-        -----------
-        returns : pd.DataFrame
-            收益率数据
-        horizon : int
-            预测期限
-        method : str
-            'classification' 或 'regression'
-        
-        Returns:
-        --------
-        pd.Series : 标签序列
-        """
-        print(f"构建标签（期限={horizon}天, 方法={method}）...")
-        
-        if method == 'regression':
-            # 回归标签：未来N天累计收益
-            labels = returns.shift(-horizon).cumsum(axis=1).iloc[:, -1]
-        
-        elif method == 'classification':
-            # 分类标签：未来N天收益分三档
-            future_return = returns.shift(-horizon).sum(axis=1)
-            
-            # 按日期横截面分位数分类
-            labels = pd.Series(index=future_return.index)
-            for date in future_return.index:
-                ret = future_return.loc[date]
-                if pd.isna(ret):
-                    labels.loc[date] = np.nan
-                elif ret <= future_return.quantile(0.33):
-                    labels.loc[date] = 0  # 跌
-                elif ret >= future_return.quantile(0.67):
-                    labels.loc[date] = 2  # 涨
-                else:
-                    labels.loc[date] = 1  # 平
-        
-        labels = labels.dropna()
-        
-        print(f"标签分布：")
-        print(labels.value_counts().sort_index())
-        
-        return labels
-```
+    return factors
 
-### 3.2 模型训练与验证
+# ========== 5. 因子标准化 ==========
+def standardize_factors(factors):
+    """横截面标准化（每个交易日，对所有股票标准化）"""
+    return factors.sub(factors.mean(axis=1), axis=0).div(factors.std(axis=1), axis=0)
 
-```python
-    def train_model(self, X_train, y_train, params=None):
-        """
-        训练模型
-        
-        Parameters:
-        -----------
-        X_train : pd.DataFrame
-            训练特征
-        y_train : pd.Series
-            训练标签
-        params : dict
-            模型参数
-        """
-        print(f"\n开始训练 {self.model_type.upper()} 模型...")
-        
-        if self.model_type == 'xgboost':
-            # XGBoost默认参数
-            if params is None:
-                params = {
-                    'objective': 'multi:softmax' if self.task == 'classification' else 'reg:squarederror',
-                    'num_class': 3 if self.task == 'classification' else None,
-                    'max_depth': 6,
-                    'learning_rate': 0.1,
-                    'n_estimators': 100,
-                    'subsample': 0.8,
-                    'colsample_bytree': 0.8,
-                    'random_state': 42,
-                    'n_jobs': -1
-                }
-                if params['num_class'] is None:
-                    del params['num_class']
-            
-            self.model = xgb.XGBClassifier(**params) if self.task == 'classification' \
-                        else xgb.XGBRegressor(**params)
-        
-        elif self.model_type == 'lightgbm':
-            # LightGBM默认参数
-            if params is None:
-                params = {
-                    'objective': 'multiclass' if self.task == 'classification' else 'regression',
-                    'num_class': 3 if self.task == 'classification' else None,
-                    'metric': 'multi_logloss' if self.task == 'classification' else 'rmse',
-                    'max_depth': -1,
-                    'num_leaves': 31,
-                    'learning_rate': 0.1,
-                    'n_estimators': 100,
-                    'subsample': 0.8,
-                    'colsample_bytree': 0.8,
-                    'random_state': 42,
-                    'n_jobs': -1,
-                    'verbose': -1
-                }
-                if params['num_class'] is None:
-                    del params['num_class']
-            
-            self.model = lgb.LGBMClassifier(**params) if self.task == 'classification' \
-                        else lgb.LGBMRegressor(**params)
-        
-        # 训练模型
-        self.model.fit(X_train, y_train)
-        
-        print(f"模型训练完成！")
-        print(f"  特征数量：{X_train.shape[1]}")
-        print(f"  训练样本：{X_train.shape[0]}")
-        
-        # 特征重要性
-        self.plot_feature_importance()
-    
-    def plot_feature_importance(self, top_n=20):
-        """绘制特征重要性"""
-        if self.model is None:
-            print("模型未训练！")
-            return
-        
-        # 获取特征重要性
-        if self.model_type == 'xgboost':
-            importance = self.model.feature_importances_
-        elif self.model_type == 'lightgbm':
-            importance = self.model.feature_importances_
-        
-        # 排序
-        indices = np.argsort(importance)[::-1][:top_n]
-        
-        # 绘图
-        fig, ax = plt.subplots(figsize=(12, 6))
-        
-        ax.barh(range(top_n), importance[indices][::-1])
-        ax.set_yticks(range(top_n))
-        ax.set_yticklabels([self.feature_names[i] for i in indices][::-1])
-        ax.set_xlabel('重要性')
-        ax.set_title(f'{self.model_type.upper()} 特征重要性 Top {top_n}')
-        ax.grid(True, alpha=0.3, axis='x')
-        
-        plt.tight_layout()
-        plt.savefig(f'public/images/xgboost-lightgbm-stock-selection/feature_importance_{self.model_type}.png', 
-                    dpi=300, bbox_inches='tight')
-        plt.close()
-        
-        print(f"特征重要性图已保存")
-    
-    def evaluate(self, X_test, y_test):
-        """
-        模型评估
-        
-        Parameters:
-        -----------
-        X_test : pd.DataFrame
-            测试特征
-        y_test : pd.Series
-            测试标签
-        
-        Returns:
-        --------
-        dict : 评估指标
-        """
-        if self.model is None:
-            print("模型未训练！")
-            return None
-        
-        print(f"\n评估模型性能...")
-        
-        # 预测
-        y_pred = self.model.predict(X_test)
-        
-        if self.task == 'classification':
-            # 分类指标
-            accuracy = accuracy_score(y_test, y_pred)
-            f1 = f1_score(y_test, y_pred, average='weighted')
-            
-            print(f"准确率（Accuracy）：{accuracy:.4f}")
-            print(f"F1分数：{f1:.4f}")
-            
-            return {'accuracy': accuracy, 'f1': f1}
-        
-        elif self.task == 'regression':
-            # 回归指标
-            from sklearn.metrics import mean_squared_error, r2_score
-            
-            mse = mean_squared_error(y_test, y_pred)
-            r2 = r2_score(y_test, y_pred)
-            
-            print(f"均方误差（MSE）：{mse:.6f}")
-            print(f"R²分数：{r2:.4f}")
-            
-            return {'mse': mse, 'r2': r2}
-```
-
-### 3.3 时间序列交叉验证
-
-```python
-    def time_series_cv(self, X, y, n_splits=5):
-        """
-        时间序列交叉验证（防止未来信息泄露）
-        
-        Parameters:
-        -----------
-        X : pd.DataFrame
-            特征矩阵
-        y : pd.Series
-            标签
-        n_splits : int
-            折数
-        
-        Returns:
-        --------
-        dict : 各折评估指标
-        """
-        print(f"\n执行时间序列交叉验证（{n_splits}折）...")
-        
-        tscv = TimeSeriesSplit(n_splits=n_splits)
-        
-        cv_scores = []
-        
-        for fold, (train_idx, test_idx) in enumerate(tscv.split(X), 1):
-            X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
-            y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
-            
-            # 训练模型
-            self.train_model(X_train, y_train)
-            
-            # 评估
-            scores = self.evaluate(X_test, y_test)
-            cv_scores.append(scores)
-            
-            print(f"Fold {fold}: {scores}")
-        
-        # 汇总结果
-        avg_scores = {}
-        for key in cv_scores[0].keys():
-            avg_scores[key] = np.mean([s[key] for s in cv_scores])
-            avg_scores[f'{key}_std'] = np.std([s[key] for s in cv_scores])
-        
-        print(f"\n交叉验证平均结果：")
-        for key, value in avg_scores.items():
-            print(f"  {key}: {value:.4f}")
-        
-        return avg_scores
-```
-
-### 3.4 完整示例运行
-
-```python
-# 主程序
+# ========== 主程序 ==========
 if __name__ == "__main__":
-    # 1. 加载数据（示例：使用模拟数据）
-    print("="*60)
-    print("量化选股模型训练流程")
-    print("="*60)
+    # 参数设置
+    tickers = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 
+               'JPM', 'GS', 'BAC', 'WFC', 'C']
+    start_date = '2023-01-01'
+    end_date = '2024-12-31'
     
-    # 生成模拟数据
-    np.random.seed(42)
-    n_samples = 1000
-    n_features = 30
+    # 获取数据
+    prices = get_price_data(tickers, start_date, end_date)
+    returns = prices.pct_change()
     
-    X = pd.DataFrame(
-        np.random.randn(n_samples, n_features),
-        columns=[f'feature_{i}' for i in range(n_features)]
-    )
-    X.index = pd.date_range('2020-01-01', periods=n_samples, freq='D')
+    # 计算因子
+    momentum_factors = calculate_momentum_factors(prices)
+    volatility_factors = calculate_volatility_factors(returns)
+    technical_factors = calculate_technical_factors(prices)
     
-    # 生成模拟标签（分类任务）
-    y = pd.Series(np.random.randint(0, 3, n_samples), index=X.index)
+    # 合并所有因子
+    all_factors = pd.concat([momentum_factors, volatility_factors, technical_factors], axis=1)
     
-    # 2. 初始化模型
-    model = QuantStockSelection(model_type='lightgbm', task='classification')
+    # 标准化
+    all_factors_standardized = standardize_factors(all_factors)
     
-    # 3. 训练模型
-    model.train_model(X.iloc[:800], y.iloc[:800])
-    
-    # 4. 评估模型
-    model.evaluate(X.iloc[800:], y.iloc[800:])
-    
-    # 5. 时间序列交叉验证
-    # model.time_series_cv(X, y, n_splits=5)
-    
-    print("\n" + "="*60)
-    print("模型训练完成！")
-    print("="*60)
+    print(f"因子维度: {all_factors_standardized.shape}")
+    print(f"因子列表: {list(all_factors_standardized.columns)}")
 ```
-
-## 四、实战案例：A股选股策略回测
-
-### 4.1 数据准备
-
-**股票池**：沪深300成份股（2020-2024）
-
-**特征体系**（50+因子）：
-- 价值：PE、PB、PS、EV/EBITDA
-- 动量：1M、3M、6M、12M收益率
-- 质量：ROE、ROA、毛利率、资产负债率
-- 技术：RSI、MACD、布林带、成交量比
-- 风险：波动率、最大回撤、Beta
-
-**标签**：未来20个交易日收益率（分5档）
-
-### 4.2 模型表现
-
-**LightGBM参数**：
-```python
-params = {
-    'objective': 'multiclass',
-    'num_class': 5,
-    'metric': 'multi_logloss',
-    'num_leaves': 63,
-    'max_depth': -1,
-    'learning_rate': 0.05,
-    'n_estimators': 200,
-    'subsample': 0.7,
-    'colsample_bytree': 0.7,
-    'reg_alpha': 0.1,
-    'reg_lambda': 0.1
-}
-```
-
-**样本外测试结果**（2023-2024）：
-
-| 指标 | LightGBM | XGBoost | Logistic回归 | 随机森林 |
-|------|----------|---------|--------------|----------|
-| 准确率 | 42.3% | 41.8% | 35.2% | 40.1% |
-| F1分数 | 0.412 | 0.408 | 0.341 | 0.395 |
-| IC均值 | 0.032 | 0.030 | 0.021 | 0.028 |
-| IC_IR | 0.85 | 0.82 | 0.61 | 0.78 |
-
-**关键发现**：
-1. LightGBM在准确率和非线性捕捉上略优于XGBoost
-2. 传统线性模型（Logistic）显著落后，验证了非线性的重要性
-3. IC（信息系数）表明模型具有稳定的选股能力
-
-### 4.3 策略回测
-
-**选股规则**：
-- 每月初预测所有股票的未来收益档位
-- 做多预测为第5档（最高收益）的前30只股票
-- 等权配置，持有20个交易日
-
-**回测结果**（2020-2024）：
-
-| 指标 | LightGBM策略 | 沪深300 | 超额收益 |
-|------|-------------|---------|---------|
-| 年化收益率 | 15.8% | 8.2% | +7.6% |
-| 年化波动率 | 18.5% | 19.3% | - |
-| 夏普比率 | 0.85 | 0.42 | - |
-| 最大回撤 | -22.3% | -28.7% | - |
-| 胜率 | 56.8% | - | - |
-
-**分年度表现**：
-
-| 年份 | 策略收益 | 基准收益 | 超额收益 |
-|------|---------|---------|---------|
-| 2020 | +28.5% | +27.2% | +1.3% |
-| 2021 | +12.3% | -3.5% | +15.8% |
-| 2022 | -8.7% | -21.6% | +12.9% |
-| 2023 | +18.2% | -11.4% | +29.6% |
-| 2024 | +22.1% | +8.3% | +13.8% |
-
-**结论**：模型在2022-2023年熊市中表现出色，验证了机器学习模型捕捉非线性alpha的能力。
-
-## 五、关键陷阱与解决方案
-
-### 5.1 数据泄露（Data Leakage）
-
-**问题**：使用未来数据训练模型，导致回测虚高。
-
-**常见来源**：
-1. 使用全样本标准化（应包含在未来信息中）
-2. 特征计算中引入未来数据（如用未来N天收益计算动量）
-3. 标签构建时未正确滞后
-
-**解决方案**：
-
-```python
-def safe_normalize(train_data, test_data):
-    """
-    安全的标准化：仅用训练集统计量
-    
-    Parameters:
-    -----------
-    train_data : pd.DataFrame
-        训练集
-    test_data : pd.DataFrame
-        测试集
-    
-    Returns:
-    --------
-    (pd.DataFrame, pd.DataFrame) : 标准化后的训练集和测试集
-    """
-    mean = train_data.mean()
-    std = train_data.std()
-    
-    train_normalized = (train_data - mean) / std
-    test_normalized = (test_data - mean) / std
-    
-    return train_normalized, test_normalized
-```
-
-### 5.2 过拟合（Overfitting）
-
-**问题**：模型在训练集表现优异，样本外失效。
-
-**诊断方法**：
-1. 训练集vs验证集性能差距大
-2. 特征重要性分散（太多特征有相似重要性）
-3. 样本外IC衰减快
-
-**解决方案**：
-
-```python
-def prevent_overfitting(model_type, params):
-    """
-    防止过拟合的参数调整
-    
-    Parameters:
-    -----------
-    model_type : str
-        'xgboost' 或 'lightgbm'
-    params : dict
-        原参数
-    
-    Returns:
-    --------
-    dict : 调整后的参数
-    """
-    if model_type == 'xgboost':
-        # 增加正则化
-        params['reg_alpha'] = 0.1  # L1正则
-        params['reg_lambda'] = 0.1  # L2正则
-        params['gamma'] = 0.1  # 分裂最小增益
-        params['max_depth'] = 5  # 限制树深度
-        params['min_child_weight'] = 5  # 叶子最小样本权重
-    
-    elif model_type == 'lightgbm':
-        # 增加正则化
-        params['reg_alpha'] = 0.1
-        params['reg_lambda'] = 0.1
-        params['num_leaves'] = 31  # 限制叶子数量
-        params['min_data_in_leaf'] = 20  # 叶子最小样本数
-        params['feature_fraction'] = 0.8  # 特征采样
-    
-    return params
-```
-
-### 5.3 类别不平衡
-
-**问题**：涨跌平样本分布不均，模型偏向多数类。
-
-**解决方案**：
-
-```python
-def handle_imbalance(X, y, method='smote'):
-    """
-    处理类别不平衡
-    
-    Parameters:
-    -----------
-    X : pd.DataFrame
-        特征矩阵
-    y : pd.Series
-        标签
-    method : str
-        'smote'：合成少数类样本
-        'class_weight'：类别权重调整
-        'undersample'：欠采样
-    
-    Returns:
-    --------
-    (pd.DataFrame, pd.Series) : 处理后的数据
-    """
-    if method == 'class_weight':
-        # 在模型参数中设置class_weight
-        pass
-    
-    elif method == 'smote':
-        from imblearn.over_sampling import SMOTE
-        
-        smote = SMOTE(random_state=42)
-        X_resampled, y_resampled = smote.fit_resample(X, y)
-        
-        return X_resampled, y_resampled
-    
-    elif method == 'undersample':
-        from imblearn.under_sampling import RandomUnderSampler
-        
-        rus = RandomUnderSampler(random_state=42)
-        X_resampled, y_resampled = rus.fit_resample(X, y)
-        
-        return X_resampled, y_resampled
-```
-
-### 5.4 非平稳性
-
-**问题**：股票市场规律时变，模型随时间衰减。
-
-**解决方案**：
-1. **滚动训练**：每季度重新训练模型
-2. **在线学习**：使用`partial_fit`增量更新
-3. **集成多个时间窗口的模型**
-
-```python
-def rolling_retrain(model, X, y, retrain_freq='3M'):
-    """
-    滚动重新训练
-    
-    Parameters:
-    -----------
-    model : 模型对象
-    X : pd.DataFrame
-        特征矩阵（带时间索引）
-    y : pd.Series
-        标签（带时间索引）
-    retrain_freq : str
-        重新训练频率
-    """
-    models = {}
-    
-    # 按时间窗口切分
-    for start_date, end_date in pd.date_range(X.index.min(), X.index.max(), freq=retrain_freq):
-        # 训练窗口：过去1年
-        train_start = start_date - pd.Timedelta(days=365)
-        
-        X_train = X.loc[train_start:start_date]
-        y_train = y.loc[train_start:start_date]
-        
-        # 训练模型
-        model.fit(X_train, y_train)
-        models[start_date] = model
-        
-        print(f"模型已更新：{start_date}")
-    
-    return models
-```
-
-## 六、模型融合与实盘部署
-
-### 6.1 模型融合策略
-
-**1. 投票法（Voting）**
-
-```python
-from sklearn.ensemble import VotingClassifier
-
-# 构建异构模型集成
-xgb_model = xgb.XGBClassifier(**xgb_params)
-lgb_model = lgb.LGBMClassifier(**lgb_params)
-rf_model = RandomForestClassifier(**rf_params)
-
-ensemble = VotingClassifier(
-    estimators=[
-        ('xgb', xgb_model),
-        ('lgb', lgb_model),
-        ('rf', rf_model)
-    ],
-    voting='soft'  # 使用预测概率加权平均
-)
-
-ensemble.fit(X_train, y_train)
-```
-
-**2. 堆叠法（Stacking）**
-
-```python
-from sklearn.ensemble import StackingClassifier
-
-# 第一层模型
-base_models = [
-    ('xgb', xgb.XGBClassifier(**xgb_params)),
-    ('lgb', lgb.LGBMClassifier(**lgb_params)),
-    ('nn', MLPClassifier(hidden_layer_sizes=(100, 50)))
-]
-
-# 第二层模型（元学习器）
-meta_model = LogisticRegression()
-
-stacking = StackingClassifier(
-    estimators=base_models,
-    final_estimator=meta_model,
-    cv=5
-)
-
-stacking.fit(X_train, y_train)
-```
-
-### 6.2 实盘部署要点
-
-**1. 特征计算延迟**
-- 财务数据：季度更新，需注意发布滞后
-- 技术指标：实时计算，确保低延迟
-
-**2. 模型更新频率**
-- 建议：每月或每季度重新训练
-- 监控：IC衰减超过阈值时触发重训
-
-**3. 交易成本控制**
-- 预测概率需超过阈值才交易（如>0.6）
-- 设置最小持有期，避免频繁调仓
-
-**4. 风险管理**
-- 单票仓位上限（如5%）
-- 行业敞口限制
-- 止损机制
-
-```python
-def generate_trading_signal(model, X, threshold=0.6):
-    """
-    生成交易信号（带置信度阈值）
-    
-    Parameters:
-    -----------
-    model : 训练好的模型
-    X : pd.DataFrame
-        当前特征
-    threshold : float
-        预测概率阈值
-    
-    Returns:
-    --------
-    pd.DataFrame : 交易信号
-    """
-    # 获取预测概率
-    proba = model.predict_proba(X)
-    
-    # 选择预测概率最高的类
-    max_proba = proba.max(axis=1)
-    pred_class = proba.argmax(axis=1)
-    
-    # 仅保留高置信度预测
-    signal = pd.Series(0, index=X.index)
-    signal[max_proba > threshold] = pred_class[max_proba > threshold]
-    
-    return signal
-```
-
-## 七、总结与展望
-
-### 核心要点
-
-**XGBoost/LightGBM在量化选股中的优势**：
-1. **非线性建模**：捕捉复杂的因子交互效应
-2. **鲁棒性强**：对异常值、缺失值不敏感
-3. **可解释性**：特征重要性分析揭示alpha来源
-4. **效率高**：LightGBM可处理百万级样本
-
-**实施关键**：
-1. **特征工程是核心**：70%精力应投入特征构建
-2. **防止数据泄露**：严格的时间序列验证不可少
-3. **控制过拟合**：正则化、早停、特征选择缺一不可
-4. **实盘需谨慎**：交易成本和模型衰减是主要挑战
-
-**局限性与改进方向**：
-1. **深度学习融合**：将GBDT与神经网络结合（如DeepGBM）
-2. **图神经网络**：利用股票间关联信息（供应链、行业关联）
-3. **强化学习**：将选股建模为序列决策问题
-4. **另类数据**：整合文本、图像、卫星数据
-
-### 展望
-
-随着AI技术的快速发展，量化选股正从**传统统计模型**向**端到端深度学习**演进。然而，XGBoost和LightGBM作为**强基线（Strong Baseline）**，仍将在相当长时间内占据重要地位。
-
-**未来趋势**：
-1. **AutoML**：自动化特征工程和超参优化
-2. **可解释AI**：SHAP、LIME等工具揭示模型决策逻辑
-3. **多模态融合**：结合价格、文本、知识图谱
-4. **实时学习**：在线更新模型以适应市场变化
 
 ---
 
-**实战建议**：
-- 初学者：从LightGBM入手，调参简单、效果好
-- 进阶者：尝试XGBoost+LightGBM集成，提升鲁棒性
-- 高级玩家：引入深度学习或强化学习，探索前沿方法
+## 三、XGBoost与LightGBM模型训练
 
-**参考资料**：
-1. Chen, T., & Guestrin, C. (2016). "XGBoost: A Scalable Tree Boosting System." *KDD*.
-2. Ke, G., et al. (2017). "LightGBM: A Highly Efficient Gradient Boosting Decision Tree." *NIPS*.
-3. De Prado, M. L. (2018). *Advances in Financial Machine Learning*. Wiley.
+### 3.1 数据准备与标签构建
 
-**免责声明**：本文仅供学术交流，不构成投资建议。机器学习模型实盘前需充分回测和风险评估。
+在量化选股中，**标签（Label）** 的构建至关重要。常见做法：
+
+1. **未来N日收益率**：
+   $$y_t = r_{t+1:t+N}$$
+   - 优点：直观，符合经济意义
+   - 缺点：噪声大，预测难度大
+
+2. **排名分位数**：
+   $$y_t = \text{rank}(r_{t+1:t+N})$$
+   - 优点：降低噪声，关注相对排名
+   - 缺点：丢失绝对收益信息
+
+3. **分类标签**（上涨/下跌/横盘）：
+   $$y_t = \begin{cases}
+   2 & \text{if } r_{t+1:t+N} > \alpha \\
+   1 & \text{if } |r_{t+1:t+N}| \leq \alpha \\
+   0 & \text{if } r_{t+1:t+N} < -\alpha
+   \end{cases}$$
+
+### 3.2 XGBoost模型训练实战
+
+```python
+import xgboost as xgb
+from sklearn.model_selection import TimeSeriesSplit
+from sklearn.metrics import accuracy_score, precision_score, recall_score
+
+# ========== 1. 准备训练数据 ==========
+def prepare_training_data(factors, prices, forward_days=5):
+    """
+    构建训练数据：因子 -> 未来N日收益率
+    """
+    # 计算未来N日收益率
+    future_returns = prices.shift(-forward_days) / prices - 1
+    
+    # 转换为分类标签（上涨=1, 下跌=0）
+    labels = (future_returns > 0).astype(int)
+    
+    # 合并因子和标签
+    X = factors.dropna()
+    y = labels.loc[X.index]
+    
+    return X, y
+
+# ========== 2. 时间序列交叉验证 ==========
+def time_series_cv(X, y, n_splits=5):
+    """
+    时间序列交叉验证（防止未来信息泄露）
+    """
+    tscv = TimeSeriesSplit(n_splits=n_splits)
+    
+    for train_idx, test_idx in tscv.split(X):
+        X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
+        y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
+        
+        yield X_train, X_test, y_train, y_test
+
+# ========== 3. XGBoost模型训练 ==========
+def train_xgboost(X_train, y_train, X_test, y_test):
+    """
+    训练XGBoost分类器
+    """
+    # 转换数据格式
+    dtrain = xgb.DMatrix(X_train, label=y_train)
+    dtest = xgb.DMatrix(X_test, label=y_test)
+    
+    # 参数设置
+    params = {
+        'objective': 'binary:logistic',  # 二分类
+        'max_depth': 6,                   # 最大深度
+        'eta': 0.1,                      # 学习率
+        'subsample': 0.8,                # 样本采样率
+        'colsample_bytree': 0.8,         # 特征采样率
+        'eval_metric': 'auc',             # 评估指标
+        'random_state': 42
+    }
+    
+    # 训练模型
+    model = xgb.train(
+        params,
+        dtrain,
+        num_boost_round=100,
+        evals=[(dtrain, 'train'), (dtest, 'test')],
+        early_stopping_rounds=10,
+        verbose_eval=10
+    )
+    
+    # 预测
+    y_pred_proba = model.predict(dtest)
+    y_pred = (y_pred_proba > 0.5).astype(int)
+    
+    # 评估
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
+    
+    print(f"Accuracy: {accuracy:.4f}")
+    print(f"Precision: {precision:.4f}")
+    print(f"Recall: {recall:.4f}")
+    
+    return model
+
+# ========== 4. 特征重要性分析 ==========
+def plot_feature_importance(model, feature_names, top_n=20):
+    """
+    绘制特征重要性图
+    """
+    importance = model.get_score(importance_type='weight')
+    importance_df = pd.DataFrame({
+        'feature': list(importance.keys()),
+        'importance': list(importance.values())
+    }).sort_values('importance', ascending=False)
+    
+    # 可视化
+    plt.figure(figsize=(12, 6))
+    plt.barh(range(top_n), importance_df['importance'][:top_n], align='center')
+    plt.yticks(range(top_n), importance_df['feature'][:top_n])
+    plt.xlabel('Importance')
+    plt.title('Top {} Feature Importance (XGBoost)'.format(top_n))
+    plt.gca().invert_yaxis()
+    plt.tight_layout()
+    plt.savefig('xgboost_feature_importance.png', dpi=300, bbox_inches='tight')
+    plt.show()
+    
+    return importance_df
+
+# ========== 主程序 ==========
+if __name__ == "__main__":
+    # 准备数据
+    X, y = prepare_training_data(all_factors_standardized, prices, forward_days=5)
+    
+    # 时间序列交叉验证
+    for fold, (X_train, X_test, y_train, y_test) in enumerate(time_series_cv(X, y)):
+        print(f"\n{'='*50}")
+        print(f"Fold {fold+1}")
+        print(f"{'='*50}")
+        
+        model = train_xgboost(X_train, y_train, X_test, y_test)
+        
+        if fold == 0:  # 只绘制第一次的特征重要性
+            plot_feature_importance(model, X.columns)
+```
+
+### 3.3 LightGBM模型训练实战
+
+```python
+import lightgbm as lgb
+from sklearn.metrics import roc_auc_score
+
+# ========== LightGBM模型训练 ==========
+def train_lightgbm(X_train, y_train, X_test, y_test):
+    """
+    训练LightGBM分类器
+    """
+    # 创建数据集
+    train_data = lgb.Dataset(X_train, label=y_train)
+    test_data = lgb.Dataset(X_test, label=y_test)
+    
+    # 参数设置
+    params = {
+        'objective': 'binary',           # 二分类
+        'metric': 'auc',                 # 评估指标
+        'boosting_type': 'gbdt',         # 传统GBDT
+        'num_leaves': 31,                # 叶子节点数
+        'learning_rate': 0.1,            # 学习率
+        'feature_fraction': 0.8,         # 特征采样率
+        'bagging_fraction': 0.8,         # 样本采样率
+        'bagging_freq': 5,               # 每5次迭代进行一次bagging
+        'verbose': -1,                   # 不输出中间信息
+        'random_state': 42
+    }
+    
+    # 训练模型
+    model = lgb.train(
+        params,
+        train_data,
+        num_boost_round=100,
+        valid_sets=[train_data, test_data],
+        valid_names=['train', 'test'],
+        early_stopping_rounds=10,
+        verbose_eval=10
+    )
+    
+    # 预测
+    y_pred_proba = model.predict(X_test, num_iteration=model.best_iteration)
+    y_pred = (y_pred_proba > 0.5).astype(int)
+    
+    # 评估
+    auc = roc_auc_score(y_test, y_pred_proba)
+    accuracy = accuracy_score(y_test, y_pred)
+    
+    print(f"AUC: {auc:.4f}")
+    print(f"Accuracy: {accuracy:.4f}")
+    
+    return model
+
+# ========== LightGBM特征重要性 ==========
+def plot_lgb_feature_importance(model, feature_names, top_n=20):
+    """
+    绘制LightGBM特征重要性图
+    """
+    importance = model.feature_importance(importance_type='gain')
+    importance_df = pd.DataFrame({
+        'feature': feature_names,
+        'importance': importance
+    }).sort_values('importance', ascending=False)
+    
+    # 可视化
+    plt.figure(figsize=(12, 6))
+    plt.barh(range(top_n), importance_df['importance'][:top_n], align='center')
+    plt.yticks(range(top_n), importance_df['feature'][:top_n])
+    plt.xlabel('Importance (Gain)')
+    plt.title('Top {} Feature Importance (LightGBM)'.format(top_n))
+    plt.gca().invert_yaxis()
+    plt.tight_layout()
+    plt.savefig('lightgbm_feature_importance.png', dpi=300, bbox_inches='tight')
+    plt.show()
+    
+    return importance_df
+```
+
+---
+
+## 四、模型融合与组合优化
+
+### 4.1 XGBoost + LightGBM 模型融合
+
+单一模型容易陷入局部最优，**模型融合**（Ensemble）可以提升泛化能力。
+
+**常见融合方法**：
+1. **简单平均**：$\hat{y} = \frac{1}{2}(\hat{y}_{xgb} + \hat{y}_{lgb})$
+2. **加权平均**：$\hat{y} = \alpha \hat{y}_{xgb} + (1-\alpha) \hat{y}_{lgb}$
+3. **Stacking**：用线性模型学习两个模型的权重
+
+```python
+# ========== 模型融合 ==========
+def ensemble_predict(model_xgb, model_lgb, X_test, alpha=0.5):
+    """
+    XGBoost + LightGBM 简单加权平均
+    """
+    # XGBoost预测
+    dtest = xgb.DMatrix(X_test)
+    y_pred_xgb = model_xgb.predict(dtest)
+    
+    # LightGBM预测
+    y_pred_lgb = model_lgb.predict(X_test, num_iteration=model_lgb.best_iteration)
+    
+    # 加权平均
+    y_pred_ensemble = alpha * y_pred_xgb + (1 - alpha) * y_pred_lgb
+    
+    return y_pred_ensemble
+
+# 评估融合模型
+y_pred_ensemble = ensemble_predict(model_xgb, model_lgb, X_test, alpha=0.5)
+y_pred_class = (y_pred_ensemble > 0.5).astype(int)
+
+ensemble_accuracy = accuracy_score(y_test, y_pred_class)
+print(f"Ensemble Accuracy: {ensemble_accuracy:.4f}")
+```
+
+### 4.2 从预测到组合构建
+
+模型输出是**预测概率**（上涨概率），需要转换为**持仓权重**。
+
+**常见方法**：
+1. **Top-K多选股**：
+   - 按预测概率排序，选择Top K只股票
+   - 等权配置或按预测概率加权
+
+2. **因子合成**：
+   - 将预测概率视为一个新因子
+   - 与其他传统因子（价值、动量等）合成综合因子
+   - 按综合因子IC（信息系数）加权
+
+3. **均值-方差优化**（Markowitz）：
+   - 目标：$\max_w w^T \mu - \frac{\gamma}{2} w^T \Sigma w$
+   - 约束：$w \geq 0$, $\sum w = 1$
+
+```python
+# ========== Top-K多选股策略 ==========
+def top_k_strategy(predictions, tickers, k=10):
+    """
+    选择预测概率最高的K只股票
+    """
+    # 创建预测DataFrame
+    pred_df = pd.DataFrame({'ticker': tickers, 'pred_prob': predictions})
+    
+    # 按预测概率排序
+    pred_df_sorted = pred_df.sort_values('pred_prob', ascending=False)
+    
+    # 选择Top K
+    top_k = pred_df_sorted.head(k)
+    
+    # 等权配置
+    weights = pd.Series(1/k, index=top_k['ticker'])
+    
+    return weights
+
+# ========== 回测框架 ==========
+def backtest_strategy(weights_dict, returns, transaction_cost=0.001):
+    """
+    简单回测框架
+    """
+    portfolio_returns = []
+    
+    for date in weights_dict.keys():
+        if date in returns.index:
+            weights = weights_dict[date]
+            daily_return = (weights * returns.loc[date]).sum()
+            
+            # 扣除交易成本
+            turnover = weights.diff().abs().sum()
+            cost = turnover * transaction_cost
+            
+            portfolio_returns.append(daily_return - cost)
+    
+    portfolio_returns = pd.Series(portfolio_returns, index=returns.index[:len(portfolio_returns)])
+    
+    # 计算累计收益
+    cumulative_returns = (1 + portfolio_returns).cumprod()
+    
+    # 绩效指标
+    sharpe = portfolio_returns.mean() / portfolio_returns.std() * np.sqrt(252)
+    max_drawdown = (cumulative_returns / cumulative_returns.cummax() - 1).min()
+    
+    return {
+        'returns': portfolio_returns,
+        'cumulative': cumulative_returns,
+        'sharpe': sharpe,
+        'max_drawdown': max_drawdown
+    }
+```
+
+---
+
+## 五、实战案例：完整的量化选股系统
+
+### 5.1 系统架构
+
+一个完整的量化选股系统包括：
+1. **数据层**：价格、财务、另类数据
+2. **因子层**：因子计算、标准化、去极值、中性化
+3. **模型层**：XGBoost/LightGBM训练、预测
+4. **组合层**：持仓权重优化
+5. **回测层**：性能评估、风险控制
+
+### 5.2 完整代码示例
+
+```python
+import numpy as np
+import pandas as pd
+import xgboost as xgb
+import lightgbm as lgb
+from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+
+# ========== 完整量化选股系统 ==========
+class QuantStockSelector:
+    def __init__(self, tickers, start_date, end_date, forward_days=5):
+        self.tickers = tickers
+        self.start_date = start_date
+        self.end_date = end_date
+        self.forward_days = forward_days
+        self.factors = None
+        self.model_xgb = None
+        self.model_lgb = None
+        self.prices = None
+        self.returns = None
+        
+    def load_data(self):
+        """加载价格数据"""
+        print("正在下载价格数据...")
+        data = {}
+        for ticker in self.tickers:
+            try:
+                df = yf.download(ticker, start=self.start_date, end=self.end_date, progress=False)
+                if not df.empty:
+                    data[ticker] = df['Adj Close']
+                else:
+                    print(f"警告: {ticker} 无数据")
+            except Exception as e:
+                print(f"错误: 下载 {ticker} 失败 - {e}")
+        
+        if not data:
+            raise ValueError("没有成功下载任何数据！")
+        
+        self.prices = pd.DataFrame(data)
+        self.returns = self.prices.pct_change().dropna()
+        print(f"✅ 数据加载完成: {self.prices.shape}")
+        return self
+    
+    def calculate_all_factors(self):
+        """计算所有因子"""
+        print("正在计算因子...")
+        
+        # 1. 动量因子
+        momentum_factors = pd.DataFrame(index=self.returns.index)
+        for period in [5, 10, 20, 60]:
+            momentum_factors[f'momentum_{period}d'] = self.returns.rolling(period).sum()
+        
+        # 2. 波动率因子
+        volatility_factors = pd.DataFrame(index=self.returns.index)
+        for window in [20, 60]:
+            volatility_factors[f'vol_{window}d'] = self.returns.rolling(window).std() * np.sqrt(252)
+        
+        # 3. 成交量因子
+        volume_factors = pd.DataFrame(index=self.returns.index)
+        for ticker in self.tickers:
+            if ticker in self.prices.columns:
+                # 这里简化，实际需要获取成交量数据
+                pass
+        
+        # 4. 技术指标
+        technical_factors = pd.DataFrame(index=self.returns.index)
+        for ticker in self.tickers:
+            if ticker in self.prices.columns:
+                prices_ticker = self.prices[ticker]
+                
+                # RSI
+                delta = prices_ticker.diff()
+                gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
+                loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+                rs = gain / loss
+                rsi = 100 - (100 / (1 + rs))
+                technical_factors[f'RSI_{ticker}'] = rsi
+                
+                # 均线
+                ma20 = prices_ticker.rolling(20).mean()
+                technical_factors[f'MA20_ratio_{ticker}'] = prices_ticker / ma20 - 1
+        
+        # 合并所有因子
+        self.factors = pd.concat([momentum_factors, volatility_factors, technical_factors], axis=1)
+        
+        # 横截面标准化
+        self.factors = self.factors.sub(self.factors.mean(axis=1), axis=0).div(self.factors.std(axis=1), axis=0)
+        
+        print(f"✅ 因子计算完成: {self.factors.shape}")
+        return self
+    
+    def prepare_labels(self):
+        """准备训练标签（未来N日收益率）"""
+        future_returns = self.prices.shift(-self.forward_days) / self.prices - 1
+        labels = (future_returns > 0).astype(int)  # 二分类：上涨=1, 下跌=0
+        
+        # 对齐因子和标签
+        self.factors_aligned = self.factors.dropna()
+        self.labels_aligned = labels.loc[self.factors_aligned.index]
+        
+        print(f"✅ 标签准备完成: {self.labels_aligned.shape}")
+        return self
+    
+    def train_models(self, test_size=0.2):
+        """训练XGBoost和LightGBM模型"""
+        print("正在训练模型...")
+        
+        # 时间序列分割（不用随机分割）
+        split_idx = int(len(self.factors_aligned) * (1 - test_size))
+        
+        X_train = self.factors_aligned.iloc[:split_idx]
+        X_test = self.factors_aligned.iloc[split_idx:]
+        y_train = self.labels_aligned.iloc[:split_idx]
+        y_test = self.labels_aligned.iloc[split_idx:]
+        
+        # 训练XGBoost
+        dtrain = xgb.DMatrix(X_train, label=y_train)
+        dtest = xgb.DMatrix(X_test, label=y_test)
+        
+        params = {
+            'objective': 'binary:logistic',
+            'max_depth': 6,
+            'eta': 0.1,
+            'subsample': 0.8,
+            'colsample_bytree': 0.8,
+            'eval_metric': 'auc',
+            'random_state': 42
+        }
+        
+        self.model_xgb = xgb.train(params, dtrain, num_boost_round=100,
+                                   evals=[(dtrain, 'train'), (dtest, 'test')],
+                                   early_stopping_rounds=10, verbose_eval=False)
+        
+        # 训练LightGBM
+        train_data = lgb.Dataset(X_train, label=y_train)
+        test_data = lgb.Dataset(X_test, label=y_test)
+        
+        params_lgb = {
+            'objective': 'binary',
+            'metric': 'auc',
+            'boosting_type': 'gbdt',
+            'num_leaves': 31,
+            'learning_rate': 0.1,
+            'feature_fraction': 0.8,
+            'bagging_fraction': 0.8,
+            'verbose': -1,
+            'random_state': 42
+        }
+        
+        self.model_lgb = lgb.train(params_lgb, train_data, num_boost_round=100,
+                                   valid_sets=[test_data], valid_names=['test'],
+                                   early_stopping_rounds=10, verbose_eval=False)
+        
+        # 评估
+        y_pred_xgb = self.model_xgb.predict(dtest) > 0.5
+        y_pred_lgb = self.model_lgb.predict(X_test, num_iteration=self.model_lgb.best_iteration) > 0.5
+        
+        acc_xgb = accuracy_score(y_test, y_pred_xgb)
+        acc_lgb = accuracy_score(y_test, y_pred_lgb)
+        
+        print(f"✅ XGBoost准确率: {acc_xgb:.4f}")
+        print(f"✅ LightGBM准确率: {acc_lgb:.4f}")
+        
+        return self
+    
+    def predict_and_backtest(self):
+        """预测并回测"""
+        print("正在回测...")
+        
+        # 使用测试集进行回测
+        split_idx = int(len(self.factors_aligned) * 0.8)
+        X_test = self.factors_aligned.iloc[split_idx:]
+        
+        # 预测
+        dtest = xgb.DMatrix(X_test)
+        y_pred_xgb = self.model_xgb.predict(dtest)
+        y_pred_lgb = self.model_lgb.predict(X_test, num_iteration=self.model_lgb.best_iteration)
+        
+        # 融合预测
+        y_pred_ensemble = 0.5 * y_pred_xgb + 0.5 * y_pred_lgb
+        
+        # 构建组合：买入预测概率最高的前10只股票
+        portfolio_returns = []
+        for i in range(len(X_test)):
+            date = X_test.index[i]
+            pred_probs = y_pred_ensemble[i]
+            
+            # 选择Top 10
+            top_10_idx = np.argsort(pred_probs)[-10:]
+            selected_tickers = X_test.columns[top_10_idx]
+            
+            # 等权配置
+            weights = np.ones(10) / 10
+            
+            # 计算组合收益
+            if date in self.returns.index:
+                daily_return = (weights * self.returns.loc[date, selected_tickers]).sum()
+                portfolio_returns.append(daily_return)
+        
+        portfolio_returns = pd.Series(portfolio_returns, index=X_test.index[:len(portfolio_returns)])
+        
+        # 计算绩效
+        cumulative = (1 + portfolio_returns).cumprod()
+        sharpe = portfolio_returns.mean() / portfolio_returns.std() * np.sqrt(252)
+        max_dd = (cumulative / cumulative.cummax() - 1).min()
+        
+        print(f"\n{'='*50}")
+        print("回测结果")
+        print(f"{'='*50}")
+        print(f"夏普比率: {sharpe:.4f}")
+        print(f"最大回撤: {max_dd:.2%}")
+        print(f"累计收益: {cumulative.iloc[-1]:.2%}")
+        
+        return {
+            'returns': portfolio_returns,
+            'cumulative': cumulative,
+            'sharpe': sharpe,
+            'max_drawdown': max_dd
+        }
+
+# ========== 主程序 ==========
+if __name__ == "__main__":
+    # 参数设置
+    tickers = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 
+               'TSLA', 'NVDA', 'JPM', 'GS', 'BAC']
+    start_date = '2023-01-01'
+    end_date = '2024-12-31'
+    
+    # 初始化系统
+    qss = QuantStockSelector(tickers, start_date, end_date, forward_days=5)
+    
+    # 执行完整流程
+    results = (qss
+               .load_data()
+               .calculate_all_factors()
+               .prepare_labels()
+               .train_models()
+               .predict_and_backtest()
+    )
+    
+    # 可视化
+    fig, axes = plt.subplots(2, 1, figsize=(14, 10))
+    
+    # 累计收益曲线
+    axes[0].plot(results['cumulative'], linewidth=2, label='Strategy')
+    axes[0].set_title('Cumulative Returns (XGBoost + LightGBM)', fontsize=14, fontweight='bold')
+    axes[0].set_ylabel('Cumulative Returns', fontsize=12)
+    axes[0].grid(True, alpha=0.3)
+    axes[0]..legend()
+    
+    # 回撤曲线
+    drawdown = results['cumulative'] / results['cumulative'].cummax() - 1
+    axes[1].fill_between(drawdown.index, drawdown, 0, alpha=0.3, color='red', label='Drawdown')
+    axes[1].plot(drawdown, color='darkred', linewidth=1)
+    axes[1].set_title('Drawdown Curve', fontsize=14, fontweight='bold')
+    axes[1].set_ylabel('Drawdown', fontsize=12)
+    axes[1].set_xlabel('Date', fontsize=12)
+    axes[1].grid(True, alpha=0.3)
+    axes[1].legend()
+    
+    plt.tight_layout()
+    plt.savefig('backtest_results.png', dpi=300, bbox_inches='tight')
+    plt.show()
+    
+    print("\n✅ 量化选股系统执行完成！")
