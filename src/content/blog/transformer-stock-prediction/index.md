@@ -1,1208 +1,1098 @@
 ---
-title: "Transformer模型股价预测"
-publishDate: '2026-06-15'
-language: Chinese
-description: "深入探讨Transformer模型在股价预测中的应用，从Attention机制到时间序列建模，带你用PyTorch构建端到端的股价预测系统。"
-tags: ["深度学习", "Transformer", "股价预测", "PyTorch", "时间序列"]
-cover: "/images/transformer-stock-prediction/cover.jpg"
+title: "Transformer模型股价预测：Attention机制在金融时序中的应用"
+description: "深入探讨Transformer模型在股价预测中的应用，从Attention机制到时间序列建模，带你用PyTorch构建端到端的股价预测系统"
+pubDate: 2026-06-22
+tags: ["机器学习", "深度学习", "Transformer", "股价预测", "PyTorch", "量化交易"]
+category: "机器学习应用"
+difficulty: "🔴 高阶"
+featured: true
 ---
 
-# Transformer模型股价预测
+# Transformer模型股价预测：Attention机制在金融时序中的应用
 
 ## 引言
 
-在深度学习的发展历程中，**Transformer模型**无疑是最重要的里程碑之一。自2017年Google在论文《Attention is All You Need》中提出Transformer以来，它已经彻底改变了自然语言处理（NLP）领域，并衍生出了BERT、GPT、T5等一系列强大的预训练模型。
+在量化交易领域，时间序列预测一直是核心问题。从传统的ARIMA、GARCH模型，到机器学习方法如随机森林、LSTM，再到最近的Transformer架构，预测方法不断演进。Transformer模型最初为自然语言处理设计，但其Attention机制在处理长序列依赖方面表现出色，这使其在金融时间序列预测中具有重要价值。
 
-然而，Transformer的应用并不仅限于NLP。近年来，越来越多的研究者开始将Transformer应用于**时间序列预测**，包括股价预测、天气预报、能源负荷预测等。相比传统的RNN/LSTM模型，Transformer具有以下优势：
+本文将深入探讨Transformer模型在股价预测中的应用，从理论到实战，带你用PyTorch构建完整的股价预测系统。
 
-1. **并行计算能力**：不像RNN需要顺序处理，Transformer可以并行处理整个序列
-2. **长程依赖捕捉**：通过Self-Attention机制，Transformer可以捕捉序列中任意位置之间的依赖关系
-3. **可解释性**：Attention权重可以可视化，帮助理解模型的决策过程
-4. **迁移学习**：Pre-trained Transformer可以迁移到不同的时间序列任务
+## 一、Transformer模型基础
 
-本文将深入探讨Transformer在股价预测中的应用，从Attention机制的数学原理到PyTorch实战，带你构建一个端到端的股价预测系统。
+### 1.1 Attention机制原理
 
-## 一、Transformer原理详解
+Attention机制的核心思想是让模型能够关注输入序列中不同位置的信息。在股价预测中，这意味着模型可以自动学习哪些历史时间点对当前预测最重要。
 
-### 1.1 Attention机制
+**Self-Attention计算公式：**
 
-Attention机制是Transformer的核心，其思想是：**在编码输入序列时，根据当前位置的需求，动态地关注序列中的其他位置**。
-
-#### Self-Attention（自注意力）
-
-给定输入序列 $X = [x_1, x_2, \ldots, x_n]$，其中 $x_i \in \mathbb{R}^{d_{model}}$，Self-Attention的计算步骤如下：
-
-**步骤1：线性变换**
-
-将输入 $X$ 通过三个不同的线性变换，得到Query（查询）、Key（键）和Value（值）矩阵：
-
-$$
-Q = X W_Q, \quad K = X W_K, \quad V = X W_V
-$$
-
-其中 $W_Q, W_K, W_V \in \mathbb{R}^{d_{model} \times d_k}$
-
-**步骤2：计算Attention分数**
-
-计算Query和Key之间的相似度（点积）：
-
-$$
-\text{scores} = \frac{Q K^T}{\sqrt{d_k}}
-$$
-
-除以 $\sqrt{d_k}$ 是为了缩放，防止点积结果过大导致Softmax函数梯度消失。
-
-**步骤3：Softmax归一化**
-
-将Attention分数通过Softmax函数归一化：
-
-$$
-A = \text{softmax}\left(\frac{Q K^T}{\sqrt{d_k}}\right)
-$$
-
-**步骤4：加权求和**
-
-使用Attention权重对Value进行加权求和：
-
-$$
-\text{Attention}(Q, K, V) = A V
-$$
-
-#### Multi-Head Attention（多头注意力）
-
-为了捕捉不同子空间的信息，Transformer使用Multi-Head Attention：
-
-$$
-\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, \ldots, \text{head}_h) W_O
-$$
+```
+Attention(Q, K, V) = softmax(QK^T / √d_k) * V
+```
 
 其中：
+- Q（Query）：当前时刻的查询向量
+- K（Key）：历史时刻的键向量  
+- V（Value）：历史时刻的值向量
+- d_k：键向量的维度
 
-$$
-\text{head}_i = \text{Attention}(Q W_i^Q, K W_i^K, V W_i^V)
-$$
+**Multi-Head Attention：**
 
-$h$ 为头数，$W_i^Q, W_i^K, W_i^V \in \mathbb{R}^{d_{model} \times d_k}$，$W_O \in \mathbb{R}^{h d_k \times d_{model}}$
-
-### 1.2 Transformer架构
-
-标准的Transformer模型由**Encoder（编码器）**和**Decoder（解码器）**两部分组成。
-
-#### Encoder
-
-Encoder由 $N$ 个相同的层堆叠而成，每一层包含两个子层：
-
-1. **Multi-Head Self-Attention**
-2. **Feed-Forward Network（FFN）**
-
-每个子层后都接有一个**残差连接（Residual Connection）**和**Layer Normalization**：
-
-$$
-\text{Output} = \text{LayerNorm}(x + \text{Sublayer}(x))
-$$
-
-FFN是一个两层全连接网络：
-
-$$
-\text{FFN}(x) = \max(0, x W_1 + b_1) W_2 + b_2
-$$
-
-#### Decoder
-
-Decoder也由 $N$ 个相同的层堆叠而成，每一层包含三个子层：
-
-1. **Masked Multi-Head Self-Attention**：防止模型看到未来的信息
-2. **Multi-Head Cross-Attention**：关注Encoder的输出
-3. **Feed-Forward Network**
-
-#### Positional Encoding（位置编码）
-
-由于Transformer不包含递归或卷积结构，它需要额外的时间位置信息。位置编码的计算公式为：
-
-$$
-PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d_{model}}}\right)
-$$
-
-$$
-PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d_{model}}}\right)
-$$
-
-其中 $pos$ 是位置，$i$ 是维度。
-
-### 1.3 Transformer用于时间序列预测的优势
-
-相比RNN/LSTM，Transformer在时间序列预测中具有以下优势：
-
-1. **并行化**：可以一次性处理整个序列，训练速度更快
-2. **长程依赖**：Self-Attention可以直接捕捉序列中任意两点之间的关系
-3. **可解释性**：Attention权重可以可视化，帮助理解模型关注的时刻
-4. **灵活性**：可以处理可变长度的输入和输出
-
-## 二、Transformer股价预测模型设计
-
-### 2.1 问题定义
-
-给定历史股价序列 $P = [p_1, p_2, \ldots, p_t]$，我们的目标是预测未来 $h$ 步的股价：
-
-$$
-\hat{p}_{t+1}, \hat{p}_{t+2}, \ldots, \hat{p}_{t+h} = f(p_{t-w+1}, \ldots, p_t)
-$$
-
-其中 $w$ 为窗口大小（回顾期），$h$ 为预测步长。
-
-### 2.2 特征工程
-
-原始股价数据通常需要进行特征工程，构造更有预测力的特征。
-
-**常用特征**：
-
-1. **价格特征**：开盘价、最高价、最低价、收盘价、成交量
-2. **技术指标**：MA、EMA、MACD、RSI、布林带等
-3. **统计特征**：收益率、波动率、偏度、峰度
-4. **滞后特征**：$t-1, t-2, \ldots, t-k$ 时刻的值
-
-**特征归一化**：
-
-使用Z-score标准化：
-
-$$
-x_{norm} = \frac{x - \mu}{\sigma}
-$$
-
-其中 $\mu$ 和 $\sigma$ 为训练集的均值和标准差（**注意：不能使用测试集的数据计算**）。
-
-### 2.3 模型架构设计
-
-针对股价预测任务，我们设计以下Transformer架构：
-
-```
-输入层 (特征维度 d_feat)
-    ↓
-线性投影层 (投影到 d_model 维度)
-    ↓
-位置编码 (Positional Encoding)
-    ↓
-Transformer Encoder (N层)
-    ↓
-全局平均池化 (Global Average Pooling)
-    ↓
-全连接层 (Dense)
-    ↓
-输出层 (预测未来 h 步)
-```
-
-**关键设计选择**：
-
-1. **仅使用Encoder**：股价预测是时间序列回归任务，不需要Decoder
-2. **回归任务**：输出层使用线性激活函数（无激活函数）
-3. **多步预测**：一次性预测未来多步，而不是递归预测
-
-### 2.4 损失函数与评估指标
-
-**损失函数**：
-
-使用均方误差（MSE）：
-
-$$
-\mathcal{L} = \frac{1}{h} \sum_{i=1}^h (p_{t+i} - \hat{p}_{t+i})^2
-$$
-
-也可以使用平均绝对误差（MAE）或平滑平均绝对误差（Huber Loss）。
-
-**评估指标**：
-
-1. **MAE（平均绝对误差）**：$\frac{1}{h} \sum_{i=1}^h |p_{t+i} - \hat{p}_{t+i}|$
-2. **MSE（均方误差）**：$\frac{1}{h} \sum_{i=1}^h (p_{t+i} - \hat{p}_{t+i})^2$
-3. **RMSE（均方根误差）**：$\sqrt{\text{MSE}}$
-4. **MAPE（平均绝对百分比误差）**：$\frac{100\%}{h} \sum_{i=1}^h \left|\frac{p_{t+i} - \hat{p}_{t+i}}{p_{t+i}}\right|$
-5. **Direction Accuracy（方向准确率）**：预测涨跌方向的准确率
-
-## 三、PyTorch实战：构建Transformer股价预测模型
-
-### 3.1 数据准备
-
-我们首先获取标普500指数（SPY）的历史数据，并进行特征工程。
+多头注意力允许模型同时关注来自不同表示子空间的信息：
 
 ```python
-import numpy as np
-import pandas as pd
-import yfinance as yf
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data import Dataset, DataLoader
-from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
-import seaborn as sns
-from datetime import datetime, timedelta
-import warnings
-warnings.filterwarnings('ignore')
+import torch.nn.functional as F
 
-# 设置随机种子
-def set_seed(seed=42):
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
+class MultiHeadAttention(nn.Module):
+    def __init__(self, d_model, num_heads):
+        super().__init__()
+        assert d_model % num_heads == 0
+        
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.d_k = d_model // num_heads
+        
+        self.W_q = nn.Linear(d_model, d_model)
+        self.W_k = nn.Linear(d_model, d_model)
+        self.W_v = nn.Linear(d_model, d_model)
+        self.W_o = nn.Linear(d_model, d_model)
+        
+    def scaled_dot_product_attention(self, Q, K, V, mask=None):
+        # 计算注意力分数
+        scores = torch.matmul(Q, K.transpose(-2, -1)) / torch.sqrt(torch.tensor(self.d_k, dtype=torch.float32))
+        
+        # 应用mask（可选）
+        if mask is not None:
+            scores = scores.masked_fill(mask == 0, -1e9)
+        
+        # Softmax归一化
+        attention = F.softmax(scores, dim=-1)
+        
+        # 加权求和
+        output = torch.matmul(attention, V)
+        
+        return output, attention
     
-set_seed(42)
-
-# 下载数据
-ticker = 'SPY'
-start_date = '2015-01-01'
-end_date = '2024-12-31'
-
-print("正在下载数据...")
-data = yf.download(ticker, start=start_date, end=end_date)
-
-# 特征工程
-def create_features(df, window=20):
-    """
-    构造技术指标特征
+    def split_heads(self, x):
+        # 将最后一维分割成 (num_heads, d_k)
+        batch_size, seq_length, d_model = x.size()
+        return x.view(batch_size, seq_length, self.num_heads, self.d_k).transpose(1, 2)
     
-    参数:
-    - df: 包含OHLCV的DataFrame
-    - window: 窗口大小
+    def combine_heads(self, x):
+        # 合并多头
+        batch_size, _, seq_length, d_k = x.size()
+        return x.transpose(1, 2).contiguous().view(batch_size, seq_length, self.d_model)
     
-    返回:
-    - features_df: 特征DataFrame
-    """
-    features = pd.DataFrame(index=df.index)
-    
-    # 价格特征
-    features['return_1d'] = df['Close'].pct_change(1)
-    features['return_5d'] = df['Close'].pct_change(5)
-    features['return_20d'] = df['Close'].pct_change(window)
-    
-    # 移动平均
-    features['ma_5'] = df['Close'].rolling(window=5).mean() / df['Close']
-    features['ma_20'] = df['Close'].rolling(window=window).mean() / df['Close']
-    
-    # 波动率
-    features['vol_5d'] = features['return_1d'].rolling(window=5).std()
-    features['vol_20d'] = features['return_1d'].rolling(window=window).std()
-    
-    # RSI
-    delta = df['Close'].diff()
-    gain = (delta.where(delta > 0, 0)).rolling(window=window).mean()
-    loss = (-delta.where(delta < 0, 0)).rolling(window=window).mean()
-    rs = gain / loss
-    features['rsi'] = 100 - (100 / (1 + rs))
-    
-    # MACD
-    ema_12 = df['Close'].ewm(span=12, adjust=False).mean()
-    ema_26 = df['Close'].ewm(span=26, adjust=False).mean()
-    features['macd'] = (ema_12 - ema_26) / df['Close']
-    
-    # 布林带
-    bb_middle = df['Close'].rolling(window=window).mean()
-    bb_std = df['Close'].rolling(window=window).std()
-    features['bb_upper'] = (bb_middle + 2 * bb_std) / df['Close']
-    features['bb_lower'] = (bb_middle - 2 * bb_std) / df['Close']
-    
-    # 成交量特征
-    features['volume_change'] = df['Volume'].pct_change(1)
-    features['volume_ma'] = df['Volume'].rolling(window=window).mean() / df['Volume']
-    
-    # 目标变量（未来5日收益率）
-    features['target'] = df['Close'].pct_change(5).shift(-5)
-    
-    return features.dropna()
-
-# 创建特征
-print("正在进行特征工程...")
-features_df = create_features(data)
-
-# 移除NaN值
-features_df = features_df.dropna()
-
-print(f"特征数量: {features_df.shape[1] - 1}")  # 减去target列
-print(f"样本数量: {features_df.shape[0]}")
-print(f"\n特征列表:")
-print([col for col in features_df.columns if col != 'target'])
+    def forward(self, Q, K, V, mask=None):
+        # 线性变换
+        Q = self.split_heads(self.W_q(Q))
+        K = self.split_heads(self.W_k(K))
+        V = self.split_heads(self.W_v(V))
+        
+        # 计算注意力
+        attention_output, attention_weights = self.scaled_dot_product_attention(Q, K, V, mask)
+        
+        # 合并多头
+        output = self.combine_heads(attention_output)
+        
+        # 输出线性变换
+        output = self.W_o(output)
+        
+        return output, attention_weights
 ```
 
-### 3.2 数据集构建
+### 1.2 Positional Encoding
 
-将特征数据转换为PyTorch Dataset格式。
+由于Transformer不包含递归或卷积结构，需要显式地注入位置信息。在股价预测中，时间顺序至关重要。
+
+**正弦余弦位置编码：**
 
 ```python
-class TimeSeriesDataset(Dataset):
-    """
-    时间序列Dataset
-    
-    参数:
-    - features: 特征DataFrame
-    - seq_len: 输入序列长度
-    - pred_len: 预测长度
-    - mode: 'train', 'val', 'test'
-    """
-    def __init__(self, features, seq_len=60, pred_len=5, mode='train'):
-        self.features = features
-        self.seq_len = seq_len
-        self.pred_len = pred_len
-        self.mode = mode
+class PositionalEncoding(nn.Module):
+    def __init__(self, d_model, max_seq_length=5000):
+        super().__init__()
         
-        # 分离特征和标签
-        self.X = features.drop('target', axis=1).values
-        self.y = features['target'].values
+        # 创建位置编码矩阵
+        pe = torch.zeros(max_seq_length, d_model)
+        position = torch.arange(0, max_seq_length, dtype=torch.float32).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
         
-        # 数据标准化
-        self.scaler_X = StandardScaler()
-        self.scaler_y = StandardScaler()
+        # 偶数位置使用sin，奇数位置使用cos
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
         
-        if mode == 'train':
-            self.X = self.scaler_X.fit_transform(self.X)
-            self.y = self.scaler_y.fit_transform(self.y.reshape(-1, 1)).flatten()
-        else:
-            # 使用训练集的scaler
-            self.X = self.scaler_X.transform(self.X)
-            self.y = self.scaler_y.transform(self.y.reshape(-1, 1)).flatten()
-    
+        # 添加batch维度
+        pe = pe.unsqueeze(0)  # (1, max_seq_length, d_model)
+        
+        # 注册为buffer（不视为模型参数）
+        self.register_buffer('pe', pe)
+        
+    def forward(self, x):
+        # x: (batch_size, seq_length, d_model)
+        return x + self.pe[:, :x.size(1), :]
+```
+
+**可学习位置编码：**
+
+```python
+class LearnablePositionalEncoding(nn.Module):
+    def __init__(self, d_model, max_seq_length=5000):
+        super().__init__()
+        self.pos_embedding = nn.Parameter(torch.randn(1, max_seq_length, d_model) * 0.02)
+        
+    def forward(self, x):
+        return x + self.pos_embedding[:, :x.size(1), :]
+```
+
+## 二、Transformer股价预测模型构建
+
+### 2.1 数据预处理
+
+股价预测需要构造合适的输入特征。常用的特征包括：
+
+- 价格特征：开盘价、最高价、最低价、收盘价
+- 成交量特征：成交量、成交额
+- 技术指标：MA、RSI、MACD、布林带等
+- 衍生特征：收益率、波动率
+
+**数据预处理流程：**
+
+```python
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from torch.utils.data import Dataset, DataLoader
+
+class StockDataset(Dataset):
+    def __init__(self, df, feature_columns, target_column, seq_length=60, pred_length=5):
+        """
+        股价预测数据集
+        
+        Args:
+            df: 包含股价数据的DataFrame
+            feature_columns: 特征列名列表
+            target_column: 目标列名（通常是收盘价或收益率）
+            seq_length: 输入序列长度（使用过去seq_length天的数据）
+            pred_length: 预测序列长度（预测未来pred_length天）
+        """
+        self.feature_columns = feature_columns
+        self.target_column = target_column
+        self.seq_length = seq_length
+        self.pred_length = pred_length
+        
+        # 标准化特征
+        self.feature_scaler = StandardScaler()
+        self.target_scaler = StandardScaler()
+        
+        features = df[feature_columns].values
+        target = df[[target_column]].values
+        
+        self.features = self.feature_scaler.fit_transform(features)
+        self.target = self.target_scaler.fit_transform(target)
+        
     def __len__(self):
-        return len(self.X) - self.seq_len - self.pred_len
+        return len(self.features) - self.seq_length - self.pred_length + 1
     
     def __getitem__(self, idx):
         # 输入序列
-        x = self.X[idx:idx+self.seq_len]
+        X = self.features[idx:idx+self.seq_length]
         
-        # 输出标签（未来pred_len步的平均值）
-        y_start = idx + self.seq_len
-        y_end = y_start + self.pred_len
-        y = self.y[y_start:y_end].mean()
+        # 目标序列
+        y_start = idx + self.seq_length
+        y = self.target[y_start:y_start+self.pred_length]
         
-        return torch.FloatTensor(x), torch.FloatTensor([y])
+        return torch.FloatTensor(X), torch.FloatTensor(y)
+    
+    def inverse_transform_target(self, scaled_target):
+        """将标准化的目标值转换回原始尺度"""
+        return self.target_scaler.inverse_transform(scaled_target)
+```
 
-# 数据集划分（7:1.5:1.5）
-train_ratio = 0.7
-val_ratio = 0.15
-test_ratio = 0.15
+### 2.2 Transformer编码器模型
 
-n = len(features_df)
-train_end = int(n * train_ratio)
-val_end = int(n * (train_ratio + val_ratio))
+构建一个用于股价预测的Transformer编码器模型：
 
-train_data = features_df.iloc[:train_end]
-val_data = features_df.iloc[train_end:val_end]
-test_data = features_df.iloc[val_end:]
+```python
+class TransformerStockPredictor(nn.Module):
+    def __init__(self, input_dim, d_model=512, num_heads=8, num_layers=6, 
+                 dim_feedforward=2048, dropout=0.1, pred_length=5):
+        super().__init__()
+        
+        self.d_model = d_model
+        self.pred_length = pred_length
+        
+        # 输入投影层（将特征维度映射到d_model）
+        self.input_projection = nn.Linear(input_dim, d_model)
+        
+        # 位置编码
+        self.positional_encoding = PositionalEncoding(d_model)
+        
+        # Dropout
+        self.dropout = nn.Dropout(dropout)
+        
+        # Transformer编码器层
+        encoder_layer = nn.TransformerEncoderLayer(
+            d_model=d_model,
+            nhead=num_heads,
+            dim_feedforward=dim_feedforward,
+            dropout=dropout,
+            batch_first=True  # 输入输出格式为 (batch, seq, feature)
+        )
+        
+        # Transformer编码器
+        self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
+        
+        # 输出层（预测未来pred_length天的数据）
+        self.output_projection = nn.Linear(d_model, pred_length)
+        
+    def forward(self, x):
+        """
+        Args:
+            x: (batch_size, seq_length, input_dim)
+            
+        Returns:
+            output: (batch_size, pred_length)
+        """
+        # 输入投影
+        x = self.input_projection(x)  # (batch_size, seq_length, d_model)
+        
+        # 添加位置编码
+        x = self.positional_encoding(x)
+        
+        # Dropout
+        x = self.dropout(x)
+        
+        # Transformer编码器
+        x = self.transformer_encoder(x)  # (batch_size, seq_length, d_model)
+        
+        # 使用最后一个时间步的输出进行预测
+        x = x[:, -1, :]  # (batch_size, d_model)
+        
+        # 输出投影
+        output = self.output_projection(x)  # (batch_size, pred_length)
+        
+        return output
+```
 
-# 创建Dataset
-seq_len = 60  # 使用过去60个交易日
-pred_len = 5  # 预测未来5个交易日
+### 2.3 带解码器的Transformer模型
 
-train_dataset = TimeSeriesDataset(train_data, seq_len=seq_len, pred_len=pred_len, mode='train')
-val_dataset = TimeSeriesDataset(val_data, seq_len=seq_len, pred_len=pred_len, mode='val')
-test_dataset = TimeSeriesDataset(test_data, seq_len=seq_len, pred_len=pred_len, mode='test')
+对于更复杂的序列预测任务，可以使用编码器-解码器结构：
 
-# 创建DataLoader
+```python
+class TransformerSeq2Seq(nn.Module):
+    def __init__(self, input_dim, d_model=512, num_heads=8, num_encoder_layers=6,
+                 num_decoder_layers=6, dim_feedforward=2048, dropout=0.1, pred_length=5):
+        super().__init__()
+        
+        self.d_model = d_model
+        self.pred_length = pred_length
+        
+        # 编码器部分
+        self.encoder_input_projection = nn.Linear(input_dim, d_model)
+        self.encoder_positional_encoding = PositionalEncoding(d_model)
+        self.encoder_dropout = nn.Dropout(dropout)
+        
+        encoder_layer = nn.TransformerEncoderLayer(
+            d_model=d_model, nhead=num_heads, 
+            dim_feedforward=dim_feedforward, dropout=dropout,
+            batch_first=True
+        )
+        self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_encoder_layers)
+        
+        # 解码器部分
+        self.decoder_input_projection = nn.Linear(1, d_model)  # 预测时输入为标量
+        self.decoder_positional_encoding = PositionalEncoding(d_model)
+        self.decoder_dropout = nn.Dropout(dropout)
+        
+        decoder_layer = nn.TransformerDecoderLayer(
+            d_model=d_model, nhead=num_heads,
+            dim_feedforward=dim_feedforward, dropout=dropout,
+            batch_first=True
+        )
+        self.transformer_decoder = nn.TransformerDecoder(decoder_layer, num_decoder_layers)
+        
+        # 输出层
+        self.output_projection = nn.Linear(d_model, 1)
+        
+    def forward(self, src, tgt):
+        """
+        Args:
+            src: (batch_size, src_seq_length, input_dim) 源序列（历史数据）
+            tgt: (batch_size, tgt_seq_length, 1) 目标序列（预测数据，训练时为空或部分的）
+        """
+        # 编码器前向传播
+        src = self.encoder_input_projection(src)
+        src = self.encoder_positional_encoding(src)
+        src = self.encoder_dropout(src)
+        memory = self.transformer_encoder(src)  # (batch_size, src_seq_length, d_model)
+        
+        # 解码器前向传播
+        tgt = self.decoder_input_projection(tgt)
+        tgt = self.decoder_positional_encoding(tgt)
+        tgt = self.decoder_dropout(tgt)
+        
+        # 生成后续掩码（防止解码器看到未来信息）
+        tgt_seq_length = tgt.size(1)
+        tgt_mask = nn.Transformer.generate_square_subsequent_mask(tgt_seq_length).to(tgt.device)
+        
+        output = self.transformer_decoder(tgt, memory, tgt_mask=tgt_mask)
+        
+        # 输出投影
+        output = self.output_projection(output)  # (batch_size, tgt_seq_length, 1)
+        
+        return output.squeeze(-1)  # (batch_size, tgt_seq_length)
+```
+
+## 三、模型训练与评估
+
+### 3.1 训练流程
+
+```python
+import torch.optim as optim
+from torch.optim.lr_scheduler import ReduceLROnPlateau
+import matplotlib.pyplot as plt
+
+def train_transformer_model(model, train_loader, val_loader, device, 
+                           num_epochs=100, learning_rate=0.001):
+    """
+    训练Transformer模型
+    
+    Args:
+        model: Transformer模型
+        train_loader: 训练数据加载器
+        val_loader: 验证数据加载器
+        device: 训练设备（CPU/GPU）
+        num_epochs: 训练轮数
+        learning_rate: 学习率
+    """
+    model.to(device)
+    
+    # 定义损失函数和优化器
+    criterion = nn.MSELoss()
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
+    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=10, verbose=True)
+    
+    # 记录训练历史
+    train_losses = []
+    val_losses = []
+    
+    for epoch in range(num_epochs):
+        # 训练阶段
+        model.train()
+        train_loss = 0.0
+        
+        for batch_idx, (X, y) in enumerate(train_loader):
+            X, y = X.to(device), y.to(device)
+            
+            # 前向传播
+            optimizer.zero_grad()
+            output = model(X)
+            loss = criterion(output, y)
+            
+            # 反向传播
+            loss.backward()
+            
+            # 梯度裁剪（防止梯度爆炸）
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+            
+            optimizer.step()
+            
+            train_loss += loss.item()
+        
+        avg_train_loss = train_loss / len(train_loader)
+        train_losses.append(avg_train_loss)
+        
+        # 验证阶段
+        model.eval()
+        val_loss = 0.0
+        
+        with torch.no_grad():
+            for X, y in val_loader:
+                X, y = X.to(device), y.to(device)
+                output = model(X)
+                loss = criterion(output, y)
+                val_loss += loss.item()
+        
+        avg_val_loss = val_loss / len(val_loader)
+        val_losses.append(avg_val_loss)
+        
+        # 更新学习率
+        scheduler.step(avg_val_loss)
+        
+        # 打印训练进度
+        if (epoch + 1) % 10 == 0:
+            print(f'Epoch [{epoch+1}/{num_epochs}], Train Loss: {avg_train_loss:.6f}, Val Loss: {avg_val_loss:.6f}')
+    
+    # 绘制损失曲线
+    plt.figure(figsize=(10, 5))
+    plt.plot(train_losses, label='Training Loss')
+    plt.plot(val_losses, label='Validation Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Training and Validation Loss')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('transformer_training_curve.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    return train_losses, val_losses
+```
+
+### 3.2 模型评估指标
+
+在股价预测中，常用的评估指标包括：
+
+- **MSE（均方误差）**：衡量预测值与真实值的平方误差
+- **RMSE（均方根误差）**：MSE的平方根，与原数据同量纲
+- **MAE（平均绝对误差）**：衡量预测值与真实值的平均绝对差异
+- **方向准确率**：预测涨跌方向的正确率
+- **信息系数（IC）**：预测值与真实值的相关系数
+
+**评估代码实现：**
+
+```python
+def evaluate_model(model, test_loader, device, dataset):
+    """
+    评估模型性能
+    
+    Args:
+        model: 训练好的模型
+        test_loader: 测试数据加载器
+        device: 评估设备
+        dataset: 数据集对象（用于反标准化）
+    """
+    model.eval()
+    predictions = []
+    actuals = []
+    
+    with torch.no_grad():
+        for X, y in test_loader:
+            X, y = X.to(device), y.to(device)
+            output = model(X)
+            
+            # 反标准化
+            output_inv = dataset.inverse_transform_target(output.cpu().numpy())
+            y_inv = dataset.inverse_transform_target(y.cpu().numpy())
+            
+            predictions.append(output_inv)
+            actuals.append(y_inv)
+    
+    predictions = np.concatenate(predictions, axis=0)
+    actuals = np.concatenate(actuals, axis=0)
+    
+    # 计算评估指标
+    mse = np.mean((predictions - actuals) ** 2)
+    rmse = np.sqrt(mse)
+    mae = np.mean(np.abs(predictions - actuals))
+    
+    # 方向准确率
+    pred_direction = np.sign(predictions[:, 0])  # 预测第一天方向
+    actual_direction = np.sign(actuals[:, 0])    # 实际第一天方向
+    direction_accuracy = np.mean(pred_direction == actual_direction)
+    
+    # 信息系数（IC）
+    ic = np.corrcoef(predictions.flatten(), actuals.flatten())[0, 1]
+    
+    print(f"MSE: {mse:.6f}")
+    print(f"RMSE: {rmse:.6f}")
+    print(f"MAE: {mae:.6f}")
+    print(f"Direction Accuracy: {direction_accuracy:.4f}")
+    print(f"Information Coefficient (IC): {ic:.4f}")
+    
+    # 绘制预测vs实际图
+    plt.figure(figsize=(12, 6))
+    plt.plot(actuals[:, 0], label='Actual', alpha=0.7)
+    plt.plot(predictions[:, 0], label='Predicted', alpha=0.7)
+    plt.xlabel('Sample')
+    plt.ylabel('Return')
+    plt.title('Transformer Model: Predicted vs Actual')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig('transformer_prediction_vs_actual.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    return {
+        'mse': mse,
+        'rmse': rmse,
+        'mae': mae,
+        'direction_accuracy': direction_accuracy,
+        'ic': ic,
+        'predictions': predictions,
+        'actuals': actuals
+    }
+```
+
+## 四、实战案例：沪深300指数预测
+
+### 4.1 数据准备
+
+```python
+import tushare as ts
+import pandas as pd
+from datetime import datetime, timedelta
+
+# 设置tushare pro API token
+ts.set_token('your_tushare_token')
+pro = ts.pro_api()
+
+def load_stock_data(stock_code='000300.SH', start_date='20180101', end_date='20231231'):
+    """
+    加载股票数据
+    
+    Args:
+        stock_code: 股票代码（沪深300指数代码：000300.SH）
+        start_date: 开始日期
+        end_date: 结束日期
+    """
+    # 获取日线数据
+    df = pro.index_daily(ts_code=stock_code, start_date=start_date, end_date=end_date)
+    
+    # 按日期升序排列
+    df = df.sort_values('trade_date')
+    
+    # 计算技术指标
+    df = calculate_technical_indicators(df)
+    
+    return df
+
+def calculate_technical_indicators(df, ma_periods=[5, 10, 20, 60]):
+    """计算技术指标"""
+    
+    # 移动平均线
+    for period in ma_periods:
+        df[f'ma{period}'] = df['close'].rolling(window=period).mean()
+    
+    # 收益率
+    df['return_1d'] = df['close'].pct_change()
+    df['return_5d'] = df['close'].pct_change(periods=5)
+    
+    # RSI
+    delta = df['close'].diff()
+    gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
+    loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+    rs = gain / loss
+    df['rsi'] = 100 - (100 / (1 + rs))
+    
+    # MACD
+    ema12 = df['close'].ewm(span=12, adjust=False).mean()
+    ema26 = df['close'].ewm(span=26, adjust=False).mean()
+    df['macd'] = ema12 - ema26
+    df['macd_signal'] = df['macd'].ewm(span=9, adjust=False).mean()
+    df['macd_hist'] = df['macd'] - df['macd_signal']
+    
+    # 布林带
+    df['bb_middle'] = df['close'].rolling(window=20).mean()
+    bb_std = df['close'].rolling(window=20).std()
+    df['bb_upper'] = df['bb_middle'] + 2 * bb_std
+    df['bb_lower'] = df['bb_middle'] - 2 * bb_std
+    df['bb_width'] = (df['bb_upper'] - df['bb_lower']) / df['bb_middle']
+    
+    # 成交量指标
+    df['volume_ma5'] = df['vol'].rolling(window=5).mean()
+    df['volume_ratio'] = df['vol'] / df['volume_ma5']
+    
+    # 删除NaN值
+    df = df.dropna().reset_index(drop=True)
+    
+    return df
+
+# 加载数据
+df = load_stock_data()
+print(f"数据加载完成，共{len(df)}条记录")
+print(f"数据时间范围：{df['trade_date'].iloc[0]} 至 {df['trade_date'].iloc[-1]}")
+```
+
+### 4.2 模型训练与预测
+
+```python
+# 定义特征列
+feature_columns = [
+    'open', 'high', 'low', 'close', 'vol', 'amount',
+    'ma5', 'ma10', 'ma20', 'ma60',
+    'return_1d', 'return_5d',
+    'rsi', 'macd', 'macd_signal', 'macd_hist',
+    'bb_middle', 'bb_upper', 'bb_lower', 'bb_width',
+    'volume_ratio'
+]
+
+target_column = 'return_1d'  # 预测次日收益率
+
+# 创建数据集
+dataset = StockDataset(
+    df, 
+    feature_columns=feature_columns, 
+    target_column=target_column,
+    seq_length=60,  # 使用过去60天的数据
+    pred_length=5   # 预测未来5天
+)
+
+# 划分训练集、验证集、测试集
+train_size = int(0.7 * len(dataset))
+val_size = int(0.15 * len(dataset))
+test_size = len(dataset) - train_size - val_size
+
+train_dataset, val_dataset, test_dataset = torch.utils.data.random_split(
+    dataset, [train_size, val_size, test_size]
+)
+
+# 创建数据加载器
 batch_size = 32
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
-print(f"\n数据集划分:")
-print(f"训练集: {len(train_dataset)} 样本")
-print(f"验证集: {len(val_dataset)} 样本")
-print(f"测试集: {len(test_dataset)} 样本")
-```
-
-### 3.3 Transformer模型定义
-
-使用PyTorch定义Transformer股价预测模型。
-
-```python
-class TransformerForecast(nn.Module):
-    """
-    Transformer股价预测模型
-    """
-    def __init__(self, d_feat, d_model=512, n_heads=8, n_layers=6, 
-                 d_ff=2048, dropout=0.1, pred_len=5):
-        """
-        参数:
-        - d_feat: 输入特征维度
-        - d_model: 模型维度
-        - n_heads: Attention头数
-        - n_layers: Encoder层数
-        - d_ff: Feed-Forward网络维度
-        - dropout: Dropout比例
-        - pred_len: 预测长度
-        """
-        super(TransformerForecast, self).__init__()
-        
-        self.d_model = d_model
-        self.pred_len = pred_len
-        
-        # 线性投影层（将特征维度投影到d_model）
-        self.input_projection = nn.Linear(d_feat, d_model)
-        
-        # Positional Encoding
-        self.positional_encoding = PositionalEncoding(d_model, dropout)
-        
-        # Transformer Encoder
-        encoder_layer = nn.TransformerEncoderLayer(
-            d_model=d_model,
-            nhead=n_heads,
-            dim_feedforward=d_ff,
-            dropout=dropout,
-            batch_first=True  # 输入格式为 (batch, seq, feature)
-        )
-        self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=n_layers)
-        
-        # 全局平均池化
-        self.global_avg_pool = nn.AdaptiveAvgPool1d(1)
-        
-        # 输出层
-        self.fc_out = nn.Sequential(
-            nn.Linear(d_model, d_model // 2),
-            nn.ReLU(),
-            nn.Dropout(dropout),
-            nn.Linear(d_model // 2, 1)
-        )
-    
-    def forward(self, x):
-        """
-        前向传播
-        
-        参数:
-        - x: (batch_size, seq_len, d_feat)
-        
-        返回:
-        - output: (batch_size, 1)
-        """
-        # 线性投影
-        x = self.input_projection(x)  # (batch_size, seq_len, d_model)
-        
-        # Positional Encoding
-        x = self.positional_encoding(x)
-        
-        # Transformer Encoder
-        x = self.transformer_encoder(x)  # (batch_size, seq_len, d_model)
-        
-        # 全局平均池化
-        x = x.transpose(1, 2)  # (batch_size, d_model, seq_len)
-        x = self.global_avg_pool(x).squeeze(-1)  # (batch_size, d_model)
-        
-        # 输出层
-        output = self.fc_out(x)  # (batch_size, 1)
-        
-        return output
-
-
-class PositionalEncoding(nn.Module):
-    """
-    Positional Encoding模块
-    """
-    def __init__(self, d_model, dropout=0.1, max_len=5000):
-        super(PositionalEncoding, self).__init__()
-        self.dropout = nn.Dropout(p=dropout)
-        
-        # 创建位置编码矩阵
-        pe = torch.zeros(max_len, d_model)
-        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
-        div_term = torch.exp(torch.arange(0, d_model, 2).float() * 
-                            (-np.log(10000.0) / d_model))
-        
-        pe[:, 0::2] = torch.sin(position * div_term)
-        pe[:, 1::2] = torch.cos(position * div_term)
-        
-        pe = pe.unsqueeze(0)  # (1, max_len, d_model)
-        self.register_buffer('pe', pe)
-    
-    def forward(self, x):
-        """
-        参数:
-        - x: (batch_size, seq_len, d_model)
-        """
-        x = x + self.pe[:, :x.size(1), :]
-        return self.dropout(x)
-
-
-# 模型初始化
-d_feat = train_dataset.X.shape[1]
-d_model = 512
-n_heads = 8
-n_layers = 6
-d_ff = 2048
-dropout = 0.1
-
-model = TransformerForecast(
-    d_feat=d_feat,
-    d_model=d_model,
-    n_heads=n_heads,
-    n_layers=n_layers,
-    d_ff=d_ff,
-    dropout=dropout,
-    pred_len=pred_len
+# 创建模型
+input_dim = len(feature_columns)
+model = TransformerStockPredictor(
+    input_dim=input_dim,
+    d_model=256,
+    num_heads=8,
+    num_layers=4,
+    dim_feedforward=1024,
+    dropout=0.2,
+    pred_length=5
 )
 
-# 计算模型参数量
-total_params = sum(p.numel() for p in model.parameters())
-trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-
-print(f"\n模型参数统计:")
-print(f"总参数量: {total_params:,}")
-print(f"可训练参数量: {trainable_params:,}")
-
-# 设备选择
+# 训练模型
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = model.to(device)
+print(f"使用设备：{device}")
 
-print(f"\n使用设备: {device}")
-```
-
-### 3.4 模型训练
-
-定义训练循环和验证循环。
-
-```python
-def train_epoch(model, train_loader, criterion, optimizer, device):
-    """
-    训练一个epoch
-    """
-    model.train()
-    total_loss = 0
-    
-    for batch_idx, (x, y) in enumerate(train_loader):
-        x, y = x.to(device), y.to(device)
-        
-        # 前向传播
-        optimizer.zero_grad()
-        output = model(x)
-        loss = criterion(output, y.unsqueeze(1))
-        
-        # 反向传播
-        loss.backward()
-        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)  # 梯度裁剪
-        optimizer.step()
-        
-        total_loss += loss.item()
-    
-    return total_loss / len(train_loader)
-
-
-def validate(model, val_loader, criterion, device):
-    """
-    验证
-    """
-    model.eval()
-    total_loss = 0
-    
-    with torch.no_grad():
-        for x, y in val_loader:
-            x, y = x.to(device), y.to(device)
-            output = model(x)
-            loss = criterion(output, y.unsqueeze(1))
-            total_loss += loss.item()
-    
-    return total_loss / len(val_loader)
-
-
-# 训练配置
-learning_rate = 0.001
-weight_decay = 0.0001
-n_epochs = 100
-early_stopping_patience = 10
-
-criterion = nn.MSELoss()
-optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
-scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', 
-                                                  factor=0.5, patience=5, verbose=True)
-
-# 训练循环
-print("\n开始训练...")
-best_val_loss = float('inf')
-patience_counter = 0
-train_losses = []
-val_losses = []
-
-for epoch in range(n_epochs):
-    # 训练
-    train_loss = train_epoch(model, train_loader, criterion, optimizer, device)
-    train_losses.append(train_loss)
-    
-    # 验证
-    val_loss = validate(model, val_loader, criterion, device)
-    val_losses.append(val_loss)
-    
-    # 学习率调度
-    scheduler.step(val_loss)
-    
-    # 打印进度
-    if (epoch + 1) % 10 == 0:
-        print(f"Epoch [{epoch+1}/{n_epochs}], "
-              f"Train Loss: {train_loss:.6f}, "
-              f"Val Loss: {val_loss:.6f}, "
-              f"LR: {optimizer.param_groups[0]['lr']:.6f}")
-    
-    # 早停检查
-    if val_loss < best_val_loss:
-        best_val_loss = val_loss
-        patience_counter = 0
-        # 保存最佳模型
-        torch.save(model.state_dict(), 'best_transformer_model.pth')
-    else:
-        patience_counter += 1
-        
-    if patience_counter >= early_stopping_patience:
-        print(f"\nEarly stopping triggered at epoch {epoch+1}")
-        break
-
-print(f"\n训练完成！最佳验证损失: {best_val_loss:.6f}")
-
-# 加载最佳模型
-model.load_state_dict(torch.load('best_transformer_model.pth'))
-
-# 可视化训练曲线
-plt.figure(figsize=(12, 5))
-plt.plot(train_losses, label='Training Loss', linewidth=2)
-plt.plot(val_losses, label='Validation Loss', linewidth=2)
-plt.xlabel('Epoch')
-plt.ylabel('MSE Loss')
-plt.title('Training and Validation Loss')
-plt.legend()
-plt.grid(True, alpha=0.3)
-plt.tight_layout()
-plt.savefig('training_curve.png', dpi=300, bbox_inches='tight')
-plt.show()
-```
-
-### 3.5 模型评估
-
-在测试集上评估模型性能。
-
-```python
-def evaluate_model(model, test_loader, device, scaler_y):
-    """
-    评估模型
-    
-    参数:
-    - model: 训练好的模型
-    - test_loader: 测试集DataLoader
-    - device: 设备
-    - scaler_y: 标签的标准化器（用于反归一化）
-    
-    返回:
-    - predictions: 预测值（反归一化）
-    - targets: 真实值（反归一化）
-    - metrics: 评估指标字典
-    """
-    model.eval()
-    all_predictions = []
-    all_targets = []
-    
-    with torch.no_grad():
-        for x, y in test_loader:
-            x = x.to(device)
-            output = model(x).cpu().numpy()
-            y = y.numpy()
-            
-            all_predictions.extend(output.flatten())
-            all_targets.extend(y.flatten())
-    
-    # 转换为numpy数组
-    predictions = np.array(all_predictions)
-    targets = np.array(all_targets)
-    
-    # 反归一化
-    predictions = scaler_y.inverse_transform(predictions.reshape(-1, 1)).flatten()
-    targets = scaler_y.inverse_transform(targets.reshape(-1, 1)).flatten()
-    
-    # 计算评估指标
-    mae = np.mean(np.abs(predictions - targets))
-    mse = np.mean((predictions - targets) ** 2)
-    rmse = np.sqrt(mse)
-    mape = np.mean(np.abs((targets - predictions) / targets)) * 100
-    
-    # 方向准确率
-    direction_true = np.sign(targets)
-    direction_pred = np.sign(predictions)
-    direction_accuracy = np.mean(direction_true == direction_pred)
-    
-    metrics = {
-        'MAE': mae,
-        'MSE': mse,
-        'RMSE': rmse,
-        'MAPE': mape,
-        'Direction Accuracy': direction_accuracy
-    }
-    
-    return predictions, targets, metrics
+train_losses, val_losses = train_transformer_model(
+    model, train_loader, val_loader, device,
+    num_epochs=100,
+    learning_rate=0.001
+)
 
 # 评估模型
-predictions, targets, metrics = evaluate_model(
-    model, test_loader, device, train_dataset.scaler_y
-)
-
-# 打印评估指标
-print("\n=== 模型评估结果 ===")
-for key, value in metrics.items():
-    if key == 'MAPE':
-        print(f"{key}: {value:.2f}%")
-    elif key == 'Direction Accuracy':
-        print(f"{key}: {value:.2%}")
-    else:
-        print(f"{key}: {value:.6f}")
-
-# 可视化预测结果
-plt.figure(figsize=(14, 6))
-plt.plot(targets, label='真实值', linewidth=2, alpha=0.7)
-plt.plot(predictions, label='预测值', linewidth=2, alpha=0.7)
-plt.xlabel('样本')
-plt.ylabel('未来5日收益率')
-plt.title('Transformer模型预测结果 vs 真实值')
-plt.legend()
-plt.grid(True, alpha=0.3)
-plt.tight_layout()
-plt.savefig('predictions_vs_targets.png', dpi=300, bbox_inches='tight')
-plt.show()
-
-# 散点图
-plt.figure(figsize=(8, 6))
-plt.scatter(targets, predictions, alpha=0.5)
-plt.xlabel('真实值')
-plt.ylabel('预测值')
-plt.title('预测值 vs 真实值散点图')
-plt.plot([targets.min(), targets.max()], [targets.min(), targets.max()], 
-         'r--', label='完美预测线')
-plt.legend()
-plt.grid(True, alpha=0.3)
-plt.tight_layout()
-plt.savefig('scatter_plot.png', dpi=300, bbox_inches='tight')
-plt.show()
-```
-
-### 3.6 Attention可视化
-
-Transformer的一个重要优势是可解释性。我们可以可视化Attention权重，理解模型关注的时刻。
-
-```python
-def visualize_attention(model, dataloader, device, sample_idx=0):
-    """
-    可视化Attention权重
-    
-    参数:
-    - model: 训练好的模型
-    - dataloader: DataLoader
-    - device: 设备
-    - sample_idx: 可视化第几个样本
-    """
-    model.eval()
-    
-    # 获取一个batch的数据
-    for batch_idx, (x, y) in enumerate(dataloader):
-        if batch_idx == sample_idx:
-            x = x.to(device)
-            break
-    
-    # 获取Attention权重（需要修改模型以返回Attention权重）
-    # 这里我们使用钩子（hook）来提取Attention权重
-    attention_weights = []
-    
-    def hook_fn(module, input, output):
-        # input是一个元组，包含(query, key, value)
-        # 我们可以在这里计算Attention权重
-        pass
-    
-    # 注册钩子
-    hooks = []
-    for name, module in model.named_modules():
-        if 'self_attn' in name:
-            hooks.append(module.register_forward_hook(hook_fn))
-    
-    # 前向传播
-    with torch.no_grad():
-        output = model(x)
-    
-    # 移除钩子
-    for hook in hooks:
-        hook.remove()
-    
-    # 由于PyTorch的TransformerEncoder不直接返回Attention权重，
-    # 我们需要使用第三方库（如transformers）或修改模型代码
-    # 这里我们使用简化的方法：可视化最后一层Encoder的Attention
-    
-    print("\n提示：完整实现需要修改Transformer模型以返回Attention权重。")
-    print("可以使用Hugging Face的transformers库，或参考以下代码：")
-    print("https://github.com/huggingface/transformers")
-
-
-# 尝试可视化（需要完整实现）
-# visualize_attention(model, test_loader, device)
-```
-
-## 四、策略回测与实战
-
-### 4.1 交易策略设计
-
-基于Transformer模型的预测结果，我们可以设计交易策略。
-
-**简单策略**：
-
-- 当预测未来收益 > 阈值（如0.5%）时，买入持有5天
-- 当预测未来收益 < -阈值（如-0.5%）时，卖空持有5天
-- 否则，不持仓
-
-**改进策略**：
-
-1. **动态阈值**：根据预测置信度动态调整阈值
-2. **仓位管理**：根据预测幅度决定仓位大小
-3. **止损止盈**：设置止损和止盈点
-4. **组合策略**：与其他模型或策略组合
-
-### 4.2 回测框架
-
-实现一个简单的回测框架。
-
-```python
-def backtest_strategy(predictions, targets, returns_data, threshold=0.005):
-    """
-    基于预测结果回测交易策略
-    
-    参数:
-    - predictions: 模型预测值
-    - targets: 真实值（未使用，仅用于评估）
-    - returns_data: 实际收益率数据（用于计算策略收益）
-    - threshold: 交易阈值
-    
-    返回:
-    - strategy_returns: 策略收益率Series
-    - metrics: 策略绩效指标
-    """
-    # 初始化
-    n = len(predictions)
-    positions = np.zeros(n)  # 持仓方向：1为多头，-1为空头，0为空仓
-    strategy_returns = np.zeros(n)
-    
-    # 生成交易信号
-    for i in range(n):
-        if predictions[i] > threshold:
-            positions[i] = 1  # 做多
-        elif predictions[i] < -threshold:
-            positions[i] = -1  # 做空
-        else:
-            positions[i] = 0  # 空仓
-    
-    # 计算策略收益率
-    # 假设预测的是未来5日收益率，我们持有5天后平仓
-    holding_period = 5
-    for i in range(n - holding_period):
-        if positions[i] != 0:
-            # 计算持有期收益率
-            actual_return = returns_data[i:i+holding_period].sum()
-            strategy_returns[i:i+holding_period] = positions[i] * actual_return / holding_period
-    
-    return strategy_returns, positions
-
-# 准备回测数据
-# 注意：这里的returns_data应该是测试集对应的实际收益率
-test_returns = test_data['return_5d'].values[-len(predictions):]
-
-# 回测
-strategy_returns, positions = backtest_strategy(
-    predictions, targets, test_returns, threshold=0.005
-)
-
-# 计算累积收益率
-cumulative_strategy_returns = (1 + strategy_returns).cumprod()
-
-# 计算基准收益率（买入持有）
-cumulative_benchmark = (1 + test_returns).cumprod()
-
-# 可视化回测结果
-plt.figure(figsize=(14, 6))
-plt.plot(cumulative_strategy_returns, label='Transformer策略', linewidth=2)
-plt.plot(cumulative_benchmark, label='买入持有基准', linewidth=2)
-plt.xlabel('时间')
-plt.ylabel('累积收益率')
-plt.title('Transformer策略 vs 买入持有基准')
-plt.legend()
-plt.grid(True, alpha=0.3)
-plt.tight_layout()
-plt.savefig('backtest_results.png', dpi=300, bbox_inches='tight')
-plt.show()
-
-# 计算策略绩效
-def calculate_strategy_metrics(returns):
-    """
-    计算策略绩效指标
-    """
-    total_return = (1 + returns).prod() - 1
-    annual_return = (1 + returns.mean()) ** 252 - 1
-    annual_volatility = returns.std() * np.sqrt(252)
-    sharpe_ratio = annual_return / annual_volatility if annual_volatility > 0 else 0
-    
-    # 最大回撤
-    cumulative = (1 + returns).cumprod()
-    running_max = cumulative.cummax()
-    drawdown = (cumulative - running_max) / running_max
-    max_drawdown = drawdown.min()
-    
-    return {
-        '总收益率': total_return,
-        '年化收益率': annual_return,
-        '年化波动率': annual_volatility,
-        '夏普比率': sharpe_ratio,
-        '最大回撤': max_drawdown
-    }
-
-strategy_metrics = calculate_strategy_metrics(strategy_returns)
-benchmark_metrics = calculate_strategy_metrics(test_returns)
-
-print("\n=== 策略回测结果 ===")
-print("\nTransformer策略:")
-for key, value in strategy_metrics.items():
-    if key in ['总收益率', '年化收益率', '年化波动率', '最大回撤']:
-        print(f"  {key}: {value:.2%}")
-    else:
-        print(f"  {key}: {value:.2f}")
-
-print("\n买入持有基准:")
-for key, value in benchmark_metrics.items():
-    if key in ['总收益率', '年化收益率', '年化波动率', '最大回撤']:
-        print(f"  {key}: {value:.2%}")
-    else:
-        print(f"  {key}: {value:.2f}")
+metrics = evaluate_model(model, test_loader, device, dataset)
 ```
 
 ## 五、模型优化与改进
 
-### 5.1 超参数调优
+### 5.1 注意力可视化
 
-Transformer模型有多个超参数需要调整：
-
-**关键超参数**：
-
-1. **d_model**：模型维度（如256, 512, 1024）
-2. **n_heads**：Attention头数（如4, 8, 16）
-3. **n_layers**：Encoder层数（如4, 6, 12）
-4. **d_ff**：FFN维度（如1024, 2048, 4096）
-5. **dropout**：Dropout比例（如0.1, 0.2, 0.3）
-6. **学习率**：（如0.001, 0.0005, 0.0001）
-7. **batch_size**：批大小（如16, 32, 64）
-
-**调优方法**：
-
-1. **网格搜索**：遍历所有超参数组合（计算量大）
-2. **随机搜索**：随机采样超参数组合（更高效）
-3. **贝叶斯优化**：使用Gaussian Process建模超参数与性能的关系
-4. **自动化工具**：使用Optuna、Ray Tune等超参数优化框架
-
-### 5.2 数据增强
-
-数据增强可以提升模型的泛化能力。
-
-**时间序列数据增强方法**：
-
-1. **加性噪声**：在训练数据中加入高斯噪声
-2. **时间扭曲**：随机拉伸或压缩时间序列
-3. **窗口切片**：随机截取子序列
-4. **多尺度特征**：构造不同时间尺度的特征
+理解Transformer模型的决策过程非常重要。通过可视化注意力权重，我们可以发现模型关注的时间点。
 
 ```python
-def add_gaussian_noise(data, noise_level=0.01):
+def visualize_attention(model, sample_data, feature_names, save_path='attention_visualization.png'):
     """
-    添加高斯噪声
+    可视化Transformer的注意力权重
+    
+    Args:
+        model: 训练好的Transformer模型
+        sample_data: 样本数据 (1, seq_length, input_dim)
+        feature_names: 特征名称列表
     """
-    noise = np.random.normal(0, noise_level, data.shape)
-    return data + noise
+    model.eval()
+    
+    with torch.no_grad():
+        # 获取注意力权重
+        # 注意：这里需要修改模型以返回注意力权重
+        # 为简化，这里展示概念性代码
+        
+        # 假设我们可以获取最后一层的注意力权重
+        # attention_weights: (num_heads, seq_length, seq_length)
+        
+        # 可视化每个头的注意力
+        num_heads = 8
+        fig, axes = plt.subplots(2, 4, figsize=(20, 10))
+        axes = axes.flatten()
+        
+        for head in range(num_heads):
+            ax = axes[head]
+            
+            # 绘制注意力热力图
+            im = ax.imshow(attention_weights[head], cmap='YlOrRd', aspect='auto')
+            
+            ax.set_xlabel('Key Position')
+            ax.set_ylabel('Query Position')
+            ax.set_title(f'Head {head+1}')
+            
+            # 添加颜色条
+            plt.colorbar(im, ax=ax)
+        
+        plt.suptitle('Transformer Attention Weights Visualization', fontsize=16)
+        plt.tight_layout()
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        print(f"注意力可视化已保存至：{save_path}")
 
-def time_warp(data, warp_factor_range=(0.9, 1.1)):
-    """
-    时间扭曲
-    """
-    warp_factor = np.random.uniform(*warp_factor_range)
-    original_length = len(data)
-    new_length = int(original_length * warp_factor)
-    
-    # 使用插值调整长度
-    from scipy import interpolate
-    x_old = np.linspace(0, 1, original_length)
-    x_new = np.linspace(0, 1, new_length)
-    
-    if data.ndim == 1:
-        f = interpolate.interp1d(x_old, data, kind='linear')
-        data_warped = f(x_new)
-    else:
-        data_warped = np.zeros((new_length, data.shape[1]))
-        for i in range(data.shape[1]):
-            f = interpolate.interp1d(x_old, data[:, i], kind='linear')
-            data_warped[:, i] = f(x_new)
-    
-    return data_warped
+# 使用示例
+sample_input = torch.FloatTensor(dataset[0][0]).unsqueeze(0).to(device)
+visualize_attention(model, sample_input, feature_columns)
+```
+
+### 5.2 时序分解与残差连接
+
+股价数据通常包含趋势、季节性和噪声。在Transformer中引入时序分解可以增强模型性能。
+
+```python
+class TimeSeriesDecomposition(nn.Module):
+    """时间序列分解模块"""
+    def __init__(self, seq_length, d_model):
+        super().__init__()
+        
+        # 趋势提取（使用移动平均）
+        self.trend_extractor = nn.Sequential(
+            nn.Conv1d(d_model, d_model, kernel_size=5, padding=2, groups=d_model),
+            nn.Linear(seq_length, seq_length)
+        )
+        
+        # 季节性提取（使用傅里叶变换）
+        self.seasonal_extractor = nn.Sequential(
+            nn.Linear(seq_length, d_model),
+            nn.ReLU(),
+            nn.Linear(d_model, d_model)
+        )
+        
+    def forward(self, x):
+        """
+        Args:
+            x: (batch_size, seq_length, d_model)
+        """
+        # 提取趋势
+        trend = self.trend_extractor(x.transpose(1, 2)).transpose(1, 2)
+        
+        # 提取季节性
+        seasonal = self.seasonal_extractor(x)
+        
+        # 残差（噪声）
+        residual = x - trend - seasonal
+        
+        return trend, seasonal, residual
+
+class TransformerWithDecomposition(nn.Module):
+    """带时序分解的Transformer模型"""
+    def __init__(self, input_dim, d_model=512, num_heads=8, num_layers=6,
+                 dim_feedforward=2048, dropout=0.1, pred_length=5):
+        super().__init__()
+        
+        # 分解模块
+        self.decomposition = TimeSeriesDecomposition(seq_length=60, d_model=d_model)
+        
+        # 分别处理趋势、季节性、残差
+        self.trend_encoder = TransformerStockPredictor(input_dim, d_model//3, num_heads, num_layers, 
+                                                       dim_feedforward//3, dropout, pred_length)
+        self.seasonal_encoder = TransformerStockPredictor(input_dim, d_model//3, num_heads, num_layers,
+                                                          dim_feedforward//3, dropout, pred_length)
+        self.residual_encoder = TransformerStockPredictor(input_dim, d_model//3, num_heads, num_layers,
+                                                         dim_feedforward//3, dropout, pred_length)
+        
+        # 融合层
+        self.fusion = nn.Linear(pred_length * 3, pred_length)
+        
+    def forward(self, x):
+        # 分解
+        trend, seasonal, residual = self.decomposition(x)
+        
+        # 分别编码
+        trend_out = self.trend_encoder(trend)
+        seasonal_out = self.seasonal_encoder(seasonal)
+        residual_out = self.residual_encoder(residual)
+        
+        # 融合
+        combined = torch.cat([trend_out, seasonal_out, residual_out], dim=-1)
+        output = self.fusion(combined)
+        
+        return output
 ```
 
 ### 5.3 集成学习
 
-集成多个Transformer模型可以提升预测稳定性。
-
-**集成方法**：
-
-1. **模型集成**：训练多个不同超参数的Transformer，取预测平均值
-2. **Bagging**：使用Bootstrap采样训练多个模型
-3. **Stacking**：将Transformer的预测作为特征，训练一个元模型
+单一模型可能存在过拟合风险。通过集成多个Transformer模型，可以提高预测的稳健性。
 
 ```python
-# 模型集成示例
 class TransformerEnsemble(nn.Module):
-    def __init__(self, model_configs):
-        super(TransformerEnsemble, self).__init__()
+    """Transformer集成模型"""
+    def __init__(self, input_dim, num_models=5, **kwargs):
+        super().__init__()
+        
+        # 创建多个不同的Transformer模型
         self.models = nn.ModuleList([
-            TransformerForecast(**config) for config in model_configs
+            TransformerStockPredictor(input_dim, **kwargs)
+            for _ in range(num_models)
         ])
+        
+        # 每个模型使用不同的初始化
+        for model in self.models:
+            for module in model.modules():
+                if isinstance(module, nn.Linear):
+                    nn.init.xavier_uniform_(module.weight)
+                    if module.bias is not None:
+                        nn.init.zeros_(module.bias)
     
     def forward(self, x):
-        predictions = []
-        for model in self.models:
-            pred = model(x)
-            predictions.append(pred)
+        # 获取每个模型的预测
+        predictions = [model(x) for model in self.models]
         
-        # 取平均值
-        ensemble_pred = torch.mean(torch.stack(predictions), dim=0)
-        return ensemble_pred
+        # 平均集成
+        ensemble_prediction = torch.stack(predictions).mean(dim=0)
+        
+        return ensemble_prediction
+    
+    def predict_with_uncertainty(self, x, num_samples=100):
+        """
+        带不确定性的预测（使用MC Dropout）
+        
+        Args:
+            x: 输入数据
+            num_samples: 采样次数
+            
+        Returns:
+            mean: 平均预测
+            std: 预测标准差（衡量不确定性）
+        """
+        self.train()  # 启用Dropout
+        
+        predictions = []
+        for _ in range(num_samples):
+            pred = self.forward(x)
+            predictions.append(pred.detach())
+        
+        predictions = torch.stack(predictions)
+        
+        mean = predictions.mean(dim=0)
+        std = predictions.std(dim=0)
+        
+        self.eval()  # 恢复评估模式
+        
+        return mean, std
 ```
 
-### 5.4 与其他模型对比
+## 六、实战策略构建
 
-将Transformer与传统的时序预测模型进行对比。
+### 6.1 基于预测的择时策略
 
-**对比模型**：
+有了股价预测模型，我们可以构建量化择时策略：
 
-1. **ARIMA**：经典统计方法
-2. **LSTM/GRU**：递归神经网络
-3. **TCN（Temporal Convolutional Network）**：时间序列卷积网络
-4. **Prophet**：Facebook开发的时间序列预测工具
-5. **XGBoost/LightGBM**：梯度提升树
+```python
+class TransformerTimingStrategy:
+    """基于Transformer预测的择时策略"""
+    
+    def __init__(self, model, dataset, threshold=0.001, holding_period=5):
+        """
+        Args:
+            model: 训练好的Transformer模型
+            dataset: 数据集对象
+            threshold: 预测收益率阈值（超过此值才交易）
+            holding_period: 持仓周期（天）
+        """
+        self.model = model
+        self.dataset = dataset
+        self.threshold = threshold
+        self.holding_period = holding_period
+        
+    def generate_signals(self, test_df):
+        """
+        生成交易信号
+        
+        Args:
+            test_df: 测试集数据
+            
+        Returns:
+            signals: 交易信号（1：买入，-1：卖出，0：持有）
+            predictions: 模型预测值
+        """
+        self.model.eval()
+        
+        signals = []
+        predictions = []
+        
+        with torch.no_grad():
+            for i in range(len(test_df) - self.dataset.seq_length):
+                # 准备输入数据
+                X = test_df.iloc[i:i+self.dataset.seq_length][self.dataset.feature_columns].values
+                X = self.dataset.feature_scaler.transform(X)
+                X = torch.FloatTensor(X).unsqueeze(0).to(next(self.model.parameters()).device)
+                
+                # 预测
+                pred = self.model(X)
+                pred = pred.cpu().numpy()
+                
+                # 反标准化
+                pred = self.dataset.inverse_transform_target(pred)
+                predictions.append(pred[0, 0])  # 预测第一天收益率
+                
+                # 生成信号
+                if pred[0, 0] > self.threshold:
+                    signals.append(1)  # 买入信号
+                elif pred[0, 0] < -self.threshold:
+                    signals.append(-1)  # 卖出信号
+                else:
+                    signals.append(0)  # 无信号
+        
+        return signals, predictions
+    
+    def backtest(self, test_df, initial_capital=1000000):
+        """
+        策略回测
+        
+        Args:
+            test_df: 测试集数据
+            initial_capital: 初始资金
+            
+        Returns:
+            returns: 策略收益率序列
+            portfolio_value: 组合价值序列
+        """
+        signals, predictions = self.generate_signals(test_df)
+        
+        # 初始化
+        capital = initial_capital
+        position = 0  # 持仓数量
+        portfolio_value = []
+        returns = []
+        
+        for i, signal in enumerate(signals):
+            current_price = test_df.iloc[i + self.dataset.seq_length]['close']
+            
+            if signal == 1 and position == 0:  # 买入
+                position = capital / current_price
+                capital = 0
+            elif signal == -1 and position > 0:  # 卖出
+                capital = position * current_price
+                position = 0
+            
+            # 计算当前组合价值
+            current_value = capital + position * current_price
+            portfolio_value.append(current_value)
+            
+            # 计算收益率
+            if i > 0:
+                daily_return = (current_value - portfolio_value[-2]) / portfolio_value[-2]
+                returns.append(daily_return)
+        
+        return returns, portfolio_value
+```
 
-**对比维度**：
+### 6.2 风险控制
 
-1. **预测精度**：MAE、RMSE、MAPE等
-2. **训练速度**：训练时间
-3. **推理速度**：预测时间
-4. **内存消耗**：模型大小
-5. **可解释性**：是否易于理解
+任何量化策略都必须考虑风险控制。以下是一些关键措施：
 
-## 六、实盘应用注意事项
+1. **止损止盈**：设置固定的止损止盈阈值
+2. **仓位管理**：根据预测置信度动态调整仓位
+3. **最大回撤控制**：当回撤超过阈值时暂停交易
+4. **交易成本**：考虑手续费和滑点
 
-### 6.1 过拟合风险
+```python
+def backtest_with_risk_control(strategy, test_df, initial_capital=1000000,
+                               stop_loss=0.05, take_profit=0.10,
+                               max_position=0.95, transaction_cost=0.001):
+    """
+    带风险控制的回测
+    
+    Args:
+        strategy: 策略对象
+        test_df: 测试数据
+        initial_capital: 初始资金
+        stop_loss: 止损比例
+        take_profit: 止盈比例
+        max_position: 最大仓位比例
+        transaction_cost: 交易成本比例
+    """
+    signals, predictions = strategy.generate_signals(test_df)
+    
+    capital = initial_capital
+    position = 0
+    entry_price = 0
+    portfolio_value = []
+    trades = []
+    
+    for i, signal in enumerate(signals):
+        current_price = test_df.iloc[i + strategy.dataset.seq_length]['close']
+        
+        # 风险控制检查
+        if position > 0:
+            # 计算当前收益率
+            current_return = (current_price - entry_price) / entry_price
+            
+            # 止损
+            if current_return < -stop_loss:
+                capital = position * current_price * (1 - transaction_cost)
+                trades.append({'type': 'stop_loss', 'price': current_price, 'return': current_return})
+                position = 0
+            
+            # 止盈
+            elif current_return > take_profit:
+                capital = position * current_price * (1 - transaction_cost)
+                trades.append({'type': 'take_profit', 'price': current_price, 'return': current_return})
+                position = 0
+        
+        # 执行交易信号
+        if signal == 1 and position == 0 and capital > 0:  # 买入
+            # 仓位管理：根据预测置信度调整仓位
+            confidence = abs(predictions[i]) / 0.01  # 预测收益率除以1%
+            position_size = min(max_position, confidence)
+            
+            position = (capital * position_size) / current_price * (1 - transaction_cost)
+            capital = capital * (1 - position_size)
+            entry_price = current_price
+            trades.append({'type': 'buy', 'price': current_price, 'confidence': predictions[i]})
+            
+        elif signal == -1 and position > 0:  # 卖出
+            capital = position * current_price * (1 - transaction_cost)
+            trades.append({'type': 'sell', 'price': current_price, 'return': (current_price - entry_price) / entry_price})
+            position = 0
+        
+        # 记录组合价值
+        current_value = capital + position * current_price
+        portfolio_value.append(current_value)
+    
+    # 计算策略表现
+    total_return = (portfolio_value[-1] - initial_capital) / initial_capital
+    sharpe_ratio = calculate_sharpe_ratio(portfolio_value)
+    max_drawdown = calculate_max_drawdown(portfolio_value)
+    
+    print(f"总收益率：{total_return:.4f}")
+    print(f"夏普比率：{sharpe_ratio:.4f}")
+    print(f"最大回撤：{max_drawdown:.4f}")
+    print(f"交易次数：{len(trades)}")
+    
+    return portfolio_value, trades
 
-深度学习模型容易过拟合，尤其是在金融数据上。
+def calculate_sharpe_ratio(portfolio_value, risk_free_rate=0.03):
+    """计算夏普比率"""
+    returns = pd.Series(portfolio_value).pct_change().dropna()
+    excess_returns = returns - risk_free_rate / 252  # 假设252个交易日
+    return np.sqrt(252) * excess_returns.mean() / excess_returns.std()
 
-**过拟合的表现**：
-
-- 训练集性能远优于验证集/测试集
-- 模型复杂度过高（参数量 >> 样本量）
-- 对噪声敏感
-
-**应对方法**：
-
-1. **正则化**：L1/L2正则化、Dropout
-2. **早停**：在验证集性能下降时停止训练
-3. **简化模型**：减少层数、隐藏单元数
-4. **增加数据**：获取更多数据或使用数据增强
-5. **交叉验证**：使用时间序列交叉验证
-
-### 6.2 非平稳性
-
-金融时间序列具有非平稳性，这是深度学习模型面临的最大挑战。
-
-**非平稳性的表现**：
-
-- 均值和方差随时间变化（漂移）
-- 相关性结构变化（体制转换）
-- 黑天鹅事件（极端值）
-
-**应对方法**：
-
-1. **在线学习**：定期用新数据微调模型
-2. **滚动训练**：使用滚动窗口重新训练模型
-3. **多时间尺度**：同时建模短期和长期模式
-4. ** regime detection**：检测市场状态，在不同状态下使用不同模型
-
-### 6.3 交易成本
-
-深度学习模型可能频繁交易，导致交易成本过高。
-
-**成本优化方法**：
-
-1. **降低交易频率**：延长持有期或减少信号数量
-2. **门槛过滤**：只交易预测置信度高的信号
-3. **智能订单路由**：选择最低佣金的券商
-4. **交易成本建模**：在损失函数中加入交易成本项
-
-### 6.4 风险管理
-
-严格的风险管理是深度学习交易策略生存的关键。
-
-**风险管理原则**：
-
-1. **仓位限制**：单个策略不超过总资金的20%
-2. **止损机制**：单笔交易亏损超过2%时强制平仓
-3. **最大回撤控制**：策略回撤超过10%时暂停交易
-4. **分散投资**：同时运行多个不相关的策略
-5. **压力测试**：在极端市场情况下测试策略表现
+def calculate_max_drawdown(portfolio_value):
+    """计算最大回撤"""
+    portfolio_series = pd.Series(portfolio_value)
+    cumulative_max = portfolio_series.cummax()
+    drawdown = (portfolio_series - cumulative_max) / cumulative_max
+    return drawdown.min()
+```
 
 ## 七、总结与展望
 
-### 7.1 本文回顾
+本文系统介绍了Transformer模型在股价预测中的应用，从Attention机制原理到PyTorch实战，构建了一个完整的股价预测系统。关键要点包括：
 
-本文深入探讨了Transformer模型在股价预测中的应用，从Attention机制的数学原理到PyTorch实战，构建了一个完整的端到端预测系统。主要内容包括：
+1. **Attention机制优势**：能够自动学习历史时间点的重要性权重，捕捉长期依赖关系
+2. **位置编码必要性**：为模型注入时间顺序信息
+3. **数据预处理关键**：特征工程、标准化、序列构造直接影响模型性能
+4. **模型评估多维**：除了传统误差指标，还应关注方向准确率、信息系数等
+5. **风险控制必须**：任何量化策略都必须有完善的风险管理措施
 
-1. **Transformer原理**：详细介绍了Attention机制、Multi-Head Attention、位置编码等核心概念
-2. **模型设计**：提出了适合股价预测的Transformer架构，仅使用Encoder部分
-3. **PyTorch实战**：从数据准备、Dataset构建、模型定义、训练评估，提供了完整的代码实现
-4. **策略回测**：基于模型预测结果设计了交易策略，并进行了回测
-5. **优化改进**：介绍了超参数调优、数据增强、集成学习等改进方法
-6. **实盘注意事项**：讨论了过拟合、非平稳性、交易成本、风险管理等实盘应用问题
+**未来改进方向：**
 
-### 7.2 Transformer的局限性
+1. **多资产联合预测**：同时预测多个相关资产，捕捉联动效应
+2. **高频数据应用**：将Transformer应用于分钟级或秒级数据
+3. **因果注意力**：引入因果推断，提高模型可解释性
+4. **在线学习**：实现模型的持续学习和自适应更新
+5. **多模态融合**：结合文本（新闻、财报）、图像（K线图）等多模态数据
 
-尽管Transformer在NLP等领域取得了巨大成功，但在股价预测中仍面临以下局限性：
-
-1. **数据稀缺**：金融数据相对稀缺，而Transformer需要大量数据
-2. **非平稳性**：金融市场时刻在变化，基于历史数据训练的模型可能失效
-3. **黑箱性质**：尽管Attention可以提供一定可解释性，但整体仍是黑箱模型
-4. **计算资源**：Transformer模型参数量大，需要强大的计算资源
-
-### 7.3 未来发展方向
-
-为了克服上述局限性，Transformer在金融预测中的未来发展方向包括：
-
-1. **预训练模型**：使用大规模金融文本数据（新闻、财报）预训练Transformer，然后微调用于股价预测
-2. **多模态融合**：结合价格数据、文本数据、另类数据（如卫星图像、信用卡数据）
-3. **图神经网络**：将Transformer与GNN结合，建模股票之间的关联关系
-4. **强化学习**：使用RL训练Transformer，直接优化交易策略的绩效
-5. **可解释AI**：开发新的方法提升Transformer在金融预测中的可解释性
-
-### 7.4 结语
-
-Transformer模型为股价预测带来了新的思路和方法。相比传统的统计模型和RNN/LSTM，Transformer具有并行计算、长程依赖捕捉、可解释性等优势。
-
-然而，**深度学习不是银弹**。股价预测本身是一个极具挑战性的任务，受到市场有效性、噪声、非平稳性等多重因素影响。Transformer可以作为一个强大的工具，但成功的量化策略还需要：
-
-1. ✅ 严谨的特征工程
-2. ✅ 充分的风险管理
-3. ✅ 合理的交易成本建模
-4. ✅ 持续的模型监控与更新
-5. ✅ 与其他方法的有机结合
-
-希望本文能帮助你深入理解Transformer在股价预测中的应用，并在实际投资中取得成功！
+Transformer模型为量化交易开辟了新的可能性，但其复杂性也带来了挑战。在实际应用中，需要平衡模型复杂度与可解释性、计算成本与预测精度。希望本文能为读者在量化交易中使用Transformer模型提供有价值的参考。
 
 ---
+
+**免责声明**：本文所有策略、代码和案例仅用于学术交流，不构成任何投资建议。量化交易涉及高风险，请谨慎决策。
 
 ## 参考文献
 
-1. Vaswani, A., et al. (2017). Attention is all you need. *Advances in Neural Information Processing Systems* (NIPS).
-2. Devlin, J., et al. (2018). BERT: Pre-training of deep bidirectional transformers for language understanding. *NAACL*.
-3. Brown, T., et al. (2020). Language models are few-shot learners. *NeurIPS*.
-4. Li, S., et al. (2019). Enhancing the locality and breaking the memory bottleneck of transformer on time series forecasting. *NeurIPS*.
-5. Lim, B., & Zohren, S. (2021). Time-series forecasting with deep learning: a survey. *Philosophical Transactions of the Royal Society A*.
-
-## 附录：完整代码
-
-完整的PyTorch代码已上传至GitHub，包含数据获取、特征工程、Transformer模型定义、训练评估、策略回测等模块。读者可以在此基础上进行修改和扩展，构建自己的深度学习股价预测系统。
-
-**代码仓库**：[GitHub链接]（待补充）
-
----
-
-*本文仅供参考，不构成投资建议。量化投资有风险，入市需谨慎。*
+1. Vaswani, A., et al. (2017). "Attention is All You Need". NeurIPS.
+2. Li, S., et al. (2019). "Enhancing the Locality and Breaking the Memory Bottleneck of Transformer on Time Series Forecasting". NeurIPS.
+3. Lim, B., & Zohren, S. (2021). "Time-series Forecasting with Deep Learning: A Survey". Philosophical Transactions of the Royal Society A.
+4. Zhang, K., et al. (2020). "Stock Price Prediction Using Attention-based Multi-Input LSTM". ICMLA.
+5. Xu, H., et al. (2021). "Transformer-Based Deep Learning Model for Stock Price Prediction". IEEE Access.

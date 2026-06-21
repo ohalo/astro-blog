@@ -10,8 +10,8 @@ layout: page
 
 ## 最新文章
 ### 2026-06-22 新发布
-- [2026-06-22 - PCA与因子模型在统计套利中的应用](/blog/pca-statistical-arbitrage/) - 🔴 深入探讨主成分分析(PCA)在统计套利策略中的应用，从理论到实战，展示如何利用PCA构建市场中性组合并捕捉均值回归机会。包含完整的Python代码示例和策略回测（高阶）
-- [2026-06-22 - XGBoost与LightGBM在量化选股中的应用](/blog/xgboost-lightgbm-stock-selection/) - 🔴 深入探讨XGBoost和LightGBM两大梯度提升框架在量化选股中的应用，从特征工程到模型训练，展示如何构建机器学习选股策略。包含完整的Python代码示例和模型对比（高阶）
+- [2026-06-22 - Transformer模型股价预测：Attention机制在金融时序中的应用](/blog/transformer-stock-prediction/) - 🔴 深入探讨Transformer模型在股价预测中的应用，从Attention机制原理到PyTorch实战，构建完整的股价预测系统。包含Self-Attention实现、位置编码、时序分解、集成学习及基于预测的择时策略（高阶）
+- [2026-06-22 - 风险预算模型：超越风险平价的资产配置新范式](/blog/risk-budgeting-model/) - 🔴 深入探讨风险预算模型的理论基础、实现方法和实战应用，学习如何根据风险贡献分配资产权重，构建更灵活的资产配置策略。包含风险贡献分解、动态风险预算、Black-Litterman融合及多资产实证（高阶）
 
 ### 2026-06-21 新发布
 - [2026-06-21 - PCA与因子模型在统计套利中的应用](/blog/pca-statistical-arbitrage/) - 🔴 深入探讨主成分分析(PCA)在统计套利策略中的应用，从因子模型构建到配对交易实践，附带完整的Python实现代码（高阶）
