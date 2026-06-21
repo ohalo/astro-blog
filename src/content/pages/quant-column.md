@@ -10,6 +10,8 @@ layout: page
 
 ## 最新文章
 ### 2026-06-21 新发布
+- [2026-06-21 - PCA与因子模型在统计套利中的应用](/blog/pca-statistical-arbitrage/) - 🔴 深入探讨主成分分析(PCA)在统计套利策略中的应用，从因子模型构建到配对交易实践，附带完整的Python实现代码（高阶）
+- [2026-06-21 - XGBoost与LightGBM在量化选股中的应用](/blog/xgboost-lightgbm-stock-selection/) - 🔴 深入探讨XGBoost和LightGBM在量化选股中的实战应用，从特征工程到模型融合，附带完整的Python实现代码和性能对比（高阶）
 - [2026-06-21 - PCA与因子模型在统计套利中的应用](/blog/pca-statistical-arbitrage/) - 🔴 深入探讨主成分分析(PCA)在统计套利策略中的应用，从理论到实战，包含完整的Python代码示例和回测框架（高阶）
 - [2026-06-21 - XGBoost与LightGBM在量化选股中的应用](/blog/xgboost-lightgbm-stock-selection/) - 🔴 深入探讨XGBoost与LightGBM在量化选股中的应用，从特征工程到模型融合，包含完整的Python代码示例和回测验证（高阶）
 - [2026-06-21 - 多因子模型风险分解：理解投资组合风险的来源](/blog/multi-factor-risk-decomposition/) - 🔴 深入解析多因子模型风险分解的 Euler 定理基础、边际风险贡献(MRC)计算、风险预算配置方法，含完整 Python 实现（MultiFactorRiskDecomposer 类）与 A 股实证考量：因子高相关性、Ledoit-Wolf 压缩估计、时变 Beta 处理（高阶）
