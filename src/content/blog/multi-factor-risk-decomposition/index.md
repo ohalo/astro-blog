@@ -1,699 +1,635 @@
 ---
-title: "多因子模型风险分解：从理论到实战的完整指南"
-description: "深入解析多因子模型的风险分解方法，包括因子暴露分析、特异性风险识别、组合风险归因，并提供完整的Python实现代码"
-publishDate: '2026-06-17'
-language: Chinese
-category: "量化交易"
-tags: ["多因子模型", "风险分解", "因子暴露", "投资组合管理", "Python量化"]
+title: "多因子模型风险分解：理解投资组合收益的底层逻辑"
+description: "深入解析多因子模型的风险分解方法，学会使用Python进行因子暴露分析、风险贡献度计算，以及如何在实战中优化因子配置。"
+pubDate: "2026-06-21"
+updatedDate: "2026-06-21"
+tags: ["多因子模型", "风险分解", "因子暴露", "投资组合", "Python实战"]
+categories: ["量化交易", "因子研究"]
+image: "/images/multi-factor-risk-decomposition/cover.jpg"
 ---
 
-# 多因子模型风险分解：从理论到实战的完整指南
+# 多因子模型风险分解：理解投资组合收益的底层逻辑
 
 ## 引言
 
-在现代量化投资中，多因子模型已成为理解投资组合收益来源和管理风险的核心工具。然而，很多量化从业者只关注因子收益率的预测，却忽视了风险分解的重要性。本文将深入探讨多因子模型的风险分解方法，帮助你精准识别收益来源和风险暴露。
+在现代量化投资中，**多因子模型**（Multi-Factor Model）已经成为理解投资组合收益来源和风险暴露的核心框架。无论是 Fama-French 三因子、五因子，还是更复杂的 AQR 风格因子模型，其本质都是试图将资产收益分解为若干个系统性风险因子的线性组合。
 
-## 一、多因子模型基础回顾
+然而，很多量化从业者在使用多因子模型时，往往只关注**因子暴露（Factor Exposure）**的计算，而忽略了对**风险贡献度（Risk Contribution）**的深入理解。本文将从理论到实战，系统性地介绍多因子模型的风险分解方法，并提供了完整的 Python 实现代码。
 
-多因子模型的本质是将资产收益率分解为系统性因子收益和特异性收益：
+## 一、多因子模型的理论基础
 
-```
-r_i = α_i + β_{i1}F_1 + β_{i2}F_2 + ... + β_{iK}F_K + ε_i
-```
+### 1.1 模型设定
 
-其中：
-- `r_i`：资产i的收益率
-- `α_i`：资产的超额收益（Jensen's Alpha）
-- `β_{ik}`：资产i对因子k的暴露度
-- `F_k`：因子k的收益率
-- `ε_i`：特异性收益（idiosyncratic return）
+多因子模型的基本形式可以表示为：
 
-## 二、风险分解的核心框架
-
-### 2.1 方差分解
-
-投资组合收益率的方差可以分解为：
-
-```
-σ_p² = w'Σw = w'(BFB' + Δ)w
-```
+$$
+R_i = \alpha_i + \sum_{k=1}^{K} \beta_{i,k} f_k + \epsilon_i
+$$
 
 其中：
-- `w`：组合权重向量
-- `Σ`：资产收益率协方差矩阵
-- `B`：因子暴露矩阵（N×K）
-- `F`：因子收益率协方差矩阵（K×K）
-- `Δ`：特异性风险协方差矩阵（对角矩阵）
+- $R_i$ 是资产 $i$ 的收益率
+- $\alpha_i$ 是个股特异性收益（Jensen's Alpha）
+- $\beta_{i,k}$ 是资产 $i$ 对因子 $k$ 的暴露度
+- $f_k$ 是因子 $k$ 的收益率
+- $\epsilon_i$ 是个股特异性风险
 
-进一步展开：
+### 1.2 风险分解的核心思想
 
-```
-σ_p² = w'BFB'w + w'Δw
-      = Σ_kΣ_l w'B_k F_{kl} B_l'w + Σ_i w_i²σ_{εi}²
-      = 系统性风险 + 特异性风险
-```
+对于投资组合 $P$，其收益率可以表示为：
 
-### 2.2 风险贡献度
+$$
+R_p = \sum_{i=1}^{N} w_i R_i = \alpha_p + \sum_{k=1}^{K} \beta_{p,k} f_k + \epsilon_p
+$$
 
-对于每个因子k，其对组合总风险的贡献度为：
+其中 $\beta_{p,k} = \sum_{i=1}^{N} w_i \beta_{i,k}$ 是组合对因子 $k$ 的暴露。
 
-```
-RC_k = (B'w)_k × (F × B'w)_k / σ_p
-```
+**风险分解的目标**是将组合的方差 $\sigma_p^2$ 分解为：
+1. **因子风险**：由因子波动引起的风险
+2. **特异性风险**：由个股特质波动引起的风险
+3. **因子贡献度**：每个因子对总风险的贡献百分比
 
-对于每个资产i，其对组合总风险的贡献度为：
+## 二、风险分解的实战方法
 
-```
-RC_i = w_i × (Σ × w)_i / σ_p
-```
+### 2.1 数据准备
 
-## 三、Python实战：完整的风险分解系统
-
-下面我们实现一个完整的多因子风险分解系统。
+我们首先构建一个简单的多因子模型，使用以下因子：
+- **市场因子（MKT）**：市场超额收益
+- **规模因子（SMB）**：小市值减大市值
+- **价值因子（HML）**：高账面市值比减低账面市值比
+- **动量因子（MOM）**：过去12个月收益率（剔除最近1个月）
 
 ```python
-import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+import numpy as np
 from scipy import stats
+import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.linear_model import LinearRegression
 
-class MultiFactorRiskDecomposer:
+# 设置中文字体
+plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS']
+plt.rcParams['axes.unicode_minus'] = False
+
+# 读取因子数据（示例：使用模拟数据）
+def load_factor_data(start_date='2020-01-01', end_date='2025-12-31'):
     """
-    多因子模型风险分解器
-    
-    功能：
-    1. 估计因子暴露（Beta）
-    2. 分解组合风险
-    3. 计算边际风险贡献
-    4. 可视化风险归因
+    加载因子数据
+    实际应用中应替换为真实的因子数据（如CSMAR、Wind等）
     """
+    dates = pd.date_range(start=start_date, end=end_date, freq='M')
+    np.random.seed(42)
     
-    def __init__(self, factor_returns, asset_returns, risk_free_rate=0.0):
-        """
-        初始化风险分解器
-        
-        参数：
-        factor_returns: DataFrame, 因子收益率（T×K）
-        asset_returns: DataFrame, 资产收益率（T×N）
-        risk_free_rate: float, 无风险利率（年化）
-        """
-        self.factor_returns = factor_returns
-        self.asset_returns = asset_returns
-        self.risk_free_rate = risk_free_rate / 252  # 转为日度
-        
-        # 剔除无风险利率
-        self.Y = asset_returns.sub(risk_free_rate / 252, axis=0)
-        self.X = factor_returns.values
-        
-        # 添加截距项
-        self.X_with_intercept = np.hstack([np.ones((self.X.shape[0], 1)), self.X])
-        
-        self.N = asset_returns.shape[1]  # 资产数量
-        self.K = factor_returns.shape[1]  # 因子数量
-        self.T = asset_returns.shape[0]    # 时间长度
-        
-    def estimate_factor_exposures(self):
-        """
-        使用OLS估计所有资产的因子暴露
-        
-        返回：
-        alpha: ndarray, (N,) 截距项
-        beta: ndarray, (N, K) 因子暴露矩阵
-        residuals: ndarray, (T, N) 残差
-        """
-        alpha = np.zeros(self.N)
-        beta = np.zeros((self.N, self.K))
-        residuals = np.zeros((self.T, self.N))
-        
-        for i in range(self.N):
-            y = self.Y.iloc[:, i].values
-            
-            # OLS估计: (X'X)^(-1)X'y
-            try:
-                coeffs = np.linalg.lstsq(self.X_with_intercept, y, rcond=None)[0]
-                alpha[i] = coeffs[0]
-                beta[i, :] = coeffs[1:]
-                
-                # 计算残差
-                residuals[:, i] = y - self.X_with_intercept @ coeffs
-            except np.linalg.LinAlgError:
-                # 处理奇异矩阵
-                alpha[i] = np.nan
-                beta[i, :] = np.nan
-                residuals[:, i] = np.nan
-        
-        self.alpha = alpha
-        self.beta = beta
-        self.residuals = residuals
-        self.specific_variance = np.var(residuals, axis=0, ddof=1)  # 特异性方差
-        
-        return alpha, beta, residuals
+    factor_data = pd.DataFrame({
+        'date': dates,
+        'MKT': np.random.normal(0.008, 0.04, len(dates)),  # 市场因子
+        'SMB': np.random.normal(0.002, 0.02, len(dates)),  # 规模因子
+        'HML': np.random.normal(0.003, 0.02, len(dates)),  # 价值因子
+        'MOM': np.random.normal(0.004, 0.03, len(dates)),  # 动量因子
+    })
     
-    def compute_factor_covariance(self, method='sample', shrinkage_intensity=0.5):
-        """
-        计算因子收益率的协方差矩阵
-        
-        参数：
-        method: str, 'sample'或'shrinkage'
-        shrinkage_intensity: float, 收缩强度（仅shrinkage方法）
-        
-        返回：
-        F: ndarray, (K, K) 因子协方差矩阵
-        """
-        if method == 'sample':
-            F = np.cov(self.factor_returns.values, rowvar=False, ddof=1)
-        
-        elif method == 'shrinkage':
-            # Ledoit-Wolf收缩估计
-            S = np.cov(self.factor_returns.values, rowvar=False, ddof=1)
-            
-            # 目标矩阵：对角矩阵，对角线元素为S的对角线
-            T = np.diag(np.diag(S))
-            
-            # 收缩
-            F = (1 - shrinkage_intensity) * S + shrinkage_intensity * T
-        
-        else:
-            raise ValueError("method must be 'sample' or 'shrinkage'")
-        
-        self.factor_covariance = F
-        return F
-    
-    def decompose_portfolio_variance(self, weights):
-        """
-        分解投资组合的方差
-        
-        参数：
-        weights: ndarray, (N,) 组合权重
-        
-        返回：
-        dict: 包含各项风险分解结果
-        """
-        if not hasattr(self, 'beta'):
-            self.estimate_factor_exposures()
-        
-        if not hasattr(self, 'factor_covariance'):
-            self.compute_factor_covariance()
-        
-        weights = weights.reshape(-1, 1)  # 转为列向量
-        
-        # 系统性风险：w'B F B'w
-        Bw = self.beta.T @ weights  # (K, 1)
-        systematic_risk = float(Bw.T @ self.factor_covariance @ Bw)
-        
-        # 特异性风险：w'Δw
-        D = np.diag(self.specific_variance)
-        specific_risk = float(weights.T @ D @ weights)
-        
-        # 总风险
-        total_risk = systematic_risk + specific_risk
-        
-        # 风险占比
-        systematic_pct = systematic_risk / total_risk * 100
-        specific_pct = specific_risk / total_risk * 100
-        
-        return {
-            'total_risk': total_risk,
-            'systematic_risk': systematic_risk,
-            'specific_risk': specific_risk,
-            'systematic_pct': systematic_pct,
-            'specific_pct': specific_pct
-        }
-    
-    def compute_risk_contribution(self, weights):
-        """
-        计算边际风险贡献
-        
-        参数：
-        weights: ndarray, (N,) 组合权重
-        
-        返回：
-        factor_contrib: ndarray, (K,) 每个因子的风险贡献
-        asset_contrib: ndarray, (N,) 每个资产的风险贡献
-        """
-        if not hasattr(self, 'beta'):
-            self.estimate_factor_exposures()
-        
-        if not hasattr(self, 'factor_covariance'):
-            self.compute_factor_covariance()
-        
-        weights = weights.reshape(-1, 1)
-        
-        # 组合波动率
-        var = self.decompose_portfolio_variance(weights.flatten())['total_risk']
-        sigma = np.sqrt(var)
-        
-        # 因子风险贡献
-        Bw = self.beta.T @ weights  # (K, 1)
-        F_Bw = self.factor_covariance @ Bw  # (K, 1)
-        factor_contrib = (Bw * F_Bw).flatten() / sigma  # (K,)
-        
-        # 资产风险贡献
-        D = np.diag(self.specific_variance)
-        Sigma_w = (self.beta @ self.factor_covariance @ self.beta.T + D) @ weights
-        asset_contrib = (weights.flatten() * Sigma_w.flatten()) / sigma
-        
-        return factor_contrib, asset_contrib
-    
-    def plot_risk_decomposition(self, weights, figsize=(14, 6)):
-        """
-        可视化风险分解结果
-        
-        参数：
-        weights: ndarray, (N,) 组合权重
-        figsize: tuple, 图像大小
-        """
-        # 计算风险分解
-        decomp = self.decompose_portfolio_variance(weights)
-        factor_contrib, asset_contrib = self.compute_risk_contribution(weights)
-        
-        fig, axes = plt.subplots(1, 3, figsize=figsize)
-        
-        # 1. 系统性风险 vs 特异性风险
-        ax1 = axes[0]
-        labels = ['系统性风险', '特异性风险']
-        sizes = [decomp['systematic_risk'], decomp['specific_risk']]
-        colors = ['#5470c6', '#91cc75']
-        ax1.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
-        ax1.set_title('风险构成', fontsize=14, fontweight='bold')
-        
-        # 2. 因子风险贡献
-        ax2 = axes[1]
-        factor_names = self.factor_returns.columns
-        colors2 = plt.cm.Set3(np.linspace(0, 1, len(factor_names)))
-        ax2.barh(range(len(factor_names)), factor_contrib, color=colors2)
-        ax2.set_yticks(range(len(factor_names)))
-        ax2.set_yticklabels(factor_names)
-        ax2.set_xlabel('风险贡献', fontsize=12)
-        ax2.set_title('因子风险贡献', fontsize=14, fontweight='bold')
-        ax2.axvline(x=0, color='black', linewidth=0.8)
-        
-        # 3. 资产风险贡献（Top 10）
-        ax3 = axes[2]
-        asset_names = self.asset_returns.columns
-        top_idx = np.argsort(np.abs(asset_contrib))[-10:]  # 取绝对值最大的10个
-        top_assets = asset_names[top_idx]
-        top_contrib = asset_contrib[top_idx]
-        
-        colors3 = ['#ee6666' if x < 0 else '#5470c6' for x in top_contrib]
-        ax3.barh(range(len(top_idx)), top_contrib, color=colors3)
-        ax3.set_yticks(range(len(top_idx)))
-        ax3.set_yticklabels(top_assets)
-        ax3.set_xlabel('风险贡献', fontsize=12)
-        ax3.set_title('资产风险贡献 (Top 10)', fontsize=14, fontweight='bold')
-        ax3.axvline(x=0, color='black', linewidth=0.8)
-        
-        plt.tight_layout()
-        plt.savefig('risk_decomposition.png', dpi=300, bbox_inches='tight')
-        plt.show()
-        
-        return fig
+    factor_data.set_index('date', inplace=True)
+    return factor_data
 
-# ==================== 示例：使用Fama-French因子 ====================
-
-# 生成模拟数据（实际中应读取真实数据）
-np.random.seed(42)
-T = 1000  # 1000个交易日
-N = 50    # 50只股票
-K = 3     # 3个因子：Market, SMB, HML
-
-# 生成因子收益率（假设为正态分布）
-factor_names = ['Market', 'SMB', 'HML']
-factor_returns = pd.DataFrame(
-    np.random.multivariate_normal(
-        mean=[0.0005, 0.0002, 0.0001],
-        cov=np.diag([0.01, 0.005, 0.005])**2,
-        size=T
-    ),
-    columns=factor_names
-)
-
-# 生成真实的因子暴露
-true_beta = np.random.uniform(0.5, 1.5, size=(N, K))
-true_alpha = np.random.uniform(-0.0005, 0.0005, size=N)
-specific_vol = np.random.uniform(0.005, 0.015, size=N)
-
-# 生成资产收益率
-asset_names = [f'Stock_{i+1:02d}' for i in range(N)]
-asset_returns = pd.DataFrame(index=factor_returns.index, columns=asset_names)
-
-for i in range(N):
-    # 系统性部分
-    systematic = true_alpha[i] + factor_returns.values @ true_beta[i, :]
-    
-    # 特异性部分
-    idiosyncratic = np.random.normal(0, specific_vol[i], size=T)
-    
-    asset_returns.iloc[:, i] = systematic + idiosyncratic
-
-# 创建风险分解器
-decomposer = MultiFactorRiskDecomposer(
-    factor_returns=factor_returns,
-    asset_returns=asset_returns,
-    risk_free_rate=0.03
-)
-
-# 估计因子暴露
-alpha, beta, residuals = decomposer.estimate_factor_exposures()
-print("因子暴露估计完成")
-print(f"平均Market Beta: {beta[:, 0].mean():.4f}")
-print(f"平均SMB Beta: {beta[:, 1].mean():.4f}")
-print(f"平均HML Beta: {beta[:, 2].mean():.4f}")
-
-# 计算因子协方差
-factor_cov = decomposer.compute_factor_covariance(method='sample')
-print(f"\n因子协方差矩阵:\n{factor_cov}")
-
-# 构建等权组合
-weights = np.ones(N) / N
-
-# 分解组合风险
-risk_decomp = decomposer.decompose_portfolio_variance(weights)
-print(f"\n=== 组合风险分解 ===")
-print(f"总风险（方差）: {risk_decomp['total_risk']:.6f}")
-print(f"系统性风险: {risk_decomp['systematic_risk']:.6f} ({risk_decomp['systematic_pct']:.1f}%)")
-print(f"特异性风险: {risk_decomp['specific_risk']:.6f} ({risk_decomp['specific_pct']:.1f}%)")
-
-# 计算风险贡献
-factor_contrib, asset_contrib = decomposer.compute_risk_contribution(weights)
-print(f"\n=== 因子风险贡献 ===")
-for i, name in enumerate(factor_names):
-    print(f"{name}: {factor_contrib[i]:.6f}")
-
-print(f"\n=== 资产风险贡献（Top 5）===")
-top5_idx = np.argsort(asset_contrib)[-5:]
-for idx in top5_idx:
-    print(f"{asset_names[idx]}: {asset_contrib[idx]:.6f}")
-
-# 可视化
-decomposer.plot_risk_decomposition(weights)
+# 加载因子数据
+factors = load_factor_data()
+print(f"因子数据形状: {factors.shape}")
+print(factors.head())
 ```
 
-## 四、实战案例：A股多因子风险归因
+### 2.2 计算因子暴露
 
-下面我们使用真实的A股数据（通过westock-data获取）进行风险分解。
+使用**滚动窗口回归**方法计算个股的因子暴露：
 
 ```python
-# 注意：实际需要westock-data CLI支持，这里展示代码框架
-
-import subprocess
-import json
-
-def fetch_ff_factors(start_date='2023-01-01', end_date='2024-12-31'):
+def calculate_factor_exposure(stock_returns, factor_returns, window=36):
     """
-    获取Fama-French因子数据（通过westock-data或直接下载）
-    """
-    # 示例：假设我们有Market, SMB, HML因子的日度收益率
-    # 实际中可以从CSMAR、Wind等数据库获取
-    pass
-
-def fetch_stock_returns(stock_list, start_date, end_date):
-    """
-    获取股票收益率数据
-    """
-    all_returns = []
+    使用滚动窗口回归计算因子暴露
     
-    for stock in stock_list:
-        # 使用westock-data获取日线数据
-        cmd = f"westock-data kline {stock} --period day --start {start_date} --end {end_date}"
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    参数:
+        stock_returns: 个股收益率序列
+        factor_returns: 因子收益率数据框
+        window: 滚动窗口长度（月）
+    
+    返回:
+        beta_df: 因子暴露时间序列
+    """
+    beta_list = []
+    dates = []
+    
+    for i in range(window, len(stock_returns)):
+        y = stock_returns.iloc[i-window:i]
+        X = factor_returns.iloc[i-window:i]
         
-        if result.returncode == 0:
-            # 解析CSV数据，计算收益率
-            # df = pd.read_csv(...)
-            # returns = df['close'].pct_change()
-            pass
+        # 添加常数项
+        X = sm.add_constant(X)
+        
+        # 回归计算
+        model = sm.OLS(y, X).fit()
+        betas = model.params[1:]  # 剔除常数项
+        beta_list.append(betas.values)
+        dates.append(stock_returns.index[i])
     
-    return pd.DataFrame(all_returns)
+    beta_df = pd.DataFrame(beta_list, index=dates, columns=factor_returns.columns)
+    return beta_df
 
-# 实战流程
-# 1. 获取因子数据和股票收益率
-# factor_returns = fetch_ff_factors()
-# asset_returns = fetch_stock_returns(['600519.SH', '000858.SZ', ...], '2023-01-01', '2024-12-31')
+# 示例使用（模拟个股数据）
+def simulate_stock_returns(factor_returns, true_betas, n_months=60):
+    """
+    模拟个股收益率（用于演示）
+    """
+    np.random.seed(123)
+    n = len(factor_returns)
+    
+    # 生成个股收益率: R = alpha + sum(beta_k * f_k) + epsilon
+    alpha = 0.002
+    factor_part = factor_returns.values @ true_betas
+    epsilon = np.random.normal(0, 0.03, n)  # 特异性风险
+    
+    returns = alpha + factor_part + epsilon
+    return pd.Series(returns, index=factor_returns.index)
 
-# 2. 创建风险分解器
-# decomposer = MultiFactorRiskDecomposer(factor_returns, asset_returns)
+# 模拟一只股票的因子暴露
+true_betas = np.array([1.2, 0.5, -0.3, 0.8])  # MKT, SMB, HML, MOM
+stock_ret = simulate_stock_returns(factors, true_betas)
 
-# 3. 估计因子暴露
-# alpha, beta, residuals = decomposer.estimate_factor_exposures()
-
-# 4. 构建组合并分解风险
-# portfolio_weights = ...  # 从优化器获得或手动设定
-# risk_decomp = decomposer.decompose_portfolio_variance(portfolio_weights)
-
-# 5. 可视化
-# decomposer.plot_risk_decomposition(portfolio_weights)
+# 计算因子暴露（使用前36个月数据）
+import statsmodels.api as sm
+stock_exposure = calculate_factor_exposure(stock_ret, factors, window=36)
+print("最近12个月的因子暴露:")
+print(stock_exposure.tail(12))
 ```
 
-## 五、高级话题：时变风险分解
+### 2.3 风险分解计算
 
-传统的多因子模型假设因子暴露和风险结构是稳定的，但现实中它们会随时间变化。我们可以使用滚动窗口或指数加权方法来捕捉这种时变性。
+核心公式：组合方差可以分解为
+
+$$
+\sigma_p^2 = \beta_p^T \Sigma_f \beta_p + \omega^T \Omega \omega
+$$
+
+其中：
+- $\Sigma_f$ 是因子协方差矩阵
+- $\Omega$ 是个股特异性风险协方差矩阵（通常假设为对角阵）
+- $\omega$ 是个股权重向量
 
 ```python
-class TimeVaryingRiskDecomposer(MultiFactorRiskDecomposer):
+def portfolio_risk_decomposition(weights, factor_exposures, factor_cov, specific_vars):
     """
-    时变风险分解器：使用滚动窗口估计时变因子暴露和风险
+    投资组合风险分解
+    
+    参数:
+        weights: 个股权重向量 (N x 1)
+        factor_exposures: 因子暴露矩阵 (N x K)
+        factor_cov: 因子协方差矩阵 (K x K)
+        specific_vars: 个股特异性方差 (N x 1)
+    
+    返回:
+        risk_contrib: 风险贡献度字典
     """
+    weights = np.array(weights).reshape(-1, 1)
+    factor_exposures = np.array(factor_exposures)
     
-    def __init__(self, factor_returns, asset_returns, window_size=252, min_periods=126):
-        """
-        初始化时变风险分解器
-        
-        参数：
-        window_size: int, 滚动窗口大小（交易日数）
-        min_periods: int, 最小样本数
-        """
-        super().__init__(factor_returns, asset_returns)
-        self.window_size = window_size
-        self.min_periods = min_periods
-        
-    def estimate_time_varying_beta(self, asset_idx, method='rolling'):
-        """
-        估计单个资产的时变因子暴露
-        
-        参数：
-        asset_idx: int, 资产索引
-        method: str, 'rolling'或'ewm'（指数加权）
-        
-        返回：
-        beta_t: DataFrame, (T, K) 时变因子暴露
-        """
-        y = self.Y.iloc[:, asset_idx].values
-        X = self.X_with_intercept
-        
-        beta_t = np.zeros((self.T, self.K + 1))  # +1 for intercept
-        beta_t[:] = np.nan
-        
-        if method == 'rolling':
-            for t in range(self.window_size - 1, self.T):
-                start = t - self.window_size + 1
-                X_window = X[start:t+1, :]
-                y_window = y[start:t+1]
-                
-                if np.sum(~np.isnan(y_window)) >= self.min_periods:
-                    try:
-                        coeffs = np.linalg.lstsq(X_window, y_window, rcond=None)[0]
-                        beta_t[t, :] = coeffs
-                    except np.linalg.LinAlgError:
-                        pass
-        
-        elif method == 'ewm':
-            # 指数加权OLS（简化版）
-            halflife = self.window_size // 2
-            for t in range(self.min_periods, self.T):
-                # 构建权重向量
-                weights = np.exp(-np.log(2) * np.arange(t+1)[::-1] / halflife)
-                weights = weights / weights.sum()
-                
-                # 加权OLS
-                W = np.diag(weights)
-                X_w = X[:t+1, :]
-                y_w = y[:t+1]
-                
-                try:
-                    coeffs = np.linalg.inv(X_w.T @ W @ X_w) @ X_w.T @ W @ y_w
-                    beta_t[t, :] = coeffs
-                except np.linalg.LinAlgError:
-                    pass
-        
-        # 转为DataFrame
-        beta_df = pd.DataFrame(
-            beta_t[:, 1:],  # 去掉截距项
-            index=self.Y.index,
-            columns=self.factor_returns.columns
-        )
-        
-        return beta_df
+    # 组合因子暴露
+    portfolio_beta = factor_exposures.T @ weights  # (K x 1)
     
-    def plot_beta_time_series(self, asset_idx, figsize=(12, 6)):
-        """
-        绘制时变因子暴露的时间序列
-        """
-        beta_df = self.estimate_time_varying_beta(asset_idx, method='rolling')
-        
-        fig, ax = plt.subplots(figsize=figsize)
-        
-        for factor in beta_df.columns:
-            ax.plot(beta_df.index, beta_df[factor], label=factor, linewidth=2, alpha=0.8)
-        
-        ax.axhline(y=0, color='black', linewidth=0.8, linestyle='--')
-        ax.set_xlabel('日期', fontsize=12)
-        ax.set_ylabel('因子暴露 (Beta)', fontsize=12)
-        ax.set_title(f'{self.asset_returns.columns[asset_idx]} 时变因子暴露', fontsize=14, fontweight='bold')
-        ax.legend(loc='best')
+    # 因子风险
+    factor_risk = portfolio_beta.T @ factor_cov @ portfolio_beta  # 标量
+    
+    # 特异性风险
+    specific_risk = weights.T @ np.diag(specific_vars) @ weights  # 标量
+    
+    # 总风险
+    total_risk = factor_risk + specific_risk
+    
+    # 各因子贡献度
+    factor_contrib = {}
+    for i, factor_name in enumerate(['MKT', 'SMB', 'HML', 'MOM']):
+        # 因子i的边际贡献: beta_i * (Σ_f @ beta)_i
+        marginal_contrib = portfolio_beta[i] * (factor_cov @ portfolio_beta)[i]
+        factor_contrib[factor_name] = float(marginal_contrib)
+    
+    # 汇总结果
+    risk_contrib = {
+        'total_variance': float(total_risk),
+        'total_volatility': float(np.sqrt(total_risk)),
+        'factor_risk': float(factor_risk),
+        'specific_risk': float(specific_risk),
+        'factor_contributions': factor_contrib,
+        'factor_risk_pct': float(factor_risk / total_risk),
+        'specific_risk_pct': float(specific_risk / total_risk),
+    }
+    
+    return risk_contrib
+
+# 示例使用
+np.random.seed(456)
+n_stocks = 50
+factor_exposures = np.random.uniform(-1, 2, (n_stocks, 4))  # 50只股票, 4个因子
+factor_exposures[:, 0] = np.random.uniform(0.8, 1.5, n_stocks)  # MKT暴露通常在0.8-1.5
+
+weights = np.ones(n_stocks) / n_stocks  # 等权配置
+factor_cov = factors.cov().values  # 因子协方差矩阵
+specific_vars = np.random.uniform(0.01, 0.05, n_stocks)  # 特异性方差
+
+risk_decomp = portfolio_risk_decomposition(weights, factor_exposures, factor_cov, specific_vars)
+
+print("=== 风险分解结果 ===")
+print(f"组合波动率: {risk_decomp['total_volatility']:.4f}")
+print(f"因子风险占比: {risk_decomp['factor_risk_pct']:.2%}")
+print(f"特异性风险占比: {risk_decomp['specific_risk_pct']:.2%}")
+print("\n各因子风险贡献度:")
+for factor, contrib in risk_decomp['factor_contributions'].items():
+    print(f"  {factor}: {contrib:.6f} ({contrib/risk_decomp['total_variance']:.2%})")
+```
+
+## 三、可视化分析
+
+### 3.1 因子暴露时间序列图
+
+```python
+def plot_factor_exposure(exposure_df, stock_name="示例股票"):
+    """
+    绘制因子暴露时间序列图
+    """
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    axes = axes.flatten()
+    
+    factors = exposure_df.columns
+    
+    for i, factor in enumerate(factors):
+        ax = axes[i]
+        ax.plot(exposure_df.index, exposure_df[factor], linewidth=2, color=f'C{i}')
+        ax.axhline(y=0, color='black', linestyle='--', alpha=0.3)
+        ax.set_title(f'{stock_name} - {factor}因子暴露', fontsize=12, fontweight='bold')
+        ax.set_xlabel('日期', fontsize=10)
+        ax.set_ylabel('暴露度', fontsize=10)
         ax.grid(True, alpha=0.3)
-        
-        plt.tight_layout()
-        plt.savefig('time_varying_beta.png', dpi=300, bbox_inches='tight')
-        plt.show()
-        
-        return fig
+    
+    plt.suptitle(f'{stock_name}因子暴露时间序列', fontsize=16, fontweight='bold')
+    plt.tight_layout()
+    plt.savefig('factor_exposure_timeseries.png', dpi=300, bbox_inches='tight')
+    plt.show()
 
-# 使用时变风险分解器
-# tv_decomposer = TimeVaryingRiskDecomposer(factor_returns, asset_returns, window_size=252)
-# tv_decomposer.estimate_time_varying_beta(asset_idx=0, method='rolling')
-# tv_decomposer.plot_beta_time_series(asset_idx=0)
+# 绘制因子暴露图
+plot_factor_exposure(stock_exposure, stock_name="示例股票")
 ```
 
-## 六、风险分解在组合优化中的应用
+![因子暴露时间序列](/images/multi-factor-risk-decomposition/factor_exposure.png)
 
-风险分解不仅可以用于归因分析，还可以直接指导组合优化。常见的应用包括：
+### 3.2 风险贡献度饼图
 
-### 6.1 风险预算优化
+```python
+def plot_risk_contribution(risk_decomp):
+    """
+    绘制风险贡献度饼图
+    """
+    # 准备数据
+    factor_contrib = risk_decomp['factor_contributions']
+    factors = list(factor_contrib.keys())
+    contributions = list(factor_contrib.values())
+    
+    # 添加特异性风险
+    factors.append('特异性风险')
+    contributions.append(risk_decomp['specific_risk'])
+    
+    # 绘制饼图
+    fig, ax = plt.subplots(figsize=(10, 8))
+    
+    colors = plt.cm.Set3(np.linspace(0, 1, len(factors)))
+    wedges, texts, autotexts = ax.pie(
+        contributions, 
+        labels=factors,
+        autopct='%1.1f%%',
+        startangle=90,
+        colors=colors,
+        textprops={'fontsize': 11}
+    )
+    
+    ax.set_title('投资组合风险贡献度分解', fontsize=14, fontweight='bold', pad=20)
+    
+    plt.tight_layout()
+    plt.savefig('risk_contribution_pie.png', dpi=300, bbox_inches='tight')
+    plt.show()
 
-将总风险分配给不同的因子或资产，使得每个成分的风险贡献等于预设的预算：
+# 绘制风险贡献度图
+plot_risk_contribution(risk_decomp)
+```
+
+![风险贡献度饼图](/images/multi-factor-risk-decomposition/risk_contribution.png)
+
+### 3.3 因子协方差热力图
+
+```python
+def plot_factor_cov_heatmap(factor_returns):
+    """
+    绘制因子协方差热力图
+    """
+    cov_matrix = factor_returns.cov()
+    corr_matrix = factor_returns.corr()
+    
+    fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+    
+    # 协方差矩阵
+    sns.heatmap(
+        cov_matrix, 
+        annot=True, 
+        fmt='.4f',
+        cmap='RdYlBu_r',
+        center=0,
+        square=True,
+        ax=axes[0]
+    )
+    axes[0].set_title('因子协方差矩阵', fontsize=13, fontweight='bold')
+    
+    # 相关系数矩阵
+    sns.heatmap(
+        corr_matrix, 
+        annot=True, 
+        fmt='.2f',
+        cmap='RdYlBu_r',
+        vmin=-1, vmax=1,
+        center=0,
+        square=True,
+        ax=axes[1]
+    )
+    axes[1].set_title('因子相关系数矩阵', fontsize=13, fontweight='bold')
+    
+    plt.tight_layout()
+    plt.savefig('factor_cov_heatmap.png', dpi=300, bbox_inches='tight')
+    plt.show()
+
+# 绘制因子协方差热力图
+plot_factor_cov_heatmap(factors)
+```
+
+![因子协方差热力图](/images/multi-factor-risk-decomposition/factor_cov_heatmap.png)
+
+## 四、实战应用：优化因子配置
+
+### 4.1 风险预算优化
+
+**风险预算（Risk Budgeting）**是一种先进的配置方法，它不直接约束权重，而是约束每个因子（或资产）对总风险的贡献度。
 
 ```python
 from scipy.optimize import minimize
 
-def risk_budget_optimization(decomposer, risk_budget, max_weight=0.1):
+def risk_budget_optimization(target_risk_contrib, factor_exposures, factor_cov, specific_vars):
     """
-    风险预算优化
+    风险预算优化：使实际风险贡献度等于目标贡献度
     
-    参数：
-    decomposer: MultiFactorRiskDecomposer实例
-    risk_budget: ndarray, 风险预算向量（对因子或资产）
-    max_weight: float, 最大权重约束
+    参数:
+        target_risk_contrib: 目标风险贡献度 (K x 1), 和为1
+        factor_exposures: 因子暴露矩阵 (N x K)
+        factor_cov: 因子协方差矩阵 (K x K)
+        specific_vars: 个股特异性方差 (N x 1)
     
-    返回：
-    weights: ndarray, 优化后的组合权重
+    返回:
+        optimal_weights: 最优权重
     """
-    N = decomposer.N
+    n_stocks = factor_exposures.shape[0]
     
     def objective(weights):
-        # 计算风险贡献
-        factor_contrib, asset_contrib = decomposer.compute_risk_contribution(weights)
+        """
+        目标函数：最小化实际风险贡献度与目标贡献度的差异
+        """
+        weights = weights.reshape(-1, 1)
         
-        # 选择对因子还是对资产进行风险预算
-        # 这里示例对资产进行风险预算
-        rc = asset_contrib / np.sum(np.abs(asset_contrib))  # 归一化
+        # 计算实际风险贡献度
+        portfolio_beta = factor_exposures.T @ weights
+        factor_risk = portfolio_beta.T @ factor_cov @ portfolio_beta
+        specific_risk = weights.T @ np.diag(specific_vars) @ weights
+        total_risk = factor_risk + specific_risk
         
-        # 目标：风险贡献与预算的偏差平方和
-        return np.sum((rc - risk_budget)**2)
+        # 各因子边际贡献
+        marginal_contrib = factor_cov @ portfolio_beta
+        factor_risk_contrib = portfolio_beta * marginal_contrib / total_risk
+        
+        # 特异性风险贡献
+        specific_risk_contrib = (weights.flatten() ** 2) * specific_vars / total_risk
+        
+        # 总贡献度（因子+特异性）
+        total_contrib = np.concatenate([factor_risk_contrib.flatten(), [float(specific_risk_contrib)]])
+        target = np.concatenate([target_risk_contrib, [0.2]])  # 特异性风险目标20%
+        
+        # 使用平方和作为目标函数
+        return np.sum((total_contrib - target) ** 2)
     
-    # 约束：权重和为1
-    constraints = ({'type': 'eq', 'fun': lambda w: np.sum(w) - 1.0})
+    # 约束条件：权重和为1
+    constraints = ({'type': 'eq', 'fun': lambda w: np.sum(w) - 1})
     
-    # 边界：权重在[-max_weight, max_weight]之间（允许做空）
-    bounds = [(-max_weight, max_weight) for _ in range(N)]
+    # 边界条件：权重在0-1之间（不允许做空）
+    bounds = [(0, 1) for _ in range(n_stocks)]
     
-    # 初始值：等权
-    w0 = np.ones(N) / N
+    # 初始权重：等权
+    w0 = np.ones(n_stocks) / n_stocks
     
     # 优化
-    result = minimize(objective, w0, method='SLSQP', bounds=bounds, constraints=constraints)
+    result = minimize(
+        objective, 
+        w0, 
+        method='SLSQP', 
+        bounds=bounds, 
+        constraints=constraints,
+        options={'ftol': 1e-8, 'disp': False}
+    )
     
     return result.x
 
-# 示例：等风险贡献组合（ERC）
-# risk_budget = np.ones(N) / N  # 每个资产贡献相等风险
-# optimized_weights = risk_budget_optimization(decomposer, risk_budget)
+# 示例使用：目标风险贡献度为等权
+target_contrib = np.array([0.25, 0.25, 0.25, 0.25])  # 4个因子各25%
+optimal_w = risk_budget_optimization(target_contrib, factor_exposures, factor_cov, specific_vars)
+
+print("=== 风险预算优化结果 ===")
+print(f"优化后权重（前10只）: {optimal_w[:10]}")
+print(f"权重和: {np.sum(optimal_w):.6f}")
+
+# 计算优化后的风险分解
+optimized_risk = portfolio_risk_decomposition(optimal_w, factor_exposures, factor_cov, specific_vars)
+print(f"\n优化后组合波动率: {optimized_risk['total_volatility']:.4f}")
+print("优化后因子风险贡献度:")
+for factor, contrib in optimized_risk['factor_contributions'].items():
+    print(f"  {factor}: {contrib/optimized_risk['total_variance']:.2%}")
 ```
 
-### 6.2 因子中性约束
+### 4.2 因子暴露约束优化
 
-在优化时加入因子暴露约束，使得组合对特定因子保持中性：
+另一种常见的优化方法是**约束因子暴露范围**，避免过度暴露于某个因子：
 
 ```python
-def factor_neutral_optimization(decomposer, target_beta=None, max_weight=0.1):
+def factor_constraint_optimization(beta_bounds, factor_exposures, factor_cov, specific_vars, expected_returns=None):
     """
-    因子中性优化
+    因子暴露约束优化
     
-    参数：
-    target_beta: ndarray, (K,) 目标因子暴露（None表示零暴露）
+    参数:
+        beta_bounds: 因子暴露边界字典, 如 {'MKT': (0.8, 1.2), 'SMB': (-0.5, 0.5)}
+        factor_exposures: 因子暴露矩阵 (N x K)
+        factor_cov: 因子协方差矩阵 (K x K)
+        specific_vars: 个股特异性方差 (N x 1)
+        expected_returns: 预期收益率 (N x 1), 如果为None则使用等权
+    
+    返回:
+        optimal_weights: 最优权重
     """
-    if target_beta is None:
-        target_beta = np.zeros(decomposer.K)
+    n_stocks, n_factors = factor_exposures.shape
     
-    N = decomposer.N
+    if expected_returns is None:
+        expected_returns = np.ones(n_stocks) / n_stocks
     
     def objective(weights):
-        # 最大化预期收益或最小化方差
-        # 这里示例最小化方差
-        var = decomposer.decompose_portfolio_variance(weights)['total_risk']
-        return var
+        """最小化组合方差"""
+        weights = weights.reshape(-1, 1)
+        portfolio_beta = factor_exposures.T @ weights
+        factor_risk = portfolio_beta.T @ factor_cov @ portfolio_beta
+        specific_risk = weights.T @ np.diag(specific_vars) @ weights
+        return float(factor_risk + specific_risk)
     
-    # 约束1：权重和为1
-    constraints = [{'type': 'eq', 'fun': lambda w: np.sum(w) - 1.0}]
+    # 约束条件
+    constraints = [{'type': 'eq', 'fun': lambda w: np.sum(w) - 1}]  # 权重和为1
     
-    # 约束2：因子暴露等于目标值
-    for k in range(decomposer.K):
-        constraints.append({
-            'type': 'eq',
-            'fun': lambda w, k=k: np.dot(decomposer.beta[:, k], w) - target_beta[k]
-        })
+    # 因子暴露约束
+    factor_names = ['MKT', 'SMB', 'HML', 'MOM']
+    for i, factor in enumerate(factor_names):
+        if factor in beta_bounds:
+            lower, upper = beta_bounds[factor]
+            constraints.append({
+                'type': 'ineq',
+                'fun': lambda w, i=i, lower=lower: np.dot(factor_exposures[:, i], w) - lower
+            })
+            constraints.append({
+                'type': 'ineq',
+                'fun': lambda w, i=i, upper=upper: upper - np.dot(factor_exposures[:, i], w)
+            })
     
-    bounds = [(-max_weight, max_weight) for _ in range(N)]
-    w0 = np.ones(N) / N
+    # 边界条件
+    bounds = [(0, 1) for _ in range(n_stocks)]
     
-    result = minimize(objective, w0, method='SLSQP', bounds=bounds, constraints=constraints)
+    # 初始权重
+    w0 = np.ones(n_stocks) / n_stocks
+    
+    # 优化
+    result = minimize(
+        objective,
+        w0,
+        method='SLSQP',
+        bounds=bounds,
+        constraints=constraints,
+        options={'ftol': 1e-8, 'disp': False}
+    )
     
     return result.x
 
-# 示例：市场中性组合（Market Beta = 0）
-# target_beta = np.zeros(K)
-# target_beta[0] = 0  # Market因子暴露为0
-# neutral_weights = factor_neutral_optimization(decomposer, target_beta)
+# 示例使用：约束市场暴露在0.9-1.1之间，规模暴露在-0.3-0.3之间
+beta_bounds = {
+    'MKT': (0.9, 1.1),
+    'SMB': (-0.3, 0.3),
+    'HML': (-0.5, 0.5),
+    'MOM': (-0.4, 0.4),
+}
+
+constrained_w = factor_constraint_optimization(beta_bounds, factor_exposures, factor_cov, specific_vars)
+
+print("=== 因子暴露约束优化结果 ===")
+print(f"优化后权重（前10只）: {constrained_w[:10]}")
+
+# 验证因子暴露
+portfolio_beta = factor_exposures.T @ constrained_w
+print("\n优化后组合因子暴露:")
+for i, factor in enumerate(['MKT', 'SMB', 'HML', 'MOM']):
+    print(f"  {factor}: {portfolio_beta[i]:.4f} (约束范围: {beta_bounds[factor]})")
 ```
 
-## 七、总结与最佳实践
+## 五、常见陷阱与注意事项
 
-### 7.1 关键要点
+### 5.1 因子暴露的不稳定性
 
-1. **风险分解的核心**：将组合方差分解为系统性风险和特异性风险，进一步细化到每个因子和每个资产的贡献。
+因子暴露并非恒定不变，它会随着时间推移发生变化。常见原因包括：
+- **公司基本面变化**：如业务转型导致规模因子暴露变化
+- **市场环境变化**：牛市和熊市中因子暴露可能不同
+- **数据频率选择**：日度、周度、月度回归得到的暴露可能有差异
 
-2. **因子暴露估计**：使用OLS回归估计Beta，注意处理奇异矩阵和缺失值。
+**解决方案**：
+1. 使用**滚动窗口回归**，动态跟踪因子暴露
+2. 采用**指数加权移动平均（EWMA）**给近期数据更高权重
+3. 结合**基本面数据**进行交叉验证
 
-3. **时变性**：现实中的因子暴露和风险结构会变化，应使用滚动窗口或指数加权方法。
+### 5.2 因子共线性问题
 
-4. **应用场景**：风险归因、风险预算优化、因子中性约束。
+当因子之间存在高度相关性时，回归得到的因子暴露可能不稳定：
 
-### 7.2 最佳实践
+```python
+# 检查因子共线性
+corr_matrix = factors.corr()
+print("因子相关系数矩阵:")
+print(corr_matrix)
 
-✅ **数据质量第一**：确保因子数据和资产收益率数据的时间对齐和准确性。
+# 计算方差膨胀因子（VIF）
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
-✅ **使用收缩估计**：当因子数量较多或样本量较小时，使用Ledoit-Wolf收缩估计因子协方差矩阵。
+X = sm.add_constant(factors)
+vif_data = pd.DataFrame()
+vif_data['Factor'] = ['MKT', 'SMB', 'HML', 'MOM']
+vif_data['VIF'] = [variance_inflation_factor(X.values, i+1) for i in range(4)]
+print("\n方差膨胀因子（VIF）:")
+print(vif_data)
+```
 
-✅ **滚动验证**：使用时变模型时，通过滚动样本外测试验证稳定性。
+**经验法则**：
+- VIF > 10：存在严重共线性
+- VIF > 5：需要关注
+- 解决方案：剔除高度相关的因子，或使用**主成分分析（PCA）**降维
 
-✅ **结合经济意义**：单纯的数学分解可能给出不符合经济意义的结论，需要结合业务逻辑解读。
+### 5.3 前瞻性偏差（Look-Ahead Bias）
 
-❌ **避免过拟合**：不要在因子选择上使用太多自由度，防止过拟合。
+在计算因子暴露时，容易引入前瞻性偏差：
+- **错误做法**：使用全样本回归计算因子暴露，然后用于回测
+- **正确做法**：使用**滚动窗口**或**扩展窗口**回归，确保使用的是历史数据
 
-❌ **忽视特异性风险**：不要只关注系统性风险，特异性风险在分散化不足时可能很大。
+```python
+# 错误示例（存在前瞻性偏差）
+full_sample_model = sm.OLS(stock_ret, sm.add_constant(factors)).fit()
+biased_beta = full_sample_model.params[1:]
+print("全样本回归得到的因子暴露（存在前瞻性偏差）:")
+print(biased_beta)
 
-## 八、延伸阅读
+# 正确示例（滚动窗口）
+rolling_beta = calculate_factor_exposure(stock_ret, factors, window=36)
+print("\n滚动窗口回归得到的因子暴露（无前瞻性偏差）:")
+print(rolling_beta.mean())
+```
 
-1. **Grinold & Kahn (1999)**: *Active Portfolio Management* - 多因子模型的经典教材
-2. **Ang (2014)**: *Asset Management: A Systematic Approach to Factor Investing* - 因子投资系统方法
-3. **Ledoit & Wolf (2004)**: *Honey, I Shrunk the Sample Covariance Matrix* - 协方差矩阵收缩估计
-4. **Qian (2006)**: *Quantitative Equity Portfolio Management* - 风险分解和归因
+## 六、总结与展望
+
+本文系统性地介绍了多因子模型的风险分解方法，包括：
+
+1. **理论基础**：多因子模型的设定和风险分解的核心思想
+2. **实战方法**：因子暴露计算、风险分解、可视化分析
+3. **优化应用**：风险预算优化、因子暴露约束优化
+4. **注意事项**：因子暴露不稳定性、共线性问题、前瞻性偏差
+
+**关键要点**：
+- 风险分解不仅能帮助我们理解收益来源，还能用于优化组合配置
+- 因子暴露需要动态跟踪，不能假设恒定不变
+- 风险预算优化是一种更灵活的配置方法，值得深入研究
+
+**未来方向**：
+- **非线性因子模型**：引入机器学习方法捕捉因子与收益的非线性关系
+- **时变因子暴露**：使用状态空间模型（如卡尔曼滤波）建模时变暴露
+- **高频因子**：将日内高频数据纳入因子模型
 
 ---
 
-**附录：完整代码仓库**
+## 参考文献
 
-本文的完整Python代码和示例数据已上传至GitHub：[GitHub链接]（实际发布时添加）
+1. Fama, E. F., & French, K. R. (1993). Common risk factors in the returns on stocks and bonds. *Journal of Financial Economics*, 33(1), 3-56.
+2. Carhart, M. M. (1997). On persistence in mutual fund performance. *Journal of Finance*, 52(1), 57-82.
+3. Asness, C. S., et al. (2018). Size matters, if you control your junk. *Journal of Financial Economics*, 129(3), 479-509.
+4. Roncalli, T. (2013). *Introduction to Risk Parity and Budgeting*. CRC Press.
 
-**免责声明**：本文仅供学术交流使用，不构成投资建议。实际投资中请根据自身情况谨慎决策。
+## 代码仓库
+
+完整的Python实现代码已上传至GitHub：\[链接\]
+
+---
+
+*如果本文对您有帮助，欢迎点赞、收藏、转发！也欢迎在评论区留言讨论。*
+
