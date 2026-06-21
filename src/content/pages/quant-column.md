@@ -9,6 +9,10 @@ layout: page
 欢迎来到我的量化交易专栏！这里分享我在量化投资领域的研究与实践，涵盖因子研究、统计套利、机器学习应用、风险管理等主题。
 
 ## 最新文章
+### 2026-06-22 新发布
+- [2026-06-22 - PCA与因子模型在统计套利中的应用](/blog/pca-statistical-arbitrage/) - 🔴 深入探讨主成分分析(PCA)在统计套利策略中的应用，从理论到实战，展示如何利用PCA构建市场中性组合并捕捉均值回归机会。包含完整的Python代码示例和策略回测（高阶）
+- [2026-06-22 - XGBoost与LightGBM在量化选股中的应用](/blog/xgboost-lightgbm-stock-selection/) - 🔴 深入探讨XGBoost和LightGBM两大梯度提升框架在量化选股中的应用，从特征工程到模型训练，展示如何构建机器学习选股策略。包含完整的Python代码示例和模型对比（高阶）
+
 ### 2026-06-21 新发布
 - [2026-06-21 - PCA与因子模型在统计套利中的应用](/blog/pca-statistical-arbitrage/) - 🔴 深入探讨主成分分析(PCA)在统计套利策略中的应用，从因子模型构建到配对交易实践，附带完整的Python实现代码（高阶）
 - [2026-06-21 - XGBoost与LightGBM在量化选股中的应用](/blog/xgboost-lightgbm-stock-selection/) - 🔴 深入探讨XGBoost和LightGBM在量化选股中的实战应用，从特征工程到模型融合，附带完整的Python实现代码和性能对比（高阶）
@@ -163,4 +167,4 @@ layout: page
 
 ---
 
-*最后更新：2026-06-17*
+*最后更新：2026-06-22*
