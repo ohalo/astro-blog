@@ -10,6 +10,8 @@ layout: page
 
 ## 最新文章
 ### 2026-06-21 新发布
+- [2026-06-21 - PCA与因子模型在统计套利中的应用](/blog/pca-statistical-arbitrage/) - 🔴 深入探讨主成分分析(PCA)在统计套利策略中的应用，从因子模型构建、PCA降维原理到配对交易实战，包含完整的Python代码示例、残差分析、协整检验及回测框架（高阶）
+- [2026-06-21 - XGBoost与LightGBM在量化选股中的应用](/blog/xgboost-lightgbm-stock-selection/) - 🔴 深入探讨XGBoost与LightGBM在量化选股中的应用，从特征工程、模型训练、特征重要性分析到策略回测，包含完整的Python代码示例和实战案例（高阶）
 - [2026-06-21 - 多因子模型风险分解：理解投资组合风险的来源](/blog/multi-factor-risk-decomposition/) - 🔴 深入解析多因子模型风险分解的 Euler 定理基础、边际风险贡献(MRC)计算、风险预算配置方法，含完整 Python 实现（MultiFactorRiskDecomposer 类）与 A 股实证考量：因子高相关性、Ledoit-Wolf 压缩估计、时变 Beta 处理（高阶）
 - [2026-06-21 - 配对交易与协整分析：均值回归策略的理论与实践](/blog/pair-trading-cointegration/) - 🔴 从协整理论到 Python 实战，完整解析 Engle-Granger 检验、Johansen 检验、Z-score 信号构建、PairsTradingStrategy 回测框架，含 A 股保险股实证案例、协整关系断裂风险管理、交易成本侵蚀应对（高阶）
 - [2026-06-21 - 因子择时：动态调整因子暴露](/blog/factor-timing/) - 🔴 深入探讨因子择时的理论基础与实践方法，学习如何根据市场状态动态调整因子暴露，提升投资组合的风险调整收益。包含因子周期性分析、宏观变量预测、Python实战代码与风险提示（高阶）
