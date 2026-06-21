@@ -1,6 +1,6 @@
 ---
 title: "训练大模型的第一步：数据清洗与配比的工程实践"
-publishDate: '2026-06-21'
+publishDate: 2026-06-21
 description: "训练大模型的第一步：数据清洗与配比的工程实践 - halo的技术博客"
 tags:
  - AI观察

@@ -1,11 +1,9 @@
 ---
 title: "因子择时：动态调整因子暴露"
+publishDate: 2026-06-21
 description: "深入探讨因子择时的理论基础与实践方法，学习如何根据市场状态动态调整因子暴露，提升投资组合的风险调整后收益。包含完整的Python实现代码。"
-pubDate: 2026-06-21
-updateDate: 2026-06-21
-heroImage: "/images/factor-timing/hero.png"
-heroAlt: "因子择时策略示意图"
 tags: ["因子投资", "因子择时", "量化策略", "风险管理"]
+language: Chinese
 ---
 
 # 因子择时：动态调整因子暴露

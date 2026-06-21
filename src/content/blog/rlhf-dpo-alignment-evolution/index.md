@@ -1,6 +1,6 @@
 ---
 title: "从RLHF到DPO：大模型对齐技术的演进与实践"
-publishDate: '2026-06-21'
+publishDate: 2026-06-21
 description: "从RLHF到DPO：大模型对齐技术的演进与实践 - halo的技术博客"
 tags:
  - AI观察

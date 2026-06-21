@@ -1,10 +1,9 @@
 ---
 title: "配对交易与协整分析：均值回归策略的理论与实战"
+publishDate: 2026-06-21
 description: "深入探讨配对交易的核心理论——协整关系，学习如何识别、测试和交易协整对，包含完整的Python实现和实战案例分析"
-pubDate: 2026-06-21
 tags: ["配对交易", "协整分析", "均值回归", "统计套利", "Python"]
-category: "量化策略"
-cover: "/images/pair-trading-cointegration/cover.png"
+language: Chinese
 ---
 
 # 配对交易与协整分析：均值回归策略的理论与实战

@@ -1,10 +1,9 @@
 ---
 title: "多因子模型风险分解：理解投资组合风险的源头"
+publishDate: 2026-06-21
 description: "深入探讨多因子模型中的风险分解方法，学习如何识别、量化和管理的因子风险，包含完整的Python实现和实战案例"
-pubDate: 2026-06-21
 tags: ["多因子模型", "风险分解", "风险归因", "量化投资", "Python"]
-category: "量化策略"
-cover: "/images/multi-factor-risk-decomposition/cover.png"
+language: Chinese
 ---
 
 # 多因子模型风险分解：理解投资组合风险的源头
