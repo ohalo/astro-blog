@@ -1,353 +1,357 @@
-#!/usr/bin/env python3
 """
-生成XGBoost与LightGBM文章配图（简化版 - 无需sklearn）
-使用模拟数据展示概念和结果
+为XGBoost与LightGBM选股文章生成配图（使用合成数据）
 """
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from datetime import datetime, timedelta
-import os
+import seaborn as sns
+from sklearn.model_selection import TimeSeriesSplit
+from sklearn.metrics import accuracy_score
+import xgboost as xgb
+import lightgbm as lgb
+from scipy import stats
 
 # 设置中文字体
-plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS', 'DejaVu Sans', 'sans-serif']
+plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
-def generate_feature_importance_plot():
-    """生成特征重要性对比图"""
-    print("生成特征重要性图...")
-    
-    # 模拟特征重要性数据
-    np.random.seed(42)
-    n_features = 20
-    
-    # 创建模拟的特征名称（量化因子）
-    feature_names = [
-        'momentum_20', 'volatility_20', 'rsi_14', 'macd', 
-        'pe_ratio', 'pb_ratio', 'roe', 'turn_over',
-        'volume_change', 'momentum_5', 'momentum_60',
-        'bollinger_position', 'ma_distance', 'volume_ratio',
-        'profit_growth', 'revenue_growth', 'debt_ratio',
-        'market_cap', 'day_of_week', 'month'
-    ]
-    
-    # 模拟LightGBM特征重要性（前几个特征更重要）
-    lgb_importance = np.zeros(n_features)
-    lgb_importance[:5] = np.random.uniform(0.08, 0.15, 5)  # 前5个重要
-    lgb_importance[5:10] = np.random.uniform(0.03, 0.07, 5)  # 中间10个
-    lgb_importance[10:] = np.random.uniform(0.001, 0.03, 10)  # 后面不太重要
-    lgb_importance = lgb_importance / lgb_importance.sum()  # 归一化
-    
-    # 模拟XGBoost特征重要性（类似但略有不同）
-    xgb_importance = lgb_importance + np.random.uniform(-0.01, 0.01, n_features)
-    xgb_importance = np.abs(xgb_importance) / xgb_importance.sum()
-    
-    # 按重要性排序
-    indices = np.argsort(lgb_importance)[::-1]
-    
-    # 绘制图形
-    fig, axes = plt.subplots(1, 2, figsize=(16, 8))
-    
-    # 左图：LightGBM特征重要性
-    colors_lgb = plt.cm.viridis(lgb_importance[indices] / lgb_importance[indices].max())
-    bars1 = axes[0].barh(range(n_features), lgb_importance[indices][::-1], 
-                           color=colors_lgb[::-1], edgecolor='black', linewidth=0.5)
-    axes[0].set_yticks(range(n_features))
-    axes[0].set_yticklabels([feature_names[i] for i in indices][::-1], fontsize=9)
-    axes[0].set_xlabel('重要性', fontsize=11, fontweight='bold')
-    axes[0].set_title('LightGBM特征重要性', fontsize=13, fontweight='bold')
-    axes[0].grid(True, alpha=0.3, axis='x')
-    axes[0].set_xlim([0, lgb_importance[indices].max() * 1.2])
-    
-    # 添加数值标签
-    for i, (bar, val) in enumerate(zip(bars1, lgb_importance[indices][::-1])):
-        axes[0].text(val + 0.002, bar.get_y() + bar.get_height()/2, 
-                      f'{val:.3f}', va='center', fontsize=7)
-    
-    # 右图：XGBoost特征重要性
-    colors_xgb = plt.cm.plasma(xgb_importance[indices] / xgb_importance[indices].max())
-    bars2 = axes[1].barh(range(n_features), xgb_importance[indices][::-1], 
-                           color=colors_xgb[::-1], edgecolor='black', linewidth=0.5)
-    axes[1].set_yticks(range(n_features))
-    axes[1].set_yticklabels([feature_names[i] for i in indices][::-1], fontsize=9)
-    axes[1].set_xlabel('重要性', fontsize=11, fontweight='bold')
-    axes[1].set_title('XGBoost特征重要性', fontsize=13, fontweight='bold')
-    axes[1].grid(True, alpha=0.3, axis='x')
-    axes[1].set_xlim([0, xgb_importance[indices].max() * 1.2])
-    
-    # 添加数值标签
-    for i, (bar, val) in enumerate(zip(bars2, xgb_importance[indices][::-1])):
-        axes[1].text(val + 0.002, bar.get_y() + bar.get_height()/2, 
-                      f'{val:.3f}', va='center', fontsize=7)
-    
-    plt.tight_layout()
-    plt.savefig('public/images/xgboost-lightgbm-stock-selection/feature_importance.png', dpi=300, bbox_inches='tight')
-    print("✓ 特征重要性图已保存")
-    plt.close()
+# 创建图片保存目录
+import os
+save_dir = '/Users/halo/workspace/astro-blog/public/images/xgboost-lightgbm-stock-selection'
+os.makedirs(save_dir, exist_ok=True)
 
-def generate_model_comparison_plot():
-    """生成模型性能对比图"""
-    print("生成模型性能对比图...")
-    
-    # 模拟不同模型的性能数据
-    models = ['Logistic\n回归', '随机森林', 'SVM', 'XGBoost', 'LightGBM']
-    accuracy = [0.352, 0.401, 0.385, 0.418, 0.423]
-    f1_score = [0.341, 0.395, 0.372, 0.408, 0.412]
-    
-    x = np.arange(len(models))
-    width = 0.35
-    
-    fig, ax = plt.subplots(figsize=(12, 6))
-    
-    bars1 = ax.bar(x - width/2, accuracy, width, label='准确率 (Accuracy)', 
-                    color='steelblue', alpha=0.8, edgecolor='black', linewidth=1.5)
-    bars2 = ax.bar(x + width/2, f1_score, width, label='F1分数', 
-                    color='darkorange', alpha=0.8, edgecolor='black', linewidth=1.5)
-    
-    ax.set_ylabel('分数', fontsize=12, fontweight='bold')
-    ax.set_title('不同模型在量化选股任务上的性能对比', fontsize=14, fontweight='bold', pad=15)
-    ax.set_xticks(x)
-    ax.set_xticklabels(models, fontsize=10)
-    ax.legend(fontsize=11, loc='upper left', framealpha=0.9)
-    ax.grid(True, alpha=0.3, axis='y')
-    ax.set_ylim([0, 0.5])
-    
-    # 添加数值标签
-    for bars in [bars1, bars2]:
-        for bar in bars:
-            height = bar.get_height()
-            ax.text(bar.get_x() + bar.get_width()/2, height + 0.005,
-                    f'{height:.3f}', ha='center', va='bottom', fontsize=9, fontweight='bold')
-    
-    # 标注最佳模型
-    ax.axhline(y=max(accuracy), color='red', linestyle='--', linewidth=1.5, 
-                alpha=0.6, label='最佳性能')
-    
-    plt.tight_layout()
-    plt.savefig('public/images/xgboost-lightgbm-stock-selection/model_comparison.png', dpi=300, bbox_inches='tight')
-    print("✓ 模型性能对比图已保存")
-    plt.close()
+# 生成合成数据
+print("正在生成模拟数据...")
 
-def generate_backtest_performance_plot():
-    """生成策略回测净值曲线图"""
-    print("生成策略回测净值曲线图...")
-    
-    # 生成模拟的净值数据
-    np.random.seed(42)
-    n_days = 1000
-    
-    # LightGBM策略（年化18%，波动率20%）
-    strategy_return = 0.18 / 252
-    strategy_vol = 0.20 / np.sqrt(252)
-    strategy_daily_returns = np.random.normal(strategy_return, strategy_vol, n_days)
-    strategy_nav = np.cumprod(1 + strategy_daily_returns)
-    
-    # 基准（沪深300，年化8%，波动率22%）
-    benchmark_return = 0.08 / 252
-    benchmark_vol = 0.22 / np.sqrt(252)
-    benchmark_daily_returns = np.random.normal(benchmark_return, benchmark_vol, n_days)
-    benchmark_nav = np.cumprod(1 + benchmark_daily_returns)
-    
-    # 创建日期索引
-    dates = pd.date_range(start='2020-01-01', periods=n_days, freq='B')
-    
-    # 绘制图形
-    fig, ax = plt.subplots(figsize=(14, 8), facecolor='white')
-    
-    # 绘制净值曲线
-    ax.plot(dates, strategy_nav, color='#1f77b4', linewidth=2.5, 
-            label='LightGBM选股策略', zorder=4, alpha=0.9)
-    ax.plot(dates, benchmark_nav, color='gray', linewidth=2, linestyle='--', 
-            label='基准 (沪深300)', alpha=0.7, zorder=3)
-    
-    # 填充区域
-    ax.fill_between(dates, 1, strategy_nav, where=(strategy_nav >= 1), 
-                     alpha=0.2, color='green', zorder=1)
-    ax.fill_between(dates, 1, strategy_nav, where=(strategy_nav < 1), 
-                     alpha=0.2, color='red', zorder=1)
-    
-    # 计算并标注关键指标
-    strategy_total_return = (strategy_nav[-1] - 1) * 100
-    benchmark_total_return = (benchmark_nav[-1] - 1) * 100
-    excess_return = strategy_total_return - benchmark_total_return
-    
-    # 计算最大回撤
-    strategy_dd = 1 - strategy_nav / np.maximum.accumulate(strategy_nav)
-    max_dd = strategy_dd.max() * 100
-    
-    stats_text = (f'策略总收益: {strategy_total_return:.1f}%\n'
-                  f'基准总收益: {benchmark_total_return:.1f}%\n'
-                  f'超额收益: {excess_return:.1f}%\n'
-                  f'最大回撤: {max_dd:.1f}%')
-    
-    ax.text(0.02, 0.97, stats_text, 
-             transform=ax.transAxes, fontsize=10, verticalalignment='top',
-             bbox=dict(boxstyle='round,pad=0.5', facecolor='wheat', alpha=0.85, edgecolor='black'),
-             fontweight='bold')
-    
-    # 标注关键时间点
-    ax.scatter([dates[0], dates[-1]], [strategy_nav[0], strategy_nav[-1]], 
-               color='blue', s=100, zorder=5, edgecolors='black', linewidth=1.5, label='策略起点/终点')
-    ax.scatter([dates[0], dates[-1]], [benchmark_nav[0], benchmark_nav[-1]], 
-               color='gray', s=100, zorder=5, edgecolors='black', linewidth=1.5, label='基准起点/终点')
-    
-    ax.set_xlabel('日期', fontsize=12, fontweight='bold')
-    ax.set_ylabel('累计净值', fontsize=12, fontweight='bold')
-    ax.set_title('LightGBM选股策略 vs 基准 - 回测净值曲线 (2020-2024)', 
-                  fontsize=15, fontweight='bold', pad=15)
-    ax.legend(loc='upper left', fontsize=10, framealpha=0.9, edgecolor='black', ncol=2)
-    ax.grid(True, alpha=0.3, linestyle='--')
-    
-    # 格式化y轴
-    ax.yaxis.set_major_formatter(plt.matplotlib.ticker.FuncFormatter(lambda x, p: f'{x:.2f}x'))
-    
-    plt.tight_layout()
-    plt.savefig('public/images/xgboost-lightgbm-stock-selection/backtest_performance.png', dpi=300, bbox_inches='tight')
-    print("✓ 策略回测净值曲线图已保存")
-    plt.close()
+np.random.seed(42)
+n_days = 1000
+n_stocks = 50
 
-def generate_learning_curve_plot():
-    """生成学习曲线图（展示训练集大小对性能的影响）"""
-    print("生成学习曲线图...")
-    
-    # 模拟不同训练集大小下的模型性能
-    train_sizes = np.array([100, 200, 500, 1000, 2000, 5000])
-    
-    # LightGBM：随数据量增加，性能提升
-    lgb_train_score = np.array([0.38, 0.39, 0.40, 0.415, 0.422, 0.425])
-    lgb_cv_score = np.array([0.35, 0.37, 0.39, 0.408, 0.415, 0.418])
-    
-    # XGBoost：类似但略低
-    xgb_train_score = np.array([0.37, 0.38, 0.395, 0.410, 0.418, 0.420])
-    xgb_cv_score = np.array([0.34, 0.36, 0.38, 0.402, 0.410, 0.412])
-    
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
-    
-    # 左图：LightGBM学习曲线
-    axes[0].plot(train_sizes, lgb_train_score, 'o-', color='blue', linewidth=2, 
-                  markersize=6, label='训练集分数')
-    axes[0].plot(train_sizes, lgb_cv_score, 'o-', color='red', linewidth=2, 
-                  markersize=6, label='交叉验证分数')
-    axes[0].fill_between(train_sizes, 
-                          lgb_cv_score - 0.01, 
-                          lgb_cv_score + 0.01, 
-                          alpha=0.2, color='red')
-    axes[0].set_xlabel('训练样本数量', fontsize=11, fontweight='bold')
-    axes[0].set_ylabel('准确率', fontsize=11, fontweight='bold')
-    axes[0].set_title('LightGBM学习曲线', fontsize=13, fontweight='bold')
-    axes[0].legend(fontsize=10, loc='lower right')
-    axes[0].grid(True, alpha=0.3, linestyle='--')
-    axes[0].set_xscale('log')
-    
-    # 右图：XGBoost学习曲线
-    axes[1].plot(train_sizes, xgb_train_score, 'o-', color='blue', linewidth=2, 
-                  markersize=6, label='训练集分数')
-    axes[1].plot(train_sizes, xgb_cv_score, 'o-', color='red', linewidth=2, 
-                  markersize=6, label='交叉验证分数')
-    axes[1].fill_between(train_sizes, 
-                          xgb_cv_score - 0.01, 
-                          xgb_cv_score + 0.01, 
-                          alpha=0.2, color='red')
-    axes[1].set_xlabel('训练样本数量', fontsize=11, fontweight='bold')
-    axes[1].set_ylabel('准确率', fontsize=11, fontweight='bold')
-    axes[1].set_title('XGBoost学习曲线', fontsize=13, fontweight='bold')
-    axes[1].legend(fontsize=10, loc='lower right')
-    axes[1].grid(True, alpha=0.3, linestyle='--')
-    axes[1].set_xscale('log')
-    
-    plt.tight_layout()
-    plt.savefig('public/images/xgboost-lightgbm-stock-selection/learning_curve.png', dpi=300, bbox_inches='tight')
-    print("✓ 学习曲线图已保存")
-    plt.close()
+# 生成日期索引
+dates = pd.date_range('2022-01-01', periods=n_days, freq='D')
 
-def generate_feature_correlation_heatmap():
-    """生成特征相关性热力图"""
-    print("生成特征相关性热力图...")
+# 生成因子数据
+def generate_factor_data(n_days, n_stocks, dates):
+    all_features = []
+    all_labels = []
     
-    # 模拟特征相关性矩阵
-    np.random.seed(42)
-    n_features = 10
+    for i in range(n_stocks):
+        # 生成特征
+        features = pd.DataFrame(index=dates)
+        
+        # 1. 动量因子
+        for period in [5, 10, 20]:
+            features[f'return_{period}d'] = np.random.randn(n_days) * 0.02
+        
+        # 2. 波动率因子
+        for period in [20, 60]:
+            features[f'volatility_{period}d'] = np.abs(np.random.randn(n_days) * 0.01)
+        
+        # 3. 成交量因子
+        features['volume_ratio'] = np.random.uniform(0.5, 2.0, n_days)
+        
+        # 4. 技术指标
+        features['ma_ratio'] = np.random.uniform(0.8, 1.2, n_days)
+        features['rsi_14'] = np.random.uniform(30, 70, n_days)
+        
+        # 5. 收益滞后特征
+        for lag in [1, 2, 3, 5]:
+            features[f'return_lag_{lag}'] = np.random.randn(n_days) * 0.015
+        
+        # 生成标签（未来5日收益）
+        # 让一些特征与标签相关
+        label = (
+            features['return_5d'] * 0.3 +
+            features['volatility_20d'] * (-0.2) +
+            features['volume_ratio'] * 0.1 +
+            np.random.randn(n_days) * 0.01
+        )
+        
+        features['label'] = label
+        features['stock_code'] = f'STOCK_{i:03d}.SS'
+        
+        all_features.append(features)
     
-    # 创建相关性矩阵（对称、对角为1）
-    corr_matrix = np.eye(n_features)
+    # 合并数据
+    data_df = pd.concat(all_features, ignore_index=False)
+    data_df = data_df.dropna()
     
-    # 添加一些相关性结构
-    for i in range(n_features):
-        for j in range(i+1, n_features):
-            if i < 3 and j < 3:  # 前3个特征高度相关（都是动量类）
-                corr = np.random.uniform(0.6, 0.8)
-            elif i >= 3 and j < 6:  # 动量类和价值类低相关
-                corr = np.random.uniform(-0.2, 0.2)
-            else:  # 其他中等相关
-                corr = np.random.uniform(-0.4, 0.4)
-            
-            corr_matrix[i, j] = corr
-            corr_matrix[j, i] = corr  # 对称
-    
-    # 特征名称
-    feature_names = ['momentum_5', 'momentum_20', 'momentum_60', 
-                     'pe_ratio', 'pb_ratio', 'roe',
-                     'rsi_14', 'macd', 'volatility_20', 'volume_change']
-    
-    # 绘制热力图
-    fig, ax = plt.subplots(figsize=(10, 8), facecolor='white')
-    
-    im = ax.imshow(corr_matrix, aspect='auto', cmap='RdBu_r', vmin=-1, vmax=1, interpolation='nearest')
-    
-    # 设置刻度
-    ax.set_xticks(range(n_features))
-    ax.set_xticklabels(feature_names, rotation=45, ha='right', fontsize=9)
-    ax.set_yticks(range(n_features))
-    ax.set_yticklabels(feature_names, fontsize=9)
-    
-    ax.set_title('量化选股特征相关性矩阵', fontsize=14, fontweight='bold', pad=20)
-    
-    # 添加颜色条
-    cbar = plt.colorbar(im, ax=ax, shrink=0.8, pad=0.02)
-    cbar.set_label('相关系数', fontsize=11, fontweight='bold')
-    
-    # 在格子中添加数值
-    for i in range(n_features):
-        for j in range(n_features):
-            text = ax.text(j, i, f'{corr_matrix[i, j]:.2f}',
-                          ha='center', va='center', 
-                          color='black' if abs(corr_matrix[i, j]) < 0.5 else 'white',
-                          fontsize=8, fontweight='bold')
-    
-    # 添加网格线
-    ax.set_xticks(np.arange(-0.5, n_features, 1), minor=True)
-    ax.set_yticks(np.arange(-0.5, n_features, 1), minor=True)
-    ax.grid(which='minor', color='black', linestyle='-', linewidth=0.5, alpha=0.3)
-    
-    plt.tight_layout()
-    plt.savefig('public/images/xgboost-lightgbm-stock-selection/feature_correlation.png', dpi=300, bbox_inches='tight')
-    print("✓ 特征相关性热力图已保存")
-    plt.close()
+    return data_df
 
-if __name__ == "__main__":
-    print("="*60)
-    print("开始生成XGBoost/LightGBM文章配图（简化版）...")
-    print("="*60)
+# 生成数据
+print("正在提取特征和标签...")
+data_df = generate_factor_data(n_days, n_stocks, dates)
+
+feature_columns = [col for col in data_df.columns if col not in ['label', 'stock_code']]
+X = data_df[feature_columns].values
+y = data_df['label'].values
+
+print(f"✓ 特征维度: {len(feature_columns)}")
+print(f"✓ 样本数量: {data_df.shape[0]}")
+
+# 时间序列交叉验证
+tscv = TimeSeriesSplit(n_splits=5)
+
+# 存储结果
+xgb_scores = []
+lgb_scores = []
+xgb_models = []
+lgb_models = []
+
+print("\n========== 模型训练与交叉验证 ==========")
+
+for fold, (train_idx, val_idx) in enumerate(tscv.split(X)):
+    print(f"\nFold {fold + 1}/5")
     
-    # 创建输出目录
-    os.makedirs('public/images/xgboost-lightgbm-stock-selection', exist_ok=True)
+    X_train, X_val = X[train_idx], X[val_idx]
+    y_train, y_val = y[train_idx], y[val_idx]
     
-    # 生成所有配图
-    generate_feature_importance_plot()
-    generate_model_comparison_plot()
-    generate_backtest_performance_plot()
-    generate_learning_curve_plot()
-    generate_feature_correlation_heatmap()
+    # XGBoost模型
+    xgb_model = xgb.XGBRegressor(
+        n_estimators=100,
+        max_depth=6,
+        learning_rate=0.1,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        random_state=42,
+        n_jobs=-1
+    )
+    xgb_model.fit(X_train, y_train)
+    xgb_pred = xgb_model.predict(X_val)
     
-    print("="*60)
-    print("✓ 所有配图生成完成！")
-    print(f"  输出目录: public/images/xgboost-lightgbm-stock-selection/")
-    print("  生成文件:")
-    print("    - feature_importance.png")
-    print("    - model_comparison.png")
-    print("    - backtest_performance.png")
-    print("    - learning_curve.png")
-    print("    - feature_correlation.png")
-    print("="*60)
+    # 计算IC（信息系数）
+    xgb_ic = np.corrcoef(xgb_pred, y_val)[0, 1]
+    xgb_scores.append(xgb_ic)
+    xgb_models.append(xgb_model)
+    
+    # LightGBM模型
+    lgb_model = lgb.LGBMRegressor(
+        n_estimators=100,
+        max_depth=6,
+        learning_rate=0.1,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        random_state=42,
+        n_jobs=-1,
+        verbose=-1
+    )
+    lgb_model.fit(X_train, y_train)
+    lgb_pred = lgb_model.predict(X_val)
+    
+    lgb_ic = np.corrcoef(lgb_pred, y_val)[0, 1]
+    lgb_scores.append(lgb_ic)
+    lgb_models.append(lgb_model)
+    
+    print(f"  XGBoost IC: {xgb_ic:.4f}")
+    print(f"  LightGBM IC: {lgb_ic:.4f}")
+
+print(f"\n========== 交叉验证结果 ==========")
+print(f"XGBoost 平均IC: {np.mean(xgb_scores):.4f} (+/- {np.std(xgb_scores):.4f})")
+print(f"LightGBM 平均IC: {np.mean(lgb_scores):.4f} (+/- {np.std(lgb_scores):.4f})")
+
+# 选择最佳模型
+best_xgb_model = xgb_models[np.argmax(xgb_scores)]
+best_lgb_model = lgb_models[np.argmax(lgb_scores)]
+
+# 特征重要性
+xgb_importance = best_xgb_model.feature_importances_
+lgb_importance = best_lgb_model.feature_importances_
+
+# 图1: 特征重要性对比
+print("\n正在生成图1: 特征重要性对比...")
+fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+
+# XGBoost特征重要性
+xgb_imp_df = pd.DataFrame({
+    'feature': feature_columns,
+    'importance': xgb_importance
+}).sort_values('importance', ascending=True)
+
+axes[0].barh(xgb_imp_df['feature'][-10:], xgb_imp_df['importance'][-10:], 
+              color='blue', alpha=0.7)
+axes[0].set_title('XGBoost Feature Importance (Top 10)', fontsize=12, fontweight='bold')
+axes[0].set_xlabel('Importance', fontsize=10)
+axes[0].grid(True, alpha=0.3)
+
+# LightGBM特征重要性
+lgb_imp_df = pd.DataFrame({
+    'feature': feature_columns,
+    'importance': lgb_importance
+}).sort_values('importance', ascending=True)
+
+axes[1].barh(lgb_imp_df['feature'][-10:], lgb_imp_df['importance'][-10:], 
+              color='green', alpha=0.7)
+axes[1].set_title('LightGBM Feature Importance (Top 10)', fontsize=12, fontweight='bold')
+axes[1].set_xlabel('Importance', fontsize=10)
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig(f'{save_dir}/feature_importance.png', dpi=300, bbox_inches='tight')
+print("✓ 生成图片1: feature_importance.png")
+plt.close()
+
+# 图2: 交叉验证IC对比
+print("正在生成图2: 交叉验证IC对比...")
+fig, ax = plt.subplots(figsize=(10, 6))
+
+folds = range(1, 6)
+xgb_scores_array = np.array(xgb_scores)
+lgb_scores_array = np.array(lgb_scores)
+
+ax.plot(folds, xgb_scores_array, 'bo-', linewidth=2, markersize=8, 
+        label=f'XGBoost (Mean IC: {np.mean(xgb_scores):.3f})')
+ax.plot(folds, lgb_scores_array, 'go-', linewidth=2, markersize=8, 
+        label=f'LightGBM (Mean IC: {np.mean(lgb_scores):.3f})')
+
+ax.set_xlabel('Fold', fontsize=12)
+ax.set_ylabel('Information Coefficient (IC)', fontsize=12)
+ax.set_title('Model Performance: Cross-Validation IC', fontsize=14, fontweight='bold')
+ax.set_xticks([1, 2, 3, 4, 5])
+ax.legend(fontsize=10, loc='lower right')
+ax.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig(f'{save_dir}/cv_comparison.png', dpi=300, bbox_inches='tight')
+print("✓ 生成图片2: cv_comparison.png")
+plt.close()
+
+# 使用最后一次验证集进行分组分析
+print("正在生成图3: 分组分析...")
+X_train_full = X[:int(0.8 * len(X))]
+y_train_full = y[:int(0.8 * len(y))]
+X_test = X[int(0.8 * len(X)):]
+y_test = y[int(0.8 * len(y)):]
+
+# 训练最终模型
+final_xgb = xgb.XGBRegressor(
+    n_estimators=200,
+    max_depth=6,
+    learning_rate=0.05,
+    subsample=0.8,
+    colsample_bytree=0.8,
+    random_state=42,
+    n_jobs=-1
+)
+final_xgb.fit(X_train_full, y_train_full)
+
+final_lgb = lgb.LGBMRegressor(
+    n_estimators=200,
+    max_depth=6,
+    learning_rate=0.05,
+    subsample=0.8,
+    colsample_bytree=0.8,
+    random_state=42,
+    n_jobs=-1,
+    verbose=-1
+)
+final_lgb.fit(X_train_full, y_train_full)
+
+# 预测
+xgb_test_pred = final_xgb.predict(X_test)
+lgb_test_pred = final_lgb.predict(X_test)
+
+# 分组分析函数
+def decile_analysis(predictions, actual_returns, n_groups=10):
+    df = pd.DataFrame({
+        'prediction': predictions,
+        'actual': actual_returns
+    })
+    df['decile'] = pd.qcut(df['prediction'], q=n_groups, labels=False)
+    decile_returns = df.groupby('decile')['actual'].mean()
+    return decile_returns
+
+# XGBoost分组分析
+xgb_decile = decile_analysis(xgb_test_pred, y_test)
+lgb_decile = decile_analysis(lgb_test_pred, y_test)
+
+# 可视化分组分析
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+axes[0].bar(range(10), xgb_decile.values, color='blue', alpha=0.7, edgecolor='black')
+axes[0].set_title('XGBoost: Decile Analysis', fontsize=12, fontweight='bold')
+axes[0].set_xlabel('Decile (0=Lowest, 9=Highest)', fontsize=10)
+axes[0].set_ylabel('Average Actual Return', fontsize=10)
+axes[0].grid(True, alpha=0.3, axis='y')
+axes[0].axhline(y=0, color='red', linestyle='--', linewidth=1)
+
+axes[1].bar(range(10), lgb_decile.values, color='green', alpha=0.7, edgecolor='black')
+axes[1].set_title('LightGBM: Decile Analysis', fontsize=12, fontweight='bold')
+axes[1].set_xlabel('Decile (0=Lowest, 9=Highest)', fontsize=10)
+axes[1].set_ylabel('Average Actual Return', fontsize=10)
+axes[1].grid(True, alpha=0.3, axis='y')
+axes[1].axhline(y=0, color='red', linestyle='--', linewidth=1)
+
+plt.tight_layout()
+plt.savefig(f'{save_dir}/decile_analysis.png', dpi=300, bbox_inches='tight')
+print("✓ 生成图片3: decile_analysis.png")
+plt.close()
+
+# 图4: 预测vs实际散点图
+print("正在生成图4: 预测vs实际散点图...")
+fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+
+# XGBoost
+axes[0].scatter(xgb_test_pred, y_test, alpha=0.5, s=10)
+axes[0].plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 
+              'r--', linewidth=2)
+axes[0].set_xlabel('Predicted Return', fontsize=10)
+axes[0].set_ylabel('Actual Return', fontsize=10)
+axes[0].set_title(f'XGBoost: Prediction vs Actual\nIC = {np.corrcoef(xgb_test_pred, y_test)[0, 1]:.3f}', 
+                  fontsize=12, fontweight='bold')
+axes[0].grid(True, alpha=0.3)
+
+# LightGBM
+axes[1].scatter(lgb_test_pred, y_test, alpha=0.5, s=10, color='green')
+axes[1].plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 
+              'r--', linewidth=2)
+axes[1].set_xlabel('Predicted Return', fontsize=10)
+axes[1].set_ylabel('Actual Return', fontsize=10)
+axes[1].set_title(f'LightGBM: Prediction vs Actual\nIC = {np.corrcoef(lgb_test_pred, y_test)[0, 1]:.3f}', 
+                  fontsize=12, fontweight='bold')
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig(f'{save_dir}/prediction_vs_actual.png', dpi=300, bbox_inches='tight')
+print("✓ 生成图片4: prediction_vs_actual.png")
+plt.close()
+
+# 图5: 封面图 - 梯度提升概念图
+print("正在生成封面图...")
+fig, ax = plt.subplots(figsize=(12, 8))
+
+# 生成模拟数据
+np.random.seed(42)
+n_samples = 200
+X_demo = np.sort(5 * np.random.rand(n_samples, 1), axis=0)
+y_demo = np.sin(X_demo).ravel() + np.random.normal(0, 0.1, n_samples)
+
+# 模拟第1棵树、第2棵树、第k棵树的预测
+y_pred_1 = 0.3 * np.sin(X_demo).ravel()
+y_pred_2 = 0.5 * np.sin(X_demo).ravel()
+y_pred_k = 0.9 * np.sin(X_demo).ravel()
+
+# 绘制数据点
+ax.scatter(X_demo, y_demo, s=20, alpha=0.6, color='gray', label='Data Points')
+
+# 绘制每棵树的预测
+ax.plot(X_demo, y_pred_1, 'r-', linewidth=2, alpha=0.6, label='Tree 1 Prediction')
+ax.plot(X_demo, y_pred_2, 'g-', linewidth=2, alpha=0.6, label='Tree 1+2 Prediction')
+ax.plot(X_demo, y_pred_k, 'b-', linewidth=3, label='Ensemble Prediction (K trees)')
+
+# 绘制真实函数
+ax.plot(X_demo, np.sin(X_demo).ravel(), 'k--', linewidth=2, label='True Function')
+
+ax.set_xlabel('Feature', fontsize=14)
+ax.set_ylabel('Target', fontsize=14)
+ax.set_title('Gradient Boosting: Ensemble of Weak Learners', fontsize=16, fontweight='bold')
+ax.legend(fontsize=10, loc='upper left')
+ax.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig(f'{save_dir}/cover.jpg', dpi=300, bbox_inches='tight')
+print("✓ 生成封面图: cover.jpg")
+plt.close()
+
+print(f"\n✅ 所有配图已生成完成！")
+print(f"图片保存位置: {save_dir}/")
+print(f"共生成 5 张图片")
