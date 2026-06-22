@@ -1,8 +1,13 @@
 ---
 title: "PCA与因子模型在统计套利中的应用"
-date: 2026-06-22
+publishDate: 2026-06-22
 description: "深入探讨主成分分析(PCA)在统计套利策略中的应用，从因子模型构建到实际交易信号生成，附带完整的Python实现代码。"
-tags: ["统计套利", "PCA", "因子模型", "配对交易", "量化策略"]
+tags:
+ - 统计套利
+ - PCA
+ - 因子模型
+ - 配对交易
+ - 量化策略
 category: "量化策略"
 cover: "/images/pca-statistical-arbitrage/cover.png"
 ---

@@ -1,8 +1,13 @@
 ---
 title: "XGBoost与LightGBM在量化选股中的应用"
-date: 2026-06-22
+publishDate: 2026-06-22
 description: "深入探讨XGBoost和LightGBM两大梯度提升框架在量化选股中的实战应用。"
-tags: ["机器学习", "XGBoost", "LightGBM", "量化选股", "梯度提升"]
+tags:
+ - 机器学习
+ - XGBoost
+ - LightGBM
+ - 量化选股
+ - 梯度提升
 category: "机器学习"
 cover: "/images/xgboost-lightgbm-stock-selection/cover.png"
 ---
