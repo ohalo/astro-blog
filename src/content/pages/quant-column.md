@@ -12,16 +12,12 @@ layout: page
 ### 2026-06-22 新发布
 - [2026-06-22 - PCA与因子模型在统计套利中的应用](/blog/pca-statistical-arbitrage/) - 🔴 深入探讨主成分分析(PCA)在统计套利策略中的应用，从因子模型理论到Python实战，揭秘如何利用PCA提取市场共性因子并构建市场中性策略。包含完整代码、配图和风险控制在内（高阶）
 - [2026-06-22 - XGBoost与LightGBM在量化选股中的应用](/blog/xgboost-lightgbm-stock-selection/) - 🔴 深入探讨XGBoost和LightGBM两大梯度提升框架在量化选股中的实战应用，从特征工程、模型训练到策略回测，结合Python完整实现一个机器学习选股策略。包含特征重要性分析与分组分析（高阶）
-- [2026-06-22 - PCA与因子模型在统计套利中的应用](/blog/pca-statistical-arbitrage/) - 🔴 深入探讨主成分分析(PCA)在统计套利策略中的应用，从理论到实战，带你理解如何利用PCA构建市场中性策略。包含完整Python代码与回测框架（高阶）
-- [2026-06-22 - Transformer模型股价预测：Attention机制在金融时序中的应用](/blog/transformer-stock-prediction/) - 🔴 深入探讨Transformer模型在股价预测中的应用，从Attention机制原理到PyTorch实战，构建完整的股价预测系统。包含Self-Attention实现、位置编码、时序分解、集成学习及基于预测的择时策略（高阶）
 - [2026-06-22 - Transformer模型股价预测：Attention机制在金融时序中的应用](/blog/transformer-stock-prediction/) - 🔴 深入探讨Transformer模型在股价预测中的应用，从Attention机制原理到PyTorch实战，构建完整的股价预测系统。包含Self-Attention实现、位置编码、时序分解、集成学习及基于预测的择时策略（高阶）
 - [2026-06-22 - 风险预算模型：超越风险平价的资产配置新范式](/blog/risk-budgeting-model/) - 🔴 深入探讨风险预算模型的理论基础、实现方法和实战应用，学习如何根据风险贡献分配资产权重，构建更灵活的资产配置策略。包含风险贡献分解、动态风险预算、Black-Litterman融合及多资产实证（高阶）
 
 ### 2026-06-21 新发布
 - [2026-06-21 - PCA与因子模型在统计套利中的应用](/blog/pca-statistical-arbitrage/) - 🔴 深入探讨主成分分析(PCA)在统计套利策略中的应用，从因子模型构建到配对交易实践，附带完整的Python实现代码（高阶）
 - [2026-06-21 - XGBoost与LightGBM在量化选股中的应用](/blog/xgboost-lightgbm-stock-selection/) - 🔴 深入探讨XGBoost和LightGBM在量化选股中的实战应用，从特征工程到模型融合，附带完整的Python实现代码和性能对比（高阶）
-- [2026-06-21 - PCA与因子模型在统计套利中的应用](/blog/pca-statistical-arbitrage/) - 🔴 深入探讨主成分分析(PCA)在统计套利策略中的应用，从理论到实战，包含完整的Python代码示例和回测框架（高阶）
-- [2026-06-21 - XGBoost与LightGBM在量化选股中的应用](/blog/xgboost-lightgbm-stock-selection/) - 🔴 深入探讨XGBoost与LightGBM在量化选股中的应用，从特征工程到模型融合，包含完整的Python代码示例和回测验证（高阶）
 - [2026-06-21 - 多因子模型风险分解：理解投资组合风险的来源](/blog/multi-factor-risk-decomposition/) - 🔴 深入解析多因子模型风险分解的 Euler 定理基础、边际风险贡献(MRC)计算、风险预算配置方法，含完整 Python 实现（MultiFactorRiskDecomposer 类）与 A 股实证考量：因子高相关性、Ledoit-Wolf 压缩估计、时变 Beta 处理（高阶）
 - [2026-06-21 - 配对交易与协整分析：均值回归策略的理论与实践](/blog/pair-trading-cointegration/) - 🔴 从协整理论到 Python 实战，完整解析 Engle-Granger 检验、Johansen 检验、Z-score 信号构建、PairsTradingStrategy 回测框架，含 A 股保险股实证案例、协整关系断裂风险管理、交易成本侵蚀应对（高阶）
 - [2026-06-21 - 因子择时：动态调整因子暴露](/blog/factor-timing/) - 🔴 深入探讨因子择时的理论基础与实践方法，学习如何根据市场状态动态调整因子暴露，提升投资组合的风险调整收益。包含因子周期性分析、宏观变量预测、Python实战代码与风险提示（高阶）
