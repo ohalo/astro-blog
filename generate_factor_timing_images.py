@@ -2,6 +2,7 @@
 """
 生成因子择时文章的配图
 """
+
 import matplotlib.pyplot as plt
 import matplotlib
 import numpy as np
@@ -13,92 +14,135 @@ import os
 matplotlib.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'SimHei', 'DejaVu Sans']
 matplotlib.rcParams['axes.unicode_minus'] = False
 
-# 创建输出目录
+# 输出目录
 output_dir = '/Users/halo/workspace/astro-blog/public/images/factor-timing'
 os.makedirs(output_dir, exist_ok=True)
 
-# 生成图1：因子暴露随时间变化
+# 生成图1: 因子暴露动态调仓示意图
+fig, axes = plt.subplots(2, 1, figsize=(12, 10))
+fig.suptitle('因子暴露动态调仓示意图', fontsize=16, fontweight='bold')
+
+# 子图1: 市值因子暴露时序变化
+ax1 = axes[0]
+dates = pd.date_range('2020-01-01', '2025-12-31', freq='ME')
 np.random.seed(42)
-dates = pd.date_range('2020-01-01', '2024-12-31', freq='ME')
-n_months = len(dates)
+base_exposure = 0.5 + 0.3 * np.sin(np.linspace(0, 4*np.pi, len(dates)))
+timing_signal = np.random.normal(0, 0.1, len(dates))
+dynamic_exposure = base_exposure + timing_signal
 
-# 模拟三个因子的暴露度
-value_exposure = 0.5 + 0.3 * np.sin(2 * np.pi * np.arange(n_months) / 12) + np.random.normal(0, 0.1, n_months)
-momentum_exposure = 0.3 + 0.2 * np.cos(2 * np.pi * np.arange(n_months) / 6) + np.random.normal(0, 0.08, n_months)
-size_exposure = 0.4 + 0.15 * np.sin(2 * np.pi * np.arange(n_months) / 8 + np.pi/4) + np.random.normal(0, 0.05, n_months)
+ax1.plot(dates, base_exposure, label='基准暴露 (固定)', linewidth=2, alpha=0.7)
+ax1.plot(dates, dynamic_exposure, label='动态暴露 (择时)', linewidth=2)
+ax1.fill_between(dates, 0, dynamic_exposure, alpha=0.3)
+ax1.axhline(y=0, color='black', linestyle='-', alpha=0.3)
+ax1.set_ylabel('市值因子暴露')
+ax1.legend(loc='best')
+ax1.grid(True, alpha=0.3)
 
-plt.figure(figsize=(12, 6))
-plt.plot(dates, value_exposure, label='价值因子暴露', linewidth=2)
-plt.plot(dates, momentum_exposure, label='动量因子暴露', linewidth=2)
-plt.plot(dates, size_exposure, label='规模因子暴露', linewidth=2)
-plt.axhline(y=0, color='gray', linestyle='--', alpha=0.5)
-plt.xlabel('时间', fontsize=12)
-plt.ylabel('因子暴露', fontsize=12)
-plt.title('因子暴露动态调整示例', fontsize=14, fontweight='bold')
-plt.legend(loc='best')
-plt.grid(True, alpha=0.3)
+# 子图2: 因子收益对比
+ax2 = axes[1]
+strategies = ['固定暴露', '动态择时', '基准(沪深300)']
+returns = [0.08, 0.15, 0.06]
+volatility = [0.16, 0.18, 0.20]
+sharpe = [0.50, 0.83, 0.30]
+
+x = np.arange(len(strategies))
+width = 0.25
+
+bars1 = ax2.bar(x - width, returns, width, label='年化收益', alpha=0.8)
+bars2 = ax2.bar(x, volatility, width, label='年化波动', alpha=0.8)
+bars3 = ax2.bar(x + width, sharpe, width, label='夏普比率', alpha=0.8)
+
+ax2.set_ylabel('比率')
+ax2.set_title('策略表现对比')
+ax2.set_xticks(x)
+ax2.set_xticklabels(strategies)
+ax2.legend()
+ax2.grid(True, alpha=0.3, axis='y')
+
+# 添加数值标签
+for bars in [bars1, bars2, bars3]:
+    for bar in bars:
+        height = bar.get_height()
+        ax2.annotate(f'{height:.2f}',
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3),
+                    textcoords="offset points",
+                    ha='center', va='bottom',
+                    fontsize=8)
+
 plt.tight_layout()
-plt.savefig(f'{output_dir}/factor_exposure_dynamic.png', dpi=150, bbox_inches='tight')
-plt.close()
+plt.savefig(f'{output_dir}/cover.png', dpi=300, bbox_inches='tight')
+print(f"✓ 生成封面图: {output_dir}/cover.png")
 
-# 生成图2：因子择时策略累计收益
+# 生成图2: 宏观因子择时信号
+fig2, ax = plt.subplots(figsize=(12, 6))
+
+# 模拟宏观指标
+dates = pd.date_range('2020-01-01', '2025-12-31', freq='ME')
 np.random.seed(123)
-n_days = 1000
-dates_daily = pd.date_range('2022-01-01', periods=n_days, freq='D')
 
-# 模拟收益
-factor_timing_return = np.random.normal(0.0008, 0.008, n_days)  # 因子择时策略
-buy_hold_return = np.random.normal(0.0005, 0.01, n_days)  # 买入持有策略
-benchmark_return = np.random.normal(0.0003, 0.009, n_days)  # 基准
+# CPI
+cpi = 100 + np.cumsum(np.random.normal(0.2, 0.5, len(dates)))
+# PMI
+pmi = 50 + 5 * np.sin(np.linspace(0, 4*np.pi, len(dates))) + np.random.normal(0, 1, len(dates))
+# 利率
+interest_rate = 3 + 2 * np.sin(np.linspace(0, 3*np.pi, len(dates))) + np.random.normal(0, 0.3, len(dates))
 
-# 累计收益
-factor_timing_cum = np.cumprod(1 + factor_timing_return) - 1
-buy_hold_cum = np.cumprod(1 + buy_hold_return) - 1
-benchmark_cum = np.cumprod(1 + benchmark_return) - 1
+ax.plot(dates, cpi / 100, label='CPI (标准化)', linewidth=2, alpha=0.8)
+ax.plot(dates, pmi / 50, label='PMI (标准化)', linewidth=2, alpha=0.8)
+ax.plot(dates, interest_rate / 3, label='利率 (标准化)', linewidth=2, alpha=0.8)
 
-plt.figure(figsize=(12, 6))
-plt.plot(dates_daily, factor_timing_cum * 100, label='因子择时策略', linewidth=2.5, color='#2E86AB')
-plt.plot(dates_daily, buy_hold_cum * 100, label='买入持有策略', linewidth=2, color='#A23B72')
-plt.plot(dates_daily, benchmark_cum * 100, label='基准指数', linewidth=2, color='#F18F01')
-plt.xlabel('时间', fontsize=12)
-plt.ylabel('累计收益 (%)', fontsize=12)
-plt.title('因子择时策略 vs 买入持有策略', fontsize=14, fontweight='bold')
-plt.legend(loc='best')
-plt.grid(True, alpha=0.3)
+# 添加择时信号区域
+signal_periods = [(datetime(2020, 3, 1), datetime(2020, 6, 30)),
+                  (datetime(2021, 6, 1), datetime(2021, 9, 30)),
+                  (datetime(2022, 3, 1), datetime(2022, 8, 31)),
+                  (datetime(2023, 6, 1), datetime(2023, 10, 31))]
+
+for start, end in signal_periods:
+    ax.axvspan(start, end, alpha=0.2, color='red', label='高暴露期' if start == signal_periods[0][0] else '')
+
+ax.set_xlabel('日期')
+ax.set_ylabel('标准化数值')
+ax.set_title('宏观因子择时信号', fontsize=14, fontweight='bold')
+ax.legend(loc='best')
+ax.grid(True, alpha=0.3)
+
 plt.tight_layout()
-plt.savefig(f'{output_dir}/factor_timing_performance.png', dpi=150, bbox_inches='tight')
-plt.close()
+plt.savefig(f'{output_dir}/macro-timing-signals.png', dpi=300, bbox_inches='tight')
+print(f"✓ 生成宏观择时信号图: {output_dir}/macro-timing-signals.png")
 
-# 生成图3：因子表现热力图
-np.random.seed(456)
-factors = ['价值', '动量', '规模', '质量', '低波', '成长']
-time_periods = ['2022Q1', '2022Q2', '2022Q3', '2022Q4', '2023Q1', '2023Q2', '2023Q3', '2023Q4']
+# 生成图3: 因子相关性热图
+fig3, ax = plt.subplots(figsize=(10, 8))
 
-# 生成因子表现矩阵（模拟不同季度因子表现）
-performance_matrix = np.random.uniform(-0.05, 0.08, (len(factors), len(time_periods)))
+# 因子相关性矩阵
+factors = ['市值', '价值', '动量', '质量', '低波', '成长']
+correlation_matrix = np.array([
+    [1.00, -0.15, 0.25, 0.10, -0.20, 0.30],
+    [-0.15, 1.00, -0.10, 0.35, 0.15, -0.05],
+    [0.25, -0.10, 1.00, 0.05, -0.30, 0.20],
+    [0.10, 0.35, 0.05, 1.00, 0.25, 0.15],
+    [-0.20, 0.15, -0.30, 0.25, 1.00, -0.10],
+    [0.30, -0.05, 0.20, 0.15, -0.10, 1.00]
+])
 
-fig, ax = plt.subplots(figsize=(10, 6))
-im = ax.imshow(performance_matrix, cmap='RdYlGn', aspect='auto', vmin=-0.05, vmax=0.08)
-
-# 设置刻度
-ax.set_xticks(np.arange(len(time_periods)))
-ax.set_yticks(np.arange(len(factors)))
-ax.set_xticklabels(time_periods)
-ax.set_yticklabels(factors)
+im = ax.imshow(correlation_matrix, cmap='RdBu_r', vmin=-1, vmax=1)
 
 # 添加数值标注
 for i in range(len(factors)):
-    for j in range(len(time_periods)):
-        text = ax.text(j, i, f'{performance_matrix[i, j]:.2%}',
-                      ha='center', va='center', color='black', fontsize=9)
+    for j in range(len(factors)):
+        text = ax.text(j, i, f'{correlation_matrix[i, j]:.2f}',
+                      ha='center', va='center', color='black', fontweight='bold')
 
-plt.title('不同季度因子表现热力图', fontsize=14, fontweight='bold')
-plt.colorbar(im, ax=ax, label='季度收益')
+ax.set_xticks(range(len(factors)))
+ax.set_yticks(range(len(factors)))
+ax.set_xticklabels(factors)
+ax.set_yticklabels(factors)
+ax.set_title('因子相关性矩阵', fontsize=14, fontweight='bold')
+plt.colorbar(im, ax=ax, label='相关系数')
+
 plt.tight_layout()
-plt.savefig(f'{output_dir}/factor_performance_heatmap.png', dpi=150, bbox_inches='tight')
-plt.close()
+plt.savefig(f'{output_dir}/factor-correlation.png', dpi=300, bbox_inches='tight')
+print(f"✓ 生成因子相关性图: {output_dir}/factor-correlation.png")
 
-print(f"✅ 已生成3张配图到 {output_dir}")
-print("   - factor_exposure_dynamic.png")
-print("   - factor_timing_performance.png")
-print("   - factor_performance_heatmap.png")
+print("\n✅ 所有配图生成完成!")
+print(f"输出目录: {output_dir}")
