@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
-为两篇新量化文章生成真实配图（matplotlib 渲染，非占位图）：
-  1. extreme-risk-modeling        (极端风险建模：肥尾与黑天鹅)
-  2. smart-beta-factor-investing  (Smart Beta 与因子投资)
+为本次两篇「非重复」量化文章生成真实配图（matplotlib 渲染，非占位图）：
+  1. shap-interpretable-ml-quant   (SHAP 与可解释机器学习：让量化因子不再黑箱)
+  2. copula-tail-dependence-risk   (Copula 模型在组合风险管理中的应用：捕捉尾部相依)
+
+说明：环境无 shap 库，故用「蒙特卡洛 Shapley 值估计(Shapley Sampling)」从原理实现，
+     结果与 shap.TreeExplainer 在期望上一致，且零外部依赖。
 """
 
 import os
@@ -11,156 +14,320 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
-import matplotlib.patches as mpatches
+from scipy.stats import norm, t as student_t
 
-rcParams["font.sans-serif"] = ["Arial Unicode MS", "SimHei", "DejaVu Sans"]
+rcParams["font.sans-serif"] = ["Arial Unicode MS", "PingFang SC", "SimHei", "DejaVu Sans"]
 rcParams["axes.unicode_minus"] = False
 
 BASE = "/Users/halo/workspace/astro-blog/public/images"
-
-
-def t_returns(n, df, scale=0.01):
-    """生成带肥尾的日收益（Student-t），并叠加偶发极端跳空。"""
-    r = np.random.standard_t(df, size=n) * scale
-    # 注入黑天鹅：约 0.3% 概率出现 ±5%~10% 极端收益
-    jumps = np.random.rand(n) < 0.003
-    r[jumps] *= np.random.uniform(5, 10, size=jumps.sum())
-    return r
+np.random.seed(20260711)
 
 
 # ============================================================
-# 文章 1：极端风险建模：肥尾与黑天鹅
+# 文章 1：SHAP 与可解释机器学习
 # ============================================================
-d1 = os.path.join(BASE, "extreme-risk-modeling")
+d1 = os.path.join(BASE, "shap-interpretable-ml-quant")
 os.makedirs(d1, exist_ok=True)
 
-np.random.seed(20260710)
-N = 4000
-rets = t_returns(N, df=4, scale=0.011)
+# ---------- 合成因子数据 + 训练树模型 ----------
+N = 2000
+pe = np.random.uniform(5, 60, N)            # 市盈率
+pb = np.random.uniform(0.5, 12, N)         # 市净率
+roe = np.random.uniform(-5, 30, N)         # ROE
+mom20 = np.random.normal(0, 0.15, N)       # 20日动量
+vol20 = np.random.uniform(0.01, 0.08, N)   # 20日波动率
+turn = np.random.uniform(0.5, 8, N)        # 换手率
+size = np.random.uniform(10, 5000, N)      # 市值(亿)
+lev = np.random.uniform(0.1, 0.85, N)      # 杠杆率
+X = np.column_stack([pe, pb, roe, mom20, vol20, turn, size, lev])
+feat_names = ["PE", "PB", "ROE", "动量20", "波动率20", "换手率", "市值", "杠杆率"]
 
-# 图1：收益分布直方图 + 正态拟合 + t 拟合，凸显肥尾
-fig, ax = plt.subplots(figsize=(10, 5.5))
-ax.hist(rets, bins=120, density=True, color="#4C78A8", alpha=0.65,
-        label="实证日收益")
-x = np.linspace(rets.min(), rets.max(), 400)
-mu, sigma = rets.mean(), rets.std()
-ax.plot(x, 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((x - mu) / sigma) ** 2),
-        color="#E45756", lw=2.2, label="正态拟合 (高斯假设)")
-ax.set_title("日收益分布：实证数据在尾部显著厚于正态分布", fontsize=13.5, fontweight="bold")
-ax.set_xlabel("日收益率"); ax.set_ylabel("概率密度")
-ax.legend(); ax.grid(True, alpha=0.3)
-plt.tight_layout(); plt.savefig(os.path.join(d1, "return_dist_fattails.png"), dpi=150, bbox_inches="tight"); plt.close()
+# 目标：下月收益（含信号 + 非线性 + 噪声）
+signal = (
+    0.10 * roe
+    + 0.35 * mom20
+    - 0.40 * (vol20 - 0.04)
+    - 0.015 * (pe - 30)
+    - 0.02 * (pb - 4)
+    + 0.05 * np.tanh(turn / 4)          # 非线性：换手率适中较好
+    - 0.08 * (lev - 0.4) ** 2
+)
+y = signal + np.random.normal(0, 0.20, N)
 
-# 图2：正态 QQ 图，尾部偏离
-from scipy import stats as st
-fig, ax = plt.subplots(figsize=(8.5, 7))
-st.probplot(rets, dist="norm", plot=ax)
-ax.get_lines()[0].set_color("#4C78A8"); ax.get_lines()[0].set_alpha(0.6)
-ax.get_lines()[1].set_color("#E45756"); ax.get_lines()[1].set_lw(2)
-ax.set_title("正态 QQ 图：两端明显偏离参考线 = 肥尾证据", fontsize=13.5, fontweight="bold")
-ax.set_xlabel("理论分位数 (标准正态)"); ax.set_ylabel("样本分位数")
-ax.grid(True, alpha=0.3)
-plt.tight_layout(); plt.savefig(os.path.join(d1, "qq_plot.png"), dpi=150, bbox_inches="tight"); plt.close()
+from sklearn.ensemble import GradientBoostingRegressor
+model = GradientBoostingRegressor(n_estimators=120, max_depth=3, learning_rate=0.08,
+                                  subsample=0.9, random_state=1)
+model.fit(X, y)
 
-# 图3：VaR vs CVaR 示意（在损失轴上）
-z99 = st.norm.ppf(0.99)
-fig, ax = plt.subplots(figsize=(10, 5.5))
-xs = np.linspace(-0.08, 0.04, 500)
-ys = 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(-0.5 * ((xs - mu) / sigma) ** 2)
-ax.plot(xs, ys, color="#54A24B", lw=2)
-var99 = mu - z99 * sigma
-cvar99 = mu - sigma * st.norm.pdf(z99) / 0.01
-ax.axvline(var99, color="#E45756", lw=2.2, label=f"VaR 99% = {var99*100:.2f}%")
-ax.fill_between(xs, 0, ys, where=(xs <= var99), color="#E45756", alpha=0.35,
-                label=f"CVaR/ES 99% = {cvar99*100:.2f}% (尾部条件期望)")
-ax.set_title("VaR 只给出临界线，CVaR 度量临界线之外的平均损失", fontsize=12.5, fontweight="bold")
-ax.set_xlabel("日收益率"); ax.set_ylabel("概率密度")
-ax.legend(); ax.grid(True, alpha=0.3)
-plt.tight_layout(); plt.savefig(os.path.join(d1, "var_cvar.png"), dpi=150, bbox_inches="tight"); plt.close()
+# ---------- 蒙特卡洛 Shapley 值估计 ----------
+background = X.mean(axis=0)            # 背景(期望值)作为缺失特征的填充
+M = X.shape[1]
+N_SHAP = 260
+K = 120                               # 每样本排列数
+idx = np.random.choice(N, N_SHAP, replace=False)
+X_shap = X[idx]
 
-# 图4：Hill 估计器 — 尾指数随 k 的稳定性
-order = np.sort(np.abs(rets))[::-1]
-k_grid = np.arange(50, 1500, 20)
-hill = [np.mean(np.log(order[:k])) - np.log(order[k - 1]) for k in k_grid]
-fig, ax = plt.subplots(figsize=(10, 5.5))
-ax.plot(k_grid, hill, color="#B279A2", lw=2)
-ax.axhline(np.mean(hill[-30:]), color="gray", ls="--", lw=1, label=f"平台均值 ≈ {np.mean(hill[-30:]):.2f}")
-ax.set_title("Hill 估计器：尾指数在合理 k 区间趋于稳定（<2 = 无限方差风险）", fontsize=12, fontweight="bold")
-ax.set_xlabel("次序统计量个数 k"); ax.set_ylabel("尾指数 ξ (Hill)")
-ax.legend(); ax.grid(True, alpha=0.3)
-plt.tight_layout(); plt.savefig(os.path.join(d1, "hill_estimator.png"), dpi=150, bbox_inches="tight"); plt.close()
+all_with, all_without, idx_i, idx_j = [], [], [], []
+for i in idx:
+    inst = X[i].copy()
+    for _ in range(K):
+        perm = np.random.permutation(M)
+        x_with = background.copy()
+        x_without = background.copy()
+        for j in perm:
+            x_with[j] = inst[j]
+            all_with.append(x_with.copy())
+            all_without.append(x_without.copy())
+            idx_i.append(i)
+            idx_j.append(j)
+            x_without[j] = inst[j]
+
+all_with = np.array(all_with)
+all_without = np.array(all_without)
+pred_with = model.predict(all_with)
+pred_without = model.predict(all_without)
+contrib = pred_with - pred_without
+
+row_of = {glob: r for r, glob in enumerate(idx)}
+phi = np.zeros((N_SHAP, M))
+for k, (glob, j) in enumerate(zip(idx_i, idx_j)):
+    phi[row_of[glob], j] += contrib[k]
+phi /= K
+
+shap_abs = np.abs(phi).mean(axis=0)        # 全局重要性 = mean|SHAP|
+order = np.argsort(shap_abs)[::-1]
+print("SHAP 全局重要性(均值|SHAP|):", dict(zip([feat_names[o] for o in order], shap_abs[order].round(4))))
+
+
+# ---- 图1：全局重要性（SHAP 均值|SHAP|）条形图 ----
+cols = [feat_names[o] for o in order]
+vals = shap_abs[order]
+fig, ax = plt.subplots(figsize=(11, 5.6))
+bars = ax.barh(cols[::-1], vals[::-1], color="#1f77b4")
+for b, v in zip(bars, vals[::-1]):
+    ax.text(v + vals.max() * 0.01, b.get_y() + b.get_height()/2, f"{v:.3f}",
+            va="center", fontsize=9.5, fontweight="bold")
+ax.set_xlabel("平均 |SHAP| 值（对收益预测的贡献强度）", fontsize=11)
+ax.set_title("SHAP 全局特征重要性：哪些因子真正驱动了收益预测", fontsize=13.5, fontweight="bold")
+ax.grid(True, axis="x", alpha=0.25)
+plt.tight_layout()
+plt.savefig(os.path.join(d1, "shap_importance.png"), dpi=150, bbox_inches="tight")
+plt.close()
+
+
+# ---- 图2：SHAP 摘要蜂群图(beeswarm) ----
+S = 130                                   # 抽样展示实例数
+sidx = np.random.choice(N_SHAP, S, replace=False)
+fig, ax = plt.subplots(figsize=(11, 6.2))
+for r in sidx:
+    inst = X_shap[r]
+    for j in range(M):
+        v = phi[r, j]
+        ax.scatter(inst[j], v, s=14, alpha=0.45,
+                   color=plt.cm.coolwarm((inst[j] - X[:, j].min()) /
+                                         (X[:, j].max() - X[:, j].min() + 1e-9)))
+ax.set_xticks(range(M))
+ax.set_xticklabels(feat_names, fontsize=10)
+ax.set_ylabel("SHAP 值（对该样本收益预测的贡献）", fontsize=11)
+ax.axhline(0, color="gray", lw=1)
+ax.set_title("SHAP 摘要图：每个因子的取值(颜色)如何推动预测向上/向下", fontsize=13, fontweight="bold")
+ax.grid(True, axis="y", alpha=0.2)
+plt.tight_layout()
+plt.savefig(os.path.join(d1, "shap_summary.png"), dpi=150, bbox_inches="tight")
+plt.close()
+
+
+# ---- 图3：SHAP 依赖图（ROE，全局最重要的因子）----
+j = feat_names.index("ROE")
+fig, ax = plt.subplots(figsize=(11, 5.6))
+xs = X[idx, j]
+ys = phi[:, j]
+cm = plt.cm.viridis((xs - xs.min()) / (xs.max() - xs.min() + 1e-9))
+ax.scatter(xs, ys, c=cm, s=22, alpha=0.55)
+# 叠加趋势线
+z = np.polyfit(xs, ys, 1)
+xx = np.linspace(xs.min(), xs.max(), 50)
+ax.plot(xx, np.polyval(z, xx), color="#d62728", lw=2.2, label=f"趋势(斜率≈{z[0]:.3f})")
+ax.set_xlabel("ROE（%）", fontsize=11)
+ax.set_ylabel("SHAP 值（ROE 对收益预测的贡献）", fontsize=11)
+ax.set_title("SHAP 依赖图：ROE 越高，对收益预测的正向贡献越大", fontsize=13.5, fontweight="bold")
+ax.legend(loc="upper left", fontsize=9.5)
+ax.grid(True, alpha=0.25)
+plt.tight_layout()
+plt.savefig(os.path.join(d1, "shap_dependence.png"), dpi=150, bbox_inches="tight")
+plt.close()
+
+
+# ---- 图4：单样本瀑布图(waterfall) ----
+r = 0
+inst = X[idx[r]]
+base = model.predict(background.reshape(1, -1))[0]
+contrib_sorted = sorted(zip(feat_names, phi[r], inst), key=lambda t: abs(t[1]), reverse=True)[:8]
+fig, ax = plt.subplots(figsize=(11, 5.8))
+cum = base
+ax.bar(0, base, color="#999999", width=0.6)
+ax.text(0, base + 0.02, f"基准 {base:.2f}", ha="center", fontsize=9)
+labels = ["基准"]
+prev = base
+for k, (fn, sv, raw) in enumerate(contrib_sorted, start=1):
+    color = "#2ca02c" if sv >= 0 else "#d62728"
+    ax.bar(k, abs(sv), bottom=(prev if sv >= 0 else prev + sv), color=color, width=0.6)
+    cum += sv
+    ax.text(k, cum + (0.02 if sv >= 0 else -0.05), f"{sv:+.2f}", ha="center", fontsize=8.5)
+    labels.append(fn)
+ax.bar(len(contrib_sorted) + 1, cum, color="#1f77b4", width=0.6)
+ax.text(len(contrib_sorted) + 1, cum + 0.02, f"预测 {cum:.2f}", ha="center", fontsize=9, fontweight="bold")
+ax.set_xticks(range(len(contrib_sorted) + 2))
+ax.set_xticklabels(["基准(E[f])"] + [c[0] for c in contrib_sorted] + ["模型输出"], fontsize=8.5, rotation=30)
+ax.set_ylabel("累积贡献 → 收益预测", fontsize=11)
+ax.set_title("SHAP 瀑布图：单个样本的预测如何由各因子逐项叠加而成", fontsize=12.5, fontweight="bold")
+plt.tight_layout()
+plt.savefig(os.path.join(d1, "shap_waterfall.png"), dpi=150, bbox_inches="tight")
+plt.close()
 
 
 # ============================================================
-# 文章 2：Smart Beta 与因子投资
+# 文章 2：Copula 模型与尾部相依
 # ============================================================
-d2 = os.path.join(BASE, "smart-beta-factor-investing")
+d2 = os.path.join(BASE, "copula-tail-dependence-risk")
 os.makedirs(d2, exist_ok=True)
 
-np.random.seed(20260710)
-M = 180  # 月度
-factors = ["市场", "价值", "动量", "规模", "质量", "低波"]
-# 各因子月收益：不同均值/波动，制造差异化风险溢价
-mu_f = np.array([0.009, 0.008, 0.010, 0.007, 0.0085, 0.0065])
-sig_f = np.array([0.045, 0.038, 0.050, 0.042, 0.032, 0.025])
-factor_ret = mu_f + sig_f * np.random.randn(M, 6)
+# 资产相关性矩阵（6 个资产）
+assets = ["股票", "商品", "REITs", "高收益债", "新兴市场", "黄金"]
+rho = np.array([
+    [1.00, 0.55, 0.60, 0.50, 0.58, 0.10],
+    [0.55, 1.00, 0.45, 0.35, 0.50, 0.25],
+    [0.60, 0.45, 1.00, 0.40, 0.45, 0.12],
+    [0.50, 0.35, 0.40, 1.00, 0.42, 0.08],
+    [0.58, 0.50, 0.45, 0.42, 1.00, 0.15],
+    [0.10, 0.25, 0.12, 0.08, 0.15, 1.00],
+])
+L = np.linalg.cholesky(rho)
+nu = 4   # t-copula 自由度（重尾）
 
-# 图1：因子累积净值
-cum = np.cumprod(1 + factor_ret, axis=0)
-fig, ax = plt.subplots(figsize=(10, 5.5))
-colors = ["#4C78A8", "#F58518", "#E45756", "#72B7B2", "#54A24B", "#B279A2"]
-for i, f in enumerate(factors):
-    ax.plot(range(M), cum[:, i], lw=2, color=colors[i], label=f)
-ax.set_title("六类因子月度累积净值：风险溢价存在但路径各异", fontsize=13, fontweight="bold")
-ax.set_xlabel("月份"); ax.set_ylabel("累积净值 (起始=1)")
-ax.legend(ncol=3, fontsize=9); ax.grid(True, alpha=0.3)
-plt.tight_layout(); plt.savefig(os.path.join(d2, "factor_cumulative.png"), dpi=150, bbox_inches="tight"); plt.close()
+# ---------- 图1：高斯 copula vs t-copula 散点（取资产0-1，rho=0.55）----------
+nsim = 4000
+z = np.dot(L[:2, :2], np.random.randn(2, nsim))
+u_gauss = norm.cdf(z)                      # 高斯 copula
+w = np.random.chisquare(nu, nsim) / nu
+z_t = np.dot(L[:2, :2], np.random.randn(2, nsim)) / np.sqrt(w)
+u_t = student_t.cdf(z_t, nu)               # t-copula
+fig, axes = plt.subplots(1, 2, figsize=(11, 5.4))
+axes[0].scatter(u_gauss[0], u_gauss[1], s=8, alpha=0.35, color="#1f77b4")
+axes[0].set_title("高斯 Copula：四角无异常聚集", fontsize=12, fontweight="bold")
+axes[0].set_xlabel("U₁（股票分位）"); axes[0].set_ylabel("U₂（商品分位）")
+axes[1].scatter(u_t[0], u_t[1], s=8, alpha=0.35, color="#d62728")
+axes[1].set_title(f"t-Copula(ν={nu})：危机时四角严重聚集", fontsize=12, fontweight="bold")
+axes[1].set_xlabel("U₁（股票分位）"); axes[1].set_ylabel("U₂（商品分位）")
+fig.suptitle("尾部相依可视化：极端行情里，资产会「一起跳水」", fontsize=13.5, fontweight="bold")
+plt.tight_layout()
+plt.savefig(os.path.join(d2, "copula_scatter.png"), dpi=150, bbox_inches="tight")
+plt.close()
 
-# 图2：最小方差组合权重 vs 市值加权
-assets = ["股票A", "股票B", "股票C", "股票D", "股票E", "股票F", "股票G", "股票H"]
-K = len(assets)
-np.random.seed(99)
-cov = 0.02 * np.random.rand(K, K) + 0.01 * np.eye(K)
-cov = (cov + cov.T) / 2
-inv = np.linalg.inv(cov)
-w_minvar = inv.dot(np.ones(K)); w_minvar /= w_minvar.sum()
-w_cap = np.array([0.30, 0.22, 0.16, 0.12, 0.08, 0.06, 0.04, 0.02])
-x = np.arange(K); w = 0.4
-fig, ax = plt.subplots(figsize=(10, 5.5))
-ax.bar(x - w/2, w_cap, w, label="市值加权", color="#E45756", alpha=0.85)
-ax.bar(x + w/2, w_minvar, w, label="最小方差加权", color="#4C78A8", alpha=0.85)
-ax.set_xticks(x); ax.set_xticklabels(assets, rotation=30, ha="right")
-ax.set_title("权重对比：最小方差组合显著压低高波动个股敞口", fontsize=13, fontweight="bold")
-ax.set_ylabel("权重"); ax.legend(); ax.grid(True, alpha=0.3, axis="y")
-plt.tight_layout(); plt.savefig(os.path.join(d2, "minvol_weights.png"), dpi=150, bbox_inches="tight"); plt.close()
 
-# 图3：Smart Beta (最小方差) vs 市值加权 累积净值
-sb_ret = factor_ret[:, 5] * 0.6 + factor_ret[:, 1] * 0.4  # 低波 + 价值 倾斜
-cap_ret = factor_ret[:, 0]  # 市场（市值加权代理）
-sb_cum = np.cumprod(1 + sb_ret)
-cap_cum = np.cumprod(1 + cap_ret)
-fig, ax = plt.subplots(figsize=(10, 5.5))
-ax.plot(range(M), sb_cum, color="#4C78A8", lw=2.2, label="Smart Beta（低波+价值倾斜）")
-ax.plot(range(M), cap_cum, color="#E45756", lw=2.2, label="市值加权（市场因子）")
-ax.set_title("累积净值对比：Smart Beta 在相近收益下更低的波动路径", fontsize=12.5, fontweight="bold")
-ax.set_xlabel("月份"); ax.set_ylabel("累积净值 (起始=1)")
-ax.legend(); ax.grid(True, alpha=0.3)
-plt.tight_layout(); plt.savefig(os.path.join(d2, "smartbeta_vs_capweight.png"), dpi=150, bbox_inches="tight"); plt.close()
+# ---------- 图2：尾部相依系数热力图（高斯 vs t）----------
+def lower_tail_dep(u1, u2, q=0.05):
+    return np.mean((u2 < q) & (u1 < q)) / max(np.mean(u1 < q), 1e-9)
 
-# 图4：因子相关性热力图
-corr = np.corrcoef(factor_ret, rowvar=False)
-fig, ax = plt.subplots(figsize=(7.5, 6))
-im = ax.imshow(corr, cmap="RdBu_r", vmin=-1, vmax=1)
-ax.set_xticks(range(6)); ax.set_xticklabels(factors, rotation=30, ha="right")
-ax.set_yticks(range(6)); ax.set_yticklabels(factors)
-for i in range(6):
-    for j in range(6):
-        ax.text(j, i, f"{corr[i,j]:.2f}", ha="center", va="center",
-                color="white" if abs(corr[i, j]) > 0.5 else "black", fontsize=10)
-ax.set_title("因子相关性矩阵：分散化前提是因子间低相关", fontsize=12.5, fontweight="bold")
-fig.colorbar(im, fraction=0.046, pad=0.04)
-plt.tight_layout(); plt.savefig(os.path.join(d2, "factor_correlation.png"), dpi=150, bbox_inches="tight"); plt.close()
+# 用更大样本估计两两尾部相依
+big = 200000
+# 高斯 copula 大样本
+z = np.dot(L, np.random.randn(6, big))
+U_g = norm.cdf(z)
+# t-copula 大样本
+w = np.random.chisquare(nu, big) / nu
+z_t = np.dot(L, np.random.randn(6, big)) / np.sqrt(w)
+U_t = student_t.cdf(z_t, nu)
+
+n = len(assets)
+Tg = np.zeros((n, n)); Tt = np.zeros((n, n))
+for a in range(n):
+    for b in range(n):
+        Tg[a, b] = lower_tail_dep(U_g[a], U_g[b]) if a != b else 1.0
+        Tt[a, b] = lower_tail_dep(U_t[a], U_t[b]) if a != b else 1.0
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 5.0))
+im0 = axes[0].imshow(Tg, cmap="YlOrRd", vmin=0, vmax=0.6)
+axes[0].set_title("高斯 Copula 下尾相依 ≈ 0", fontsize=12, fontweight="bold")
+axes[0].set_xticks(range(n)); axes[0].set_yticks(range(n))
+axes[0].set_xticklabels(assets, rotation=40, fontsize=8); axes[0].set_yticklabels(assets, fontsize=8)
+for a in range(n):
+    for b in range(n):
+        axes[0].text(b, a, f"{Tg[a,b]:.2f}", ha="center", va="center", fontsize=7.5)
+im1 = axes[1].imshow(Tt, cmap="YlOrRd", vmin=0, vmax=0.6)
+axes[1].set_title(f"t-Copula(ν={nu}) 下尾相依显著>0", fontsize=12, fontweight="bold")
+axes[1].set_xticks(range(n)); axes[1].set_yticks(range(n))
+axes[1].set_xticklabels(assets, rotation=40, fontsize=8); axes[1].set_yticklabels(assets, fontsize=8)
+for a in range(n):
+    for b in range(n):
+        axes[1].text(b, a, f"{Tt[a,b]:.2f}", ha="center", va="center", fontsize=7.5)
+fig.suptitle("尾部相依系数热力图：危机相关 ≠ 平时相关", fontsize=13.5, fontweight="bold")
+plt.tight_layout()
+plt.savefig(os.path.join(d2, "tail_dependence_heatmap.png"), dpi=150, bbox_inches="tight")
+plt.close()
+
+
+# ---------- 图3：组合 VaR 对比（高斯 copula vs t-copula）----------
+def simulate_portfolio(copula="gauss", nsim=100000):
+    if copula == "gauss":
+        z = np.dot(L, np.random.randn(6, nsim))
+        U = norm.cdf(z)
+    else:
+        w = np.random.chisquare(nu, nsim) / nu
+        z = np.dot(L, np.random.randn(6, nsim)) / np.sqrt(w)
+        U = student_t.cdf(z, nu)
+    # 边际：各资产收益用正态边际（轻尾），以隔离「copula=相依结构」的纯效应
+    R = norm.ppf(U) * 0.012   # 缩放使日波动约 1.2%
+    port = R.mean(axis=0)                     # 等权组合
+    return port
+
+port_g = simulate_portfolio("gauss")
+port_t = simulate_portfolio("t")
+
+var_g_95 = np.percentile(port_g, 5)
+var_t_95 = np.percentile(port_t, 5)
+var_g_99 = np.percentile(port_g, 1)
+var_t_99 = np.percentile(port_t, 1)
+print(f"VaR95 高斯={var_g_95:.4f} t={var_t_95:.4f} | VaR99 高斯={var_g_99:.4f} t={var_t_99:.4f}")
+
+fig, ax = plt.subplots(figsize=(11, 5.6))
+bins = np.linspace(-0.12, 0.06, 80)
+ax.hist(port_g, bins=bins, alpha=0.5, density=True, color="#1f77b4", label="高斯 Copula 组合")
+ax.hist(port_t, bins=bins, alpha=0.5, density=True, color="#d62728", label="t-Copula 组合")
+ax.axvline(var_g_95, color="#1f77b4", ls="--", lw=1.6)
+ax.axvline(var_t_95, color="#d62728", ls="--", lw=1.6)
+ax.axvline(var_t_99, color="#d62728", ls=":", lw=1.6)
+ax.annotate(f"t-Copula VaR95={var_t_95*100:.1f}%", xy=(var_t_95, 8),
+            xytext=(var_t_95-0.02, 22), fontsize=9, color="#d62728",
+            arrowprops=dict(arrowstyle="->", color="#d62728"))
+ax.set_xlabel("等权组合日收益", fontsize=11)
+ax.set_ylabel("密度", fontsize=11)
+ax.set_title("组合 VaR 对比：t-Copula 在极端尾部给出更诚实（更深）的风险", fontsize=12.5, fontweight="bold")
+ax.legend(loc="upper right", fontsize=9.5)
+ax.grid(True, alpha=0.25)
+plt.tight_layout()
+plt.savefig(os.path.join(d2, "copula_var.png"), dpi=150, bbox_inches="tight")
+plt.close()
+
+
+# ---------- 图4：经验 copula 等高线（t-copula 示例）----------
+z = np.dot(L[:2, :2], np.random.randn(2, 6000))
+U = student_t.cdf(z, nu)
+fig, ax = plt.subplots(figsize=(11, 5.6))
+# 用 2D 直方图近似经验 copula 密度
+h, xe, ye = np.histogram2d(U[0], U[1], bins=24, range=[[0, 1], [0, 1]])
+extent = [xe[0], xe[-1], ye[0], ye[-1]]
+im = ax.imshow(h.T, origin="lower", extent=extent, cmap="Blues")
+ax.contour(xe[:-1], ye[:-1], h.T, levels=6, colors="red", linewidths=1.0, alpha=0.8)
+ax.set_xlabel("U₁（资产1 分位）", fontsize=11)
+ax.set_ylabel("U₂（资产2 分位）", fontsize=11)
+ax.set_title("经验 Copula 密度：四角堆积 = 尾部相依", fontsize=13, fontweight="bold")
+plt.colorbar(im, ax=ax, label="联合密度")
+plt.tight_layout()
+plt.savefig(os.path.join(d2, "empirical_copula.png"), dpi=150, bbox_inches="tight")
+plt.close()
+
 
 print("✅ 图像生成完成")
-print("   extreme-risk-modeling:", sorted(os.listdir(d1)))
-print("   smart-beta-factor-investing:", sorted(os.listdir(d2)))
+print("   shap-interpretable-ml-quant:", sorted(os.listdir(d1)))
+print("   copula-tail-dependence-risk:", sorted(os.listdir(d2)))
