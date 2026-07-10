@@ -1,10 +1,14 @@
 ---
 title: "因子择时：动态调整因子暴露"
+publishDate: '2026-06-23'
 description: "深入探讨因子择时的理论基础与实践方法，从无-risk因子配置到宏观经济状态切换，通过Python实现动态调整因子暴露的完整框架。"
-pubDate: 2026-06-23
-tags: ["因子投资", "因子择时", "量化策略", "风险管理", "Python"]
-category: "因子投资"
-cover: "/images/factor-timing/cover.jpg"
+tags:
+ - 因子投资
+ - 因子择时
+ - 量化策略
+ - 风险管理
+ - Python
+language: Chinese
 ---
 
 # 因子择时：动态调整因子暴露
