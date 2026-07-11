@@ -1,0 +1,16 @@
+{
+  "ic_ridge": 0.0171,
+  "ls_ann": 21.4,
+  "ls_sharpe": 6.01,
+  "ls_daily_mean_bps": 7.7,
+  "ic_pca_top1": 0.0024,
+  "pca_explained_top10": 2.9,
+  "impact_Q": 50000,
+  "IS_bps": 14.9,
+  "perm_bps": 15.0,
+  "temp_peak_bps": 29.62,
+  "temp_avg_bps": 14.81,
+  "market_move_bps": -31.1,
+  "trade_impact_bps": 29.8,
+  "sqrt_slope": 161.7
+}
