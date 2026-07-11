@@ -10,6 +10,8 @@ layout: page
 
 ## 最新文章
 ### 2026-07-11 新发布
+- [2026-07-11 - 扩散模型生成合成行情：用 DDPM 做组合压力测试](/blog/diffusion-synthetic-market/) - 🎲 历史太短、极端行情稀少，本文用纯 numpy 手写 DDPM 扩散模型生成海量合成 30 日行情，把历史里稀疏的尾部补全、给出更稳的压力 VaR，并诚实列出过弥散、无法凭空创造新危机等真实陷阱（高阶）
+- [2026-07-11 - 注意力机制的可解释性：用特征归因解释模型决策](/blog/attention-interpretability-quant/) - 🔍 注意力权重只告诉你模型「看了哪里」≠「哪里重要」；用纯 numpy 搭特征级自注意力收益预测器，对比注意力与 Integrated Gradients 归因——后者更锋利地锁定真正驱动预测的因子，并给出归因的实战边界（高阶）
 - [2026-07-11 - 深度强化学习的离线批处理(Offline RL)在交易中的应用](/blog/offline-rl-trading/) - 🤖 在线 RL 在交易里等于拿真金白银探索，几乎不可用；Offline RL 只用历史数据学策略，但朴素离线 Q 因分布偏移给未支持动作虚高估值、收益崩塌，附行为克隆 / 保守 Q 学习(CQL)解法与落地清单（高阶）
 - [2026-07-11 - 因果推断与双重差分(DID)：从相关性到策略可解释性](/blog/causal-inference-quant/) - 🎯 用潜在结果框架讲清「相关性≠因果」，从零实现 DID 估计 + 集群 bootstrap 置信区间 + 事件研究 CAR，并诚实列出平行趋势不可检验、预期效应等真实陷阱（高阶）
 - [2026-07-11 - 量子计算在组合优化中的早期应用与 NISQ 现实](/blog/quantum-portfolio-optimization/) - ⚛️ 用 numpy 手写 statevector QAOA，在 10 只股票选 4 只的 QUBO 上把近似比跑满 1.0，再戳破 NISQ 现实：量子比特数、噪声、嵌入惩罚与 barren plateau 三道墙，讲清它今天能干什么、不能干什么（高阶）

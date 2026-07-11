@@ -1,0 +1,15 @@
+windows_train=4000
+syn_samples=10000
+real_mean_daily=3.945895604770997e-05
+real_std_daily=0.024346107650038466
+final_train_loss=0.8993
+loss_first=2.3348
+loss_last=0.9292
+cum_real_mean=0.0012
+cum_syn_mean=-0.0028
+cum_real_std=0.1318
+cum_syn_std=0.1712
+VaR99_real=0.3392
+VaR99_syn=0.4031
+VaR95_real=0.2074
+VaR95_syn=0.2856

@@ -1,0 +1,10 @@
+F=8
+T=20
+TRUE_FEAT=3
+r2_train=0.91
+r2_test=0.781
+best_val_r2=0.781
+ig_top1_acc=0.625
+attn_top1_acc=0.487
+ig_share_true=0.408
+attn_share_true=0.313
