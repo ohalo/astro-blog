@@ -1,0 +1,10 @@
+M=2500 nb=18 na=3
+oracle_ret=0.4972
+behavior_ret=0.3340
+bc_ret=0.3630
+naive_ret=0.0000
+cql_ret=0.0000
+naive_long_low=0.1644
+true_long_low=0.1000
+naive_short_high=0.1641
+true_short_high=0.1000

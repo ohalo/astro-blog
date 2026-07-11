@@ -1,0 +1,6 @@
+N=90 T=120 n_treat=30 tau_true=0.004
+tau_hat=0.004150
+ci=[0.003279,0.004982]
+pre_trend_gap_slope=2.205957e-05
+car_final=0.097823
+cell_means(percent)=0.0395,0.5695,0.0293,0.1442
