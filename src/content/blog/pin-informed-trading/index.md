@@ -1,6 +1,6 @@
 ---
 title: "PIN 模型：用知情交易概率量化市场透明度"
-description: "市场透明度能不能被一个数字量化？PIN(Probability of Informed Trading)用 EKOP 订单流模型，把「每天有多大概率有人在靠内幕信息交易」变成可估计的概率。本文从 Poisson 混合似然推导到 MLE 从零实现，并用 Monte Carlo 与滚动窗口验证它如何捕捉市场透明度的结构性突变（高阶）。"
+description: "市场透明度能被一个数字量化吗？PIN(知情交易概率)用 EKOP 订单流模型，把「每天多大概率有人在靠信息交易」变成可估计概率，并从 MLE 实现到滚动监控验证它捕捉透明度突变（高阶）。"
 publishDate: '2026-07-13'
 tags:
   - 量化交易
