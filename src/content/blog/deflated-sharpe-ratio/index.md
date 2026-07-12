@@ -1,7 +1,7 @@
 ---
 title: "夏普比率的统计量误差与 Deflated Sharpe Ratio：别被好运气骗了"
 publishDate: '2026-07-12'
-description: "你的策略回测出夏普 0.8，激动吗？先别急——夏普比率本身是一个被噪声严重污染的随机变量。本文讲清它的抽样误差、概率夏普比率(PSR)如何修正偏度/厚尾、多选偏差如何让『最佳策略』只是噪声里最响的那一声，以及 Deflated Sharpe Ratio(DSR)怎样把选法偏差一次性扣掉。配 4 张真实图表与完整 Python。"
+description: "夏普比率是被噪声严重污染的随机变量。本文讲清其抽样误差、概率夏普比率(PSR)如何修正偏度/厚尾，以及 Deflated Sharpe Ratio 怎样把多选偏差一次性扣掉。配 4 张图表与完整 Python。"
 tags:
   - 量化交易
   - 夏普比率

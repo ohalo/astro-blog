@@ -1,7 +1,7 @@
 ---
 title: "波动率微笑的 SVI 参数化：用一条曲线吃下整张隐含波动率曲面"
 publishDate: '2026-07-12'
-description: "期权的隐含波动率不是一个数，而是到期和行权价的二维曲面；原始报价还带噪声、甚至隐含套利。SVI(Stochastic Volatility Inspired)用区区 5 个参数把一条微笑、整张曲面平滑地吃下去，并顺手给出风险中性密度。本文从微笑形态讲起，逐月最小二乘拟合 SVI，恢复曲面，再用 Breeden-Litzenberger 反推密度并指出『误校准 SVI 如何给出负密度=蝶式套利』。配 4 张真实图表与完整 Python。"
+description: "裸 IV 报价带噪且可能隐含套利。SVI 用 5 个参数把整条微笑、整张曲面平滑吃下，并用 Breeden-Litzenberger 反推风险中性密度、亮出蝶式套利红旗。配 4 张图表与完整 Python。"
 tags:
   - 量化交易
   - 期权定价
