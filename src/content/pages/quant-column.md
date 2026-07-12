@@ -10,6 +10,8 @@ layout: page
 
 ## 最新文章
 ### 2026-07-12 新发布
+- [2026-07-12 - Purged K-Fold 交叉验证：给回测一个诚实的样本外](/blog/purged-kfold-cv/) - 🔍 金融标签常向前看、相邻标签高度重叠，普通 KFold 打乱靠抄邻居刷出 0.745 的虚假 AUC；Purged K-Fold 用 purge+embargo 把近重复删掉，逼出 0.487 的真相，附完整 Python（高阶）
+- [2026-07-12 - 做市商库存风险与 Glosten-Milgrom 模型：报价如何随信息调整](/blog/glosten-milgrom-mm/) - 💱 G-M(1985) 用贝叶斯把买卖价差解释为逆向选择成本：知情买盘推高报价、卖盘压低；再加库存风险让报价随持仓下移、价差加宽，附完整 Python（高阶）
 - [2026-07-12 - 波动率微笑的 SVI 参数化：用一条曲线吃下整张隐含波动率曲面](/blog/volatility-smile-svi/) - 📐 裸 IV 报价带噪且可能隐含套利；SVI 用 5 参数(a,b,ρ,m,σ)对总方差建模，逐月最小二乘把 4 条微笑拟合到 IV-RMSE≈0.002，恢复平滑曲面，再用 Breeden-Litzenberger 反推风险中性密度并亮出「误校准 SVI 给出负密度=蝶式套利」的红旗，附完整 Python（高阶）
 - [2026-07-12 - 夏普比率的统计量误差与 Deflated Sharpe Ratio：别被好运气骗了](/blog/deflated-sharpe-ratio/) - 🎲 夏普比率是被噪声严重污染的随机变量：60 个月样本 SE≈1/√T≈0.13，真 SR=0 也有 0.16% 概率「看起来」>0.4；概率夏普 PSR 用偏度/峰度修正分母，Deflated Sharpe 再把「从 N 个里挑最好」的选法偏差扣掉——同一候选 SR=0.4，朴素 PSR 死守 99.9% 而 DSR 随测试数 1→500 从 99.8% 崩到 43.7%，附完整 Python（高阶）
 - [2026-07-12 - 分数阶差分 fracdiff：在平稳与记忆之间找平衡点](/blog/fractional-differentiation-fracdiff/) - 📐 机器学习做量化最隐蔽的坑：直接用价格(非平稳)引入伪相关、用收益率(一阶差分)又把记忆丢光；分数阶差分 (1-L)^d 用 0<d<1 在「平稳」与「记忆」间取折中，扫 d 看 ADF 平稳性与记忆保留的权衡曲线，附权重公式/自相关对比/完整 Python（高阶）
