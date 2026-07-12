@@ -1,0 +1,158 @@
+---
+title: 概念漂移检测：当因子开始失效时如何早发现
+publishDate: '2026-07-12'
+description: 概念漂移检测：当因子开始失效时如何早发现 - halo的技术博客
+tags:
+  - 量化交易
+  - 量化专栏
+  - 因子投资
+  - 机器学习
+language: Chinese
+difficulty: advanced
+---
+
+## 因子是会过期的
+
+一个因子昨天 IC 0.08、多空 Sharpe 3.0，今天还在跑，但下个月开始悄悄亏钱——这是量化研究里最贵的事故之一。问题不在于因子"错了"，而在于它和市场的**关系变了**：这叫**概念漂移（concept drift）**。
+
+更坑的是：你用来"盯因子还灵不灵"的很多指标，盯的根本不是同一个东西。本文用一个可控合成实验，把"概念漂移"和"协变量漂移"拆开，告诉你该用**性能监控**（IC 类）还是**分布监控**（PSI/KL 类），并对比四种检测器在延迟与误报上的真实权衡。
+
+## 一、先分清两种漂移
+
+设因子暴露为 X，收益为 y，关系 y = β·X + ε。
+
+- **概念漂移（concept drift）**：β 变了，即 P(y|X) 变了。X 的边际分布没动，但因子对收益的预测力塌了。例：动量因子在 regime 切换后失效。
+- **协变量漂移（covariate shift）**：X 的边际分布变了（均值/方差漂移），但 β 没变。例：数据口径换了、某板块被纳入指数导致因子值整体抬升。
+
+这一点至关重要：**监控 X 的分布（PSI/KL）抓得到协变量漂移，却抓不到概念漂移**——因为概念漂移里 X 根本没变。下面用实验证明。
+
+## 二、用滚动 IC 看因子失效
+
+合成数据：X~N(0,1)，y = β·X + ε，ε~N(0,0.04)；前 500 天 β=0.05（因子有效），第 500 天起 β 衰减到 0.012（因子"半死"），共 1000 天。滚动 60 日 IC 如下：
+
+```python
+import numpy as np
+N, DRIFT, WIN = 1000, 500, 60
+rng = np.random.default_rng(20260712)
+X = rng.normal(0, 1, N)
+beta = np.where(np.arange(N) < DRIFT, 0.05, 0.012)
+y = beta * X + rng.normal(0, 0.04, N)
+
+def rolling_ic(X, y, w=WIN):
+    out = np.full(len(X), np.nan)
+    for t in range(w, len(X)):
+        out[t] = np.corrcoef(X[t-w:t], y[t-w:t])[0, 1]
+    return out
+
+ic = rolling_ic(X, y)
+pre, post = np.nanmean(ic[WIN:DRIFT]), np.nanmean(ic[DRIFT+WIN:])
+print(f"漂移前 IC={pre:.4f}  漂移后 IC={post:.4f}  衰减{(1-post/pre)*100:.1f}%")
+```
+
+实测：漂移前平均 IC=**0.7607**，漂移后**0.2858**，**衰减 62.4%**。注意这里用的是"因子暴露与收益的相关系数"作为 IC 的代理（合成数据里 β 直接是系数，所以 IC 很高）；实盘里 IC 通常小一个数量级，但"下台阶"的形状一模一样。
+
+![因子 IC 在概念漂移点后明显下台阶](/images/concept-drift-detection/drift_ic_over_time.png)
+
+图里的 −2σ 控制带是漂移前的基准。IC 在 t=500 之后系统性跌破下轨——这就是概念漂移在性能监控上的"指纹"。
+
+## 三、分布监控的盲区：PSI/KL 为什么抓不到概念漂移
+
+现在分别对 X（因子分布）算 PSI 和 KL 散度，基准取漂移前 250 天。关键看两件事：**概念漂移场景**（X 不变）和**协变量漂移场景**（X 均值 0→0.3，β 不变）。
+
+```python
+def psi(expected, actual, bins=8):
+    edges = np.quantile(expected, np.linspace(0, 1, bins+1))
+    edges[0] -= 1e-9; edges[-1] += 1e-9
+    e = np.histogram(expected, bins=edges)[0] / len(expected)
+    a = np.histogram(actual, bins=edges)[0] / len(actual)
+    e = np.clip(e, 1e-6, None); a = np.clip(a, 1e-6, None)
+    return np.sum((a - e) * np.log(a / e))
+
+def kl_gauss(x_ref, x_new):
+    edges = np.linspace(min(x_ref.min(), x_new.min())-0.5,
+                        max(x_ref.max(), x_new.max())+0.5, 21)
+    p = np.histogram(x_ref, bins=edges)[0] + 1e-6
+    q = np.histogram(x_new, bins=edges)[0] + 1e-6
+    p, q = p/p.sum(), q/q.sum()
+    return np.sum(p * np.log(p / q))
+```
+
+实验结果：
+- **概念漂移场景**：PSI 峰值 1.785，但出现在 t≈695——**随机散布，并不在漂移点 t=500**。这些偶发尖峰是 60 日窗 + 分箱稀疏导致的空箱噪声，不是真漂移信号。换句话说，X 的分布没变，PSI 自然不会在 t=500 系统性抬升 → **漏报**。
+- **协变量漂移场景**：X 均值从 0 移到 0.3，PSI 峰值 0.508、KL 峰值 2.154，两者都在 **t=500 处系统性抬升** → **抓住**。
+
+![PSI/KL 对两类漂移的响应](/images/concept-drift-detection/drift_psi_kl.png)
+
+这张双面板图是全文的核心教训：**上图里 IC（右轴）在 t=500 明显下台阶，PSI（左轴）却毫无反应——因为概念漂移里 X 没动；下图里 X 一动，PSI/KL 立刻跳起来。** 所以 PSI/KL 是"协变量漂移检测器"，不是"因子有效性检测器"。用 PSI 去监控一个因子的预测力，等于用体温计量血压。
+
+## 四、性能监控检测器对比：谁更早、谁更稳
+
+既然概念漂移要盯性能（IC），那用哪种序列监控最快、最稳？我们在上面的概念漂移数据上，用 150 次蒙特卡洛对比四种方案（都以漂移前滚动 IC 为基准，采用运行规则抑制噪声误报；误报率 = 漂移前处于报警状态的点数占比）：
+
+| 检测器 | 平均检测延迟（天） | 漂移前误报率 |
+|---|---|---|
+| Shewhart 单点（3σ） | 22.7 | 0.26% |
+| Shewhart 2-of-3 | 24.2 | 0.18% |
+| CUSUM（k=0.30, h=1.5） | 62.6 | 0.00% |
+| EWMA（60 日窗） | 28.5 | 0.12% |
+| EWMA（20 日窗） | 18.6 | 0.61% |
+
+```python
+def alarm_state(ic, mu, sd, method, win=60, L=3.0, k=0.30, h=1.5, lam=0.2, Lc=3.0, run=3):
+    n = len(ic); alarm = np.zeros(n, dtype=bool)
+    if method == "shewhart_raw":
+        return ic < (mu - L*sd)
+    if method == "shewhart":           # 2-of-3 运行规则
+        below = ic < (mu - L*sd)
+        for t in range(2, n):
+            if below[t] and (below[t-1] or below[t-2]):
+                alarm[t] = True
+        return alarm
+    if method == "cusum":              # 向下累计和
+        S = 0.0
+        for t in range(n):
+            if np.isnan(ic[t]): continue
+            S = max(0.0, S + (mu - ic[t] - k))
+            if S > h: alarm[t] = True
+        return alarm
+    if method == "ewma":               # EWMA + 连续 run 规则
+        z = ic[win]; zh = np.full(n, np.nan); zh[win] = z
+        for t in range(win+1, n):
+            z = lam*ic[t] + (1-lam)*z; zh[t] = z
+        sd_z = np.nanstd(zh[win:500])  # 用漂移前经验 std 设限（IC 自相关，不能套公式）
+        below = zh < (mu - Lc*sd_z)
+        for t in range(run-1, n):
+            if np.all(below[t-run+1:t+1]): alarm[t] = True
+        return alarm
+```
+
+![四种概念漂移检测器对比](/images/concept-drift-detection/drift_detect_compare.png)
+
+读这张图要抓住三点：
+
+1. **全部低误报。** 运行规则 + 3σ 把漂移前误报压到 1% 以内，CUSUM 甚至 0.00%——说明这些检测器不会"狼来了"。
+2. **延迟主要被滚动 IC 的窗长决定。** 60 日 IC 要等窗口一半进入漂移段（约 t=560）才真正下台阶，所以再灵敏的检测器也得等 IC 先动。这不是检测器的锅，是**监控信号本身的滞后**。
+3. **窗越短越快、但噪声越大。** 20 日窗 EWMA 延迟 18.6 天、误报 0.61%；60 日窗 EWMA 延迟 28.5 天、误报仅 0.12%。CUSUM 因为阈值设得保守（要累计足够大的偏移才报警），延迟最长为 62.6 天——这是"少误报 vs 早发现"的取舍，k/h 调小就能更快但更易误报。
+
+## 五、实战落地清单
+
+- **双轨监控。** 因子有效性用性能监控（滚动 IC、分层多空收益、组合 Sharpe 的滚动表现）；因子分布用 PSI/KL 做协变量监控。两条线职责不同，别混。
+- **报警后别立刻拔因子。** 先确认是协变量漂移（数据/口径变了，可修复）还是真概念漂移（关系坏了，该降权）。用滚动窗口的样本外表现交叉验证，而不是看一眼就砍。
+- **用运行规则压误报。** 单点 3σ 太敏感，2-of-3 或 CUSUM/EWMA 的连续触发能砍掉绝大多数噪声误报。
+- **窗长权衡。** 想要早发现就缩短 IC 窗口（20–30 日），代价是误报率上升；想要稳就加长（60 日）。多因子组合能天然分散单一因子漂移，比单因子死磕监控更省心。
+- **阈值要校准。** 用历史误报率定报警线，而不是拍脑袋。漂移点之后的样本不要用来定阈值（那是未来信息，前视）。
+
+## 六、真实陷阱（别踩）
+
+- **陷阱 1：只监控收益不监控 IC。** 市场整体上涨时，因子多空可能还在赚，但 IC 早已塌了——收益被 Beta 掩盖，等你发现时已亏一截。
+- **陷阱 2：用 PSI 监控因子有效性。** 这是最常见的张冠李戴：PSI 看 X 分布，概念漂移里 X 不变，所以 PSI 静悄悄→你以为因子还活着。
+- **陷阱 3：窗口太长发现太晚。** 用 250 日 IC 做监控，漂移发生半年后才报警，黄花菜都凉了。
+- **陷阱 4：忽略多重检验。** 你同时监控 50 个因子，每个 1% 月误报率，整体几乎必有误报。要按因子数做误报率校正（如 Bonferroni / FDR）。
+- **陷阱 5：样本外被漂移污染。** 漂移点之后的数据，标签分布已经变了，拿它做"验证因子还行"的回测是自欺。
+- **陷阱 6：用未来定阈值。** 拿包含漂移段的全样本算 IC 均值当基准，等于把答案写进题目。
+
+## 小结
+
+因子失效的本质是概念漂移：**β 变、X 不变**。因此盯因子还灵不灵，要盯**性能（IC/多空收益）**，而不是因子分布（PSI/KL 只管协变量漂移）。性能监控里，运行规则能把误报压到 1% 以内，检测延迟主要取决于你用的 IC 窗口长度——想早发现就缩短窗口，代价是噪声上升。把"双轨监控 + 运行规则 + 阈值校准"接进你的因子生产流水线，因子过期时能早几周发现，而这几周往往就是回撤和保命的差别。
+
+> 全部数字由文中逻辑真实计算：合成 β 从 0.05 衰减到 0.012（t=500，N=1000，WIN=60）；PSI 用 8 分箱、60 日窗；检测器对比为 150 次蒙特卡洛，误报率定义为漂移前处于报警状态的点数占比。
