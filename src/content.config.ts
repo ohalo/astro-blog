@@ -17,8 +17,8 @@ const blog = defineCollection({
   schema: ({ image }) =>
     z.object({
       // Required
-      title: z.string().max(60),
-      description: z.string().max(160),
+      title: z.string().max(150),
+      description: z.string().max(600),
       publishDate: z.coerce.date(),
       // Optional
       updatedDate: z.coerce.date().optional(),
@@ -46,8 +46,8 @@ const docs = defineCollection({
   loader: glob({ base: './src/content/docs', pattern: '**/*.{md,mdx}' }),
   schema: () =>
     z.object({
-      title: z.string().max(60),
-      description: z.string().max(160),
+      title: z.string().max(150),
+      description: z.string().max(600),
       publishDate: z.coerce.date().optional(),
       updatedDate: z.coerce.date().optional(),
       tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
