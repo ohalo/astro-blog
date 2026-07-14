@@ -11,6 +11,9 @@ layout: page
 ## 最新文章
 ### 2026-07-14 新发布
 
+- [2026-07-14 - 波动率管理组合(Moreira-Muir)：用已实现波动缩放敞口而非预测方向](/blog/volatility-managed-portfolio/) - 📉 波动率管理组合(VM) 不预测方向只缩放敞口：w_t=c/σ̂_t² 把风险预算钉死、高波动期自动去杠杆。合成里它把年化波动从 16.1% 压到 5.6%(降 65%)、最大回撤从 −49% 砍到 −18.6%(降 62%)，Sharpe 几乎不变(0.320→0.285)——省下的是冗余风险不是 alpha，附完整 Python 与六类真实陷阱（高阶）
+- [2026-07-14 - 智能订单路由(SOR)：在多个交易场所之间把大单拆成最优流](/blog/smart-order-routing-venues/) - 🧭 智能订单路由(SOR) 用二次临时冲击成本把大单拆到多场所，water-filling 凸优化逐期自适应重配：5 场所合成里实现短缺从等权的 17.0 bps 降到 7.8 bps(降 54%)、方差从 6.5 砍到 2.8；静态成本分配均值省 1.6% 却标准差 13.3(碰枯竭就崩)，附完整 Python 与六类真实陷阱（高阶）
+
 - [2026-07-14 - 最优传输(Wasserstein)资产配置：用 Earth Mover's Distance 把分布差异变成权重](/blog/optimal-transport-portfolio/) - 🚚 把两个收益分布的 Earth Mover's Distance(1-Wasserstein)当「形状差异」，用 softmax(−β·W1) 软分配权重：离标杆分布越近权重越大。合成里样本内「幸运肥尾」资产 Sharpe 3.92、样本外崩到 −0.72，均值贪婪把 100% 仓位压进去、OOS 回撤 −35.6%；OT 只给 6.8% 权重，OOS Sharpe 2.03 跑赢等权 1.51，附完整 Python 与五类真实陷阱（高阶）
 - [2026-07-14 - 高频跳跃检测(Lee-Mykland)：从噪声里揪出真实的瞬时跳变](/blog/high-frequency-jump-detection/) - 🦘 Lee-Mykland(2008) 用局部波动率缩放的检验量 L=r_t/ŝ_{t-1} 把「一分钟内是真跳还是噪声」变可检验假设，再用 Bonferroni 校正多重检验。合成一天 390 分钟、三段波动 regime、注入 5 个跳变：LM 命中 5/5、仅 1 误报；朴素固定阈值命中 5/5 却误报 10 个（动荡段 9 个），附完整 Python 与五类真实陷阱（高阶）
 
