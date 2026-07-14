@@ -11,6 +11,11 @@ layout: page
 ## 最新文章
 ### 2026-07-14 新发布
 
+- [2026-07-14 - 最优传输(Wasserstein)资产配置：用 Earth Mover's Distance 把分布差异变成权重](/blog/optimal-transport-portfolio/) - 🚚 把两个收益分布的 Earth Mover's Distance(1-Wasserstein)当「形状差异」，用 softmax(−β·W1) 软分配权重：离标杆分布越近权重越大。合成里样本内「幸运肥尾」资产 Sharpe 3.92、样本外崩到 −0.72，均值贪婪把 100% 仓位压进去、OOS 回撤 −35.6%；OT 只给 6.8% 权重，OOS Sharpe 2.03 跑赢等权 1.51，附完整 Python 与五类真实陷阱（高阶）
+- [2026-07-14 - 高频跳跃检测(Lee-Mykland)：从噪声里揪出真实的瞬时跳变](/blog/high-frequency-jump-detection/) - 🦘 Lee-Mykland(2008) 用局部波动率缩放的检验量 L=r_t/ŝ_{t-1} 把「一分钟内是真跳还是噪声」变可检验假设，再用 Bonferroni 校正多重检验。合成一天 390 分钟、三段波动 regime、注入 5 个跳变：LM 命中 5/5、仅 1 误报；朴素固定阈值命中 5/5 却误报 10 个（动荡段 9 个），附完整 Python 与五类真实陷阱（高阶）
+
+### 2026-07-14 新发布
+
 - [2026-07-14 - FTRL 在线学习组合：用正则化跟随引领历史](/blog/ftrl-online-portfolio/) - 🔁 FTRL(Follow The Regularized Leader)把「跟随历史最优」写成带自适应学习率与 L1/L2 正则的逐坐标在线更新，移植到在线投资组合选择：6 资产 3 年合成回测总收益 80.1%（UCRP 39.7%、OLMAR 36.5%）、Sharpe 0.94、日均换手仅 3.9%、L1 把 41% 仓位压成 0，20 种子 12/20 跑赢 UCRP，附完整 Python 与六大真实陷阱（高阶）
 - [2026-07-14 - 注意力机制因子：让模型自己决定看哪些特征](/blog/attention-factor/) - 🧲 把注意力机制从 NLP 搬进多因子选股：用特征级自注意力让模型在「价值/动量/质量…」间学会看谁，再门控加权出 1 维注意力因子；合成里注意力 vs 真值 IC=0.999、IG 归因锁定动量、门控因子 OOS R²=0.59 远超等权平均 0.15，附完整 Python 与六大真实陷阱（高阶）
 
