@@ -10,6 +10,9 @@ layout: page
 
 ## 最新文章
 
+- [2026-07-17 - CVaR 优化 Rockafellar：把『最坏情况的平均』写进目标函数](/blog/cvar-optimization-rockafellar/) - 📉 均值-方差对尾部近视，会把 100% 砸进肥尾资产4（组合 CVaR 5.93%）；Rockafellar-Uryasev 把 CVaR 写成线性规划直接优化尾部，自动把资产4 压到 12.7%、组合 CVaR 仅 2.03%，放开危机对冲资产再降到 1.03%，附完整 Python 与六类真实陷阱（高阶）
+- [2026-07-17 - FinBERT 新闻情绪：用金融预训练模型把公告变成 alpha](/blog/finbert-news-sentiment/) - 🤖 FinBERT 在金融语料上继续预训练，把公告读成 positive/negative/neutral 概率；合成里对真实信号保真度 0.92 碾压朴素词典法 0.45，情绪多空净 Sharpe 约 2.8、年化 22%，附完整 Python 与六类真实陷阱（高阶）
+
 - [2026-07-17 - 系统性 Carry 交易：用利差把『被奖励的持险』做成策略](/blog/carry-trade-systematic/) - 💱 Carry 不是外汇专属——利率、商品、股票都在为「持险」付费。G10 套息模拟证明收益本质是对全球风险因子的负向暴露(β=−1.36、危机月 −13.6%、最大回撤 −38%)，常态收保费、危机赔大钱，附完整 Python 与六类真实陷阱（高阶）
 - [2026-07-17 - 因子动量：当因子本身也有趋势，用因子收益做二阶择时](/blog/factor-momentum-signal/) - 🔁 因子不是常量而是时强时弱的状态。用因子过去 12 月收益做信号、做多走强因子，Sharpe 从 0.94 拉到 2.27、与市相关仅 0.18，附完整 Python 与六类真实陷阱（高阶）
 
