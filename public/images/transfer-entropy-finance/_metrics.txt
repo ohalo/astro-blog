@@ -1,0 +1,15 @@
+T=4000
+te_xy=0.2135
+te_yx=0.0303
+te_yz=0.2175
+te_zy=0.0366
+te_xz=0.0569
+te_zx=0.0365
+te_uv=0.0449
+te_vu=0.041
+corr_uv=0.318
+te_ratio_xy=7.05
+te_ratio_yz=5.95
+s_follow=5.047
+s_against=-5.047
+s_bh=-0.015

@@ -1,0 +1,16 @@
+N=240
+T_months=180
+comp_ls_ann_ret=0.1346
+comp_ls_ann_vol=0.1046
+comp_ls_sharpe=1.286
+bm_ls_ann_ret=0.082
+bm_ls_ann_vol=0.1078
+bm_ls_sharpe=0.761
+capm_alpha_ann=0.127
+capm_beta=0.136
+ic_comp_mean=0.0273
+ic_bm_mean=0.0149
+ic_comp_t=6.12
+spread_fwd_corr=0.088
+fwd_wide=0.1588
+fwd_rest=0.122
