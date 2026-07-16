@@ -1,0 +1,14 @@
+N=300
+T_months=240
+roe_ls_ann_ret=0.2144
+roe_ls_sharpe=5.507
+ia_ls_ann_ret=-0.2131
+ia_ls_sharpe=-4.856
+size_ls_ann_ret=-0.0009
+size_ls_sharpe=-0.02
+r2_ff3_mean=0.973
+r2_q_mean=0.974
+absalpha_ff3_mean=0.0025
+absalpha_q_mean=0.0021
+q_ret_slope=-0.0032
+q_ret_corr=-0.677

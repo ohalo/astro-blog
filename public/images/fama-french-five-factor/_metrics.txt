@@ -1,0 +1,15 @@
+N=300
+T_months=240
+P_test_ports=18
+rmw_ls_ann_ret=0.2144
+rmw_ls_sharpe=5.507
+cma_ls_ann_ret=0.2131
+cma_ls_sharpe=4.856
+hml_ls_ann_ret=0.0509
+hml_ls_sharpe=2.358
+r2_ff3_mean=0.973
+r2_ff5_mean=0.977
+absalpha_ff3_mean=0.0025
+absalpha_ff5_mean=0.0007
+grs_ff3=55.21
+grs_ff5=0.65
