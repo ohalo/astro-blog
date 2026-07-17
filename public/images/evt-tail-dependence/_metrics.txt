@@ -1,0 +1,15 @@
+{
+  "n_sim": 40000,
+  "rho": 0.6,
+  "nu": 4.0,
+  "u_frac": 0.9,
+  "threshold_u": 1.5168,
+  "n_exceed": 4000,
+  "gpd_xi": 0.149,
+  "gpd_sigma": 0.8139,
+  "gpd_mean_excess_theory": 0.9565,
+  "lam_gauss_last": 0.16,
+  "lam_t_last": 0.3,
+  "lam_t_theory": 0.3144,
+  "taildep_ratio_t_over_gauss": 1.9
+}

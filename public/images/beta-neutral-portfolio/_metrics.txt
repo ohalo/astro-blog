@@ -1,0 +1,20 @@
+{
+  "n_assets": 10,
+  "T_total": 504,
+  "T_test": 252,
+  "beta_portfolio": 0.968,
+  "beta_true_mean": 0.965,
+  "corr_long_mkt": 0.9739,
+  "corr_neut_mkt": -0.0745,
+  "mdd_long": -0.1613,
+  "mdd_neut": -0.0153,
+  "mdd_mkt": -0.1941,
+  "sharpe_long": 1.65,
+  "sharpe_neut": 2.21,
+  "sharpe_mkt": 1.16,
+  "long_exp": 1.0,
+  "short_exp": 0.968,
+  "gross": 1.968,
+  "net": 0.032,
+  "beta_neutral_residual_beta": -0.01658
+}
