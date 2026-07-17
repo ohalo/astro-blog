@@ -1,0 +1,30 @@
+{
+  "T_total": 2520,
+  "zwin": 120,
+  "z_hi": 1.0,
+  "z_lo": -1.0,
+  "ann_strat": 0.0675,
+  "vol_strat": 0.1574,
+  "sharpe_strat": 0.43,
+  "mdd_strat": -0.2808,
+  "ann_bh": 0.0645,
+  "sharpe_bh": 0.36,
+  "mdd_bh": -0.3459,
+  "avg_exposure": 0.767,
+  "quintile_fwd5_ret_pct": [
+    -0.161,
+    -0.153,
+    0.042,
+    0.272,
+    0.671
+  ],
+  "quintile_mean_z": [
+    -0.95,
+    -0.441,
+    -0.272,
+    0.092,
+    2.301
+  ],
+  "pcr_mean": 0.991,
+  "pcr_max": 3.0
+}

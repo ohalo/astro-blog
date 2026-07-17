@@ -1,0 +1,42 @@
+{
+  "T_total": 3024,
+  "L_lookback": 126,
+  "n_assets": 4,
+  "ann_macro": 0.125,
+  "vol_macro": 0.052,
+  "sharpe_macro": 2.41,
+  "mdd_macro": -0.0965,
+  "ann_bh": 0.1009,
+  "sharpe_bh": 1.95,
+  "mdd_bh": -0.1258,
+  "ann_raw": 0.1055,
+  "sharpe_raw": 1.48,
+  "mdd_raw": -0.1995,
+  "corr_macro_bh": 0.206,
+  "per_asset": [
+    {
+      "name": "股票",
+      "timed_ann": 0.132,
+      "timed_sharpe": 1.28,
+      "bh_ann": 0.0355
+    },
+    {
+      "name": "债券",
+      "timed_ann": 0.1212,
+      "timed_sharpe": 1.18,
+      "bh_ann": 0.1415
+    },
+    {
+      "name": "商品",
+      "timed_ann": 0.1325,
+      "timed_sharpe": 1.28,
+      "bh_ann": 0.0784
+    },
+    {
+      "name": "外汇",
+      "timed_ann": 0.1144,
+      "timed_sharpe": 1.11,
+      "bh_ann": 0.1483
+    }
+  ]
+}
