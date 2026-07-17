@@ -1,0 +1,20 @@
+{
+  "H_rw": 0.4352,
+  "H_trend": 0.7258,
+  "H_mean": 0.3876,
+  "rs_slope_trend": 0.7258,
+  "H_trend_roll": 0.679,
+  "H_mean_roll": 0.293,
+  "H_rand_roll": 0.616,
+  "sharpe_buyhold": 0.746,
+  "sharpe_filtered": 0.668,
+  "dd_buyhold": -0.749,
+  "dd_filtered": -0.637,
+  "exposure": 0.395,
+  "vol_trend": 0.0383,
+  "vol_mean": 0.0433,
+  "vol_rand": 0.0461,
+  "hs_median": 0.5391,
+  "hs_mean": 0.5405,
+  "hs_std": 0.0625
+}
