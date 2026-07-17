@@ -1,0 +1,16 @@
+{
+  "phi_hat": 0.981,
+  "kappa": 4.84,
+  "half_life_days": 36.1,
+  "vix_acf_lag1": 0.978,
+  "ann_strat": 0.0237,
+  "vol_strat": 0.1329,
+  "sharpe_strat": 0.18,
+  "mdd_strat": -0.3417,
+  "ann_bh": 0.0606,
+  "vol_bh": 0.1903,
+  "sharpe_bh": 0.32,
+  "mdd_bh": -0.4198,
+  "avg_leverage": 0.709,
+  "corr_strat_bh": 0.708
+}
