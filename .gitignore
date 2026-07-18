@@ -42,3 +42,4 @@ bunfig.toml
 
 # Python cache
 __pycache__/
+err.txt
