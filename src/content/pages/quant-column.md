@@ -10,6 +10,11 @@ layout: page
 
 ## 最新文章
 
+### 2026-07-19 新发布（利率上限下限 / Greeks 风险地图）
+
+- [2026-07-19 - 利率上限/下限(Floorlet)估值：把利率衍生品拆成一篮子期权](/blog/cap-floorlet-valuation/) - 📈 Cap/Floor 不靠神秘模型，而是拆成「一篮子 caplet/floorlet」——每个 caplet 是「重置日进入浮动利率、按 K 结算」的看涨期权。用 Black(1983) 逐期闭合式定价 4 期 caplet，验证 Cap−Floor=Swap 平价(偏差 1e-19)、蒙特卡洛与闭合式一致(偏差 0.6%)，并诚实点出「首期 caplet 退化向前/扁平曲线焊死远期/flat vol 压扁扇形/重置频率改写价值」四类真实陷阱(中阶)
+- [2026-07-19 - Greeks 全景与对冲：用 Delta/Gamma/Vega 拼出风险地图](/blog/greeks-hedging-map/) - 🗺️ 期权价格只是表层，Greeks 才是风险地图：Delta 管方向、Gamma 管 Delta 稳定性、Vega 管波动、Theta 管时间。用 BS 从零算出全部六个 Greek 并画曲线+风险地图(标的价格冲击×波动率冲击)，蒙特卡洛对比「未对冲(σ=1.95)/仅 Delta(0.19)/Delta+Gamma(0.01)」三种对冲方差阶梯，附四类真实陷阱(中阶)
+
 ### 2026-07-19 新发布（隐含二叉树 / 篮子期权矩匹配）
 
 - [2026-07-19 - 隐含二叉树：用市场报价反推风险中性转移概率](/blog/implied-binomial-tree/) - 🌳 Rubinstein (1994) 隐含二叉树：用市场微笑经 Breeden-Litzenberger 反推终端风险中性分布，再前向归纳解出状态依赖转移概率 p(i,j)；自洽验证还原 IV 几乎重合（偏差≤0.013）、终端分布偏差=0，并诚实拆穿 RND 二阶导噪声/微笑套利/翼部离散化等六类陷阱（高阶）
