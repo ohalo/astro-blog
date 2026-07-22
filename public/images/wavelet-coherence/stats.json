@@ -1,0 +1,17 @@
+{
+  "N": 512,
+  "crisis_window": [
+    180,
+    300
+  ],
+  "corr_overall": 0.081,
+  "corr_crisis": 0.4314,
+  "corr_calm": -0.1118,
+  "coh_band_crisis_mean": 0.9474,
+  "coh_band_rest_mean": 0.8378,
+  "coh_band_overall_mean": 0.8635,
+  "periods_range": [
+    6.0,
+    64.0
+  ]
+}

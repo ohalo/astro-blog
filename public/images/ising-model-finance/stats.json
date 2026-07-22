@@ -1,0 +1,40 @@
+{
+  "cover": {
+    "L": 60,
+    "T_low": 1.5,
+    "T_high": 3.5,
+    "m_low_per_spin": 0.1486,
+    "m_high_per_spin": 0.0009
+  },
+  "magnetization": {
+    "Tc": 2.2692,
+    "m1d_at_Tc": 0.1067,
+    "m2d_at_Tc": 0.0
+  },
+  "specific_heat": {
+    "Tc": 2.2692,
+    "C_peak_per_spin": 1.8875,
+    "T_peak": 2.2667
+  },
+  "susceptibility": {
+    "Tc": 2.2692,
+    "chi_peak_per_spin": 189.7412,
+    "T_peak": 2.287
+  },
+  "phase_diagram": {
+    "Ls": [
+      16,
+      24,
+      32,
+      40
+    ],
+    "peaks": [
+      2.2978,
+      2.2978,
+      2.3549,
+      2.2978
+    ],
+    "Tc_extrapolated": 2.3371,
+    "Tc_true": 2.2692
+  }
+}
