@@ -1,0 +1,18 @@
+{
+  "N": 2000,
+  "pe_tiers": {
+    "sine": 0.2161,
+    "chaos_logistic": 0.6787,
+    "white_noise": 0.9947,
+    "random_walk": 0.9168
+  },
+  "regime_accuracy": 0.976,
+  "mean_pe_order": 0.5202,
+  "mean_pe_noise": 0.7781,
+  "threshold": 0.6491,
+  "mean_row_entropy_order": 0.397,
+  "mean_row_entropy_noise": 1.6916,
+  "used_patterns_order": 93,
+  "used_patterns_noise": 120,
+  "wpe_pe_max_diff_at_spike": 0.2662
+}
