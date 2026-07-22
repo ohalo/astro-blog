@@ -1,0 +1,21 @@
+{
+  "N_state": 30,
+  "D": 4,
+  "T_expert": 600,
+  "gamma": 0.9,
+  "true_w": [
+    1.0,
+    1.2,
+    0.6,
+    -0.3
+  ],
+  "learned_w": [
+    0.743,
+    1.482,
+    0.133,
+    -0.352
+  ],
+  "cos_sim": 0.9366,
+  "kl_expert_replay": 0.0613,
+  "kl_expert_random": 0.2252
+}
