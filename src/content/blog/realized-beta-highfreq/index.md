@@ -10,7 +10,7 @@ tags:
   - 风险管理
   - Python
 language: Chinese
-difficulty: intermediate-advanced
+difficulty: advanced
 ---
 
 ## 一句话版本
