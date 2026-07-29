@@ -81,6 +81,6 @@ language: Chinese
 
 大模型给股市预测带来了新的可能性，但核心原则不变：严格的回测、审慎的风险控制、持续的研究迭代。技术只是工具，投资哲学才是根本。
 
-![大模型处理金融文本流程](/images/llm-stock-prediction/llm-pipeline.jpg)
+![大模型处理金融文本流程](/images/2026-07-29-llm-stock-prediction/llm-pipeline.jpg)
 
-![情绪因子与收益关系](/images/llm-stock-prediction/sentiment-returns.jpg)
+![情绪因子与收益关系](/images/2026-07-29-llm-stock-prediction/sentiment-returns.jpg)

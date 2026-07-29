@@ -93,6 +93,6 @@ language: Chinese
 
 因子挖掘的终极目标不是找到一个"圣杯因子"，而是建立一个**持续迭代的研究体系**——不断挖掘、测试、上线、监控、淘汰，形成闭环。
 
-![因子挖掘流程图](/images/quant-factor-mining-methodology/factor-pipeline.jpg)
+![因子挖掘流程图](/images/2026-07-29-quant-factor-mining-methodology/factor-pipeline.jpg)
 
-![因子IC衰减示例](/images/quant-factor-mining-methodology/ic-decay.jpg)
+![因子IC衰减示例](/images/2026-07-29-quant-factor-mining-methodology/ic-decay.jpg)
