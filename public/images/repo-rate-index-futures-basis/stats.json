@@ -1,0 +1,20 @@
+{
+  "corr_all": 0.917,
+  "corr_nc": 0.98,
+  "beta_all": 1.065,
+  "beta_nc": 1.012,
+  "viol_up": 0.0,
+  "viol_dn": 0.0,
+  "avg_ann_basis": -0.0022,
+  "avg_carry": 0.0003,
+  "crisis_basis": -0.043,
+  "normal_basis": 0.0008,
+  "sharpe": 0.84,
+  "ann_ret": 0.002,
+  "ann_vol": 0.0024,
+  "mdd": -0.0049,
+  "n_trades": 4,
+  "avg_repo": 0.0242,
+  "avg_div": 0.0239,
+  "spike_repo_max": 0.0564
+}
