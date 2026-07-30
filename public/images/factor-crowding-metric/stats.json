@@ -1,0 +1,102 @@
+{
+  "n_stock": 120,
+  "years": 12.0,
+  "capital_peak": 1.337,
+  "capital_peak_day": 1927,
+  "shock_day": 1540,
+  "capital_trough_post": 0.586,
+  "port_ann_ret": 16.19,
+  "port_ann_vol": 17.34,
+  "port_sharpe": 0.934,
+  "corr_crowding_vs_capital": 0.316,
+  "corr_absorption_vs_capital": 0.653,
+  "corr_legcorr_vs_capital": 0.357,
+  "corr_composite_raw_vs_capital": 0.56,
+  "ewma_halflife": 21,
+  "corr_composite_vs_capital": 0.638,
+  "smoothing_corr_gain": 0.078,
+  "crowd_pre_shock_z": 0.006,
+  "crowd_pct_pre_shock": 41.34,
+  "crowd_pct_pre_shock_raw": 55.35,
+  "ic_crowd_fwdret": -0.327,
+  "ic_crowd_fwddd": -0.176,
+  "quintile_fwd_ret": [
+    16.76,
+    2.66,
+    -1.76,
+    2.44,
+    2.75
+  ],
+  "quintile_fwd_dd": [
+    -4.86,
+    -7.91,
+    -11.05,
+    -8.84,
+    -8.47
+  ],
+  "quintile_n": [
+    580,
+    579,
+    580,
+    579,
+    580
+  ],
+  "q5_minus_q1_ret": -14.01,
+  "q5_minus_q1_dd": -3.61,
+  "strategies": {
+    "恒定满仓": {
+      "ann": 15.61,
+      "vol": 17.38,
+      "sharpe": 0.899,
+      "mdd": -54.37,
+      "avg_pos": 1.0,
+      "turnover": 0.0
+    },
+    "线性减仓": {
+      "ann": 19.9,
+      "vol": 17.38,
+      "sharpe": 1.145,
+      "mdd": -55.7,
+      "avg_pos": 0.999,
+      "turnover": 1.31
+    },
+    "阈值切档": {
+      "ann": 14.67,
+      "vol": 17.25,
+      "sharpe": 0.851,
+      "mdd": -54.37,
+      "avg_pos": 0.988,
+      "turnover": 0.22
+    }
+  },
+  "sharpe_gain_lin": 0.246,
+  "mdd_cut_lin": 1.33,
+  "mdd_cut_thr": -0.0,
+  "null_mean_sharpe_gain": 0.004,
+  "null_sd_sharpe_gain": 0.097,
+  "null_p95": 0.171,
+  "real_gain_vs_null_z": 2.5,
+  "null_pct_positive": 53.3,
+  "windows": [
+    21,
+    42,
+    63,
+    126,
+    252
+  ],
+  "window_ic": [
+    -0.289,
+    -0.305,
+    -0.327,
+    -0.416,
+    -0.398
+  ],
+  "window_sharpe": [
+    1.195,
+    1.199,
+    1.145,
+    1.187,
+    1.311
+  ],
+  "best_window": 252
+}
