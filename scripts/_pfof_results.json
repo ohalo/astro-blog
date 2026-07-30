@@ -1,0 +1,73 @@
+{
+  "n_orders": 200000,
+  "avg_half_spread_bp": 6.004242088306818,
+  "avg_pi_rate": 0.21576204464763832,
+  "pi_per_share_cent": 0.744927151120259,
+  "lit_cost_total": 1774328.7381513957,
+  "wholesale_cost_total": 1212726.414961981,
+  "midpoint_cost_total": 1577735.859167913,
+  "saving_total": 561602.3231894148,
+  "saving_per_order": 2.808011615947074,
+  "pct_orders_better": 100.0,
+  "mid_fill_rate": 39.0685,
+  "best_lit_pct": 0.0,
+  "best_wholesale_pct": 60.93150000000001,
+  "best_mid_pct": 39.0685,
+  "oracle_cost": 763084.750089884,
+  "wholesale_vs_oracle_gap": 449641.66487209685,
+  "wholesaler_gross": 1212726.414961981,
+  "pfof_to_broker": 363817.9244885943,
+  "wholesaler_net": 848908.4904733866,
+  "pfof_per_100sh_cent": 67.7158167909945,
+  "client_saving_vs_pfof": 1.5436356633028427,
+  "informed_share": 7.9990000000000006,
+  "detect_rate": 62.007750968871115,
+  "drift_informed_bp": 26.86418107345197,
+  "drift_noise_bp": 0.004372385311602919,
+  "internalized_share": 95.04,
+  "pnl_selective": 929169.3633854233,
+  "pnl_indiscriminate": 632252.8955645878,
+  "adverse_avoided": 357814.197060767,
+  "pnl_informed_kept": -184781.5503077453,
+  "pnl_noise": 1113950.9136931687,
+  "adverse_per_informed": 36.228058556398665,
+  "capture_per_order": 6.063632074809904,
+  "pfof_grid_lo": 0.05,
+  "pfof_grid_hi": 0.55,
+  "client_pi_at_lo": 403231.5329748586,
+  "client_pi_at_hi": 191004.41035651194,
+  "broker_rev_at_lo": 60636.320748099046,
+  "broker_rev_at_hi": 666999.5282290896,
+  "client_pi_drop_pct": 52.63157894736843,
+  "broker_rev_gain_x": 11.000000000000002,
+  "quality_table": [
+    [
+      "100-499股",
+      159973,
+      12.0,
+      9.02,
+      24.8
+    ],
+    [
+      "500-1999股",
+      40027,
+      12.06,
+      9.06,
+      24.8
+    ],
+    [
+      "窄价差(<5bp)",
+      95029,
+      6.58,
+      5.41,
+      17.8
+    ],
+    [
+      "宽价差(>15bp)",
+      4915,
+      35.8,
+      21.6,
+      39.7
+    ]
+  ]
+}
