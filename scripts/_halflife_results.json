@@ -1,0 +1,50 @@
+{
+  "hl_true": 8.0,
+  "hl_hat": 11.9,
+  "hl_logfit": 16.19,
+  "hl_mc_mean": 9.79,
+  "hl_mc_std": 3.14,
+  "hl_mc_min": 5.4,
+  "hl_mc_max": 16.67,
+  "ic1": 1.65,
+  "a_hat": 1.57,
+  "best_hold": {
+    "0": {
+      "hold": 1,
+      "sharpe": 3.05
+    },
+    "10": {
+      "hold": 3,
+      "sharpe": 2.02
+    },
+    "30": {
+      "hold": 10,
+      "sharpe": 0.94
+    },
+    "60": {
+      "hold": 40,
+      "sharpe": 0.47
+    }
+  },
+  "gross_sharpe_h1": 3.05,
+  "net10_h1": 1.62,
+  "net30_h1": -1.25,
+  "net60_h1": -5.52,
+  "ann_turn_h1": 145.7,
+  "ann_turn_h8": 42.8,
+  "ann_turn_h20": 21.2,
+  "ema_best": {
+    "10": {
+      "span": 3,
+      "sharpe": 2.15
+    },
+    "30": {
+      "span": 30,
+      "sharpe": 1.28
+    },
+    "60": {
+      "span": 30,
+      "sharpe": 0.35
+    }
+  }
+}
