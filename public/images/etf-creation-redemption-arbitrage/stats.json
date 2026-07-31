@@ -1,0 +1,51 @@
+{
+  "halflife_minutes": {
+    "宽基ETF_实测": 8,
+    "行业ETF_实测": 18,
+    "QDII_实测": 30,
+    "宽基ETF_理论": 8.7,
+    "行业ETF_理论": 27.7,
+    "QDII_理论": 115.5
+  },
+  "cost_ladder": {
+    "ap_gross_bp_mean": 15.37,
+    "ap_cost_bp": 5.0,
+    "ap_net_bp_mean": 10.37,
+    "ap_profit_mean": 1037.0,
+    "ap_profit_positive_pct": 90.0,
+    "retail_slippage_bp": 5.0,
+    "retail_commission_bp": 3.0,
+    "retail_net_bp_mean": 7.37,
+    "retail_profit_mean": 737.0,
+    "retail_profit_positive_pct": 81.0,
+    "ctrl_retail_net_bp_mean": 7.37,
+    "ctrl_retail_profit_mean": 737.0
+  },
+  "stat_tests": {
+    "ap_vs_retail_tstat": 12.235,
+    "ap_vs_retail_pvalue": 0.0
+  },
+  "permutation_test": {
+    "observed_diff_bp": 3.0,
+    "perm_pvalue": 0.0,
+    "n_permutations": 1000
+  },
+  "clean_engine_control": {
+    "ctrl_ap_net_mean_bp": -5.0,
+    "ctrl_retail_net_mean_bp": -8.0,
+    "ctrl_ap_profit_mean": -500.0,
+    "ctrl_retail_profit_mean": -800.0
+  },
+  "bug_lookahead": {
+    "false_signal_rate": 32.6,
+    "bug_strategy_total_profit_bp": -55.5,
+    "correct_strategy_total_profit_bp": -2129.3,
+    "correct_filtered_total_profit_bp": -3918.7,
+    "profit_drop_pct": 6966.0,
+    "bug_description": "用当日收盘 IOPV 判断日内折溢价（look-ahead bias）",
+    "correct_description": "实时 IOPV + 考虑 5bp 估算误差 + false signal 过滤",
+    "n_trades": 500,
+    "bug_profit_per_trade_bp": -0.11,
+    "correct_profit_per_trade_bp": -7.84
+  }
+}
