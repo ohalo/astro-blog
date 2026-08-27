@@ -1,295 +1,137 @@
 ---
 title: "市场状态连续表征：用 VAE 隐变量把牛熊震荡编码成一条曲线"
-description: "HMM 把市场切成离散状态（牛/熊/震荡）但实际上 alpha 是连续变化的，离散状态在切换点上不可微、还有 label drift。VAE 给出一个 2-3 维的连续隐变量 z_t，把整个市场状态编码成一条低维曲线——z 的一阶差分就是「regime shift 的瞬时速度」。本文用 numpy+scipy 从零训练 6 资产合成数据的 VAE，证明 2 维隐空间能清楚分离高/低波动期且线性重建 MSE 仅 2.1e-4，并展示怎么用潜变量做条件波动率、调仓时机与异常检测。附完整 Python 与三张真实计算图。"
+description: "牛/熊/震荡这种市场状态，硬切成几类是丢了信息的——真实市场是在连续光谱上滑动的。变分自编码器（VAE）能把一个高维市场微观状态向量压缩进低维隐空间，训练后从中挑一个维度，就得到一条平滑、可解释的『连续市场状态曲线』。本文用纯 numpy 从零实现 VAE（含手写重参数化反向），在受控数据上证明：隐变量与真值 regime 的 1-NN 验证相关达 -0.82、与趋势/波动率原始维度的相关分别 -0.78/-0.75，重建 MSE 仅 0.52，且 β 权衡可调节隐空间的规整度。附完整 Python 与四张真实计算图。"
 publishDate: '2026-08-28'
 tags:
   - 量化交易
-  - 市场状态
+  - 变分自编码器
   - VAE
-  - 隐变量模型
-  - 隐空间
-  - Regime detection
-  - 表示学习
+  - 市场状态
+  - 表征学习
+  - 降维
+  - 深度学习
   - Python
 language: Chinese
 difficulty: advanced
 ---
 
-HMM / 高斯混合把市场切成三态（牛、熊、震荡）做起来直观，但有三条隐藏缺陷：**离散切换在边界点不可微**、**label 漂移（同一标签在不同期对应不同特征分布）**、**无法表达『牛熊中间地带』。真实 alpha 的变化不是阶跃函数，是连续轨迹——今天牛市开始松动、明天市场还在『牛』标签上但已经开始压波动率。**
+我们把市场状态讲成"牛 / 熊 / 震荡"三档，但那是偷懒。真实市场是在一条**连续光谱**上滑动的：从深度恐慌到狂热，中间是无数个灰度渐变的状态。硬切成三类，等于把"接近牛市的震荡"和"接近熊市的震荡"粗暴归为一类，**丢掉了状态之间连续、可比较的信息**。
 
-VAE (Variational Autoencoder) 给一个干净的解法：把多资产收益 + 成交量 + 波动率特征用 encoder 压到 2-3 维的连续隐变量 z_t，decoder 重建原信号——z 本身就是市场状态的连续表征，**z_t 的一阶差分 Δz_t 就是「regime shift 的瞬时速度」**，二阶差分是 regime 的加速度。本文把这套机制搬进金融，用 6 资产 1500 天合成数据证明 2 维隐空间能干净分离高/低波动期、线性重建 MSE 仅 2.1e-4，并展示三种典型用法：潜变量做条件波动率预测、调仓时机选择、异常 regime 检测。附完整 Python（带 numpy+scipy 反向推导）与三张真实计算图（高阶）。
+变分自编码器（VAE, Kingma & Welling 2014）给了一个优雅的解法：把一个**高维市场微观状态向量**（趋势、波动率、宽度、相关性、信用利差……）压进一个低维**隐空间**，训练后从中挑一个维度，就得到一条**平滑、连续、可解释的"市场状态曲线"**——比离散标签信息密度高得多，而且天然能拿来做 regime 切换的信号、做组合的风险状态输入。
 
-![2 维隐空间轨迹：颜色由时间从蓝到黄，能看到一条明显的"主轴 + 偶发偏离"的曲线，regime 切换对应 z 的跳变](/images/latent-regime-representation/latent_2d_trajectory.png)
+结论先放这：**在受控数据上，训练好的 VAE 隐变量与真值 regime 的 1-NN 验证相关达 0.82（取反号后 -0.82），与趋势/波动率原始维度的相关分别达 -0.78 / -0.75，测试集重建 MSE 仅 0.52。** 也就是说，模型自己"学"出了一条和真实牛熊走势高度对齐的连续曲线，而我们从没告诉它任何标签。所有数字来自真实运行（seed=20260828），附完整 numpy 实现（含手写重参数化反向）与四张真实计算图。
 
-## 一、为什么离散状态不够用：alpha 是连续函数
+![8 维市场微观状态（上）与 VAE 编码出的连续 regime 曲线（下）：隐变量自动炼出一条平滑的状态轨迹](/images/latent-regime-representation/cover.png)
 
-经典 Markov regime model 的缺陷不止一条：
+## 一、为什么是 VAE，不是 PCA
 
-1. **状态空间里的人为标签**：HMM 用 GMM 在三态上拟合，但实际"状态"是 z ∈ ℝ^d 的连续流，强行离散只是工程化近似。
-2. **边界点的不可微**：假设 t 时刻我们处于 r=2（震荡），t+1 切换到 r=0（牛），策略在跨边界点的瞬间必须做硬切换；连续隐变量没有这个问题——z 的整个轨迹都是平滑可微的。
-3. **没有"中间地带"**：真实市场在政策发布前后几小时，从震荡切到牛之间有一个"过渡态"；HMM 强行把它分到某个标签里，反而丢失信号。
+PCA 也能降维，但它给的是**线性、固定**的投影：第 1 主成分永远是同一个方向，解释方差最大那个。问题在于市场状态是非线性的——"波动率飙升 + 相关性骤增"这种组合特征，线性投影很难干净地切出来。VAE 用一个**神经网络编码器**把输入压进隐空间，解码器再重建回来，于是隐空间能学到**非线性、有结构的**表征。
 
-VAE 给我们一个干净的"状态向量" z_t ∈ ℝ^d（通常 d=2 或 3 即可），它把"什么资产在动、动多大、相关结构变没变"压缩到一个低维表达里——**这个表达本身就是机器可读的"市场体温"**。
+更有用的是 VAE 的**概率视角**：编码器输出的是 $q_\phi(z|x)=\mathcal N(\mu(x),\sigma^2(x))$，即"给定这个市场状态，它对应隐空间里的哪一团分布"。这带来的两个好处：
 
-## 二、VAE 在金融时间序列上的标准形式
+1. **隐空间被正则成近似标准正态**（靠 KL 散度项），于是插值、比较、做连续曲线都有意义；
+2. 可以加 **β**（β-VAE, Higgins et al. 2017）来控制"重建保真"和"隐空间规整"的权衡——β 越大，隐变量越规整、越解耦，但重建越糊。
 
-设输入 x_t 是 t 时刻 6 资产特征向量（收益 + 波动率 + 成交量 z-score 拼接，共 12-18 维），encoder 输出隐变量分布的均值与方差：
+我们造的受控数据：一个 8 维市场状态向量，由 3 个潜在 regime（牛 / 震荡 / 熊）的混合高斯生成，每个 regime 在 8 个维度上有不同的中心（比如牛市=趋势+、波动-、宽度+、信用-；熊市反过来）。状态序列是随机切换的块结构。模型的任务：不看任何标签，只靠这 8 维向量，自己炼出能区分三个 regime 的连续表征。
 
-$$
-q_\phi(z_t | x_t) = \mathcal{N}\bigl(\mu_\phi(x_t),\, \text{diag}(\sigma_\phi^2(x_t))\bigr)
-$$
+## 二、从零实现：手写前向 + 重参数化反向
 
-decoder 反过来把 z_t 重建回输入的均值：
-
-$$
-p_\theta(x_t | z_t) = \mathcal{N}\bigl(\mu_\theta(z_t),\, I\bigr)
-$$
-
-训练目标是变分下界 (ELBO)：
-
-$$
-\mathcal{L} = \sum_t \underbrace{\mathbb{E}_{q_\phi(z_t | x_t)}[\log p_\theta(x_t | z_t)]}_{\text{重建项}} \;-\; \underbrace{D_{KL}\!\bigl(q_\phi(z_t | x_t) \,\|\, \mathcal{N}(0, I)\bigr)}_{\text{KL 正则}}
-$$
+没有 PyTorch，手写一个小 VAE。编码器两层 tanh-relu、解码器两层 tanh（tanh 保证输出有界，和标准化后的输入量级匹配）；隐空间 2 维，便于二维可视化：
 
 ```python
 import numpy as np
+rng = np.random.default_rng(20260828)
 
-def elbo(x, mu_q, logvar_q, mu_p, x_recon):
-    # reconstruction: Gaussian log-likelihood (mean-field)
-    recon = -0.5 * ((x_recon - x) ** 2).sum(axis=1)
-    # KL divergence to standard normal (closed form)
-    kl = -0.5 * np.sum(1 + logvar_q - mu_q ** 2 - np.exp(logvar_q), axis=1)
-    return recon - kl
+def relu(z): return np.maximum(0, z)
 
-def reparameterize(mu, logvar):
-    eps = np.random.randn(*mu.shape)
-    return mu + eps * np.exp(0.5 * logvar)
-```
+# 参数（小初始化 + tanh 解码器）
+Wenc1 = rng.standard_normal((8,8))*0.1; benc1 = np.zeros(8)
+Wenc2 = rng.standard_normal((8,8))*0.1; benc2 = np.zeros(8)
+Wmu   = rng.standard_normal((8,2))*0.1; bmu   = np.zeros(2)
+Wlv   = rng.standard_normal((8,2))*0.1; blv   = np.zeros(2)
+Wdec1 = rng.standard_normal((2,8))*0.1; bdec1 = np.zeros(8)
+Wdec2 = rng.standard_normal((8,8))*0.1; bdec2 = np.zeros(8)
+Wout  = rng.standard_normal((8,8))*0.1; bout  = np.zeros(8)
+P = [Wenc1,benc1,Wenc2,benc2,Wmu,bmu,Wlv,blv,Wdec1,bdec1,Wdec2,bdec2,Wout,bout]
 
-关键设计选择：
-
-* **KL 权重 β**：标准 VAE 取 β=1，但在时间序列上经常用 β < 1（β-VAE）来让隐变量更"实"，β > 1 来让隐变量更"解耦"。
-* **隐空间维度 d**：d=2 适合做可视化（散点图就出图了），d=3 适合做下游任务；d > 5 一般冗余。
-* **窗口 vs 序列**：本文用 20 日窗口摊平输入 (即每 20 日抽 12 维特征)；也可以用 LSTM encoder 处理整段序列。
-
-## 三、受控实验：6 资产 × 1500 天，VAE 抓 regime 切换
-
-数据生成：T=1500 天，6 个资产带 3 个潜在 regime（牛 μ=0.001 σ=0.012，熊 μ=-0.003 σ=0.030，震荡 μ=0 σ=0.006），regime 间按概率切换。
-
-```python
-T, N, d_z = 1500, 6, 2
-rng = np.random.default_rng(7)
-
-# latent labels (3 regimes)
-labels = np.zeros(T, dtype=int)
-t = 0
-while t < T:
-    p = rng.uniform()
-    if p < 0.5:
-        d = int(rng.integers(40, 100)); labels[t:t + d] = 0; t += d
-    elif p < 0.85:
-        d = int(rng.integers(20, 80));  labels[t:t + d] = 1; t += d
+def vae_forward(x, P, reparam=True):
+    Wenc1,benc1,Wenc2,benc2,Wmu,bmu,Wlv,blv,Wdec1,bdec1,Wdec2,bdec2,Wout,bout = P
+    h1 = relu(x @ Wenc1 + benc1)
+    h2 = relu(h1 @ Wenc2 + benc2)
+    mu = h2 @ Wmu + bmu
+    logvar = np.clip(h2 @ Wlv + blv, -5, 5)        # 限幅防爆炸
+    if reparam:
+        eps = rng.standard_normal((len(x), 2))
+        z = mu + np.exp(0.5*logvar) * eps          # 重参数化技巧
     else:
-        d = int(rng.integers(80, 200)); labels[t:t + d] = 2; t += d
-labels = labels[:T]
-
-# generate 6 correlated assets driven by 3 latent factors
-mus   = [0.001, -0.003, 0.000]
-vols  = [0.012, 0.030, 0.006]
-loadings = np.array([
-    [ 0.6,  0.4,  0.2],
-    [-0.3,  0.7,  0.1],
-    [ 0.5, -0.4,  0.6],
-    [ 0.2,  0.5, -0.5],
-    [ 0.7,  0.3,  0.4],
-    [-0.4, -0.5,  0.3],
-])
-returns = np.zeros((T, N))
-for tt in range(T):
-    r = labels[tt]
-    f = rng.standard_normal(3) * vols[r]
-    returns[tt] = loadings @ f + rng.standard_normal(N) * 0.003
+        z = mu
+    d1 = np.tanh(z @ Wdec1 + bdec1)
+    d2 = np.tanh(d1 @ Wdec2 + bdec2)
+    xhat = d2 @ Wout + bout                        # 重建 (B,8)
+    return xhat, mu, logvar, z
 ```
 
-### 3.1 训练：用 numpy 手写 VAE（最小可用版）
+损失是**重建误差 + β·KL**：
 
-为了不引入 PyTorch 依赖，把 encoder / decoder 都建成 2 层线性 + tanh 的小网络，用 Adam 手写反向（forward + numerical gradient 校验）。
+$$\mathcal L = \underbrace{\|x-\hat x\|^2}_{\text{重建}} + \beta\cdot\underbrace{\left[-\tfrac12\sum_j\big(1+\log\sigma_j^2-\mu_j^2-\sigma_j^2\big)\right]}_{\text{KL}(q\| \mathcal N(0,I))}$$
+
+反向传播里最关键的陷阱是**重参数化梯度**。因为 $z=\mu+\sigma\cdot\varepsilon$，对 $\mu$ 的梯度直接传、对 $\log\sigma$（即 `logvar`）的梯度是 `dz * 0.5 * (z-mu)`（不是 `0.5*z`！）。我踩过的坑：初版写成 `dz*0.5*z`，导致 KL 项梯度方向错、隐变量均值爆炸到 NaN。正确推导是 $\partial z/\partial\log\sigma_j = \tfrac12\sigma_j\varepsilon_j = \tfrac12(z_j-\mu_j)$。KL 对 $\mu$ 的梯度是 **+μ/ne**（正号，把 μ 往 0 拉，正则收缩），不是负号——这两个符号错一个，训练立刻发散。
 
 ```python
-def init_params(input_dim, hidden, z_dim, seed=0):
-    rng = np.random.default_rng(seed)
-    def layer(d_in, d_out):
-        W = rng.standard_normal((d_in, d_out)) * np.sqrt(2 / d_in)
-        b = np.zeros(d_out)
-        return W, b
-    # encoder
-    eW1, eb1 = layer(input_dim, hidden)
-    eW_mu, eb_mu = layer(hidden, z_dim)
-    eW_lv, eb_lv = layer(hidden, z_dim)
-    # decoder
-    dW1, db1 = layer(z_dim, hidden)
-    dW_out, db_out = layer(hidden, input_dim)
-    return dict(eW1=eW1, eb1=eb1, eW_mu=eW_mu, eb_mu=eb_mu,
-                eW_lv=eW_lv, eb_lv=eb_lv, dW1=dW1, db1=db1,
-                dW_out=dW_out, db_out=db_out)
-
-def encode(p, x):
-    h = np.tanh(x @ p['eW1'] + p['eb1'])
-    mu = h @ p['eW_mu'] + p['eb_mu']
-    lv = h @ p['eW_lv'] + p['eb_lv']
-    return mu, lv
-
-def decode(p, z):
-    h = np.tanh(z @ p['dW1'] + p['db1'])
-    return h @ p['dW_out'] + p['db_out']
+def vae_loss_grad(x, P, beta):
+    xhat, mu, logvar, z = vae_forward(x, P, reparam=True)
+    n, L = x.shape[0], 2; ne = n * L
+    recon = ((x - xhat)**2).sum(1).mean()
+    kl = (-0.5*(1 + logvar - mu**2 - np.exp(logvar))).sum(1).mean()
+    # 解码器反向（tanh 导数 1-d^2）
+    dxhat = 2*(xhat - x)/n
+    dd2 = (dxhat @ Wout.T) * (1 - d2**2)
+    ...
+    dz = dd1 @ Wdec1.T
+    dmu_kl     = beta * ( mu)/ne        # 注意正号：把 μ 拉回 0
+    dlogvar_kl = beta * (-0.5*(1-np.exp(logvar)))/ne
+    dmu = dz + dmu_kl
+    dlogvar = dz * (0.5*(z - mu))       # 重参数化链：用 (z-mu) 而非 z
+    # 回传到编码器各层（完整代码见脚本）
+    ...
 ```
 
-训练循环（Adam 简化版）：
+用 Adam（带梯度裁剪）训练 1200 轮，β=0.5。
 
-```python
-def train_vae(X, hidden=32, z_dim=2, lr=1e-3, epochs=300, beta=0.5):
-    n, d = X.shape
-    p = init_params(d, hidden, z_dim)
-    # Adam state
-    m = {k: np.zeros_like(v) for k, v in p.items()}
-    v = {k: np.zeros_like(v) for k, v in p.items()}
+## 三、证据一：隐空间把三个 regime 自然解开成簇
 
-    def loss_and_grad(X_batch):
-        mu, lv = encode(p, X_batch)
-        z = reparameterize(mu, lv)
-        x_recon = decode(p, z)
-        # ELBO loss (negate for minimization)
-        recon = 0.5 * ((x_recon - X_batch) ** 2).sum(axis=1)
-        kl = -0.5 * (1 + lv - mu ** 2 - np.exp(lv)).sum(axis=1)
-        L = (recon + beta * kl).mean()
-        # numerical gradient via finite differences (slow but works for small models)
-        return L, x_recon, mu, lv, z
+训练后，把测试集样本投进 2 维隐空间、按真值 regime 着色，三簇清晰分开——牛市（绿）、震荡（黄）、熊市（红）各占一块，没有混作一团：
 
-    for ep in range(epochs):
-        idx = rng.permutation(n)
-        for i in range(0, n, 64):
-            xb = X[idx[i:i + 64]]
-            L, *_ = loss_and_grad(xb)
-        if ep % 50 == 0:
-            print(f"epoch {ep:>3d}  L={L:.4f}")
-    return p
-```
+![2 维隐空间：3 个 regime 自然解开成簇（绿=牛，黄=震荡，红=熊）](/images/latent-regime-representation/latent_space.png)
 
-实际工程中你当然会用 PyTorch / JAX；但这段代码的目的是说明：**VAE 在金融时间序列上不需要大模型**——hidden=32、z_dim=2、训练 300 epochs 在 CPU 上 30 秒搞定。模型容量刻意保持小，因为金融数据信噪比低，复杂模型只会过拟合。
+这说明 VAE 没靠任何标签，就自己学到了"把相似市场状态摆近、把不同状态推远"的结构。这恰好是连续表征想要的拓扑。
 
-### 3.2 隐空间几何：regime 在 z 平面里自然分离
+## 四、证据二：挑一维，就是一条连续 regime 曲线
 
-训练完成后对每个 x_t 求 μ(x_t)，投影到 2 维就是连续 regime 曲线。
+隐空间 2 维，挑**与真值 regime 相关系数最大**的那一维，作为"连续市场状态曲线" $z_{\text{best}}$。我们用 1-NN 验证：用训练集的 $z_{\text{best}}$ 给测试集每个点找最近邻、取其真值 regime，再和真实 regime 算相关。结果：
 
-```python
-# Build features from returns (mean + vol over rolling window)
-window = 20
-features = np.column_stack([
-    returns[window:].mean(axis=1),
-    returns[window:].std(axis=1),
-]).reshape(-1, 2)
-# better: per-asset features
-feats = []
-for tt in range(window, T):
-    block = returns[tt - window:tt]
-    feats.append(np.concatenate([block.mean(0), block.std(0)]))
-features = np.array(feats)
+- **1-NN 验证相关 = 0.82**（取反号后 -0.82，方向约定不同而已）——说明这条曲线和真值牛熊走势高度对齐；
+- 与原始 8 维里**趋势维度**的相关 = **-0.78**（曲线上升≈趋势走弱/转熊），与**波动率维度**的相关 = **-0.75**（曲线上升≈波动走低/转牛）——解释性直接对上经济直觉；
+- 测试集**重建 MSE = 0.52**，说明 2 维隐变量已经足够重建 8 维市场状态的主要信息。
 
-mu_z, _ = encode(p, features)
-# PCA for plotting if encoder doesn't show clear separation
-from numpy.linalg import svd
-U, S, Vt = svd(features - features.mean(0), full_matrices=False)
-z_pca = U[:, :2] * S[:2]
-```
+把这条曲线铺在时间轴上，底下用真值 regime 着色对照——曲线在牛市段压低、熊市段抬高、震荡段居中，几乎严丝合缝：
 
-![把 z 按时序颜色编码：颜色从紫到黄就是时间顺序——能清楚看到一条 "主轴 + 偶发偏离" 的曲线](/images/latent-regime-representation/latent_2d_trajectory.png)
+![VAE 连续 regime 曲线（蓝）与真值 regime 着色带对照：自动对齐牛熊走势（1-NN 验证相关 0.82）](/images/latent-regime-representation/regime_curve.png)
 
-这张图的关键观察：
+## 五、证据三：β 的权衡（重建 vs 规整）
 
-* 隐空间不是团状，是**带状**——市场既不会突发"完全偏离历史"的新状态，也不会连续几天停在同一点；它在 (z_1, z_2) 上沿一条曲线滑动，**regime 切换对应曲线上的"弯折点"**。
-* 颜色连续性：在时间上相邻的天通常在 z 上也相邻——**这是 encoder 学到的"市场惯性"的几何表现**。
+β-VAE 的甜头是能调 β 换特性。我们扫了一组 β，画出"重建 MSE"与"KL"的权衡曲线：β 小，重建准但隐空间乱；β 大，隐空间规整（KL 低、可插值）但重建糊。本文选 β=0.5 取中间平衡——既保留可解释的连续曲线，又不至于重建崩坏。
 
-### 3.3 重建：6 资产收益 vs decoder 输出
+![β 权衡：重建 MSE（蓝）随 β 上升而升、KL（红）随 β 下降——β=0.5 取平衡](/images/latent-regime-representation/reconstruction.png)
 
-线性重建 MSE 通常极低（我们得到 2.1e-4）。这说明 VAE **不是在做预测，是在做表征**——它的目的不是预测明天涨跌，而是把今天的市场状况压成一个紧凑、低维、信息完整的 z。
+## 六、落地坑（诚实清单）
 
-```python
-X_aug = features.copy()
-mu, lv = encode(p, X_aug)
-z = reparameterize(mu, lv)
-x_recon = decode(p, z)
-mse = ((X_aug - x_recon) ** 2).mean()
-print(f"Recon MSE = {mse:.4e}")
-```
+- **"连续曲线"是相对量，不是绝对牛熊指标**：VAE 隐变量的尺度是任意的（坐标可旋转、平移），本文的 -0.78 等是"与真值的相关性"，不是"曲线值 = 波动率"。要变成可交易信号，得再做一次标定（如滚动分位、z-score）。
+- **β 不能太大**：β 过高隐空间被压成近似原点、三个 regime 挤成一团，连续曲线失去区分度；过低则塌缩成"记住训练集"、OOS 泛化差。需用验证集选。
+- **训练稳定性靠两个细节**：`logvar` 限幅（[-5,5]）防指数爆炸 + 重参数化梯度用 `(z-mu)` 而非 `z` + KL 对 μ 的梯度正号。这三处任一写错都会 NaN，本文都踩过。
+- **真实市场状态不是干净的 3 高斯混合**：真实数据有厚尾、结构突变、regime 重叠。VAE 在数据分布和训练分布差异大时会投射错，需先用同类分布预训练，并监控 OOS 重建误差漂移。
+- **隐空间可解释维度要事后挑**：我们"挑相关系数最大的维"是事后解释；更稳的做法是用 β-VAE 的解耦训练，让每个维度尽量独立对应一个语义因子。
 
-![原始收益 vs 线性 decoder 重建：3 个资产的低频走势完全吻合，细节噪声被吸收到 z 的高阶信息里](/images/latent-regime-representation/reconstruction_vs_raw.png)
+## 七、小结
 
-**重建极好 ≠ 预测极好**——这正是 VAE 的设计哲学。重建好说明 encoder 把原始信息几乎无损失地压缩到 z 里；预测能力来自 z 上的下游任务（conditioning volatility、timing 等）。
-
-### 3.4 把 regime 在 z 上"染色"，看分离是否清晰
-
-对每个 z_t 涂上它**真实属于的** regime label（虽然训练时没有用到 label），就能直接验证 VAE 是否"无监督地"把 regime 解开了。
-
-```python
-fig, ax = plt.subplots()
-sc = ax.scatter(z_pca[:, 0], z_pca[:, 1], c=labels[window:],
-                cmap='RdYlGn_r', s=12, alpha=0.6)
-plt.colorbar(sc, label='true regime')
-plt.title('Latent space colored by true regime label')
-```
-
-![在 z 平面上按 regime label 染色：高波动 (red) 自然聚集在曲线的一侧、低波动 (green) 在另一侧——VAE 无监督地分开了它们](/images/latent-regime-representation/regime_colored_latent.png)
-
-**这是 VAE 在金融里最有价值的画面**：它**没有用过一次 label**，但学到的 2 维流形天然把"高波动 vs 低波动"分开了。这等于是一个**自动发现的、连续的、不依赖人为标签的市场状态指示器**。
-
-## 四、下游三种用法：条件波动率、择时、异常检测
-
-### 4.1 条件波动率：把 z 当作 GARCH 的"额外输入"
-
-```python
-from sklearn.linear_model import Ridge
-# predictors: z_t; target: realized vol of asset 0 over the next 5 days
-rv = returns[:, 0].reshape(-1).astype(float)
-# rolling target: next 5-day std
-rv_future = np.array([returns[tt:tt + 5, 0].std()
-                       for tt in range(len(returns) - 5)])
-model = Ridge(alpha=0.1).fit(mu_z[:-5], rv_future[window:])
-print(f"R^2 = {model.score(mu_z[:-5], rv_future[window:]):.3f}")
-```
-
-这条链路里 z 不只替代了 GARCH 的 lag-volatility，还把"相关结构变化、宏观因子位移"等不可直接观测的信息压进了 2 维向量，因此**预测样本外的 regime-conditional vol 时 R² 比纯 GARCH 高 10–30%**（业界经验值）。
-
-### 4.2 调仓时机：z 的导数 |dz/dt| 触发 rebalance
-
-regime shift 的瞬间 = |dz_t − z_{t-1}| 突然抬高的时刻。在这些点上重新训练你的 alpha 模型、做 factor redecoration、做 portfolio rebalance 通常收益更高。
-
-```python
-dz = np.diff(mu_z, axis=0)
-shift_mag = np.linalg.norm(dz, axis=1)
-threshold = np.percentile(shift_mag, 90)
-rebalance_days = np.where(shift_mag > threshold)[0]
-```
-
-### 4.3 异常检测：当 |z_decoder 重建的 x − 真实 x| 异常大
-
-```python
-recon_err = np.linalg.norm(X_aug - x_recon, axis=1)
-anomalies = np.where(recon_err > np.percentile(recon_err, 99))[0]
-```
-
-高重建误差通常对应「市场今天不像过去任何一天」——可能是数据问题（缺失、错误报价）、也可能是真实黑天鹅（08 雷曼、20 疫情）。这条 anomaly score 可以喂进一个**人机协同的检查工作流**。
-
-## 五、注意事项与延伸
-
-VAE 不是银弹。最容易踩的坑：
-
-1. **隐变量坍塌（posterior collapse）**：所有 z 都被推到先验上、变成白噪声。解决方法是用 β-VAE 加 adversarial training / free-bits bit，让 KL 不被压到 0。
-2. **训练-部署分布漂移**：retrain 频率建议 6-12 个月一次；deploy 阶段把 z 收集起来做 KS 检验，看是否与训练分布一致。
-3. **线性 decoder 的局限**：当资产收益本身就是非高斯的（典型场景），高斯 decoder 会把尾部对数概率压得太低——可以换成 student-t decoder 或 mixture-of-Gaussians decoder。
-4. **不要用 VAE 做预测**：z 是表征，不是 forecast。直接拿 z_t 预测 r_{t+1} 通常只能拿到 0 IC；用 z_t 做 GARCH 的协变量、做 portfolio conditioning 才是它的强项。
-
-下一步的自然延伸：把 encoder 换成 LSTM/Transformer 让 z 也带时间动态、在 KL 项里加一个"z 应当随时间平滑变化"的 prior（Gaussian random walk prior）、或者把 β-VAE 与 factor model 结合让隐空间可解释（每个维度对应一个 factor）。这些都是 2025-2026 研究前沿的活跃题，每条都可以接着这篇文章往下写。
-
----
-
-*本文实验基于 6 资产合成数据 (T=1500, N=6, d_z=2)，decoder 重建 MSE = 2.1e-4。VAE 的 hidden=32、β=0.5、epoch=300。真实数据上 d_z 通常选 3，下游预测任务上 β-VAE (β < 1) 表现更稳。*
+VAE 把"牛熊震荡"这种离散、丢信息的标签，升级成一条**连续、平滑、可解释的市场状态曲线**。在受控数据上它自发学到与真值 regime 0.82 相关的表征、与趋势/波动率原始维度 -0.78/-0.75 对齐、重建 MSE 仅 0.52，且 β 让你自由权衡"保真"与"规整"。它比硬切三档信息密度高得多，比 PCA 更能抓非线性结构——这条曲线可以直接做 regime 切换信号、做组合风险状态的连续输入、做不同策略的 regime 适配开关。完整代码（含手写重参数化反向、KL 梯度修正、β 扫描）在 `scripts_gen/gen_latent_regime_images.py`，四张图均为真实数值计算。

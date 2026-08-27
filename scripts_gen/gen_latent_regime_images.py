@@ -129,7 +129,9 @@ def loss_grad(x, p, beta):
     # 经 z 回传（reparam）
     dz = dd1 @ Wdec1.T  # (B,LAT)
     # KL 对 mu, logvar 的梯度（除以元素总数 ne）
-    dmu_kl = beta * (-mu) / ne
+    # d KL/d mu = mu/ne  (正号 → SGD 把 mu 拉回 0，收缩正则)
+    # d KL/d logvar = -0.5*(1-exp(logvar))/ne
+    dmu_kl = beta * (mu) / ne
     dlogvar_kl = beta * (-0.5 * (1 - np.exp(logvar))) / ne
     dmu = dz + dmu_kl
     # z = mu + exp(0.5*logvar)*eps  =>  d logvar = dz * 0.5 * (z - mu)
@@ -206,7 +208,7 @@ summary = {
     "recon_mse": recon_mse, "kl_mean": kl_mean,
     "best_dim": best_dim, "corr_per_dim": [float(c) for c in corr_per_dim],
     "corr_trend": corr_trend, "corr_vol": corr_vol,
-    "knn_regime_corr": knn_corr, "beta": 0.5, "LAT": LAT, "epochs": 800,
+    "knn_regime_corr": knn_corr, "beta": 0.5, "LAT": LAT, "epochs": 1200,
 }
 print("SUMMARY", json.dumps(summary, indent=2, ensure_ascii=False))
 
