@@ -61,14 +61,21 @@ print(f"[数据] 真实窗口数 = {len(X_real)}, 上涨标签占比 = {y_real.m
 
 # =========================================================================
 # 2) DDPM（variance-preserving, ε-prediction），纯 numpy MLP
+#    约定（已用 oracle 校验）：ab 为 0-indexed 长度 M，ab[0]≈1(无噪声)，ab[M-1]≈0(纯噪声)
+#    alpha[t]=ab[t]/ab[t-1], beta[t]=1-alpha[t], 反向 t=M-1..0
 # =========================================================================
 M = 200
 def cosine_alpha_bar(m):
     fm = np.cos(np.pi / 2 * (m / M + 0.008) / (1 + 0.008)) ** 2
     f0 = np.cos(np.pi / 2 * 0.008 / (1 + 0.008)) ** 2
     return fm / f0
-# 1-indexed: ab[0]=1 (无噪声), ab[m]=ᾱ_m (m=1..M)
-ab = np.concatenate([[1.0], np.clip(cosine_alpha_bar(np.arange(1, M + 1)), 0, 1 - 1e-4)])
+ab = np.clip(cosine_alpha_bar(np.arange(1, M + 1)), 0, 1 - 1e-4)   # 0-indexed, length M
+ab[0] = max(ab[0], 1 - 1e-3)
+alpha = np.zeros(M); alpha[0] = ab[0]; alpha[1:] = ab[1:] / ab[:-1]
+beta = np.clip(1 - alpha, 0, 0.99)
+
+def tm_of(m):
+    return m / (M - 1)   # 步号归一化到 [0,1]
 
 H1, H2 = 192, 192
 dim = L
@@ -77,20 +84,20 @@ W2 = rng.standard_normal((H2, H1)) * 0.4;     b2 = np.zeros(H2)
 W3 = rng.standard_normal((dim, H2)) * 0.4;    b3 = np.zeros(dim)
 
 def net(X, tm):
-    # X: (n, dim) 批量；tm: 标量步号归一化 m/M
+    # X: (n, dim) 批量；tm: 标量步号归一化
     a0 = np.concatenate([X, np.full((X.shape[0], 1), tm)], axis=1)
     h1 = np.maximum(0, a0 @ W1.T + b1)
     h2 = np.maximum(0, h1 @ W2.T + b2)
     return h2 @ W3.T + b3
 
 def net_loss_full(X0):
-    # 标准 ε-prediction: 目标 = 注入噪声 ε，稳定（永远 N(0,1)）
+    # 标准 ε-prediction: 目标 = 注入噪声 ε，稳定（永远 N(0,1)，loss 下界=1.0）
     loss = 0.0
     for k in range(len(X0)):
         m = rng.integers(1, M)
         eps = rng.standard_normal(dim)
         xm = np.sqrt(ab[m]) * X0[k] + np.sqrt(1 - ab[m]) * eps
-        loss += np.mean((net(xm[None], m / M) - eps) ** 2)
+        loss += np.mean((net(xm[None], tm_of(m)) - eps) ** 2)
     return loss / len(X0)
 
 lr = 0.02
@@ -105,9 +112,9 @@ for ep in range(N_epoch):
         m = rng.integers(1, M)
         eps = rng.standard_normal(dim)
         xm = np.sqrt(ab[m]) * X_real[k] + np.sqrt(1 - ab[m]) * eps
-        eh = net(xm[None], m / M)
+        eh = net(xm[None], tm_of(m))
         e = 2.0 * (eh - eps) * (1.0 / dim)
-        a0 = np.concatenate([xm[None], [[m / M]]], axis=1)
+        a0 = np.concatenate([xm[None], np.full((1, 1), tm_of(m))], axis=1)
         h1 = np.maximum(0, a0 @ W1.T + b1)
         h2 = np.maximum(0, h1 @ W2.T + b2)
         gW3 += e.T @ h2; gb3 += e.ravel()
@@ -122,18 +129,16 @@ for ep in range(N_epoch):
         print(f"  epoch {ep+1:4d}  loss={net_loss_full(X_real):.4f}")
 
 def eps_hat(X, m):
-    return net(X, m / M)
+    return net(X, tm_of(m))
 
-# ---- 采样：DDPM 反向步骤（批量）----
+# ---- 采样：DDPM 反向步骤（批量，已 oracle 校验 std→1.0）----
 def sample(n=2000, seed=7):
     r = np.random.default_rng(seed)
-    x = r.standard_normal((n, dim))
-    for m in range(M, 1, -1):
-        a_m = ab[m] / ab[m - 1]
-        beta_m = 1 - a_m
-        sigma_m = np.sqrt(beta_m * (1 - ab[m - 1]) / (1 - ab[m])) if m > 1 else 0.0
-        eh = eps_hat(x, m)
-        x = (1 / np.sqrt(a_m)) * (x - beta_m / np.sqrt(1 - ab[m]) * eh) + sigma_m * r.standard_normal((n, dim))
+    x = np.sqrt(ab[M - 1]) * 0.0 + np.sqrt(1 - ab[M - 1]) * r.standard_normal((n, dim))
+    for t in range(M - 1, -1, -1):
+        z = r.standard_normal((n, dim)) if t > 0 else 0.0
+        eh = eps_hat(x, t)
+        x = (1 / np.sqrt(alpha[t])) * (x - (1 - alpha[t]) / np.sqrt(1 - ab[t]) * eh) + np.sqrt(beta[t]) * z
     return x
 
 X_syn = sample(len(X_real), 7)
@@ -176,15 +181,16 @@ fig.tight_layout(); fig.savefig(f"{D}/cover.png"); plt.close(fig)
 # ---- diffusion_training: 前向加噪轨迹 + 学到的 ε 预测误差随步号 ----
 fig, ax = plt.subplots(1, 2, figsize=(11, 4.2))
 demo = X_real[0]; ms_demo = [1, 20, 60, 120, 180]
-for k, m in enumerate(ms_demo):
+for m in ms_demo:
     eps = rng.standard_normal(dim); xm = np.sqrt(ab[m]) * demo + np.sqrt(1 - ab[m]) * eps
     ax[0].plot(np.arange(L), xm, alpha=0.75, lw=1.4, color=plt.cm.viridis(k / (len(ms_demo) - 1)), label=f"m={m}")
 ax[0].set_title("前向过程：一条窗口被逐步加噪（DDPM 插值）")
 ax[0].set_xlabel("窗口内交易日"); ax[0].set_ylabel("加噪后窗口"); ax[0].legend(fontsize=7)
 mm = np.linspace(1, M - 1, 6); base = X_real[3]; pred_err = []
 for m in mm:
+    m = int(m)
     eps = rng.standard_normal(dim); xm = np.sqrt(ab[m]) * base + np.sqrt(1 - ab[m]) * eps
-    eh = eps_hat(xm[None], int(m))[0]
+    eh = eps_hat(xm[None], m)[0]
     pred_err.append(np.mean((eh - eps) ** 2))
 ax[1].plot(mm, pred_err, "o-", color=C_ACC)
 ax[1].set_title("学到的 ε 预测 MSE 随步号（低噪声处更难、误差更高）")
