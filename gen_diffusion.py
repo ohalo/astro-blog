@@ -4,7 +4,7 @@
 
 核心逻辑（全部真实数值计算，非占位图）：
   1) 真实金融序列：GBM + 牛熊 regime drift -> 30 日归一化窗口，标签 = 窗口净方向（涨/跌）。
-  2) 训练一个 score-based 扩散模型（VE SDE + 加权去噪分数匹配，纯 numpy MLP）学习窗口分布。
+  2) 训练一个 DDPM（variance-preserving, ε-prediction）扩散模型学习窗口分布，纯 numpy MLP。
   3) 真实性检验：生成窗口的边缘分布 / 自相关结构 与真实窗口一致（合成 std≈真实 std）。
   4) 数据增强的诚实价值：小样本下游（窗口方向分类器）下，+合成样本把最差随机种子的
      测试 IC 拉上来、降低方差，但不制造真实信号不存在的信息。
@@ -60,54 +60,43 @@ X_real = X_real / Xs
 print(f"[数据] 真实窗口数 = {len(X_real)}, 上涨标签占比 = {y_real.mean():.3f}")
 
 # =========================================================================
-# 2) 扩散模型：DDPM（variance-preserving）去噪分数匹配，纯 numpy MLP
+# 2) DDPM（variance-preserving, ε-prediction），纯 numpy MLP
 # =========================================================================
-M = 200                      # 扩散步数
-# 余弦噪声调度（Nichol & Dhariwal 2021），温和且训练稳定
+M = 200
 def cosine_alpha_bar(m):
     fm = np.cos(np.pi / 2 * (m / M + 0.008) / (1 + 0.008)) ** 2
     f0 = np.cos(np.pi / 2 * 0.008 / (1 + 0.008)) ** 2
     return fm / f0
-alphabar = np.clip(cosine_alpha_bar(np.arange(1, M + 1)), 0, 1 - 1e-4)
-alphabar = np.concatenate([[1.0], alphabar])      # 含 m=0
-beta = np.clip(1 - alphabar[1:] / alphabar[:-1], 0, 0.999)
-alphabar = alphabar[1:]
+# 1-indexed: ab[0]=1 (无噪声), ab[m]=ᾱ_m (m=1..M)
+ab = np.concatenate([[1.0], np.clip(cosine_alpha_bar(np.arange(1, M + 1)), 0, 1 - 1e-4)])
 
-def forward(x0, m, eps):
-    # x_m = √ᾱ_m · x0 + √(1-ᾱ_m) · ε
-    return np.sqrt(alphabar[m]) * x0 + np.sqrt(1 - alphabar[m]) * eps
-
-H1, H2 = 256, 256
+H1, H2 = 192, 192
 dim = L
 W1 = rng.standard_normal((H1, dim + 1)) * 0.4; b1 = np.zeros(H1)
 W2 = rng.standard_normal((H2, H1)) * 0.4;     b2 = np.zeros(H2)
 W3 = rng.standard_normal((dim, H2)) * 0.4;    b3 = np.zeros(dim)
-mW1 = np.zeros_like(W1); mb1 = np.zeros_like(b1)
-mW2 = np.zeros_like(W2); mb2 = np.zeros_like(b2)
-mW3 = np.zeros_like(W3); mb3 = np.zeros_like(b3)
 
-def net_forward(x, tm):
-    a0 = np.concatenate([x, [tm]], axis=0)     # tm = m/M 归一化步号
-    h1 = np.maximum(0, W1 @ a0 + b1)
-    h2 = np.maximum(0, W2 @ h1 + b2)
-    return W3 @ h2 + b3, (a0, h1, h2)
+def net(X, tm):
+    # X: (n, dim) 批量；tm: 标量步号归一化 m/M
+    a0 = np.concatenate([X, np.full((X.shape[0], 1), tm)], axis=1)
+    h1 = np.maximum(0, a0 @ W1.T + b1)
+    h2 = np.maximum(0, h1 @ W2.T + b2)
+    return h2 @ W3.T + b3
 
 def net_loss_full(X0):
-    # 最优去噪分数匹配：目标 = s(x_m,m) ≈ -ε/√(1-ᾱ_m)，无 σ² 加权，直接收敛真 score
+    # 标准 ε-prediction: 目标 = 注入噪声 ε，稳定（永远 N(0,1)）
     loss = 0.0
     for k in range(len(X0)):
         m = rng.integers(1, M)
         eps = rng.standard_normal(dim)
-        xm = forward(X0[k], m, eps)
-        sc, _ = net_forward(xm, m / M)
-        target = -eps / np.sqrt(1 - alphabar[m] + 1e-10)
-        loss += np.mean((sc - target) ** 2)
+        xm = np.sqrt(ab[m]) * X0[k] + np.sqrt(1 - ab[m]) * eps
+        loss += np.mean((net(xm[None], m / M) - eps) ** 2)
     return loss / len(X0)
 
 lr = 0.02
-N_epoch = 2000
+N_epoch = 1800
 N = len(X_real)
-print("[训练] 开始 DDPM 分数匹配（全批量+RMSProp）...")
+print("[训练] 开始 DDPM ε-prediction 分数匹配（全批量）...")
 for ep in range(N_epoch):
     gW1 = np.zeros_like(W1); gb1 = np.zeros_like(b1)
     gW2 = np.zeros_like(W2); gb2 = np.zeros_like(b2)
@@ -115,43 +104,36 @@ for ep in range(N_epoch):
     for k in range(N):
         m = rng.integers(1, M)
         eps = rng.standard_normal(dim)
-        xm = forward(X_real[k], m, eps)
-        sc, (a0, h1, h2) = net_forward(xm, m / M)
-        target = -eps / np.sqrt(1 - alphabar[m] + 1e-10)
-        e = 2.0 * (sc - target) * (1.0 / dim)
-        g3 = e
-        gW3 += np.outer(g3, h2); gb3 += g3
-        g2 = (W3.T @ g3) * (h2 > 0)
-        gW2 += np.outer(g2, h1); gb2 += g2
-        g1 = (W2.T @ g2) * (h1 > 0)
-        gW1 += np.outer(g1, a0); gb1 += g1
-    for G, Mc in [(gW1, mW1), (gW2, mW2), (gW3, mW3), (gb1, mb1), (gb2, mb2), (gb3, mb3)]:
-        G /= N; Mc[:] = 0.9 * Mc + 0.1 * (G * G); G /= (np.sqrt(Mc) + 1e-6)
+        xm = np.sqrt(ab[m]) * X_real[k] + np.sqrt(1 - ab[m]) * eps
+        eh = net(xm[None], m / M)
+        e = 2.0 * (eh - eps) * (1.0 / dim)
+        a0 = np.concatenate([xm[None], [[m / M]]], axis=1)
+        h1 = np.maximum(0, a0 @ W1.T + b1)
+        h2 = np.maximum(0, h1 @ W2.T + b2)
+        gW3 += e.T @ h2; gb3 += e.ravel()
+        g2 = (e @ W3) * (h2 > 0); gW2 += g2.T @ h1; gb2 += g2.ravel()
+        g1 = (g2 @ W2) * (h1 > 0); gW1 += g1.T @ a0; gb1 += g1.ravel()
+    for G in (gW1, gW2, gW3): G /= N
+    for G in (gb1, gb2, gb3): G /= N
     W1 -= lr * gW1; b1 -= lr * gb1
     W2 -= lr * gW2; b2 -= lr * gb2
     W3 -= lr * gW3; b3 -= lr * gb3
     if (ep + 1) % 400 == 0:
         print(f"  epoch {ep+1:4d}  loss={net_loss_full(X_real):.4f}")
 
-def score_of(x, m):
-    sc, _ = net_forward(x, m / M); return sc
+def eps_hat(X, m):
+    return net(X, m / M)
 
-# ---- 采样：DDPM 反向步骤（逐样本，x_0 ~ N(0,I)）----
+# ---- 采样：DDPM 反向步骤（批量）----
 def sample(n=2000, seed=7):
     r = np.random.default_rng(seed)
     x = r.standard_normal((n, dim))
-    for m in range(M - 1, -1, -1):
-        x0hat = np.empty_like(x)
-        for k in range(n):
-            s = score_of(x[k], m)
-            x0hat[k] = (x[k] - np.sqrt(1 - alphabar[m]) * s) / np.sqrt(alphabar[m] + 1e-10)
-        if m == 0:
-            x = x0hat; break
-        coeff = np.sqrt(max(1 - alphabar[m - 1] - beta[m] * (1 - alphabar[m - 1]) / (1 - alphabar[m]), 0))
-        sigma = np.sqrt(beta[m] * (1 - alphabar[m - 1]) / (1 - alphabar[m]))
-        for k in range(n):
-            s = score_of(x[k], m)
-            x[k] = np.sqrt(alphabar[m - 1]) * x0hat[k] + coeff * s + sigma * r.standard_normal(dim)
+    for m in range(M, 1, -1):
+        a_m = ab[m] / ab[m - 1]
+        beta_m = 1 - a_m
+        sigma_m = np.sqrt(beta_m * (1 - ab[m - 1]) / (1 - ab[m])) if m > 1 else 0.0
+        eh = eps_hat(x, m)
+        x = (1 / np.sqrt(a_m)) * (x - beta_m / np.sqrt(1 - ab[m]) * eh) + sigma_m * r.standard_normal((n, dim))
     return x
 
 X_syn = sample(len(X_real), 7)
@@ -176,7 +158,7 @@ print(f"[保真] ACF(1) real={acf_real:+.3f} syn={acf_syn:+.3f}")
 # =========================================================================
 # 3) 配图
 # =========================================================================
-# ---- cover: 真实 vs 合成 路径 + ACF ----
+# ---- cover ----
 fig, ax = plt.subplots(1, 2, figsize=(11, 4.2))
 for k in range(6):
     ax[0].plot(np.arange(L), X_real[k], color=C_TRUE, alpha=0.55, lw=1.2)
@@ -184,34 +166,32 @@ for k in range(6):
 ax[0].set_title("归一化价格窗口：实线=真实，虚线=扩散合成（肉眼难分）")
 ax[0].set_xlabel("窗口内交易日"); ax[0].set_ylabel("标准化价格")
 lags = np.arange(0, 11)
-acf_r = [acf_seq(X_real, l) for l in lags]
-acf_s = [acf_seq(X_syn, l) for l in lags]
-ax[1].plot(lags, acf_r, "o-", color=C_TRUE, label="真实")
-ax[1].plot(lags, acf_s, "s--", color=C_SYN, label="合成")
+ax[1].plot(lags, [acf_seq(X_real, l) for l in lags], "o-", color=C_TRUE, label="真实")
+ax[1].plot(lags, [acf_seq(X_syn, l) for l in lags], "s--", color=C_SYN, label="合成")
 ax[1].axhline(0, color=C_GREY, lw=0.8)
 ax[1].set_title("时间维自相关：两者都接近 0（弱记忆市场）")
 ax[1].set_xlabel("lag"); ax[1].set_ylabel("ACF"); ax[1].legend()
 fig.tight_layout(); fig.savefig(f"{D}/cover.png"); plt.close(fig)
 
-# ---- diffusion_training: 前向加噪轨迹 + 学到的 score 范数 ----
+# ---- diffusion_training: 前向加噪轨迹 + 学到的 ε 预测误差随步号 ----
 fig, ax = plt.subplots(1, 2, figsize=(11, 4.2))
-demo = X_real[0]; ts_demo = np.linspace(0, 1, 8)
-for k, t in enumerate(ts_demo):
-    s = sigma_of_t(t); xt = demo + s * rng.standard_normal(dim)
-    ax[0].plot(np.arange(L), xt, alpha=0.75, lw=1.4, color=plt.cm.viridis(k / 7), label=f"t={t:.2f}")
+demo = X_real[0]; ms_demo = [1, 20, 60, 120, 180]
+for k, m in enumerate(ms_demo):
+    eps = rng.standard_normal(dim); xm = np.sqrt(ab[m]) * demo + np.sqrt(1 - ab[m]) * eps
+    ax[0].plot(np.arange(L), xm, alpha=0.75, lw=1.4, color=plt.cm.viridis(k / (len(ms_demo) - 1)), label=f"m={m}")
 ax[0].set_title("前向过程：一条窗口被逐步加噪（DDPM 插值）")
 ax[0].set_xlabel("窗口内交易日"); ax[0].set_ylabel("加噪后窗口"); ax[0].legend(fontsize=7)
-mm = np.linspace(1, M - 1, 6); base = X_real[3]; sc_list = []
+mm = np.linspace(1, M - 1, 6); base = X_real[3]; pred_err = []
 for m in mm:
-    eps = rng.standard_normal(dim)
-    xm = forward(base, int(m), eps)
-    sc_list.append(np.linalg.norm(score_of(xm, int(m))))
-ax[1].plot(mm, sc_list, "o-", color=C_ACC)
-ax[1].set_title("学到的 score 范数随步号：噪声越大（m 大），指向数据的力越强")
-ax[1].set_xlabel("扩散步号 m"); ax[1].set_ylabel("‖score‖")
+    eps = rng.standard_normal(dim); xm = np.sqrt(ab[m]) * base + np.sqrt(1 - ab[m]) * eps
+    eh = eps_hat(xm[None], int(m))[0]
+    pred_err.append(np.mean((eh - eps) ** 2))
+ax[1].plot(mm, pred_err, "o-", color=C_ACC)
+ax[1].set_title("学到的 ε 预测 MSE 随步号（低噪声处更难、误差更高）")
+ax[1].set_xlabel("扩散步号 m"); ax[1].set_ylabel("‖ε̂ − ε‖²")
 fig.tight_layout(); fig.savefig(f"{D}/diffusion_training.png"); plt.close(fig)
 
-# ---- diffusion_fidelity: 边缘分布直方图 + 箱线 ----
+# ---- diffusion_fidelity ----
 fig, ax = plt.subplots(1, 2, figsize=(11, 4.2))
 bins = np.linspace(-3.5, 3.5, 40)
 ax[0].hist(hist_real, bins, density=True, alpha=0.5, color=C_TRUE, label="真实")
@@ -219,8 +199,7 @@ ax[0].hist(hist_syn, bins, density=True, alpha=0.5, color=C_SYN, label="合成")
 ax[0].set_title("收益率边缘分布：合成与真实高度重叠")
 ax[0].set_xlabel("标准化收益"); ax[0].set_ylabel("密度"); ax[0].legend()
 for q in [0.95, 0.99]:
-    pr = np.quantile(np.abs(hist_real), q); ps = np.quantile(np.abs(hist_syn), q)
-    print(f"[尾部] |ret|@{q:.0%}: real={pr:.3f} syn={ps:.3f}")
+    print(f"[尾部] |ret|@{q:.0%}: real={np.quantile(np.abs(hist_real),q):.3f} syn={np.quantile(np.abs(hist_syn),q):.3f}")
 ax[1].boxplot([hist_real, hist_syn], tick_labels=["真实", "合成"], showfliers=False)
 ax[1].set_title("分布箱线：中位数/四分位几乎重合"); ax[1].set_ylabel("标准化收益")
 fig.tight_layout(); fig.savefig(f"{D}/diffusion_fidelity.png"); plt.close(fig)
@@ -257,7 +236,7 @@ print(f"[增强] 小样本(N={N_small}) 测试IC: real-only μ={ics_real.mean():
 print(f"[增强] 最差种子 IC: real={ics_real.min():.3f} -> aug={ics_aug[np.argmin(ics_real)]:.3f}")
 
 fig, ax = plt.subplots(figsize=(6.2, 4.4))
-bp = ax.boxplot([ics_real, ics_aug], labels=["仅真实(150)", "真实+合成(×5)"], showfliers=True, patch_artist=True)
+bp = ax.boxplot([ics_real, ics_aug], tick_labels=["仅真实(150)", "真实+合成(×5)"], showfliers=True, patch_artist=True)
 bp["boxes"][0].set_facecolor("#aed6f1"); bp["boxes"][1].set_facecolor("#f5b7b1")
 ax.set_title("下游窗口方向分类器：小样本测试 IC（12 随机种子）")
 ax.set_ylabel("测试集 IC"); ax.axhline(0, color=C_GREY, lw=0.8)
