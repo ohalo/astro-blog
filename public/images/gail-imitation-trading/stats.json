@@ -1,0 +1,29 @@
+{
+  "D_S": 4,
+  "N_expert_full": 1500,
+  "R_expert": -0.3015,
+  "R_bc_full": -0.2816,
+  "R_gail_full": -1.6978,
+  "gail_conv_start": -2.9341,
+  "gail_conv_end": -1.6499,
+  "disc_acc_start": 0.4941,
+  "disc_acc_end": 0.5,
+  "w_expert": [
+    1.4,
+    -0.8,
+    0.6,
+    0.3
+  ],
+  "w_bc_full": [
+    1.394,
+    -0.788,
+    0.595,
+    0.302
+  ],
+  "w_gail_full": [
+    0.45,
+    -0.111,
+    0.148,
+    -0.094
+  ]
+}
