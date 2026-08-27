@@ -10,6 +10,11 @@ layout: page
 
 ## 最新文章
 
+### 2026-08-28 发布（神经组合优化 Pointer Net / 生存分析违约预测）
+
+- [2026-08-28 - 神经组合优化 Pointer Net：用 seq2seq 直接输出排序权重](/blog/pointer-network-portfolio/) - 🎯 Markowitz 输出连续权重但跳过『选几只』这一步，Pointer Net 用 attention 直接给出排序+稀疏权重。在 8 资产 + 双因子合成数据上 20 个滚动窗口测试，Pointer Net 样本外 Sharpe 中位数 1.62、IQR 仅 0.28，跑赢 Markowitz（1.05）53%。附完整 numpy 实现与三张真实计算图。
+- [2026-08-28 - 生存分析在违约预测：用 Cox 比例风险把『何时违约』变成风险率](/blog/survival-analysis-default/) - 📉 Logistic 把违约折成单点 PD、丢掉了时间分布；Cox 用 hazard rate 完整建模违约时间，把 S(t) 曲线接到 LGD×EAD 直接出预期损失。受控信用组合上 Cox 真实违约时间 AUC 0.78（logistic 0.64）、24 月 EL 估计误差从 38% 砍到 12%。附完整 numpy + Kaplan-Meier 实现与三张真实计算图。
+
 ### 2026-08-28 发布（图神经网络过平滑 / 对比学习负采样）
 
 - [2026-08-28 - 图神经网络过平滑：在板块关联图上避免深层 GNN 的信号坍塌](/blog/gnn-over-smoothing-finance/) - 🕸️ 把股票建成板块关联图用 GNN 借横截面信号，但层数一深所有节点会被磨成同一个向量。本文用 numpy 从零复现：纯 GCN 叠 16 层 Dirichlet 能量塌到 2.2%、下游分类从 1.000 掉到 0.333（跌破随机）；并给出 AppNP 遥传（16 层仍 0.900）、JK 留层（守住 1.000）与谱视角根因（高频判别能量 19.6%→0.2%）。附完整 Python 与四张真实计算图。
