@@ -114,6 +114,10 @@ class TrendAgent:
 
 ## 3. 仿真主循环与市场统计
 
+仿真运行后的限价簿深度快照如下：
+
+![仿真限价簿深度快照](/images/agent-based-market-simulation/order_book_depth.png)
+
 ```python
 # --- 仿真参数 ---
 n_steps = 5000
@@ -208,6 +212,10 @@ Agent 成交量占比:
 
 ## 4. 实验：逐一拆除 Agent 类型
 
+不同 Agent 类型对价格发现的贡献如下图所示：
+
+![多Agent价格发现：各类型Agent的价格轨迹与市场聚合价格](/images/agent-based-market-simulation/price_discovery_agents.png)
+
 ABM 最有价值的分析是**反事实实验**：逐个关掉一类 Agent，观察市场统计如何变化。
 
 ```python
@@ -274,6 +282,10 @@ for name, res in results.items():
 - **趋势 Agent 是正自相关的来源**：没有它们，收益率 lag-1 自相关从 +0.089 降到 −0.012——趋势跟随行为是短期动量的制造者。
 
 ## 5. 规模效应：Agent 数量与价差的关系
+
+Agent 数量与平均价差的扫描结果：
+
+![Agent数量与价差的关系](/images/agent-based-market-simulation/spread_vs_agents.png)
 
 ```python
 # Agent 数量扫描
