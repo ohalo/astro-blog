@@ -72,5 +72,4 @@
 [reinforcement-learning-trading] BROKEN_IMG: /images/reinforcement-learning-trading/learning-curve.jpg
 [satellite-image-alternative-data] MISSING_INDEX_MD
 [stress-testing-scenario-analysis] BROKEN_IMG: /images/stress-testing-scenario-analysis/climate_stress.jpg
-[tech-career-at-30-three-paths] MISSING_FIELD: description
 [tech-tips] MISSING_INDEX_MD
