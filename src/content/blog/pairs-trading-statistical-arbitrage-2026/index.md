@@ -590,6 +590,7 @@ class PairsTradingBacktest:
             'profit_loss_ratio': profit_loss_ratio
         }
 
+```
 ## 六、实盘案例分析
 
 ### 6.1 案例：贵州茅台 vs 五粮液

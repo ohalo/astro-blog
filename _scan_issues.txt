@@ -1,4 +1,3 @@
-[2026-02-26-ema-calculation-formula] BAD_DIFFICULTY: 入门
 [2026-05-25] MISSING_INDEX_MD
 [2026-05-26-ai-coding-tool-comparison] BROKEN_IMG: /images/2026-05-26-ai-coding-tool-comparison/01.jpg
 [2026-05-26-ai-coding-tool-comparison] BROKEN_IMG: /images/2026-05-26-ai-coding-tool-comparison/02.jpg
@@ -23,7 +22,6 @@
 [2026-06-04-mean-reversion-strategy] BROKEN_IMG: /images/2026-06-04-mean-reversion-strategy/mean_reversion_chart.jpg
 [2026-06-04-tail-risk-hedging] BROKEN_IMG: /images/2026-06-04-tail-risk-hedging/vix_spx_correlation.png
 [2026-06-05-option-volatility-trading] BROKEN_IMG: /images/2026-06-05-option-volatility-trading/volatility_surface.jpg
-[2026-06-05-risk-var-cvar] UNCLOSED_CODE_FENCE
 [2026-06-06-execution-algo] BROKEN_IMG: /images/2026-06-06-execution-algo/vwap_chart.jpg
 [2026-06-06-execution-algo] BROKEN_IMG: /images/2026-06-06-execution-algo/impact_curve.jpg
 [2026-06-07-cointegration-pairs-trading-advanced] BROKEN_IMG: /images/2026-06-07-cointegration-pairs-trading-advanced/z_score_signal.jpg
@@ -39,36 +37,25 @@
 [2026-06-13-black-litterman-china] BROKEN_IMG: /images/2026-06-13-black-litterman-china/portfolio_weights.jpg
 [2026-06-13-lob-high-frequency] MISSING_INDEX_MD
 [2026-06-13-pairs-trading-cointegration] MISSING_INDEX_MD
-[2026-06-15-execution-slippage-control] UNCLOSED_CODE_FENCE
 [2026-06-15-execution-slippage-control] BROKEN_IMG: /images/2026-06-15-execution-slippage-control/execution-algorithms.jpg
 [2026-06-15-execution-slippage-control] BROKEN_IMG: /images/2026-06-15-execution-slippage-control/slippage-analysis.png
-[2026-06-15-lstm-time-series] UNCLOSED_CODE_FENCE
 [2026-06-15-quality-factor-strategy] MISSING_INDEX_MD
 [2026-07-18-backtesting-framework-pitfalls] MISSING_INDEX_MD
 [2026-07-18-financial-engineer-skills] MISSING_INDEX_MD
 [2026-08-09-factor-mining-pipeline] MISSING_INDEX_MD
 [2026-08-09-quant-dev-stack] MISSING_INDEX_MD
 [2026-08-10-quant-dev-tech-stack] MISSING_INDEX_MD
-[agent-based-market-simulation] MISSING_FIELD: language
 [ai-tool-ecosystem-2026] BROKEN_IMG: /images/2026-ai-tool-ecosystem/multimodal-apps.png
-[bet-sizing-probability] BAD_DIFFICULTY: intermediate-advanced
 [black-litterman-practical] BROKEN_IMG: /images/black-litterman-practical/bl_framework.png
 [black-litterman-practical] BROKEN_IMG: /images/black-litterman-practical/weight_comparison.png
 [convertible-bond-grid-trading] BROKEN_IMG: /images/convertible-bond-grid/strategy-overview.jpg
 [convertible-bond-grid-trading] BROKEN_IMG: /images/convertible-bond-grid/convertible-bond-ipo.png
 [convertible-bond-grid-trading] BROKEN_IMG: /images/convertible-bond-grid/grid-trading-diagram.png
-[correlation-network-mst] MISSING_FIELD: language
 [cross-asset-risk-model] MISSING_INDEX_MD
-[cusum-filter-event-sampling] BAD_DIFFICULTY: intermediate-advanced
-[diffusion-financial-synthetic] MISSING_FIELD: language
 [digital-minimalism-2026] BROKEN_IMG: /images/digital-minimalism-2026/focus-in-ai-era.jpg
 [digital-minimalism-2026] BROKEN_IMG: /images/digital-minimalism-2026/digital-minimalism-evolution.png
 [digital-minimalism-2026] BROKEN_IMG: /images/digital-minimalism-2026/deep-work-setup.png
-[dollar-bars-information-sampling] BAD_DIFFICULTY: intermediate-advanced
-[factor-crowding] UNCLOSED_CODE_FENCE
 [factor-decay-interaction] BROKEN_IMG: /images/factor-decay-interaction/portfolio_performance.jpg
-[factor-timing] UNCLOSED_CODE_FENCE
-[feature-importance-mdi-mda] BAD_DIFFICULTY: intermediate-advanced
 [investment] MISSING_INDEX_MD
 [life] MISSING_INDEX_MD
 [llm-quant-trading-agents] MISSING_INDEX_MD
@@ -76,30 +63,14 @@
 [macbook-pro-m5-preview] BROKEN_IMG: /images/macbook-m5-preview/tsmc-n3p-vs-n3e.png
 [macbook-pro-m5-preview] BROKEN_IMG: /images/macbook-m5-preview/m5-npu-ai-performance.png
 [markowitz-portfolio-optimization] BROKEN_IMG: /images/markowitz-portfolio-optimization/cumulative_returns.svg
-[meta-labeling-position-sizing] BAD_DIFFICULTY: intermediate-advanced
-[multi-task-factor-learning] MISSING_FIELD: language
-[online-concept-drift-adapt] MISSING_FIELD: language
 [options-market-making] MISSING_INDEX_MD
 [options-volatility-trading] BROKEN_IMG: /images/options-volatility-trading/delta_hedging.jpg
-[pairs-trading-statistical-arbitrage-2026] UNCLOSED_CODE_FENCE
-[pca-statistical-arbitrage] MISSING_FIELD: language
 [python-quant-engineering-pipeline] MISSING_INDEX_MD
 [reading] MISSING_INDEX_MD
 [reinforcement-learning-quant-trading] BROKEN_IMG: /images/reinforcement-learning-quant-trading/rl-framework.jpg
 [reinforcement-learning-quant-trading] BROKEN_IMG: /images/reinforcement-learning-quant-trading/dqn-algorithm.jpg
 [reinforcement-learning-trading] BROKEN_IMG: /images/reinforcement-learning-trading/learning-curve.jpg
-[risk-budgeting-model] MISSING_FIELD: language
-[risk-budgeting-model] BAD_DIFFICULTY: 🔴 高阶
-[sample-weights-uniqueness] BAD_DIFFICULTY: intermediate-advanced
 [satellite-image-alternative-data] MISSING_INDEX_MD
-[sparse-pca-stat-arb] MISSING_FIELD: language
 [stress-testing-scenario-analysis] BROKEN_IMG: /images/stress-testing-scenario-analysis/climate_stress.jpg
 [tech-career-at-30-three-paths] MISSING_FIELD: description
 [tech-tips] MISSING_INDEX_MD
-[transformer-stock-prediction] MISSING_FIELD: language
-[transformer-stock-prediction] BAD_DIFFICULTY: 🔴 高阶
-[triple-barrier-labeling] BAD_DIFFICULTY: intermediate-advanced
-[turnover-constrained-optimization] BAD_DIFFICULTY: intermediate-advanced
-[vix-derivatives-trading] BAD_DIFFICULTY: 高阶
-[volume-clock-sampling] BAD_DIFFICULTY: intermediate-advanced
-[xgboost-lightgbm-stock-selection] MISSING_FIELD: language

@@ -520,3 +520,4 @@ class ModelMonitor:
 # 1. 数据准备
 preprocessor = FinancialTimeSeriesPreprocessor(lookback=60, forecast_horizon=5)
 data = load_stock_data('000300.SH',
+```

@@ -342,6 +342,7 @@ plt.tight_layout()
 plt.savefig('factor_timing_backtest.png', dpi=300, bbox_inches='tight')
 plt.show()
 
+```
 ## 回测结果分析
 
 通过上述框架，我们在1963-2023年的样本外数据上测试了因子择时策略，主要发现：

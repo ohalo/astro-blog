@@ -34,7 +34,8 @@ def calculate_var(returns, confidence=0.95):
 # 示例：计算中证500指数每日95% VaR
 csi500_returns = pd.read_csv('csi500_returns.csv')['return']
 var_95 = calculate_var(csi500_returns, 0.95)
-print(f"95% VaR: {var_95:.4f}")  # 输出：-0.0234（即2.34%）```
+print(f"95% VaR: {var_95:.4f}")  # 输出：-0.0234（即2.34%）
+```
 
 ## CVaR：条件风险价值
 
