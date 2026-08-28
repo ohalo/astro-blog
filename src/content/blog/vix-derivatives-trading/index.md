@@ -5,7 +5,7 @@ publishDate: '2026-06-15'
 language: Chinese
 tags: ["VIX", "波动率交易", "VIX期权", "VIX期货", "恐慌指数"]
 category: "quant"
-difficulty: "高阶"
+difficulty: "advanced"
 featured: false
 cover: "/images/vix-derivatives-trading/vix-1.jpg"
 ---

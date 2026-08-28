@@ -17,7 +17,7 @@ AI编码OpenSpecSpecKitHAFW代码评审
 
 * * *
 
-![国外工具 vs 完整流程对比](https://blog.halo26812.eu.org/images/ai-coding-tools-missing-review/flow-comparison.png)
+![国外工具 vs 完整流程对比](/images/ai-coding-tools-missing-review/flow-comparison.png)
 
 ## 一、AI 编码工具的"假爽"
 

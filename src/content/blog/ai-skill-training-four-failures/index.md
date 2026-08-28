@@ -210,7 +210,7 @@ AI 不只是执行者，还应该成为 Skill 的共同调参者。Skill 一旦�
 
 ## Skill 训练闭环图
 
-![Skill训练闭环](https://blog.halo26812.eu.org/images/skill-training-loop/loop-diagram.svg)
+![Skill训练闭环](/images/skill-training-loop/loop-diagram.svg)
 
 ## 结论：训练 Skill，不是在抬高上限，是在抬高下限
 

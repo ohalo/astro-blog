@@ -13,7 +13,6 @@
 [2026-06-02-behavioral-finance-quant] BROKEN_IMG: /images/2026-06-02-behavioral-finance-quant/backtest-equity-curve.jpg
 [2026-06-02-lstm-stock-prediction] BROKEN_IMG: /images/2026-06-02-lstm-stock-prediction/lstm-architecture.jpg
 [2026-06-02-lstm-stock-prediction] BROKEN_IMG: /images/2026-06-02-lstm-stock-prediction/equity-curve.jpg
-[2026-06-03-delta-neutral-options] UNCLOSED_CODE_FENCE
 [2026-06-03-delta-neutral-options] BROKEN_IMG: /images/2026-06-03-delta-neutral-options/delta_hedging.jpg
 [2026-06-03-lstm-stock-prediction] BROKEN_IMG: /images/2026-06-03-lstm-stock-prediction/backtest_equity.jpg
 [2026-06-03-mean-reversion-validation] BROKEN_IMG: /images/2026-06-03-mean-reversion-validation/adf_test_price_ratio.jpg
@@ -78,8 +77,8 @@
 [macbook-pro-m5-preview] BROKEN_IMG: /images/macbook-m5-preview/m5-npu-ai-performance.png
 [markowitz-portfolio-optimization] BROKEN_IMG: /images/markowitz-portfolio-optimization/cumulative_returns.svg
 [meta-labeling-position-sizing] BAD_DIFFICULTY: intermediate-advanced
-[multi-task-factor-learning] MISSING_INDEX_MD
-[online-concept-drift-adapt] MISSING_INDEX_MD
+[multi-task-factor-learning] MISSING_FIELD: language
+[online-concept-drift-adapt] MISSING_FIELD: language
 [options-market-making] MISSING_INDEX_MD
 [options-volatility-trading] BROKEN_IMG: /images/options-volatility-trading/delta_hedging.jpg
 [pairs-trading-statistical-arbitrage-2026] UNCLOSED_CODE_FENCE

@@ -2,9 +2,10 @@
 title: "风险预算模型：超越风险平价的资产配置新范式"
 description: "深入探讨风险预算模型的理论基础、实现方法和实战应用，学习如何根据风险贡献分配资产权重，构建更灵活的资产配置策略"
 publishDate: 2026-06-22
+language: Chinese
 tags: ["投资组合", "风险预算", "资产配置", "风险管理", "量化交易", "风险平价"]
 category: "投资组合理论"
-difficulty: "🔴 高阶"
+difficulty: "advanced"
 featured: true
 ---
 

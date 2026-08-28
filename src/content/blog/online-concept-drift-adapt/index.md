@@ -2,6 +2,7 @@
 title: "在线学习概念漂移自适应：当因子缓慢失效时自动重加权"
 description: "回测里 IC 漂亮的因子，上线半年就悄悄失效——问题是它不会一夜归零，而是每天少给一点。本文化解 Page-Hinkley 漂移检测 + 在线梯度重加权，给因子价格加个滑动窗口注意力。"
 publishDate: '2026-08-28'
+language: Chinese
 tags:
   - 量化交易
   - 在线学习
@@ -85,7 +86,7 @@ def page_hinkley_test(series, delta=0.001, threshold=0.05, reset_after_trigger=T
 - **检测越早**（threshold 小）→ 越快响应，但也越容易误报（噪声波动被你当成漂移）；
 - **检测越迟**（threshold 大）→ 误报少了，但你已经等了太久，损失窗口很长。
 
-![Page-Hinkley threshold 扫描：横轴是阈值、纵轴是平均检测延迟（天）、颜色深浅是误报率](https://blog.halo26812.eu.org/images/online-concept-drift-adapt/detection_delay_tradeoff.png)
+![Page-Hinkley threshold 扫描：横轴是阈值、纵轴是平均检测延迟（天）、颜色深浅是误报率](/images/online-concept-drift-adapt/detection_delay_tradeoff.png)
 
 这张图是受控实验：在 3 个因子序列上扫 `threshold ∈ [0.01, 0.20]`，纵轴是「真实漂移发生后多少天才被检测到」，颜色是「在漂移前误报的频率」。你会看到：
 
@@ -131,7 +132,7 @@ def adaptive_reweight(ic_matrix, lr=0.02, floor=0.02):
 
 **关键细节**：`lr` 不能太大（不然噪声主导权重），也不能太小（漂移发生时反应太慢）。我们的实验给了一组 ablation：
 
-![不同学习率下的累积组合 IC：自适应权重（lr=0.005/0.02/0.05）与静态 1/3 等权对比](https://blog.halo26812.eu.org/images/online-concept-drift-adapt/adaptive_lr_ablation.png)
+![不同学习率下的累积组合 IC：自适应权重（lr=0.005/0.02/0.05）与静态 1/3 等权对比](/images/online-concept-drift-adapt/adaptive_lr_ablation.png)
 
 横轴是样本外天数（已经扣除 60 天 burn-in），纵轴是 `Σ_t (权重_t · 真实因子 IC_t)` —— 即「按当期权重组合的因子信号」的累积 IC。结论：
 
@@ -146,7 +147,7 @@ def adaptive_reweight(ic_matrix, lr=0.02, floor=0.02):
 
 把上面三段拼接起来，做一个完整的「监控→检测→调权→收益」回路。在受控合成数据上跑了 3 个因子（动量/价值/流动性），分别在 120/280/420 天上开始衰减，看看自适应权重能不能战胜静态等权。
 
-![自适应权重演化（上半部分）+ 三个因子真实 IC 衰减曲线（下半部分）](https://blog.halo26812.eu.org/images/online-concept-drift-adapt/cover.png)
+![自适应权重演化（上半部分）+ 三个因子真实 IC 衰减曲线（下半部分）](/images/online-concept-drift-adapt/cover.png)
 
 上图上半部分是权重时间线：每个因子颜色一致，三条垂直虚线是真实漂移起点，标 `detect@day` 是 PH 检测到漂移的时间。可以看到：
 
@@ -159,7 +160,7 @@ def adaptive_reweight(ic_matrix, lr=0.02, floor=0.02):
 
 接着看累积组合 IC 对比：
 
-![静态等权 vs 自适应权重：累积组合 IC + 每日差分柱状图](https://blog.halo26812.eu.org/images/online-concept-drift-adapt/rolling_ic_comparison.png)
+![静态等权 vs 自适应权重：累积组合 IC + 每日差分柱状图](/images/online-concept-drift-adapt/rolling_ic_comparison.png)
 
 这张图把对比拉成两条曲线 + 一根差分柱。可以看到：
 

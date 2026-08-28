@@ -13,7 +13,7 @@ NAS日志监控SMART硬盘健康告警系统
 
 从那之后我开始认真研究 NAS 监控。现在我的 NAS 有完整的告警体系：硬盘健康、空间容量、Docker 日志、异常登录，任何异常都会在 5 分钟内推送到我手机。这篇文章说说我怎么搭的这套系统。
 
-![监控面板](https://blog.halo26812.eu.org/images/nas-log-monitoring/dashboard.jpg)
+![监控面板](/images/nas-log-monitoring/dashboard.jpg)
 
 ## NAS 自带日志系统
 
@@ -37,7 +37,7 @@ NAS日志监控SMART硬盘健康告警系统
 
 群晖 NAS 在"存储管理器"→ "HDD/SSD"里能看到每块硬盘的 SMART 信息。如果看到警告图标，说明硬盘有问题。
 
-![服务器监控](https://blog.halo26812.eu.org/images/nas-log-monitoring/server.jpg)
+![服务器监控](/images/nas-log-monitoring/server.jpg)
 
 ### 关键 SMART 参数解读
 
@@ -92,7 +92,7 @@ PushPlus（pushplus.plus）是一个免费的微信消息推送服务，注册�
 
 钉钉的好处是可以附带手机震动，半夜也能叫醒你。
 
-![告警通知](https://blog.halo26812.eu.org/images/nas-log-monitoring/alert.jpg)
+![告警通知](/images/nas-log-monitoring/alert.jpg)
 
 ## 存储容量预警：设定阈值自动告警
 

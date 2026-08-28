@@ -2,9 +2,10 @@
 title: "Transformer模型股价预测：Attention机制在金融时序中的应用"
 description: "深入探讨Transformer模型在股价预测中的应用，从Attention机制到时间序列建模，带你用PyTorch构建端到端的股价预测系统"
 publishDate: 2026-06-22
+language: Chinese
 tags: ["机器学习", "深度学习", "Transformer", "股价预测", "PyTorch", "量化交易"]
 category: "机器学习应用"
-difficulty: "🔴 高阶"
+difficulty: "advanced"
 featured: true
 ---
 

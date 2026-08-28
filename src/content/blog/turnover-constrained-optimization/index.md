@@ -12,7 +12,7 @@ tags:
   - 近端梯度
   - Python
 language: Chinese
-difficulty: intermediate-advanced
+difficulty: "intermediate"
 ---
 
 均值方差优化有一个课本从不告诉你的隐藏账单：**它每个月都想把你的组合翻个底朝天**。你用过去半年的收益率估计期望和协方差，下个月数据滚动一格，估计值轻微抖动，优化器输出的"最优权重"却大幅跳动——因为 MV 优化对输入的敏感度是出了名的病态。权重月月大搬家，换手率就是你付给这种病态的月租。

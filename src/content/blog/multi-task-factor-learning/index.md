@@ -2,6 +2,7 @@
 title: "多任务因子学习：用硬共享底座同时预测收益与风险"
 description: "同时预测预期收益和预期波动率的因子模型为什么会比单任务模型更准？原因是梯度信号翻倍、共享表征被迫学到『干净的特征』，并且对噪声特征自动降权。本文 numpy 从零搭建硬共享硬参数化模型，用受控实验证明联合训练的 IC 高于单任务拼接。"
 publishDate: '2026-08-28'
+language: Chinese
 tags:
   - 量化交易
   - 多任务学习
@@ -154,7 +155,7 @@ def fit_single_task(X, y, lr=0.01, epochs=200):
 
 在同一份合成数据上跑 250 个 epoch，比较两套：
 
-![左：收益 head 的 MSE 损失；右：波动率 head 的 MSE 损失。实线多任务，虚线单任务](https://blog.halo26812.eu.org/images/multi-task-factor-learning/loss_curves_shared_vs_single.png)
+![左：收益 head 的 MSE 损失；右：波动率 head 的 MSE 损失。实线多任务，虚线单任务](/images/multi-task-factor-learning/loss_curves_shared_vs_single.png)
 
 横轴 epoch，纵轴样本内 MSE。**两个 head 在多任务设置下都收敛到更低的损失**——这是硬共享 MTL 最直白的福利：
 
@@ -167,7 +168,7 @@ def fit_single_task(X, y, lr=0.01, epochs=200):
 
 样本内低损失不等于样本外好。我们用 walk-forward 做 OOS 测试：
 
-![Walk-forward 测试：多任务 / 单任务拼接 / 朴素基线的累积 rank IC](https://blog.halo26812.eu.org/images/multi-task-factor-learning/oos_ic_walkforward.png)
+![Walk-forward 测试：多任务 / 单任务拼接 / 朴素基线的累积 rank IC](/images/multi-task-factor-learning/oos_ic_walkforward.png)
 
 横轴是 walk-forward 的步数（每天推进一步，重训前 200 天），纵轴是「累积的截面 rank IC」。信号定义是 `μ̂ / σ̂`——这才是组合管理器真正想要的目标（高 μ̂ + 低 σ̂ 的资产 = 性价比高）。三组对比：
 
@@ -188,7 +189,7 @@ def fit_single_task(X, y, lr=0.01, epochs=200):
 
 MTL 的隐藏红利是「**梯度耦合**」——你改一个目标，另一个目标的预测也跟着变。我们做一组扫描：把 μ 目标的尺度从 0 倍拉到 2 倍，把 σ 目标的尺度从 0 倍拉到 2 倍，看两个 head 的联合 R² 怎么变。
 
-![横扫 ret 头目标尺度 × vol 头目标尺度，得到联合 R² 热图](https://blog.halo26812.eu.org/images/multi-task-factor-learning/shared_representation_coupling.png)
+![横扫 ret 头目标尺度 × vol 头目标尺度，得到联合 R² 热图](/images/multi-task-factor-learning/shared_representation_coupling.png)
 
 这张图的关键观察：
 

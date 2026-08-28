@@ -11,7 +11,7 @@ NASCalibre电子书数字图书馆阅读
 
 我的电子书架上有 3000 多本书，小说、技术书籍、有声书、漫画，什么都有。以前存在电脑里，每次找书都要靠记忆文件名；后来全搬到了 NAS 上，用 Calibre-Web 管理，体验完全不一样了。这篇文章说说我怎么搭的这套系统，以及踩过的坑。
 
-![书架上的书籍](https://blog.halo26812.eu.org/images/nas-ebook-library/books.jpg)
+![书架上的书籍](/images/nas-ebook-library/books.jpg)
 
 ## Calibre 是什么？书库管理的基础
 
@@ -63,7 +63,7 @@ Calibre-Web 是一个基于 Web 的 Calibre 书库浏览器，界面清爽，搜
 
 第一次设置时，要把书库路径指向你的 Calibre 书库文件夹（在 NAS 的共享目录里）。Calibre-Web 会读取 metadata.db，直接加载你已有的书库，不需要重新录入。
 
-![图书馆](https://blog.halo26812.eu.org/images/nas-ebook-library/library.jpg)
+![图书馆](/images/nas-ebook-library/library.jpg)
 
 ## 格式转换：epub/mobi/azw3 互转
 
@@ -91,7 +91,7 @@ Calibre 原生支持把有声书（mp3、m4a、m4b 格式）纳入书库管理�
 
 我的做法是：电子书用 Calibre-Web，有声书单独用 AudioStation（群晖）或 Plex 处理，两套系统各司其职。
 
-![阅读](https://blog.halo26812.eu.org/images/nas-ebook-library/reader.jpg)
+![阅读](/images/nas-ebook-library/reader.jpg)
 
 ## 手机阅读 App 推荐
 

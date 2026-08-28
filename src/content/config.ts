@@ -9,7 +9,7 @@ const blog = defineCollection({
     tags: z.array(z.string()),
     language: z.string(),
     difficulty: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
-  }),
+  }).passthrough(),
 });
 
 export const collections = { blog };

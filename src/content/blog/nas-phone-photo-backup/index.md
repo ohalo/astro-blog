@@ -11,7 +11,7 @@ NAS相册备份iCloudSynology Photos家庭存储
 
 我用 iPhone 12 的时候，每月 iCloud 付费 21 元——50GB 套餐。拍了几千张照片之后，50GB 根本不够用，想升 200GB 就要每月 68 元。一年下来 800 块，够我买两块 4TB 硬盘了。后来换了群晖，彻底告别了 iCloud，这篇文章说说实操经验。
 
-![手机照片备份](https://blog.halo26812.eu.org/images/nas-phone-photo-backup/phone-photos.jpg)
+![手机照片备份](/images/nas-phone-photo-backup/phone-photos.jpg)
 
 ## 各品牌 NAS 的手机相册方案
 
@@ -75,7 +75,7 @@ iPhone 默认用 HEIC 格式拍照，Windows 和 Android 设备原生不支持�
 
 实际操作中，群晖 Photos 的 iOS App 对 HEIC 支持已经比较完善，大部分情况下不需要手动转换。
 
-![数据备份](https://blog.halo26812.eu.org/images/nas-phone-photo-backup/backup.jpg)
+![数据备份](/images/nas-phone-photo-backup/backup.jpg)
 
 ## 家庭共享：多人上传各自相册
 
@@ -99,7 +99,7 @@ iPhone 默认用 HEIC 格式拍照，Windows 和 Android 设备原生不支持�
   * 出门在外需要快速备份时，用 4G 热点连 WiFi，让 NAS 在家接收
   * 如果你经常在外网访问 NAS 相册，选择上行带宽高的宽带套餐（至少 30Mbps）
 
-![NAS存储](https://blog.halo26812.eu.org/images/nas-phone-photo-backup/nas.jpg)
+![NAS存储](/images/nas-phone-photo-backup/nas.jpg)
 
 ## 备份策略：增量同步 vs 全量备份
 

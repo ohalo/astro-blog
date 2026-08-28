@@ -10,7 +10,7 @@ tags:
   - AFML
   - Python
 language: Chinese
-difficulty: intermediate-advanced
+difficulty: "intermediate"
 ---
 
 ## 一句话版本

@@ -11,7 +11,7 @@ NASGitGitea自托管私有仓库
 
 去年我把个人项目从 GitHub 私有仓库迁到了自己 NAS 上。不是为了装，是真的算了一笔账：免费私有仓库有 500MB 限制，想扩容就得掏钱；而我自己有两块 4TB 硬盘，跑个 Git 服务绰绰有余。用了快一年，说说真实体验。
 
-![NAS服务器](https://blog.halo26812.eu.org/images/nas-git-server/server.jpg)
+![NAS服务器](/images/nas-git-server/server.jpg)
 
 ## 为什么用 NAS 跑 Git？三个理由
 
@@ -21,7 +21,7 @@ NASGitGitea自托管私有仓库
 
 第三个是成本。一台入门级 NAS 2000 元左右，能跑 Git、Docker、相册、视频，Git 服务只是附带的；GitHub 私有仓库年费 48 刀（约 350 元），NAS 摊下来还更划算。
 
-![终端操作](https://blog.halo26812.eu.org/images/nas-git-server/terminal.jpg)
+![终端操作](/images/nas-git-server/terminal.jpg)
 
 ## 方案一：Gitea —— 轻量级 GitHub 替代
 
@@ -74,7 +74,7 @@ Clone 示例：
 
 Gitea 界面很干净，支持 Issues、PR、Wiki，还能装主题。团队用也够，我给两个朋友的开发小组搭了一套，反馈不错。它的缺点是需要手动维护更新，不像 GitHub 那样省心；另外如果 NAS 配置低，网页响应会慢。
 
-![Git操作](https://blog.halo26812.eu.org/images/nas-git-server/git.jpg)
+![Git操作](/images/nas-git-server/git.jpg)
 
 ## 方案二：群晖 Git Server —— 官方套件，适合小团队
 
