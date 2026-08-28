@@ -287,4 +287,3 @@ Delta中性策略是期权交易中的高级技巧，适合有经验的量化团
 3. Sinclair, E. (2013). *Option Trading: Pricing and Volatility Strategies and Techniques*. Wiley.
 4. 上海证券交易所. (2023). *股票期权交易规则*. 
 5. CBOE. (2023). *Delta-Neutral Trading Strategies*. 
-```
