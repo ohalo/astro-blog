@@ -1,10 +1,14 @@
 ---
 title: "多任务因子学习：用硬共享底座同时预测收益与风险"
-slug: multi-task-factor-learning
-date: 2026-08-28
-tags: ["quant", "deep-learning", "multi-task-learning", "factor-model"]
-categories: ["量化交易"]
 description: "同时预测预期收益和预期波动率的因子模型为什么会比单任务模型更准？原因是梯度信号翻倍、共享表征被迫学到『干净的特征』，并且对噪声特征自动降权。本文 numpy 从零搭建硬共享硬参数化模型，用受控实验证明联合训练的 IC 高于单任务拼接。"
+publishDate: '2026-08-28'
+tags:
+  - 量化交易
+  - 多任务学习
+  - 硬共享
+  - MTL
+  - 因子模型
+  - 波动率预测
 image: /images/multi-task-factor-learning/cover.png
 keywords: ["多任务学习", "硬共享", "MTL", "因子模型", "波动率预测", "联合训练", "共享表征"]
 author: halo

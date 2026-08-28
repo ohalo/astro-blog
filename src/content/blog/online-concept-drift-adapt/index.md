@@ -1,10 +1,13 @@
 ---
 title: "在线学习概念漂移自适应：当因子缓慢失效时自动重加权"
-slug: online-concept-drift-adapt
-date: 2026-08-28
-tags: ["quant", "online-learning", "concept-drift", "factor-model"]
-categories: ["量化交易"]
 description: "回测里 IC 漂亮的因子，上线半年就悄悄失效——问题是它不会一夜归零，而是每天少给一点。本文化解 Page-Hinkley 漂移检测 + 在线梯度重加权，给因子价格加个滑动窗口注意力。"
+publishDate: '2026-08-28'
+tags:
+  - 量化交易
+  - 在线学习
+  - 概念漂移
+  - 因子衰减
+  - Page-Hinkley
 image: /images/online-concept-drift-adapt/cover.png
 keywords: ["在线学习", "概念漂移", "因子衰减", "Page-Hinkley", "ADWIN", "增量式学习", "自适应权重"]
 author: halo
