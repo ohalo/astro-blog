@@ -141,7 +141,7 @@ Xd = np.column_stack([M_d.ravel(), Tt_d.ravel()])
 mu_d, sd_d = gp_pred(Xd, X_obs, alpha, L, em, eT, sf2, sn2)
 ```
 
-![GP 回归波动率曲面：非参数插值](../../public/images/gaussian-process-vol-surface/gp_surface.png)
+![GP 回归波动率曲面：非参数插值](/images/gaussian-process-vol-surface/gp_surface.png)
 
 红色是 35 个观测点,曲面是 GP 后验均值。3 个关键形态都对上了:左边(负 moneyness)曲面更凹(微笑),右边凸出(偏度),远端(长 tenor)整体抬高(期限结构)。
 
@@ -149,7 +149,7 @@ mu_d, sd_d = gp_pred(Xd, X_obs, alpha, L, em, eT, sf2, sn2)
 
 把真实曲面、GP 预测曲面、误差绝对值并排画出来(图 2),可以一眼看到 GP 在哪些区域偏得最多:
 
-![真实曲面 σ(m,T) + 35 个观测点 / GP 预测曲面 / |预测 − 真实| 误差](../../public/images/gaussian-process-vol-surface/gp_true_vs_pred.png)
+![真实曲面 σ(m,T) + 35 个观测点 / GP 预测曲面 / |预测 − 真实| 误差](/images/gaussian-process-vol-surface/gp_true_vs_pred.png)
 
 观察:
 
@@ -171,7 +171,7 @@ ax.scatter(X_obs[:, 0], X_obs[:, 1], c="white", edgecolor="black", s=28)
 fig.colorbar(cs, ax=ax, label="预测标准差")
 ```
 
-![GP 后验标准差：观测点周围低，远离升高](../../public/images/gaussian-process-vol-surface/gp_uncertainty.png)
+![GP 后验标准差：观测点周围低，远离升高](/images/gaussian-process-vol-surface/gp_uncertainty.png)
 
 数值范围约 0.0064-0.0075,接近 GP 自动学出的噪声水平 $\sigma_n \approx 0.0059$。不确定性在四个角落 (极端 (m,T)) 略高,在观测点附近最低。这张图直接可以喂给风控系统:对冲时把"GP 后验 std 大的区域"当成隐含波动率不确定性的代理,放大 hedge 比率。
 
@@ -189,7 +189,7 @@ true_s = true_vol(m_slice, 0.5)
 lin_s  = lin(m_slice, np.full_like(m_slice, 0.5))
 ```
 
-![T = 0.5 年 切片：GP 非参数插值优于线性](../../public/images/gaussian-process-vol-surface/gp_smile_slice.png)
+![T = 0.5 年 切片：GP 非参数插值优于线性](/images/gaussian-process-vol-surface/gp_smile_slice.png)
 
 - **绿色 GP 预测**(RMSE 0.0023) 紧贴蓝色真实曲线。
 - **橙色虚线线性插值**(RMSE 0.0031) 在 7 个观测点之间是直线段,在 ATM 到 OTM 之间明显偏离真实曲率(因为线性插值不假设凸性,但真实 smile 是凸的)。

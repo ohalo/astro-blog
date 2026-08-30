@@ -90,7 +90,7 @@ x = trend_true + cycle_med + cycle_fast + 0.04 * np.random.randn(N)
 
 跑 `imfs, residue = emd(x, max_imf=6)`，得到 6 个 IMF 加 1 个残差（图 1）。从 IMF1（最高频）到 IMF5（最清晰的一条 ~252 日等值正弦）频谱自上而下，残差（绿色）紧贴真实 S 形慢趋势。
 
-![EMD 自适应分解：6 IMF + 1 趋势(残差)](../../public/images/emd-trend-decomposition/emd_decomposition.png)
+![EMD 自适应分解：6 IMF + 1 趋势(残差)](/images/emd-trend-decomposition/emd_decomposition.png)
 
 几个值得标记的观察：
 
@@ -102,7 +102,7 @@ x = trend_true + cycle_med + cycle_fast + 0.04 * np.random.randn(N)
 
 图 2 把残差（EMD 认定的趋势）单独拉出来和真实趋势叠在一起：
 
-![EMD 把非线性慢趋势从噪声+多周期中自适应剥离](../../public/images/emd-trend-decomposition/emd_trend_extraction.png)
+![EMD 把非线性慢趋势从噪声+多周期中自适应剥离](/images/emd-trend-decomposition/emd_trend_extraction.png)
 
 ```python
 def safe_corr(a, b):
@@ -131,7 +131,7 @@ mse_ma15  = np.mean((np.convolve(x, np.ones(15)/15, mode="same") - trend_true) *
 mse_ma120 = np.mean((np.convolve(x, np.ones(120)/120, mode="same") - trend_true) ** 2)
 ```
 
-![固定窗 MA 的两难：窗口扫描 MSE 呈 U 形](../../public/images/emd-trend-decomposition/emd_vs_ma.png)
+![固定窗 MA 的两难：窗口扫描 MSE 呈 U 形](/images/emd-trend-decomposition/emd_vs_ma.png)
 
 数据是诚实的：
 
@@ -169,7 +169,7 @@ for im in imfs_keep:
             H[pe[k], te[k]] += amp[k] ** 2
 ```
 
-![Hilbert-Huang 谱：周期能量随时间的自适应分布](../../public/images/emd-trend-decomposition/hilbert_huang_spectrum.png)
+![Hilbert-Huang 谱：周期能量随时间的自适应分布](/images/emd-trend-decomposition/hilbert_huang_spectrum.png)
 
 Y 轴是对数周期（21 / 63 / 126 / 252 日四档标记），X 轴是交易日，颜色是能量 ∑|IMF|²。注意几个事：
 
