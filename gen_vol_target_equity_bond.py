@@ -41,7 +41,8 @@ OUT = os.path.join(BASE, SLUG)
 os.makedirs(OUT, exist_ok=True)
 
 C = {"vm": "#4C72B0", "st": "#C44E52", "grid": "#DDDDDD", "lev": "#55A868",
-     "dd": "#8172B3", "eq": "#DD8452", "bd": "#CCB974", "dark": "#333333"}
+     "dd": "#8172B3", "eq": "#DD8452", "bd": "#CCB974", "dark": "#333333",
+     "gold": "#DD8452"}
 
 rng = np.random.default_rng(20260901)
 T = 252 * 15
@@ -56,11 +57,11 @@ crash0, cr1 = int(T * 0.70), int(T * 0.70) + 45
 sig_eq[crash0:cr1] *= 3.5
 eq_ret = 0.0004 + sig_eq * rng.standard_normal(T)
 eq_ret[crash0:cr1] -= 0.013
-eq_ret -= eq_ret.mean()
-# ---- bond：低波动 + 轻微负相关 ----
-bond_base = 0.005
+# 不整体去均值：保留权益风险溢价（VM 的用武之地是波动而非漂移）
+# 仅把 bond 的基准漂移对齐到带利息区间，保留轻微负相关避险属性
+bond_base = 0.004
 bond_ret = 0.00015 + bond_base * rng.standard_normal(T) - 0.25 * sig_eq * rng.standard_normal(T)
-bond_ret -= bond_ret.mean()
+bond_ret = bond_ret - bond_ret.mean() + 0.00012
 
 # ---------------- 波动目标配置 ----------------
 TARGET = 0.10
