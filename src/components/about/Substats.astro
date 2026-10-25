@@ -55,9 +55,7 @@ await Promise.all(stats.map(fetchCount))
               <samp>{count}</samp>
               <span class='text-sm font-normal'>{text}</span>
             </div>
-          ) : (
-            'null'
-          )}
+          ) : null}
         </div>
       </a>
     ))
@@ -66,7 +64,7 @@ await Promise.all(stats.map(fetchCount))
 <div class='mt-2 text-right text-sm'>
   Display real-time; powered by <a
     class='text-muted-foreground'
-    href='http://github.com/spencerwooo/substats'
+    href='https://github.com/spencerwooo/substats'
     target='_blank'
     rel='noopener noreferrer'>Substats</a
   >
