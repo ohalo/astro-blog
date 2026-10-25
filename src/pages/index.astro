@@ -19,6 +19,19 @@ const MAX_POSTS = 10
 const allPosts = await getBlogCollection()
 const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
 
+// 量化专栏统计（与 /quant-column 页面同口径：标签含 量化/quant/交易/投资）
+const quantPosts = allPosts.filter((post) =>
+  post.data.tags?.some((tag: string) =>
+    ['量化', 'quant', '交易', '投资'].some((k) => tag.toLowerCase().includes(k))
+  )
+)
+const quantStats = {
+  total: quantPosts.length,
+  beginner: quantPosts.filter((p) => p.data.difficulty === 'beginner').length,
+  intermediate: quantPosts.filter((p) => p.data.difficulty === 'intermediate').length,
+  advanced: quantPosts.filter((p) => p.data.difficulty === 'advanced').length
+}
+
 const imagePath = config.logo.src
 const images = import.meta.glob<{ default: ImageMetadata }>(
   '/src/assets/*.{jpeg,jpg,png,gif,avif,webp}'
@@ -67,6 +80,31 @@ if (!images[imagePath])
           一个 37 岁的创业者，正在探索 AI 时代的工作方式。
         </p>
         <Button title='了解更多' class='w-fit self-end' href='/about' variant='ahead' />
+      </Section>
+
+      <Section title='量化专栏'>
+        <p class='text-muted-foreground'>
+          系统化的量化交易学习路径：{quantStats.total} 篇文章按「入门 / 进阶 /
+          高阶」三级分类，覆盖股票基础、回测框架、因子研究、统计套利、高频微观结构与机器学习选股。
+        </p>
+        <div class='flex flex-wrap items-center gap-2'>
+          <span
+            class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'
+          >
+            {quantStats.beginner} 入门
+          </span>
+          <span
+            class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'
+          >
+            {quantStats.intermediate} 进阶
+          </span>
+          <span
+            class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'
+          >
+            {quantStats.advanced} 高阶
+          </span>
+        </div>
+        <Button title='进入量化专栏' class='w-fit self-end' href='/quant-column' variant='ahead' />
       </Section>
       {
         allPostsByDate.length > 0 && (
