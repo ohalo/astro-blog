@@ -141,7 +141,7 @@ def gen_survival_cox():
 
     # 训练/测试划分（按公司）
     perm = rng.permutation(N)
-    tr_mask = np.zeros(N, dtype=bool); tr_mask[perm[:2100]] = True
+    tr_mask = np.zeros(N, dtype=bool); tr_mask[perm[:4200]] = True
     te_mask = ~tr_mask
     beta, se, lam0_interp, slope_lev, slope_vol = fit_cox(tr_mask)
     lam0_true_arr = LAM0(np.arange(T))
@@ -210,8 +210,8 @@ def gen_survival_cox():
         w = np.zeros(Xb.shape[1])
         for _ in range(iters):
             p = 1 / (1 + np.exp(-(Xb @ w)))
-            g = Xb.T @ (y - p) / len(y) - 0.01 * w
-            H = (Xb * (p * (1 - p))[:, None]).T @ Xb / len(y) + 0.01 * np.eye(Xb.shape[1])
+            g = Xb.T @ (y - p) / len(y) - 1e-8 * w
+            H = (Xb * (p * (1 - p))[:, None]).T @ Xb / len(y) + 1e-8 * np.eye(Xb.shape[1])
             w = w + np.linalg.solve(H, g)
         return w
 
@@ -220,7 +220,33 @@ def gen_survival_cox():
     w_static = logit_fit(X[tr_idx], y12[tr_idx])
     score_logit = np.einsum("nmk,k->nm", Xt, w_static[1:]) + w_static[0]
 
+    # 面板 logit：与 Cox 用同样的面板数据与同样的 12 个月前瞻目标（逐月单元）
+    pi_list, pm_list, py_list = [], [], []
+    for m in range(0, 48):
+        alive = tr_idx[exit_t[tr_idx] > m]
+        d = exit_t[alive] - m
+        y1m = alive[(event[alive] == 1) & (d <= 12)]
+        y0m = alive[d > 12]
+        pi_list.append(np.concatenate([y1m, y0m]))
+        pm_list.append(np.full(len(y1m) + len(y0m), m))
+        py_list.append(np.concatenate([np.ones(len(y1m)), np.zeros(len(y0m))]))
+    pi = np.concatenate(pi_list); pm = np.concatenate(pm_list); py = np.concatenate(py_list)
+    Xp = Xt[pi, pm, :]
+    Xb = np.column_stack([np.ones(len(Xp)), Xp])
+    w_panel = np.zeros(4)
+    for it in range(60):
+        p = 1 / (1 + np.exp(-(Xb @ w_panel)))
+        g = Xb.T @ (py - p) / len(py) - 1e-8 * w_panel
+        H = (Xb * (p * (1 - p))[:, None]).T @ Xb / len(py) + 1e-8 * np.eye(4)
+        step = np.linalg.solve(H, g)
+        w_panel = w_panel + step
+        if np.max(np.abs(step)) < 1e-8:
+            break
+    n_panel_events = int(py.sum())
+    score_panel = np.einsum("nmk,k->nm", Xt, w_panel[1:]) + w_panel[0]
+
     c_cox_pooled = pooled_cindex_12m(score_cox, te_idx)
+    c_panel_pooled = pooled_cindex_12m(score_panel, te_idx)
     c_logit_pooled = pooled_cindex_12m(score_logit, te_idx)
     c_logit_annual = pooled_cindex_12m(score_logit, te_idx, months=range(0, 1))  # 仅 m=0 单元（年度体检）
     c_cox_m0 = pooled_cindex_12m(score_cox, te_idx, months=range(0, 1))
@@ -240,7 +266,8 @@ def gen_survival_cox():
     print(f"真实 β: 杠杆 {BETA_TRUE[0]}, 波动 {BETA_TRUE[1]}, ROA {BETA_TRUE[2]}")
     print(f"估计 β: 杠杆 {beta[0]:.3f}(se {se[0]:.3f}, z {zvals[0]:.1f}), 波动 {beta[1]:.3f}(se {se[1]:.3f}, z {zvals[1]:.1f}), ROA {beta[2]:.3f}(se {se[2]:.3f}, z {zvals[2]:.1f})")
     print(f"风险比 HR: 杠杆 {hr[0]:.2f}, 波动 {hr[1]:.2f}, ROA {hr[2]:.3f}")
-    print(f"12个月前瞻 C-index（测试公司）: Cox逐月重评 {c_cox_pooled:.4f} | 静态logit冻结系数 {c_logit_pooled:.4f} | 静态logit仅m=0(年度体检) {c_logit_annual:.4f} | Cox仅m=0 {c_cox_m0:.4f}")
+    print(f"12个月前瞻 C-index（测试公司）: Cox逐月重评 {c_cox_pooled:.4f} | 面板logit(同数据) {c_panel_pooled:.4f} | 静态logit冻结系数 {c_logit_pooled:.4f} | 静态logit仅m=0(年度体检) {c_logit_annual:.4f} | Cox仅m=0 {c_cox_m0:.4f}")
+    print(f"面板logit系数: {w_panel.round(3).tolist()}（训练单元 {len(py)}，事件 {n_panel_events}）；静态logit系数: {np.concatenate([[0], w_static]).round(3).tolist()}")
     print(f"Schoenfeld PH: 杠杆斜率 {slope_lev:+.5f}, 波动斜率 {slope_vol:+.5f}")
     print(f"基线强度 λ0(0): 真值 {LAM0(0):.5f} vs 估计 {lam0_interp[0]:.5f}; λ0(59): {LAM0(59):.5f} vs {lam0_interp[59]:.5f}")
     x_ref = np.array([0.40, 0.25, 0.02])
@@ -296,13 +323,14 @@ def gen_survival_cox():
 
     # ============ 图 5：模型对比 + 系数恢复 ============
     fig, axes = plt.subplots(1, 2, figsize=(11.5, 4))
-    models = ["Cox\n逐月重评", "静态logit\n冻结系数", "静态logit\n年度体检(m=0)"]
-    vals = [c_cox_pooled, c_logit_pooled, c_logit_annual]
-    bars = axes[0].bar(models, vals, color=["#d62728", "#7f7f7f", "#7f7f7f"], width=0.55)
+    models = ["Cox\n逐月重评", "面板logit\n同数据同目标", "静态logit\n冻结系数"]
+    vals = [c_cox_pooled, c_panel_pooled, c_logit_pooled]
+    bars = axes[0].bar(models, vals, color=["#d62728", "#1f77b4", "#7f7f7f"], width=0.55)
     for b, v in zip(bars, vals):
-        axes[0].text(b.get_x() + b.get_width() / 2, v + 0.002, f"{v:.3f}", ha="center", fontsize=9)
-    axes[0].set_ylim(0.4, max(vals) + 0.04)
-    axes[0].set_title("12个月前瞻违约排名 C-index（测试公司）")
+        axes[0].text(b.get_x() + b.get_width() / 2, v + 0.004, f"{v:.3f}", ha="center", fontsize=9)
+    axes[0].axhline(0.5, color="black", ls=":", lw=1)
+    axes[0].set_ylim(0.45, max(vals) + 0.03)
+    axes[0].set_title("12个月前瞻违约排名 C-index（测试公司，同一评估集，0.5=随机）")
     xpos = np.arange(3)
     axes[1].bar(xpos - 0.18, BETA_TRUE, width=0.36, label="真实 β", color="#1f77b4")
     axes[1].bar(xpos + 0.18, beta, width=0.36, yerr=se, label="Cox 估计 β̂（训练集）", color="#ff7f0e", capsize=3)
@@ -312,8 +340,11 @@ def gen_survival_cox():
     return {
         "n_default": int(event.sum()), "rate": float(event.mean()),
         "beta": beta.tolist(), "se": se.tolist(), "z": zvals.tolist(), "hr": hr.tolist(),
-        "c_cox_pooled": float(c_cox_pooled), "c_logit_pooled": float(c_logit_pooled),
-        "c_logit_annual": float(c_logit_annual), "c_cox_m0": float(c_cox_m0),
+        "c_cox_pooled": float(c_cox_pooled), "c_panel_pooled": float(c_panel_pooled),
+        "c_logit_pooled": float(c_logit_pooled), "c_logit_annual": float(c_logit_annual),
+        "c_cox_m0": float(c_cox_m0),
+        "w_panel": w_panel.tolist(), "w_static": np.concatenate([[0.0], w_static]).tolist(),
+        "n_panel_events": n_panel_events, "n_panel_units": int(len(py)),
         "slope_lev": slope_lev, "slope_vol": slope_vol,
         "pd12_hi": pd12["高杠杆 80%"].tolist(), "pd12_lo": pd12["低杠杆 20%"].tolist(), "pd12_mid": pd12["中杠杆 45%"].tolist(),
         "surv_model": {k: v.tolist() for k, v in surv_model.items()},
