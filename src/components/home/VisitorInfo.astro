@@ -23,7 +23,7 @@ const { locale = 'zh' } = Astro.props
       : '基于 IP 的城市级定位 · 不收集、不存储任何信息'
   }
 >
-  <span id='visitor-info-main'>🌍 定位中…</span>
+  <span id='visitor-info-main'>{locale === 'en' ? '🌍 Locating…' : '🌍 定位中…'}</span>
   <span id='visitor-info-sub' class='text-xs opacity-80'></span>
 </div>
 
