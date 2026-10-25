@@ -1,40 +1,48 @@
-/* Theme */
+/* Theme —— 黑金配色
+ * 黑色为基底（庄重、深邃、稳固），金色为唯一强调色（光辉、高贵、权威）
+ * 两档均为黑底：浅档为炭黑（#131210），深档为墨黑（#0B0A09），仅金调深浅不同
+ */
 :root {
-  /* Primary */
-  --primary: 200 29% 45%;
-  /* Foreground */
-  --foreground: 240 10% 3.9%;
-  --muted-foreground: 240 3.8% 28.1%;
-  /* Background */
-  --background: 210 33% 99%;
-  --muted: 240 4.8% 96%;
-  --card: 0 0% 90%;
+  /* Primary：香槟金 —— 链接、强调、图标 */
+  --primary: 45 68% 51%;
+  /* Foreground：暖象牙白 */
+  --foreground: 42 30% 91%;
+  --muted-foreground: 40 10% 66%;
+  /* Background：炭黑 */
+  --background: 40 7% 7%;
+  --muted: 40 6% 12%;
+  --card: 40 6% 14%;
 
   /* Basic */
-  --border: 240 5.9% 88%;
-  --input: 240 5.9% 90%;
-  --ring: 240 5.9% 10%;
+  --border: 40 8% 22%;
+  --input: 40 8% 18%;
+  --ring: 45 68% 51%;
   --radius: 0.5rem;
+
+  color-scheme: dark;
 }
+
 .dark {
-  /* Primary */
-  --primary: 195 95% 85%;
-  /* Foreground */
-  --foreground: 0 0% 98%;
-  --muted-foreground: 240 5% 74.9%;
-  /* Background */
-  --background: 240 20.54% 5.2%;
-  --muted: 240 5.9% 13%;
-  --card: 240 3.7% 24.9%;
+  /* Primary：亮金 */
+  --primary: 45 78% 57%;
+  /* Foreground：象牙白 */
+  --foreground: 42 32% 93%;
+  --muted-foreground: 40 10% 70%;
+  /* Background：墨黑 */
+  --background: 40 9% 4%;
+  --muted: 40 5% 9%;
+  --card: 40 5% 11%;
 
   /* Basic */
-  --border: 240 3.7% 22.9%;
-  --input: 240 3.7% 17.9%;
-  --ring: 240 4.9% 83.9%;
+  --border: 40 7% 19%;
+  --input: 40 7% 15%;
+  --ring: 45 78% 57%;
 }
+
 :root {
   --un-default-border-color: hsl(var(--border) / 1);
 }
+
 html.dark {
   color-scheme: dark;
 }
@@ -45,4 +53,27 @@ a {
   &:hover {
     color: hsl(var(--primary) / var(--un-text-opacity, 1));
   }
+}
+
+/* 选中态：金底黑字，呼应货币符号 */
+::selection {
+  background: hsl(var(--primary) / 0.85);
+  color: hsl(var(--background) / 1);
+}
+
+/* 滚动条：细金边，配合整体质感 */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--background) / 1);
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.45);
+  border-radius: 5px;
+  border: 2px solid hsl(var(--background) / 1);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.7);
 }

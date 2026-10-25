@@ -44,7 +44,7 @@ if (!images[imagePath])
   )
 ---
 
-<PageLayout meta={{ title: 'Home' }} highlightColor='#659EB9'>
+<PageLayout meta={{ title: 'Home' }} highlightColor='#7A5C11'>
   <main class='flex w-full flex-col items-center'>
     <section class='animate mb-10 flex flex-col items-center gap-y-7' id='content-header'>
       <Image
@@ -94,17 +94,17 @@ if (!images[imagePath])
           <span
             class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'
           >
-            {quantStats.beginner} 入门
+            <span class='font-medium text-primary'>{quantStats.beginner}</span> 入门
           </span>
           <span
             class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'
           >
-            {quantStats.intermediate} 进阶
+            <span class='font-medium text-primary'>{quantStats.intermediate}</span> 进阶
           </span>
           <span
             class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'
           >
-            {quantStats.advanced} 高阶
+            <span class='font-medium text-primary'>{quantStats.advanced}</span> 高阶
           </span>
         </div>
         <Button title='进入量化专栏' class='w-fit self-end' href='/quant-column' variant='ahead' />

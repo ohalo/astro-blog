@@ -43,3 +43,6 @@ bunfig.toml
 # Python cache
 __pycache__/
 err.txt
+
+# 生成脚本临时产物
+tmp/
