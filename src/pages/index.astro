@@ -9,6 +9,7 @@ import PageLayout from '@/layouts/BaseLayout.astro'
 import ProjectCard from '@/components/home/ProjectCard.astro'
 import Section from '@/components/home/Section.astro'
 import SkillLayout from '@/components/home/SkillLayout.astro'
+import VisitorInfo from '@/components/home/VisitorInfo.astro'
 import config from '@/site-config'
 
 const languages = ['Java', 'Python', 'C++', 'Qt', 'PHP', 'Go', 'HTML', 'JavaScript', 'CSS', 'Shell']
@@ -68,6 +69,7 @@ if (!images[imagePath])
             <Icon name='github' class='size-5' slot='icon' />
           </Label>
         </div>
+        <VisitorInfo />
       </div>
 
       {/* Get template */}

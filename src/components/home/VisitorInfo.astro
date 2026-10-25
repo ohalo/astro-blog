@@ -1,0 +1,176 @@
+---
+/**
+ * 访客位置与天气（首页展示）
+ * - 定位：ipwho.is（IP 城市级，无需授权、不收集不存储）
+ * - 天气：Open-Meteo（免费、无需 API Key、CORS 友好）
+ * - 结果缓存 localStorage 10 分钟，避免重复请求
+ */
+---
+
+<div
+  id='visitor-info'
+  class='flex flex-col items-center gap-y-0.5 rounded-2xl border bg-muted px-4 py-2 text-center text-sm text-muted-foreground'
+  title='基于 IP 的城市级定位 · 不收集、不存储任何信息'
+>
+  <span id='visitor-info-main'>🌍 定位中…</span>
+  <span id='visitor-info-sub' class='text-xs opacity-80'></span>
+</div>
+
+<script>
+  const CACHE_KEY = 'visitor-info'
+  const TTL = 10 * 60 * 1000 // 10 分钟
+
+  /** WMO 天气代码 → [图标, 中文描述] */
+  const WMO: Record<number, [string, string]> = {
+    0: ['☀️', '晴'],
+    1: ['🌤', '晴间多云'],
+    2: ['⛅', '多云'],
+    3: ['☁️', '阴'],
+    45: ['🌫', '雾'],
+    48: ['🌫', '冻雾'],
+    51: ['🌦', '小雨'],
+    53: ['🌦', '中雨'],
+    55: ['🌧', '大雨'],
+    56: ['🌧', '冻雨'],
+    57: ['🌧', '冻雨'],
+    61: ['🌧', '小雨'],
+    63: ['🌧', '中雨'],
+    65: ['🌧', '大雨'],
+    66: ['🌧', '冻雨'],
+    67: ['🌧', '冻雨'],
+    71: ['🌨', '小雪'],
+    73: ['🌨', '中雪'],
+    75: ['❄️', '大雪'],
+    77: ['🌨', '雪粒'],
+    80: ['🌦', '阵雨'],
+    81: ['🌧', '阵雨'],
+    82: ['🌧', '强阵雨'],
+    85: ['🌨', '阵雪'],
+    86: ['❄️', '强阵雪'],
+    95: ['⛈', '雷雨'],
+    96: ['⛈', '雷雨冰雹'],
+    99: ['⛈', '强雷雨']
+  }
+
+  /** 主要城市中文名映射（ipwho.is 只返回英文名） */
+  const CITY_ZH: Record<string, string> = {
+    Shanghai: '上海',
+    Beijing: '北京',
+    Guangzhou: '广州',
+    Shenzhen: '深圳',
+    Hangzhou: '杭州',
+    Nanjing: '南京',
+    Suzhou: '苏州',
+    Chengdu: '成都',
+    Chongqing: '重庆',
+    Wuhan: '武汉',
+    Xian: '西安',
+    Tianjin: '天津',
+    Qingdao: '青岛',
+    Changsha: '长沙',
+    Zhengzhou: '郑州',
+    Shenyang: '沈阳',
+    Dalian: '大连',
+    Xiamen: '厦门',
+    Fuzhou: '福州',
+    Hefei: '合肥',
+    Jinan: '济南',
+    Ningbo: '宁波',
+    Wuxi: '无锡',
+    Harbin: '哈尔滨',
+    Changchun: '长春',
+    Kunming: '昆明',
+    Nanning: '南宁',
+    Guiyang: '贵阳',
+    Haikou: '海口',
+    Sanya: '三亚',
+    Lanzhou: '兰州',
+    Taiyuan: '太原',
+    Shijiazhuang: '石家庄',
+    Nanchang: '南昌',
+    Wenzhou: '温州',
+    Jiaxing: '嘉兴',
+    Nantong: '南通',
+    Changzhou: '常州',
+    Xuzhou: '徐州',
+    Yantai: '烟台',
+    Tangshan: '唐山',
+    Luoyang: '洛阳',
+    Weifang: '潍坊',
+    Dongying: '东营'
+  }
+
+  interface Weather {
+    temp: number
+    code: number
+    min: number
+    max: number
+    tCode: number
+    tMin: number
+    tMax: number
+  }
+  interface VisitorData {
+    ts: number
+    city: string
+    wx: Weather
+  }
+
+  const $main = document.getElementById('visitor-info-main')
+  const $sub = document.getElementById('visitor-info-sub')
+
+  function show(d: VisitorData) {
+    const [icon, desc] = WMO[d.wx.code] ?? ['🌡', '未知']
+    const [tIcon] = WMO[d.wx.tCode] ?? ['🌡']
+    if ($main)
+      $main.textContent = `📍 ${d.city} · ${icon} ${desc} ${d.wx.temp}°C`
+    if ($sub) $sub.textContent = `今天 ${d.wx.min}~${d.wx.max}° · 明天 ${tIcon} ${d.wx.tMin}~${d.wx.tMax}°`
+  }
+
+  async function load() {
+    // 命中缓存直接用
+    try {
+      const raw = localStorage.getItem(CACHE_KEY)
+      if (raw) {
+        const cached = JSON.parse(raw) as VisitorData
+        if (Date.now() - cached.ts < TTL) {
+          show(cached)
+          return
+        }
+      }
+    } catch {
+      /* 忽略缓存错误 */
+    }
+
+    try {
+      const geo = await fetch('https://ipwho.is/').then((r) => r.json())
+      if (!geo?.success) throw new Error('geo failed')
+      const w = await fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=2`
+      ).then((r) => r.json())
+      const data: VisitorData = {
+        ts: Date.now(),
+        city: CITY_ZH[geo.city] ?? geo.city ?? geo.region ?? '未知地区',
+        wx: {
+          temp: Math.round(w.current.temperature_2m),
+          code: w.current.weather_code,
+          min: Math.round(w.daily.temperature_2m_min[0]),
+          max: Math.round(w.daily.temperature_2m_max[0]),
+          tCode: w.daily.weather_code[1],
+          tMin: Math.round(w.daily.temperature_2m_min[1]),
+          tMax: Math.round(w.daily.temperature_2m_max[1])
+        }
+      }
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(data))
+      } catch {
+        /* 忽略存储错误（如隐私模式） */
+      }
+      show(data)
+    } catch {
+      // 定位失败时显示欢迎语，保持布局稳定
+      if ($main) $main.textContent = '🌍 欢迎访问'
+    }
+  }
+
+  load()
+</script>
