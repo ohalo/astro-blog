@@ -5,6 +5,7 @@ description: "实盘交易系统构建指南 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 # 实盘交易系统构建指南：从订单管理到滑点控制

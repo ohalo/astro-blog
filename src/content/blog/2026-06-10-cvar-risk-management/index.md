@@ -5,6 +5,7 @@ description: "CVaR在量化组合风险管理中的应用：从理论到实盘 -
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## VaR的局限

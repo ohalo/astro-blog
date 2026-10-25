@@ -5,6 +5,7 @@ description: "质量因子与低波动因子：防守反击的量化之道 - hal
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：当"质量"遇见"低波"

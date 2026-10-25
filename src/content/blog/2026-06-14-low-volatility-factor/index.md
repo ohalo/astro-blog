@@ -5,6 +5,7 @@ description: "低波动因子策略 - halo的技术博客"
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 低波动因子策略：逆直觉的阿尔法来源

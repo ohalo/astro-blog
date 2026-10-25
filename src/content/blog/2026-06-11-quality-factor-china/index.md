@@ -5,6 +5,7 @@ description: "质量因子（Quality Factor）在中国市场的有效性检验�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：为什么"质量"也是因子？

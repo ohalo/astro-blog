@@ -5,6 +5,7 @@ description: "另类数据在量化选股中的应用 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

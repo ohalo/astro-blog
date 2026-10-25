@@ -5,6 +5,7 @@ description: "量化策略过拟合检测与防范：从回测陷阱到实盘真
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 量化策略过拟合检测与防范：从回测陷阱到实盘真相

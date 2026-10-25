@@ -5,6 +5,7 @@ description: "期权收入策略 -  halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 期权收入策略：备兑开仓与现金担保卖出的稳健阿尔法

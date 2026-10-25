@@ -5,6 +5,7 @@ description: "行为金融因子：捕捉市场非理性波动 - halo的技术�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

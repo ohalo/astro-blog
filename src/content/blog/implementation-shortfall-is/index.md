@@ -10,6 +10,7 @@ tags:
   - 交易成本分析
   - Python
 language: Chinese
+difficulty: advanced
 ---
 
 # 执行落差 Implementation Shortfall：从决策价到成交价流失了多少钱

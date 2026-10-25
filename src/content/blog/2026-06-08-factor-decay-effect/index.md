@@ -5,6 +5,7 @@ description: "因子衰减效应：量化策略的生命周期与应对之道 - 
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 什么是因子衰减？

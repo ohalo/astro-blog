@@ -11,6 +11,7 @@ tags:
 categories: ["量化交易"]
 slug: "forward-rate-bias-carry-trade"
 image: "/images/forward-rate-bias-carry-trade/forward_bias_scatter.png"
+difficulty: advanced
 ---
 
 外汇交易员常挂在嘴边的一句话是：**利差就是方向**。美元利率 5%，日元 0.5%，直觉上资金该从日元涌入美元，推高 USDJPY。可假如把这句话推向极端——「只要买高息货币、卖低息货币就能躺赚」——它就成了著名的 Carry Trade。

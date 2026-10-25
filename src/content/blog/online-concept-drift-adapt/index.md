@@ -12,6 +12,7 @@ tags:
 image: /images/online-concept-drift-adapt/cover.png
 keywords: ["在线学习", "概念漂移", "因子衰减", "Page-Hinkley", "ADWIN", "增量式学习", "自适应权重"]
 author: halo
+difficulty: advanced
 ---
 
 ## 问题的形状：因子不会突然死，它会慢慢蒸发

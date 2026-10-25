@@ -5,6 +5,7 @@ description: "配对交易与协整分析 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 统计套利简介

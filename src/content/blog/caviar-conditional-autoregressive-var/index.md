@@ -5,6 +5,7 @@ description: "CAViaR 条件自回归 VaR：让分位数自己带记忆演化 - h
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 先说结论：**GARCH 算 VaR 的路线是"先建波动率模型 + 再假设一个分布 + 最后取分位数"，三步里任何一步错都会传染到 VaR。Engle 和 Manganelli（2004）的 CAViaR 直接砍掉前两步——让分位数本身服从一个自回归过程 $f_t = \beta_0 + \beta_1 f_{t-1} + \beta_2 |r_{t-1}|$，用 pinball 损失直接估计，全程不对收益分布做任何假设。我在 GARCH-t(6) 模拟上实测：静态正态 VaR 和滚动历史模拟在 [DQ 检验](/blog/dynamic-quantile-test-dq/)下 p=0.0002 和 p=0.0000 双双被拒，CAViaR-SAV 突破 49 次（期望 50）、DQ p=0.90，pinball 损失 0.0973——距离知道真实波动率和真实分布的"神谕"模型（0.0959）只差 1.5%。它不知道数据是 GARCH 生成的，也不知道噪声是 t 分布，却几乎追平了全知模型**。

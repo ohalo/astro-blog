@@ -5,6 +5,7 @@ description: "风险平价策略 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 风险平价策略深度解析：从Bridgewater All Weather到中国市场的实证

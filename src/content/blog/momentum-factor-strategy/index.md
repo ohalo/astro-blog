@@ -5,6 +5,7 @@ description: "动量因子策略 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：动量效应的发现

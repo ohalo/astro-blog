@@ -5,6 +5,7 @@ description: 量化研究员的一天——从数据清洗到因子交付的完�
 tags:
   - 量化交易
 language: Chinese
+difficulty: beginner
 ---
 
 很多人对"量化研究员"这个岗位充满好奇：他们到底在做什么？是整天写代码跑模型，还是对着Bloomberg终端发呆？

@@ -11,6 +11,7 @@ tags:
  - 逆向选择
  - Python
 language: Chinese
+difficulty: advanced
 ---
 
 ![零佣金蛋糕：价差被三方瓜分](/images/pfof-order-flow-payment/pfof-pie-split.png)

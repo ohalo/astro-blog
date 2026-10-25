@@ -5,6 +5,7 @@ description: "社交媒体情绪因子构建：另类数据量化实践 - halo�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 另类数据的价值缺口

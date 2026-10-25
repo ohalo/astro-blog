@@ -7,6 +7,7 @@ tags:
  - 技术栈
  - 金融工程
 language: Chinese
+difficulty: beginner
 ---
 
 量化开发者（Quant Developer）是量化投资产业链上最容易被误解的角色。外界常把他们等同于"写 Python 脚本的数据分析师"，但真正的量化开发是一个跨越多层技术栈的综合性工程岗位。这篇文章梳理一下量化开发者需要掌握的技术全景。

@@ -6,6 +6,7 @@ tags:
  - AI观察
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 2024-2026年，大语言模型（LLM）从「聊天工具」迅速进化到「Agent 智能体」，能够在特定领域自主完成复杂任务。量化交易领域也不例外——从研报分析到因子构思，从回测脚本生成到风控预警，LLM Agent 正在重新定义量化工作流。

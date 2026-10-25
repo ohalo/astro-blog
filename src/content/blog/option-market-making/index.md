@@ -8,6 +8,7 @@ tags:
   - 量化交易
   - Greek字母
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言：期权做市商的角色与盈利模式

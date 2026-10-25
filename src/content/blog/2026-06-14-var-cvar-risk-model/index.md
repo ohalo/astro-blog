@@ -5,6 +5,7 @@ description: "VaR与CVaR风险度量：量化投资的风险标尺 - halo的技�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 为什么需要风险度量？

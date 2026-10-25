@@ -5,6 +5,7 @@ description: "回撤在险值 CDaR：把回撤分布的尾部写进优化目标 
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 先说结论：**方差惩罚所有偏离，最大回撤只看一个最坏点，两者都不是投资人真正在乎的东西。Chekhlov-Uryasev-Zabarankin（2005）的 CDaR（Conditional Drawdown-at-Risk）取中间路线：对回撤序列做 CVaR——CDaR₉₅ 就是"最差 5% 回撤日的平均深度"。它继承了 [CVaR](/blog/cvar-optimization-rockafellar/) 的全部工程优点：凸、可以写成线性规划、优化时不用碰任何分布假设。我用三资产（股票/债券/趋势）两状态模拟实测：同一目标收益下，最小方差组合和最小 CDaR 组合的权重分道扬镳——趋势资产样本内年化 -1.6%，最小方差只给它 11%，最小 CDaR 给到 21%，几乎翻倍——因为它危机期年化收益 +75%，是全组合唯一的回撤对冲；代价是波动率反而更高（4.5% vs 4.1%）。CDaR 优化用更高的方差买更浅的回撤，这笔交易方差目标永远不会做**。

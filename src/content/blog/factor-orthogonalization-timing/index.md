@@ -5,6 +5,7 @@ description: "因子正交化与因子择时：多因子模型的进阶修炼 - 
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 因子正交化与因子择时：多因子模型的进阶修炼

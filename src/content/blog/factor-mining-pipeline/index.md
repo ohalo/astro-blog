@@ -5,6 +5,7 @@ description: "因子挖掘全流程：从数据清洗到实盘上线的工程化
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 做过量化的人都知道：**找到一个能赚钱的因子，比找到一个能上实盘的因子容易十倍**。

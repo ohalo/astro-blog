@@ -5,6 +5,7 @@ description: "行业动量因子研究：捕捉板块轮动的阿尔法 - halo�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 行业动量因子研究：捕捉板块轮动的阿尔法

@@ -5,6 +5,7 @@ description: "偏度风险溢价：卖出崩盘保险的系统化收益 - 20年�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ![裸卖 put 的月度收益分布](/images/skew-risk-premium/pnl-distribution.png)

@@ -5,6 +5,7 @@ description: "量化交易员的一天 - halo的技术博客"
 tags:
  - 量化投资
 language: Chinese
+difficulty: beginner
 ---
 
 ## 引言

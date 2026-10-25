@@ -5,6 +5,7 @@ description: "Black-Litterman模型实战：从CAPM到主观观点的量化融�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 传统均值方差优化的困境

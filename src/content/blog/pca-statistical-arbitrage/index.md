@@ -6,6 +6,7 @@ language: Chinese
 tags: ["PCA", "统计套利", "配对交易", "因子模型", "机器学习"]
 categories: ["量化交易"]
 featured_image: "/images/pca-statistical-arbitrage/hero.jpg"
+difficulty: intermediate
 ---
 
 # PCA与因子模型在统计套利中的应用：降维视角下的配对交易

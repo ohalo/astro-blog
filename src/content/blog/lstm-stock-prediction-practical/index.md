@@ -5,6 +5,7 @@ description: "基于LSTM的股价预测实战：从数据预处理到模型部�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言：深度学习进军量化交易

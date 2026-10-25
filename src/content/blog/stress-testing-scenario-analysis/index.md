@@ -5,6 +5,7 @@ description: "压力测试与情景分析：量化投资的风险防线 - halo�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 风险管理的演进

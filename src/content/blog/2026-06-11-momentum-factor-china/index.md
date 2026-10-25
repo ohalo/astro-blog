@@ -5,6 +5,7 @@ description: "动量因子在中国A股市场的有效性检验：趋势跟踪�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：动量与反转的博弈

@@ -5,6 +5,7 @@ description: "量化风险管理实战：VaR与CVaR计算及压力测试框架 -
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

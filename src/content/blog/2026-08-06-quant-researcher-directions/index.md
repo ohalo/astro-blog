@@ -6,6 +6,7 @@ tags:
  - 量化投资
  - AI观察
 language: Chinese
+difficulty: beginner
 ---
 
 ## 开篇：量化研究员不是"写策略的"

@@ -5,6 +5,7 @@ description: "质量因子选股：识别高质量公司的量化指标 - halo�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

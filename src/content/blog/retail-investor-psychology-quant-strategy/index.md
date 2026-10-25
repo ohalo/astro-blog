@@ -5,6 +5,7 @@ description: "散户心理的量化应用：行为金融因子构建 - halo的�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 行为金融的核心逻辑

@@ -5,6 +5,7 @@ description: "社交媒体情绪分析交易策略 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：当散户情绪成为阿尔法

@@ -5,6 +5,7 @@ description: "收盘集合竞价失衡：尾盘最后十分钟的订单流信号
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ![失衡信号 vs 尾盘收益](/images/closing-auction-imbalance/imbalance-signal.png)

@@ -5,6 +5,7 @@ description: "行为金融学：散户心理偏差与量化交易应用 - halo�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 行为金融学：散户心理偏差与量化交易应用

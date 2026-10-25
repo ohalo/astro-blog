@@ -10,6 +10,7 @@ tags:
   - 逆向选择
   - Python
 language: Chinese
+difficulty: advanced
 ---
 
 # PIN 知情交易概率：用买卖单不平衡估计市场里有多少『内幕单』

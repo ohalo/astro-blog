@@ -5,6 +5,7 @@ description: "新闻情感分析驱动的事件驱动策略：从NLP到超额收
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 当量化遇见自然语言处理

@@ -5,6 +5,7 @@ description: "配对交易实务：从协整检验到实盘执行 - halo的技�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

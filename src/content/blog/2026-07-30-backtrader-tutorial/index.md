@@ -6,6 +6,7 @@ tags:
  - AI工具
  - 金融量化
 language: Chinese
+difficulty: beginner
 ---
 
 如果你对量化交易感兴趣，一定听过一句话："没有回测过的策略，不值得投入一分钱。"回测（Backtesting）是量化投资的第一道关卡——它让你在真金白银投入之前，用历史数据模拟策略的表现。而Python生态中，Backtrader是最成熟、最灵活的回测框架之一。本文带你从零搭建一个完整的量化回测系统。

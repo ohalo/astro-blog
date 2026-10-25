@@ -5,6 +5,7 @@ description: "低波因子是防御性投资的核心因子之一，本文通过
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 低波因子的理论基础

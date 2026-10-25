@@ -5,6 +5,7 @@ description: "期权波动率交易策略：从Vega到实战 - halo的技术博�
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 期权波动率交易策略：从Vega到实战

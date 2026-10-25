@@ -11,6 +11,7 @@ tags:
 categories: ["量化交易"]
 slug: "commodity-roll-yield-contango-backwardation"
 image: "/images/commodity-roll-yield-contango-backwardation/contango_backwardation.png"
+difficulty: advanced
 ---
 
 很多人以为"买原油期货 = 赌油价上涨"。只要你判断对方向，就能赚钱。但 2009—2020 年这十一年里，WTI 油价从 40 美元涨回 60 美元，追踪它的旗舰 ETF（USO）却几乎原地踏步甚至亏损。原因不在你的方向判断，而在**展期收益（Roll Yield）**——一个藏在期货期限结构里、每天都要扣你钱的隐性成本。

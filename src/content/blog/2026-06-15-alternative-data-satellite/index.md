@@ -5,6 +5,7 @@ description: "另类数据进阶：卫星图像与信用卡数据在量化中的
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 另类数据进阶：卫星图像与信用卡数据在量化中的应用

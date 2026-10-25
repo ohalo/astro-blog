@@ -5,6 +5,7 @@ description: "期权波动率交易 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 期权波动率交易的核心逻辑

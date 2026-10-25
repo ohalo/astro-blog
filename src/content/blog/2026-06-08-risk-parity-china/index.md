@@ -5,6 +5,7 @@ description: "风险平价策略在中国市场的实证：跨越理论的实践
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 什么是风险平价？

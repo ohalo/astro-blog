@@ -10,6 +10,7 @@ tags:
   - Corwin-Schultz
   - Python
 language: Chinese
+difficulty: advanced
 ---
 
 # Corwin-Schultz 高低价价差估计：用两日高低价把价差与波动拆开

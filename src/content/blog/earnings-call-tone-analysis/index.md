@@ -5,6 +5,7 @@ description: "财报电话会语调分析：用词频把管理层情绪变成因
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ![12000 次电话会的语调分布](/images/earnings-call-tone-analysis/tone-distribution.png)

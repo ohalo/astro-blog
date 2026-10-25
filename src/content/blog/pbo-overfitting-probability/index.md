@@ -5,6 +5,7 @@ description: "回测过拟合概率 PBO：用组合对称检验量化『选出�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 你跑了 40 个策略变体，挑出夏普最高的那个准备上仓位。问题来了：这个「最优」，是真有 edge，还是 40 次抽奖里运气最好的那张彩票？传统回测无法回答，因为它只给你一个夏普数字，不告诉你这个数字里有多少是运气。Bailey 和 López de Prado 在 2014 年提出的**回测过拟合概率**（Probability of Backtest Overfitting，PBO），用一套叫组合对称交叉验证（Combinatorially Symmetric Cross-Validation，CSCV）的方法，把「你选出的最优在样本外其实是平庸货」这件事，算成一个 0 到 1 之间的概率。这篇讲清 PBO 到底在算什么、怎么算、以及为什么它应该和夏普一起出现在每一份策略报告里。

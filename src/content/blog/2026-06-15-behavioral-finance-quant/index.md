@@ -5,6 +5,7 @@ description: "行为金融学在量化策略中的应用：羊群效应与过度
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 行为金融学在量化策略中的应用：羊群效应与过度反应

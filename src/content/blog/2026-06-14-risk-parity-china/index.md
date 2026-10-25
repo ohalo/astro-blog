@@ -5,6 +5,7 @@ description: "风险平价策略中国实证：跨越美股的本土化改造 - 
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 风险平价：从Bridgewater的神话说起

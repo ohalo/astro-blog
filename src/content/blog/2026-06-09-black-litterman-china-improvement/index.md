@@ -5,6 +5,7 @@ description: "Black-Litterman模型在中国量化组合的改良应用 - halo�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 传统马科维茨模型的痛点

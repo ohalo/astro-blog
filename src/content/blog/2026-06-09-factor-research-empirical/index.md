@@ -5,6 +5,7 @@ description: "因子选股实证：价值/动量/质量因子的A股回测分析
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 因子投资的理论基础

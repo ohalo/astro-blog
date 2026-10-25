@@ -10,6 +10,7 @@ tags:
 categories: ["量化交易"]
 slug: "portfolio-insurance-cppi"
 image: "/images/portfolio-insurance-cppi/cppi_mechanism.png"
+difficulty: intermediate
 ---
 
 组合保险（Portfolio Insurance）曾经是华尔街最优雅的想法之一：在不牺牲上涨空间的前提下，为投资组合锁定一个下跌底线。CPPI（Constant Proportion Portfolio Insurance，固定比例投资组合保险）作为其中最易实现的变体，在 1980 年代风靡一时。然而 1987 年 10 月 19 日，这个本应"保护"投资者的机制，反而成了踩踏的推手。

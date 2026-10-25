@@ -5,6 +5,7 @@ description: "均值回归策略 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 均值回归的理论基础

@@ -5,6 +5,7 @@ description: "组合式净化交叉验证 CPCV：用组合分块把回测过拟�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 一次回测给你一个夏普 1.8，你敢上吗？大多数人会说「再跑一次样本外看看」。但样本外只有一段，它本身也可能是运气。真正的问题是：能不能从一次回测里，同时估计出「这个策略的样本外表现分布」和「它其实是过拟合噪声的概率」？López de Prado 的组合式净化交叉验证（Combinatorial Purged Cross-Validation，CPCV）就是干这个的——它用组合数学榨出几十条互不相同的回测路径，再用 purge 和 embargo 堵死金融数据特有的信息泄漏，最后算出一个叫 PBO（Probability of Backtest Overfitting，回测过拟合概率）的数字。

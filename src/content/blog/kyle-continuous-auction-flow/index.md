@@ -11,6 +11,7 @@ tags:
   - Python
 language: Chinese
 difficulty: advanced
+---
 
 金融市场的核心矛盾是信息不对称：有人知道资产的真值 v，做市商只看到订单流。Kyle 1985 年的两篇论文（《Speculation, Duopoly, and Equilibrium》与《Continuous Auctions and Insider Trading》）第一次把这个问题变成了**可解的均衡**：知情者的最优下单策略是什么？做市商的定价规则是什么？四十年后，「Kyle's lambda」（订单流价格冲击）已经是微观结构实证的标配。本文用 numpy 把这个经典模型完整解一遍：先单次拍卖，再 50 期连续拍卖，全部数值可复现。
 

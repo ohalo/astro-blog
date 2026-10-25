@@ -5,6 +5,7 @@ description: "期权波动率交易实战：隐含波动率曲面与Delta中性�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：波动率是期权的灵魂

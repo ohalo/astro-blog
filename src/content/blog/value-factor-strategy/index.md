@@ -5,6 +5,7 @@ description: "价值因子策略：挖掘被低估的股票阿尔法 - halo的�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 价值因子的理论基础

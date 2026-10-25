@@ -5,6 +5,7 @@ description: "马科维茨均值方差模型 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 马科维茨均值方差模型：在中国A股市场的实证应用与改进

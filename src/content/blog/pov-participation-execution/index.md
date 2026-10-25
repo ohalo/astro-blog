@@ -5,6 +5,7 @@ description: "POV 参与率执行算法详解：原理、与 TWAP/VWAP 对比、
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 先说结论

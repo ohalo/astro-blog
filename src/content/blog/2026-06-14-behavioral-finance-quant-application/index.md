@@ -5,6 +5,7 @@ description: "散户心理偏差与量化策略设计 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 行为金融学简介

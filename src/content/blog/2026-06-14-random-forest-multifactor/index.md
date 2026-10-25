@@ -5,6 +5,7 @@ description: "随机森林多因子选股模型：机器学习在量化中的实
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言

@@ -5,6 +5,7 @@ description: "最优执行算法详解：从VWAP到强化学习驱动的现代�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言

@@ -5,6 +5,7 @@ description: "因子拥挤度监测：识别因子失效的早期警告信号 - 
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 什么是因子拥挤度？

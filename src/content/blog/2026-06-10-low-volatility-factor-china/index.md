@@ -5,6 +5,7 @@ description: "低波因子在中国市场的有效性检验：理论与实践 - 
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

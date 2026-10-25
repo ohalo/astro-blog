@@ -8,6 +8,7 @@ tags:
   - 职业发展
   - C++
 language: Chinese
+difficulty: beginner
 ---
 
 ## 谁在做金融工程？

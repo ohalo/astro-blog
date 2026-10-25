@@ -5,6 +5,7 @@ description: "风险平价策略在中国市场的实证分析 - halo的技术�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 当"股债64"不再灵验：风险平价的崛起

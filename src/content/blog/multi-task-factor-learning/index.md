@@ -13,6 +13,7 @@ tags:
 image: /images/multi-task-factor-learning/cover.png
 keywords: ["多任务学习", "硬共享", "MTL", "因子模型", "波动率预测", "联合训练", "共享表征"]
 author: halo
+difficulty: advanced
 ---
 
 ## 预测收益和预测风险，其实是同一道题

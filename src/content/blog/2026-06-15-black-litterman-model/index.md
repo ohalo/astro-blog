@@ -5,6 +5,7 @@ description: "Black-Litterman模型实战：融合市场均衡与投资者观点
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 为什么需要Black-Litterman模型？

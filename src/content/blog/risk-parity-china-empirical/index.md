@@ -5,6 +5,7 @@ description: "风险平价策略（Risk Parity）在中国市场的实证应用�
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：打破均值方差优化的桎梏

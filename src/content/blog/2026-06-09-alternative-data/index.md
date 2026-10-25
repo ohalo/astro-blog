@@ -5,6 +5,7 @@ description: "探索另类数据在量化投资中的应用，从卫星图像、
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 另类数据：超越传统金融数据

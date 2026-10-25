@@ -9,6 +9,7 @@ tags:
  - Python
  - 配对交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ![统计套利与均值回归的核心思想](/images/statistical-arbitrage-mean-reversion/cover.jpg)

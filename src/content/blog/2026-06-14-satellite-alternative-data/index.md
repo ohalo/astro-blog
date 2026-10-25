@@ -5,6 +5,7 @@ description: "卫星图像另类数据：用卫星图像预测公司业绩与股
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：从太空俯瞰投资机会

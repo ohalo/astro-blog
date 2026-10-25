@@ -5,6 +5,7 @@ description: "因子衰减效应研究：因子有效期与策略生命周期管
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 因子衰减效应研究：因子有效期与策略生命周期管理

@@ -5,6 +5,7 @@ description: "信用卡另类数据：用消费数据预测公司业绩 - halo�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 另类数据的崛起

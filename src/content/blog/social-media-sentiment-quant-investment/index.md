@@ -5,6 +5,7 @@ description: "社交媒体情绪在量化投资中的应用：从Twitter到投�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 社交媒体情绪在量化投资中的应用：从Twitter到投资决策

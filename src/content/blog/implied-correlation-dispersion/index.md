@@ -11,6 +11,7 @@ tags:
  - 风险溢价
  - Python
 language: Chinese
+difficulty: advanced
 ---
 
 ![指数波动率与隐含相关性的恒等式关系](/images/implied-correlation-dispersion/implied-corr-identity.png)

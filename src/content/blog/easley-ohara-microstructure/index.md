@@ -5,6 +5,7 @@ description: "Easley-O'Hara 序贯交易模型详解：信息事件树、做市�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 先说结论

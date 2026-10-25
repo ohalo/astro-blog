@@ -5,6 +5,7 @@ description: "另类数据：量化投资的新阿尔法源泉——从卫星图
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：传统数据的局限与另类数据的崛起

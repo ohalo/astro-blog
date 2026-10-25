@@ -5,6 +5,7 @@ description: "Hansen SPA 检验：在一堆策略里判断有没有真正跑赢�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 先说结论：**White Reality Check（WRC）有一个致命软肋——池子里塞进越多明显亏钱的垃圾策略，它对真信号越迟钝；Hansen 在 2005 年提出的 SPA（Superior Predictive Ability）检验用「学生化统计量 + 差策略剔除」补上了这个洞**。本文的模拟给出直接证据：一个夏普 0.9 的真 alpha 混在 20 个噪声策略里，WRC p 值 0.034 尚能识别；往池子里再倒进 150 个年化 -25% 的垃圾策略后，WRC p 值恶化到 0.224，真信号被淹没——而 SPA 的 p 值全程稳定在 0.03-0.04，几乎不受垃圾策略污染。

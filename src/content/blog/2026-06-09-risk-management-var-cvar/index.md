@@ -5,6 +5,7 @@ description: "风险管理实战：VaR与CVaR计算、回测与合规应用 - ha
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 为什么风险管理是量化系统的"生命线"？

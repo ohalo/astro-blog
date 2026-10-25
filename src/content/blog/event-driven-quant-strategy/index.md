@@ -5,6 +5,7 @@ description: "事件驱动量化策略：并购套利与业绩公告的超额收
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：当事件成为阿尔法

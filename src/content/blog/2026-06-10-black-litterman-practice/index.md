@@ -5,6 +5,7 @@ description: "Black-Litterman模型实践：结合主观观点与量化配置 - 
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 传统马科维茨模型的局限

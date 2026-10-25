@@ -5,6 +5,7 @@ description: "VPIN 订单流毒性：闪崩前的流动性预警指标 - 50 万�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ![价格与 VPIN 全样本](/images/vpin-flow-toxicity/price-vpin.png)

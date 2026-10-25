@@ -5,6 +5,7 @@ description: "风险平价策略在中国市场的实证 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：传统资产配置的困境

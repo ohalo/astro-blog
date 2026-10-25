@@ -10,6 +10,7 @@ tags:
   - 流动性
   - Python
 language: Chinese
+difficulty: intermediate
 ---
 
 # Kyle Lambda 价格冲击：从订单流回归里估出市场的『吃单成本』

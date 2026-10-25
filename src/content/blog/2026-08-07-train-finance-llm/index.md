@@ -6,6 +6,7 @@ tags:
  - AI观察
  - 量化投资
 language: Chinese
+difficulty: advanced
 ---
 
 ## 为什么需要领域大模型

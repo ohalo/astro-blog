@@ -15,6 +15,7 @@ tags:
 categories: ["量化交易"]
 slug: "yield-curve-butterfly-trade"
 image: "/images/yield-curve-butterfly-trade/yield_curve_paths.png"
+difficulty: advanced
 ---
 
 债券交易员嘴里的「做 curve」，大多指收益率曲线上不同期限之间的相对价值。最朴素的是 2s10s 斜率交易（赌长短端利差走阔或收窄）。但斜率交易同时暴露了「水平因子」——整条曲线平移时你也会亏钱。想要一个**对曲线平移和旋转都中性、只赌中段形状**的头寸，就轮到 **蝶式（butterfly）** 登场了。

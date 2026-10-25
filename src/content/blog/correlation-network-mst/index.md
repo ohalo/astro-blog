@@ -11,6 +11,7 @@ tags:
   - 板块联动
 categories:
   - 量化交易
+difficulty: advanced
 ---
 
 # 相关性网络与最小生成树：用图论看清板块联动结构

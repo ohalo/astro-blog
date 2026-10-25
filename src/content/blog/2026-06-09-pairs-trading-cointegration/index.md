@@ -5,6 +5,7 @@ description: "配对交易实战：协整检验与价差交易策略构建 - hal
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 配对交易的核心逻辑

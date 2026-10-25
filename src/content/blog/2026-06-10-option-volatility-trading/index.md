@@ -5,6 +5,7 @@ description: "期权波动率交易实战：从GARCH预测到Vega对冲 - halo�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

@@ -5,6 +5,7 @@ description: "Black-Litterman模型实战：融合主观观点与量化定价的
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 当量化遇上主观判断：Black-Litterman模型的诞生

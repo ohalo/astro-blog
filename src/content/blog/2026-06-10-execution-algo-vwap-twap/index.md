@@ -5,6 +5,7 @@ description: "深入解析VWAP和TWAP交易执行算法原理与实战应用 - h
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言：为什么需要执行算法？

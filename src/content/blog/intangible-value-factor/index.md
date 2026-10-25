@@ -5,6 +5,7 @@ description: "无形资产价值因子：把研发和品牌加回账面修复失
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ![传统价值因子 vs 无形资产调整价值因子](/images/intangible-value-factor/hml-vs-ihml.png)

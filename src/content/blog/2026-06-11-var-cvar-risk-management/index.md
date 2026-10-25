@@ -5,6 +5,7 @@ description: "风险管理利器：VaR与CVaR在量化投资中的应用 - halo�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：为什么风险管理至关重要？

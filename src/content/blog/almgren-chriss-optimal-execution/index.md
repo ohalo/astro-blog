@@ -5,6 +5,7 @@ description: "Almgren-Chriss 最优执行：在冲击成本与时间风险之间
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ![Almgren-Chriss 最优清仓轨迹](/images/almgren-chriss-optimal-execution/trajectories.png)

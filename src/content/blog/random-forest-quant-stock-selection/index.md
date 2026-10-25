@@ -5,6 +5,7 @@ description: "随机森林在量化选股中的应用：从特征工程到实盘
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 随机森林在量化选股中的核心优势

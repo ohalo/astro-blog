@@ -5,6 +5,7 @@ description: "多因子模型中的因子衰减与交互效应：构建稳健阿
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：多因子模型的现实挑战

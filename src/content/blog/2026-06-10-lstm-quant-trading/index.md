@@ -5,6 +5,7 @@ description: "LSTM神经网络在量化交易中的应用 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 为什么需要LSTM？

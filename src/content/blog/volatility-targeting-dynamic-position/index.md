@@ -5,6 +5,7 @@ description: "波动率目标策略：动态仓位管理的风险预算框架 - 
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

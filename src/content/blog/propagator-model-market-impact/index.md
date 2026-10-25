@@ -10,6 +10,7 @@ tags:
   - 最优执行
   - Python
 language: Chinese
+difficulty: advanced
 ---
 
 # 传播子模型 Propagator：把每笔成交的冲击衰减写成核函数

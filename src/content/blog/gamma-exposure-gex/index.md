@@ -11,6 +11,7 @@ tags:
  - 波动率
  - Python
 language: Chinese
+difficulty: advanced
 ---
 
 ![做市商 GEX 剖面与 Gamma 翻转点](/images/gamma-exposure-gex/gex-profile.png)

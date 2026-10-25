@@ -5,6 +5,7 @@ description: "价值因子（Value Factor）在中国A股市场的有效性检�
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：价值投资的数理化表达

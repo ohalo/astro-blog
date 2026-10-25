@@ -5,6 +5,7 @@ description: "价值因子深度研究：低价股的阿尔法源泉与陷阱 - 
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 当"便宜"成为一门科学

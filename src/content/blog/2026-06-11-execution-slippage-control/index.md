@@ -5,6 +5,7 @@ description: "实盘交易中的滑点控制：量化执行策略优化 - halo�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言：滑点——量化策略的隐形杀手

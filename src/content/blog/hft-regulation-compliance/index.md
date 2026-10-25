@@ -7,6 +7,7 @@ tags: ["高频交易", "监管合规", "算法交易", "MiFID II", "中国证监
 categories: ["量化交易"]
 slug: "hft-regulation-compliance"
 image: "/images/hft-regulation-compliance/global_hft_regulation.png"
+difficulty: advanced
 ---
 
 # 高频交易监管与合规：全球监管框架与中国实践

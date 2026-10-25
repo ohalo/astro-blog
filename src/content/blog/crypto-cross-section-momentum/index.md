@@ -6,6 +6,7 @@ tags:
  - 量化投资
  - 加密货币
 language: Chinese
+difficulty: intermediate
 ---
 
 传统的动量策略问「这个资产过去涨得好不好，未来会不会继续涨」——这是**时间序列动量（Time-Series Momentum）**。而横截面动量（Cross-Sectional Momentum）问的是另一个问题：「在一篮子资产里，哪些相对更强、哪些相对更弱」，然后**做多相对强者、做空相对弱者**。

@@ -5,6 +5,7 @@ description: "基于风险的资产配置新范式：超越马科维茨的现代
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 传统均值-方差模型的困境

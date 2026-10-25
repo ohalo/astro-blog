@@ -14,6 +14,7 @@ tags:
 categories: ["量化交易"]
 slug: "inflation-breakeven-trade"
 image: "/images/inflation-breakeven-trade/bei_decomposition.png"
+difficulty: advanced
 ---
 
 很多人把 **盈亏平衡通胀率（Breakeven Inflation, BEI）** 当成「市场对未来通胀的预期」直接读。TIPS（通胀保值国债）和同期限名义国债的收益率差，就是 BEI。财经新闻里常说「10 年 BEI 是 2.3%，说明市场预计通胀 2.3%」。

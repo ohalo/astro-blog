@@ -5,6 +5,7 @@ description: "量化风险管理：VaR与CVaR模型详解及Python实现 - halo�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 为什么风险管理至关重要？

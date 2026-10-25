@@ -5,6 +5,7 @@ description: "信用卡消费数据是另类数据的核心品类之一，可提
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 信用卡另类数据的核心价值

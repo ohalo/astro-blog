@@ -5,6 +5,7 @@ description: "因子衰减效应与因子择时：量化投资中的时间维度
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：因子的"保质期"

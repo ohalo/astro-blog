@@ -5,6 +5,7 @@ description: "投资组合再平衡策略 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 为什么需要再平衡？

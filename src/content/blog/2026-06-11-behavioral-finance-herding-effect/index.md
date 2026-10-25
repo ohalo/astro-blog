@@ -5,6 +5,7 @@ description: "行为金融中的羊群效应：量化视角下的市场非理性
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：当理性模型遭遇非理性市场

@@ -11,6 +11,7 @@ tags:
   - 主成分分析
 categories:
   - 量化交易
+difficulty: intermediate
 ---
 
 # 稀疏 PCA 统计套利：只保留少数正交共性因子

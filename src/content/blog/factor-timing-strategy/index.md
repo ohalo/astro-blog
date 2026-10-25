@@ -5,6 +5,7 @@ description: "因子择时策略：动态切换因子暴露的量化实战 - hal
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 因子择时策略：动态切换因子暴露的量化实战

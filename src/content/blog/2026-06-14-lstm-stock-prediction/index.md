@@ -5,6 +5,7 @@ description: "LSTM神经网络股价预测：深度学习在量化交易中的�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 从线性到非线性：为什么需要LSTM？

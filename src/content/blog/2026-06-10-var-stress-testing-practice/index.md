@@ -5,6 +5,7 @@ description: "深入探讨量化投资中的VaR（风险价值）与压力测试
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # VaR与压力测试：量化风险管理的双支柱

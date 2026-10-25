@@ -5,6 +5,7 @@ description: "Amihud 非流动性因子：用单位成交额的价格冲击给�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ![ILLIQ 五分组累计净值](/images/amihud-illiquidity-factor/quintile-nav.png)

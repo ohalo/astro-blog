@@ -5,6 +5,7 @@ description: "实盘交易系统搭建：交易执行、滑点控制与订单管
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 从回测到实盘：量化策略的"最后一公里"

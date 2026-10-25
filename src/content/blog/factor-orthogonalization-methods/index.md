@@ -5,6 +5,7 @@ description: "多因子模型中的因子正交化：从理论到Python实战 - 
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：因子共线性的困局

@@ -5,6 +5,7 @@ description: "价值因子深度研究：从Fama-French到AI时代的蜕变 - ha
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 价值因子深度研究：从Fama-French到AI时代的蜕变

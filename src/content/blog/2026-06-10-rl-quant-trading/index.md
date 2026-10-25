@@ -5,6 +5,7 @@ description: "探索强化学习如何革命性改变量化交易策略 - halo�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言：当AI学会交易

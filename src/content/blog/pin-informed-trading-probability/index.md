@@ -5,6 +5,7 @@ description: "PIN 知情交易概率：从订单流不平衡里估计谁在偷�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ![EKOP 混合结构散点](/images/pin-informed-trading-probability/ekop-scatter.png)

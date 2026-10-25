@@ -5,6 +5,7 @@ description: "VaR与CVaR风险度量 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 风险度量的重要性

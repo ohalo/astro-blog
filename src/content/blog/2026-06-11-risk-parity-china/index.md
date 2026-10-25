@@ -5,6 +5,7 @@ description: "风险平价策略中国实证 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

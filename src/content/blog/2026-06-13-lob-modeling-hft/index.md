@@ -5,6 +5,7 @@ description: "限价订单簿建模与高频策略：捕捉微观结构阿尔法
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言：为什么研究限价订单簿？

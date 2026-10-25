@@ -10,6 +10,7 @@ tags:
   - GCN
   - Python
 language: Chinese
+difficulty: advanced
 ---
 
 ## 订单簿不是表格，是图

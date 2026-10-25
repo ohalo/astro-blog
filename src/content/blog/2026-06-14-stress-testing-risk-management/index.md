@@ -5,6 +5,7 @@ description: "压力测试与极端风险管理 - halo的技术博客"
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 压力测试与极端风险管理：构建量化投资的防火墙

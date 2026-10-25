@@ -5,6 +5,7 @@ description: "行为金融学：A股散户心理与羊群效应的量化实证 -
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：当理性假设遭遇现实市场

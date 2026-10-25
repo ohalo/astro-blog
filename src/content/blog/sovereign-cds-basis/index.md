@@ -11,6 +11,7 @@ tags:
 categories: ["量化交易"]
 slug: "sovereign-cds-basis"
 image: "/images/sovereign-cds-basis/cds_bond_basis_bar.png"
+difficulty: advanced
 ---
 
 如果你同时关注主权债券市场和 CDS 市场，会经常看到一个奇怪现象：**同一个国家的违约风险，现金债券要求的利差可能比 CDS 保护更高**。例如意大利 10 年期国债比德国国债高 120bp，而 5 年期主权 CDS 却只有 105bp。两者之间的差值，就是**CDS-Bond Basis**。

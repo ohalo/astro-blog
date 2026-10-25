@@ -5,6 +5,7 @@ description: "统计套利的数学原理：从协整到均值回归的量化实
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：统计套利的核心逻辑

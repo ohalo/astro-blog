@@ -5,6 +5,7 @@ description: "另类数据：卫星图像在量化投资中的应用 - halo的�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 另类数据的崛起

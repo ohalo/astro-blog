@@ -5,6 +5,7 @@ description: "Black-Litterman模型 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # Black-Litterman模型：超越Markowitz的投资组合优化

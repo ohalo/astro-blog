@@ -6,6 +6,7 @@ tags:
   - AI观察
   - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 量化交易的核心驱动力是什么？是因子。

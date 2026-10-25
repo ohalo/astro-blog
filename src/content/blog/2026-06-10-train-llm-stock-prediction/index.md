@@ -6,6 +6,7 @@ tags:
   - AI观察
   - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言：LLM能预测股价吗？

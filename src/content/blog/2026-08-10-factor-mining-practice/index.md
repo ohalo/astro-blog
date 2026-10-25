@@ -5,6 +5,7 @@ description: "因子挖掘从入门到实战 - halo的技术博客"
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 提起量化交易，"因子"绝对是绕不开的核心概念。很多刚入门的同学会问："因子到底是什么？怎么发现有效的因子？为什么别人的因子能赚钱，我挖出来的就是噪音？"

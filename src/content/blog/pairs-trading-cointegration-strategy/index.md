@@ -5,6 +5,7 @@ description: "配对交易实战：基于协整关系的均值回归策略 - hal
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

@@ -5,6 +5,7 @@ description: "LSTM神经网络在股票价格预测中的应用：从理论到�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 # LSTM神经网络在股票价格预测中的应用：从理论到实战

@@ -5,6 +5,7 @@ description: "因子衰减效应：挖掘阿尔法的时效性陷阱 - halo的�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 因子衰减效应：挖掘阿尔法的时效性陷阱

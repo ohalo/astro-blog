@@ -11,6 +11,7 @@ tags:
  - 梯度提升
 category: "机器学习"
 cover: "/images/xgboost-lightgbm-stock-selection/cover.png"
+difficulty: advanced
 ---
 
 # XGBoost与LightGBM在量化选股中的应用

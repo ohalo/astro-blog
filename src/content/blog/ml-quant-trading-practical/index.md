@@ -5,6 +5,7 @@ description: "机器学习在量化交易中的实盘应用：从理论到实践
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言

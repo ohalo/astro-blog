@@ -5,6 +5,7 @@ description: "备兑开仓策略（Covered Call）在A股期权市场的实战�
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：用期权增强收益的稳健策略

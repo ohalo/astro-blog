@@ -6,6 +6,7 @@ tags:
   - 量化交易
   - 投资组合
 language: Chinese
+difficulty: intermediate
 ---
 
 ![PCA 特征组合](/images/pca-eigenportfolio/pca_scree.png)

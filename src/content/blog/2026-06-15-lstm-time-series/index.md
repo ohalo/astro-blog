@@ -5,6 +5,7 @@ description: "LSTM时间序列预测 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## LSTM神经网络在量化交易中的实战：时间序列预测与策略构建

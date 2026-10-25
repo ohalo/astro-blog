@@ -5,6 +5,7 @@ description: "算法交易执行与滑点控制：从VWAP到智能订单路由 -
 tags:
   - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 # 算法交易执行与滑点控制：从VWAP到智能订单路由

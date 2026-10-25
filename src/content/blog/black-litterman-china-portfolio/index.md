@@ -5,6 +5,7 @@ description: "Black-Litterman模型在中国组合配置中的实战应用 - hal
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## Black-Litterman模型的核心逻辑

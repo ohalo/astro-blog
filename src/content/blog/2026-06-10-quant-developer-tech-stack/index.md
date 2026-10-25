@@ -6,6 +6,7 @@ tags:
   - AI工具
   - 量化交易
 language: Chinese
+difficulty: beginner
 ---
 
 ## 引言：量化开发≠普通程序员

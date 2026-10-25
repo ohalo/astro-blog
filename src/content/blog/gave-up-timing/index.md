@@ -5,6 +5,7 @@ description: "曾经花很多时间研究''什么时候买、什么时候卖''�
 tags:
   - 投资理财
 language: Chinese
+difficulty: beginner
 ---
 
 我大概是那种典型的"聪明人"投资者——至少我自己是这么以为的。

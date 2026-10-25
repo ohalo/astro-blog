@@ -5,6 +5,7 @@ description: "市场微观结构噪声：高频数据中的'不完美'真相 - h
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言：当完美假设遭遇现实市场

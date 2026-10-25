@@ -5,6 +5,7 @@ description: "Black-Litterman模型：桥接市场均衡与投资者观点的资
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 传统均值方差优化的困境

@@ -5,6 +5,7 @@ description: "高频做市商策略：库存管理与损益归因分析 - halo�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言

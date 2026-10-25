@@ -5,6 +5,7 @@ description: "VaR与CVaR风险管理实战：投资组合风险度量与实时�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # VaR与CVaR风险管理实战：投资组合风险度量与实时监控

@@ -5,6 +5,7 @@ description: "订单流毒性与LPPL模型：高频交易中的逆向选择与�
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 # 订单流毒性与LPPL模型：高频交易中的逆向选择与市场崩盘预测

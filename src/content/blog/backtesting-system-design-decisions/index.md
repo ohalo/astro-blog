@@ -8,6 +8,7 @@ tags:
   - Python
   - 因子挖掘
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 回测的悖论：越认真做，越不信结果

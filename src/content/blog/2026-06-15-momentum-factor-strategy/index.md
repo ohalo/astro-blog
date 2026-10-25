@@ -5,6 +5,7 @@ description: "动量因子策略全解析：捕捉趋势的阿尔法来源 - hal
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 什么是动量因子？

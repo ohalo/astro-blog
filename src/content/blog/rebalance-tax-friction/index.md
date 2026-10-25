@@ -10,6 +10,7 @@ tags:
   - 换手率
   - Python
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 一个被忽视的数字

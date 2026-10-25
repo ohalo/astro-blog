@@ -9,6 +9,7 @@ tags:
  - 风险管理
  - Python
 language: Chinese
+difficulty: intermediate
 ---
 
 # 因子择时：动态调整因子暴露

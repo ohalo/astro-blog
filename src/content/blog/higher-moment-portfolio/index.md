@@ -6,6 +6,7 @@ tags:
   - 量化交易
   - 投资组合
 language: Chinese
+difficulty: advanced
 ---
 
 ![高阶矩组合](/images/higher-moment-portfolio/hm_efficient_frontier.png)

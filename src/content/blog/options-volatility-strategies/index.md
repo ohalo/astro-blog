@@ -5,6 +5,7 @@ description: "期权波动率策略详解 - halo的技术博客"
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言

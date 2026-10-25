@@ -5,6 +5,7 @@ description: "社交媒体情绪分析：另类数据在量化交易中的实战
 tags:
   - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 社交媒体情绪分析：另类数据在量化交易中的实战指南

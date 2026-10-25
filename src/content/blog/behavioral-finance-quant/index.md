@@ -5,6 +5,7 @@ description: "行为金融学在量化策略中的应用：捕捉市场非理性
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 引言：当有效市场假说遇到行为偏差

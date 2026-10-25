@@ -5,6 +5,7 @@ description: "动态分位数 DQ 检验：把 VaR 突破回归到信息集上 - 
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 先说结论：**一个正确的 VaR 模型必须满足比"突破率等于名义值"强得多的条件：突破必须对昨天之前的一切信息不可预测。Engle 和 Manganelli（2004）的动态分位数（DQ）检验把这个条件变成一个回归——把去中心化的突破序列回归到滞后突破、当期 VaR 等解释变量上，模型正确时所有系数应为零，检验统计量服从 χ²。它是 [Christoffersen 一阶马尔可夫检验](/blog/christoffersen-independence-test/)的严格推广：不止看昨天破没破，还看更远的滞后和 VaR 水平本身。我在 GARCH-t(6) 模拟上实测：静态正态 VaR 的突破序列在 Christoffersen 独立性检验下 p=0.51 安然过关，DQ 检验 p=0.004 直接拒绝；功效实验里 DQ 在高波动持续性下达到 63%，比一阶检验的 40% 高出一半**。

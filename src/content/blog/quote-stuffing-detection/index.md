@@ -8,6 +8,7 @@ tags:
   - 市场微观结构
   - Python
 language: Chinese
+difficulty: advanced
 ---
 
 ## 先说结论

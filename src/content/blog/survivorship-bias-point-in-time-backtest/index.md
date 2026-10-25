@@ -8,6 +8,7 @@ tags:
   - 数据偏差
   - 风险控制
 language: Chinese
+difficulty: intermediate
 ---
 
 任何做过股票回测的人，都欠自己一个诚实的问题：**你用的股票池里，那些退市、ST、破产的股票，去哪了？**

@@ -5,6 +5,7 @@ description: "配对交易与协整分析：统计套利的核心方法 - halo�
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 什么是配对交易

@@ -11,6 +11,7 @@ tags:
  - 因子投资
  - Python
 language: Chinese
+difficulty: intermediate
 ---
 
 ![北向资金流五分组累计净值](/images/northbound-flow-factor/group-nav.png)

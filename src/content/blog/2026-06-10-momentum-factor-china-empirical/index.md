@@ -5,6 +5,7 @@ description: "动量因子在中国A股市场的有效性检验：基于2010-202
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 # 动量因子在中国市场的实证研究：因子有效性检验

@@ -5,6 +5,7 @@ description: "Markowitz均值方差模型实战：用Python构建最优投资组
 tags:
  - 量化交易
 language: Chinese
+difficulty: intermediate
 ---
 
 ## 现代投资组合理论的核心思想

@@ -5,6 +5,7 @@ description: "高频交易核心：订单流分析与限价订单簿微结构 - 
 tags:
  - 量化交易
 language: Chinese
+difficulty: advanced
 ---
 
 ## 引言：微结构决定价格形成

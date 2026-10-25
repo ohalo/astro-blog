@@ -10,6 +10,7 @@ tags:
   - 买卖价差
   - Python
 language: Chinese
+difficulty: advanced
 ---
 
 # Roll 价差估计量：只用收盘价的自协方差反推有效价差
