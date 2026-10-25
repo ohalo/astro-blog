@@ -1,0 +1,37 @@
+---
+import { PFSearch } from 'astro-pure/components/pages'
+import { Button } from 'astro-pure/user'
+import PageLayout from '@/layouts/BaseLayout.astro'
+import { dict, getLocale, localePath } from '@/i18n'
+import { integ } from '@/site-config'
+
+const locale = getLocale(Astro.url.pathname)
+const d = dict(locale)
+
+const meta = {
+  description: d.blog.searchDesc,
+  title: d.blog.searchTitle
+}
+---
+
+<PageLayout {meta} {locale}>
+  <Button title={d.common.back} href={localePath(locale, '/blog')} variant='back' />
+  <main class='mt-6 lg:mt-10'>
+    <div id='content-header' class='animate'>
+      <h1 class='mb-6 text-3xl font-medium'>{d.blog.searchTitle}</h1>
+    </div>
+
+    <div id='content' class='animate'>
+      {
+        integ.pagefind ? (
+          <>
+            <p>{d.blog.searchIntro}</p>
+            <PFSearch />
+          </>
+        ) : (
+          <p>{d.blog.searchDisabled}</p>
+        )
+      }
+    </div>
+  </main>
+</PageLayout>

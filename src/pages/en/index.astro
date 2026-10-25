@@ -1,0 +1,18 @@
+---
+import { Quote } from 'astro-pure/advanced'
+
+import HomeContent from '@/components/home/HomeContent.astro'
+import PageLayout from '@/layouts/BaseLayout.astro'
+import { getLocale } from '@/i18n'
+
+const locale = getLocale(Astro.url.pathname)
+---
+
+<PageLayout
+  meta={{ title: 'Home', description: 'AI tools, investing, reading notes and life' }}
+  highlightColor='#7A5C11'
+  {locale}
+>
+  <HomeContent {locale} />
+  <Quote class='mt-12' />
+</PageLayout>

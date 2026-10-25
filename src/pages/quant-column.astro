@@ -1,96 +1,18 @@
 ---
-import type { MarkdownHeading } from 'astro'
-import type { CollectionEntry } from 'astro:content'
-
-import { getCollection } from 'astro:content'
-import { PostPreview } from 'astro-pure/components/pages'
-import { sortMDByDate } from 'astro-pure/server'
+import QuantColumnContent from '@/components/pages/QuantColumnContent.astro'
 import PageLayout from '@/layouts/CommonPage.astro'
+import { dict, getLocale } from '@/i18n'
 
-const allPosts = await getCollection('blog')
-
-// 量化文章筛选（与首页统计口径一致）
-const isQuant = (post: CollectionEntry<'blog'>) =>
-  post.data.tags.some((tag) =>
-    ['量化', 'quant', '交易', '投资'].some((k) => tag.toLowerCase().includes(k))
-  )
-
-const quantPosts = allPosts.filter(isQuant)
-const byDateDesc = (posts: CollectionEntry<'blog'>[]) => sortMDByDate(posts)
-
-const categories = [
-  {
-    slug: 'beginner',
-    title: '🌱 入门：量化交易基础',
-    desc: '适合初学者的量化交易概念和工具',
-    posts: byDateDesc(quantPosts.filter((p) => p.data.difficulty === 'beginner'))
-  },
-  {
-    slug: 'intermediate',
-    title: '📈 进阶：策略开发与回测',
-    desc: '因子挖掘、策略设计、风险控制',
-    posts: byDateDesc(quantPosts.filter((p) => p.data.difficulty === 'intermediate'))
-  },
-  {
-    slug: 'advanced',
-    title: '🚀 高阶：实盘交易与高级策略',
-    desc: '高频交易、机器学习、组合优化',
-    posts: byDateDesc(quantPosts.filter((p) => p.data.difficulty === 'advanced'))
-  },
-  {
-    slug: 'uncategorized',
-    title: '📚 未分类',
-    desc: '等待分类的量化文章（请在 frontmatter 中添加 difficulty 字段）',
-    posts: quantPosts.filter((p) => !p.data.difficulty)
-  }
-].filter((c) => c.posts.length > 0)
-
-const headings: MarkdownHeading[] = categories.map((c) => ({
-  depth: 2,
-  slug: c.slug,
-  text: c.title
-}))
-
-const stats = [
-  { label: '篇文章', value: quantPosts.length },
-  { label: '入门', value: quantPosts.filter((p) => p.data.difficulty === 'beginner').length },
-  { label: '进阶', value: quantPosts.filter((p) => p.data.difficulty === 'intermediate').length },
-  { label: '高阶', value: quantPosts.filter((p) => p.data.difficulty === 'advanced').length }
-]
+const locale = getLocale(Astro.url.pathname)
+const d = dict(locale)
 ---
 
 <PageLayout
-  title='量化专栏'
-  {headings}
-  meta={{ title: '量化专栏', description: '系统化的量化投资学习路径：从入门到高阶' }}
+  title={d.quant.title}
+  meta={{
+    title: d.quant.title,
+    description: d.quant.subtitle
+  }}
 >
-  <p class='text-muted-foreground'>
-    系统化的量化投资学习路径：{quantPosts.length} 篇文章按「入门 / 进阶 /
-    高阶」三级分类，覆盖股票基础、回测框架、因子研究、统计套利、高频微观结构与机器学习选股。
-  </p>
-
-  <dl class='not-prose my-6 grid grid-cols-2 gap-3 sm:grid-cols-4'>
-    {stats.map((s) => (
-      <div class='rounded-2xl border bg-muted px-4 py-3'>
-        <dt class='text-sm text-muted-foreground'>{s.label}</dt>
-        <dd class='mt-0.5 text-2xl font-medium text-primary'>{s.value}</dd>
-      </div>
-    ))}
-  </dl>
-
-  {
-    categories.map((cat) => (
-      <section class='mt-10 first:mt-8'>
-        <h2 id={cat.slug}>{cat.title}</h2>
-        <p class='text-muted-foreground'>{cat.desc}</p>
-        <ul class='not-prose mt-4 flex flex-col gap-y-1.5 sm:gap-y-2'>
-          {cat.posts.map((post) => (
-            <li>
-              <PostPreview post={post} />
-            </li>
-          ))}
-        </ul>
-      </section>
-    ))
-  }
+  <QuantColumnContent {locale} />
 </PageLayout>

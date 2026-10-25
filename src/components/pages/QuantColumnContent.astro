@@ -1,0 +1,109 @@
+---
+/**
+ * 量化专栏内容（中文 / 英文共用）
+ */
+import type { MarkdownHeading } from 'astro'
+import type { CollectionEntry } from 'astro:content'
+
+import { getCollection } from 'astro:content'
+import { PostPreview } from 'astro-pure/components/pages'
+import { sortMDByDate } from 'astro-pure/server'
+import { dict, fill } from '@/i18n'
+import type { Locale } from '@/i18n'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const d = dict(locale)
+
+const allPosts = await getCollection('blog')
+
+// 量化文章筛选（与首页统计口径一致）
+const isQuant = (post: CollectionEntry<'blog'>) =>
+  post.data.tags.some((tag) =>
+    ['量化', 'quant', '交易', '投资'].some((k) => tag.toLowerCase().includes(k))
+  )
+
+const quantPosts = allPosts.filter(isQuant)
+const byDateDesc = (posts: CollectionEntry<'blog'>[]) => sortMDByDate(posts)
+
+const categories = [
+  {
+    slug: 'beginner',
+    emoji: '🌱',
+    title: d.quant.categories.beginner,
+    desc: d.quant.categories.beginnerDesc,
+    posts: byDateDesc(quantPosts.filter((p) => p.data.difficulty === 'beginner'))
+  },
+  {
+    slug: 'intermediate',
+    emoji: '📈',
+    title: d.quant.categories.intermediate,
+    desc: d.quant.categories.intermediateDesc,
+    posts: byDateDesc(quantPosts.filter((p) => p.data.difficulty === 'intermediate'))
+  },
+  {
+    slug: 'advanced',
+    emoji: '🚀',
+    title: d.quant.categories.advanced,
+    desc: d.quant.categories.advancedDesc,
+    posts: byDateDesc(quantPosts.filter((p) => p.data.difficulty === 'advanced'))
+  },
+  {
+    slug: 'uncategorized',
+    emoji: '📚',
+    title: d.quant.categories.uncategorized,
+    desc: d.quant.categories.uncategorizedDesc,
+    posts: quantPosts.filter((p) => !p.data.difficulty)
+  }
+].filter((c) => c.posts.length > 0)
+
+const headings: MarkdownHeading[] = categories.map((c) => ({
+  depth: 2,
+  slug: c.slug,
+  text: `${c.emoji} ${c.title}`
+}))
+
+const stats = [
+  { label: d.quant.stats.total, value: quantPosts.length },
+  { label: d.quant.stats.beginner, value: quantPosts.filter((p) => p.data.difficulty === 'beginner').length },
+  {
+    label: d.quant.stats.intermediate,
+    value: quantPosts.filter((p) => p.data.difficulty === 'intermediate').length
+  },
+  { label: d.quant.stats.advanced, value: quantPosts.filter((p) => p.data.difficulty === 'advanced').length }
+]
+---
+
+<p class='text-muted-foreground'>{fill(d.quant.intro, { count: quantPosts.length })}</p>
+
+<dl class='not-prose my-6 grid grid-cols-2 gap-3 sm:grid-cols-4'>
+  {
+    stats.map((s) => (
+      <div class='rounded-2xl border bg-muted px-4 py-3'>
+        <dt class='text-sm text-muted-foreground'>{s.label}</dt>
+        <dd class='mt-0.5 text-2xl font-medium text-primary'>{s.value}</dd>
+      </div>
+    ))
+  }
+</dl>
+
+{
+  categories.map((cat) => (
+    <section class='mt-10 first:mt-8'>
+      <h2 id={cat.slug}>
+        {cat.emoji} {cat.title}
+      </h2>
+      <p class='text-muted-foreground'>{cat.desc}</p>
+      <ul class='not-prose mt-4 flex flex-col gap-y-1.5 sm:gap-y-2'>
+        {cat.posts.map((post) => (
+          <li>
+            <PostPreview post={post} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))
+}

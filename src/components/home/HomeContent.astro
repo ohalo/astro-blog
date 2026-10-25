@@ -1,0 +1,256 @@
+---
+/**
+ * 首页内容（中文 / 英文共用）
+ * 所有文案从 i18n 字典取，语言由 locale 属性决定
+ */
+import { Image } from 'astro:assets'
+
+import { PostPreview } from 'astro-pure/components/pages'
+import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
+import { Button, Icon, Label } from 'astro-pure/user'
+
+import ProjectCard from '@/components/home/ProjectCard.astro'
+import Section from '@/components/home/Section.astro'
+import SkillLayout from '@/components/home/SkillLayout.astro'
+import VisitorInfo from '@/components/home/VisitorInfo.astro'
+import { dict, fill, localePath } from '@/i18n'
+import type { Locale } from '@/i18n'
+import config from '@/site-config'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const d = dict(locale)
+
+const languages = ['Java', 'Python', 'C++', 'Qt', 'PHP', 'Go', 'HTML', 'JavaScript', 'CSS', 'Shell']
+const frontend = ['Vue', 'React', 'TypeScript', 'Vite', 'Webpack', 'Astro', 'CSS3']
+const backend = ['MySQL', 'PostgreSQL', 'Redis', 'Docker', 'Nginx', 'Vercel', 'Waline', 'API', 'SQL']
+
+const MAX_POSTS = 10
+const allPosts = await getBlogCollection()
+const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
+
+// 量化专栏统计（与 /quant-column 页面同口径：标签含 量化/quant/交易/投资）
+const quantPosts = allPosts.filter((post) =>
+  post.data.tags?.some((tag: string) =>
+    ['量化', 'quant', '交易', '投资'].some((k) => tag.toLowerCase().includes(k))
+  )
+)
+const quantStats = {
+  total: quantPosts.length,
+  beginner: quantPosts.filter((p) => p.data.difficulty === 'beginner').length,
+  intermediate: quantPosts.filter((p) => p.data.difficulty === 'intermediate').length,
+  advanced: quantPosts.filter((p) => p.data.difficulty === 'advanced').length
+}
+
+const linkStats = {
+  total: 155,
+  categories: 11
+}
+
+/** 首页导航区展示的分类标签（取前 6 个） */
+const linkChips =
+  locale === 'en'
+    ? [
+        { emoji: '📈', name: 'Quotes' },
+        { emoji: '🗂', name: 'Data' },
+        { emoji: '📚', name: 'Papers' },
+        { emoji: '⚙️', name: 'Frameworks' },
+        { emoji: '🧮', name: 'Factors' },
+        { emoji: '📰', name: 'Media' }
+      ]
+    : [
+        { emoji: '📈', name: '行情与交易' },
+        { emoji: '🗂', name: '数据与研究平台' },
+        { emoji: '📚', name: '学术与论文' },
+        { emoji: '⚙️', name: '量化框架与工具' },
+        { emoji: '🧮', name: '因子与策略库' },
+        { emoji: '📰', name: '财经媒体' }
+      ]
+
+const imagePath = config.logo.src
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/*.{jpeg,jpg,png,gif,avif,webp}'
+)
+if (!images[imagePath])
+  throw new Error(
+    `"${imagePath}" does not exist in glob: "src/assets/*.{jpeg,jpg,png,gif,avif,webp}"`
+  )
+---
+
+<main class='flex w-full flex-col items-center'>
+  <section class='animate mb-10 flex flex-col items-center gap-y-7' id='content-header'>
+    <Image
+      src={images[imagePath]()}
+      alt={config.logo.alt || 'Profile'}
+      class='h-28 w-auto rounded-full border p-1'
+      loading='eager'
+      fetchpriority='high'
+    />
+
+    <div class='flex flex-col items-center gap-y-4'>
+      <h1 class='text-3xl font-medium'>{config.author}</h1>
+      <div class='flex flex-wrap justify-center gap-x-7 gap-y-3'>
+        <Label title={d.common.location}>
+          <Icon name='location' class='size-5' slot='icon' />
+        </Label>
+        <Label
+          title={d.common.sourceCode}
+          as='a'
+          href='https://github.com/ohalo/astro-blog'
+          target='_blank'
+        >
+          <Icon name='github' class='size-5' slot='icon' />
+        </Label>
+      </div>
+      <VisitorInfo {locale} />
+    </div>
+  </section>
+
+  <div id='content' class='animate flex flex-col gap-y-10 md:w-4/5 lg:w-5/6'>
+    <Section title={d.home.aboutTitle}>
+      <p class='text-muted-foreground'>{d.home.aboutRole}</p>
+      <p class='text-muted-foreground'>{d.home.aboutDesc}</p>
+      <Button
+        title={d.home.aboutMore}
+        class='w-fit self-end'
+        href={localePath(locale, '/about')}
+        variant='ahead'
+      />
+    </Section>
+
+    <Section title={d.home.quantTitle}>
+      <p class='text-muted-foreground'>{fill(d.home.quantDesc, { count: quantStats.total })}</p>
+      <div class='flex flex-wrap items-center gap-2'>
+        <span
+          class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'
+        >
+          <span class='font-medium text-primary'>{quantStats.beginner}</span> {d.quant.stats.beginner}
+        </span>
+        <span
+          class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'
+        >
+          <span class='font-medium text-primary'>{quantStats.intermediate}</span>
+          {d.quant.stats.intermediate}
+        </span>
+        <span
+          class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'
+        >
+          <span class='font-medium text-primary'>{quantStats.advanced}</span> {d.quant.stats.advanced}
+        </span>
+      </div>
+      <Button
+        title={d.home.quantMore}
+        class='w-fit self-end'
+        href={localePath(locale, '/quant-column')}
+        variant='ahead'
+      />
+    </Section>
+
+    <Section title={d.home.linksTitle}>
+      <p class='text-muted-foreground'>
+        {fill(d.home.linksDesc, { count: linkStats.total, cats: linkStats.categories })}
+      </p>
+      <div class='flex flex-wrap items-center gap-2'>
+        {
+          linkChips.map((c) => (
+            <span class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'>
+              {c.emoji} {c.name}
+            </span>
+          ))
+        }
+        <span
+          class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'
+        >
+          {fill(d.home.moreCategories, { count: linkStats.categories - linkChips.length })}
+        </span>
+      </div>
+      <Button
+        title={d.home.linksMore}
+        class='w-fit self-end'
+        href={localePath(locale, '/stock-links')}
+        variant='ahead'
+      />
+    </Section>
+
+    {
+      allPostsByDate.length > 0 && (
+        <Section title={d.home.latestPosts}>
+          <ul class='flex flex-col gap-y-1.5 sm:gap-y-2'>
+            {allPostsByDate.map((p) => (
+              <li class='flex flex-col gap-x-2 sm:flex-row'>
+                <PostPreview post={p} />
+              </li>
+            ))}
+          </ul>
+          <Button
+            title={d.common.morePosts}
+            class='w-fit self-end'
+            href={localePath(locale, '/blog')}
+            variant='ahead'
+          />
+        </Section>
+      )
+    }
+
+    <Section title={d.home.siteList}>
+      <div class='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+        <ProjectCard
+          href='https://blog.halo26812.eu.org/'
+          heading={d.home.techBlog}
+          subheading={d.home.techBlogDesc}
+          imagePath='/src/assets/projects/blog-banner.png'
+          altText={d.home.techBlog}
+        />
+        <ProjectCard
+          href='https://hafw.halo26812.eu.org/'
+          heading={d.home.hafw}
+          subheading={d.home.hafwDesc}
+          imagePath='/src/assets/projects/hafw.png'
+          altText={d.home.hafw}
+        />
+        <ProjectCard
+          href='https://www.bookmarks-topic.cloud/'
+          heading={d.home.bookmarks}
+          subheading={d.home.bookmarksDesc}
+          imagePath='/src/assets/projects/bookmarkstopic.png'
+          altText={d.home.bookmarks}
+        />
+        <ProjectCard
+          href='https://cybermap.halo26812.eu.org/'
+          heading={d.home.cybermap}
+          subheading={d.home.cybermapDesc}
+          imagePath='/src/assets/projects/cybermap.png'
+          altText={d.home.cybermap}
+        />
+      </div>
+    </Section>
+
+    <Section title={d.home.browserExt}>
+      <div class='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+        <ProjectCard
+          href='https://chromewebstore.google.com/detail/bookmarks-topic-%E4%B9%A6%E7%AD%BE%E7%AE%A1%E7%90%86%E5%99%A8/ciphcokjcbpcledglaghnljgijneoijk'
+          heading={`${d.home.bookmarks} - Chrome`}
+          subheading={d.home.bookmarksDesc}
+          imagePath='/src/assets/projects/bookmarkstopic.png'
+          altText={`${d.home.bookmarks} Chrome`}
+        />
+        <ProjectCard
+          href='https://microsoftedge.microsoft.com/addons/detail/bookmarks-topic-%E4%B9%A6%E7%AD%BE%E7%AE%A1%E7%90%86%E5%99%A8/ocgpfnmcgfoceiibfikieppgenciblim'
+          heading={`${d.home.bookmarks} - Edge`}
+          subheading={d.home.bookmarksDesc}
+          imagePath='/src/assets/projects/bookmarkstopic.png'
+          altText={`${d.home.bookmarks} Edge`}
+        />
+      </div>
+    </Section>
+
+    <Section title={d.home.skills}>
+      <SkillLayout title={d.home.skillLanguages} skills={languages} />
+      <SkillLayout title={d.home.skillFrontend} skills={frontend} />
+      <SkillLayout title={d.home.skillBackend} skills={backend} />
+    </Section>
+  </div>
+</main>

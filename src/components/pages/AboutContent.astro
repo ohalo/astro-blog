@@ -1,0 +1,196 @@
+---
+/**
+ * 关于页内容（中文 / 英文共用）
+ */
+import { Timeline } from 'astro-pure/user'
+
+import Substats from '@/components/about/Substats.astro'
+import ToolSection from '@/components/about/ToolSection.astro'
+import { dict } from '@/i18n'
+import type { Locale } from '@/i18n'
+
+interface Props {
+  locale: Locale
+}
+
+const { locale } = Astro.props
+const d = dict(locale)
+
+const headings = [
+  { depth: 2, slug: 'hobbies', text: d.about.hobbies },
+  { depth: 2, slug: 'tools', text: d.about.tools },
+  { depth: 2, slug: 'social-networks', text: d.about.social },
+  { depth: 2, slug: 'about-blog', text: d.about.aboutBlog }
+]
+---
+
+<p>{d.about.intro}</p>
+<p>{d.about.motto}</p>
+
+{/* hobbies */}
+<h2 id='hobbies'>{d.about.hobbies}</h2>
+<ul>
+  {d.about.hobbiesItems.map((item) => (
+    <li>{item}</li>
+  ))}
+</ul>
+
+{/* tools */}
+<h2 id='tools'>{d.about.tools}</h2>
+<p>{d.about.toolsIntro}</p>
+<ToolSection
+  class='mb-5'
+  title={d.about.toolGroups.ai}
+  tools={[
+    {
+      name: 'OpenClaw',
+      description: d.about.toolDescs.openclaw,
+      href: 'https://openclaw.ai',
+      icon: import('@/assets/tools/openclaw.svg?raw')
+    },
+    {
+      name: 'HAFW',
+      description: d.about.toolDescs.hafw,
+      href: 'https://hafw.halo26812.eu.org/',
+      icon: import('@/assets/tools/hafw.svg?raw')
+    },
+    {
+      name: 'Claude',
+      description: d.about.toolDescs.claude,
+      href: 'https://claude.ai',
+      icon: import('@/assets/tools/claude.svg?raw')
+    },
+    {
+      name: 'ChatGPT',
+      description: d.about.toolDescs.chatgpt,
+      href: 'https://chatgpt.com',
+      icon: import('@/assets/tools/chatgpt.svg?raw')
+    }
+  ]}
+/>
+<ToolSection
+  class='mb-5'
+  title={d.about.toolGroups.dev}
+  tools={[
+    {
+      name: 'VS Code',
+      description: d.about.toolDescs.vscode,
+      href: 'https://code.visualstudio.com/',
+      icon: import('@/assets/tools/vscode.svg?raw')
+    },
+    {
+      name: 'GitHub',
+      description: d.about.toolDescs.github,
+      href: 'https://github.com',
+      icon: import('@/assets/tools/github.svg?raw')
+    },
+    {
+      name: 'Astro',
+      description: d.about.toolDescs.astro,
+      href: 'https://astro.build',
+      icon: import('@/assets/tools/astro.svg?raw')
+    }
+  ]}
+/>
+<ToolSection
+  class='mb-5'
+  title={d.about.toolGroups.productivity}
+  tools={[
+    {
+      name: 'Notion',
+      description: d.about.toolDescs.notion,
+      href: 'https://www.notion.so/',
+      icon: import('@/assets/tools/notion.svg?raw')
+    },
+    {
+      name: 'Typora',
+      description: d.about.toolDescs.typora,
+      href: 'https://typora.io/',
+      icon: import('@/assets/tools/typora.svg?raw')
+    }
+  ]}
+/>
+
+{/* social-networks */}
+<h2 id='social-networks'>{d.about.social}</h2>
+<p>{d.about.socialIntro}</p>
+<Substats
+  stats={[
+    {
+      platform: 'GitHub',
+      icon: 'github',
+      link: 'https://github.com/ohalo',
+      text: 'followers',
+      api: 'github/ohalo'
+    },
+    {
+      platform: '知乎',
+      icon: 'link',
+      color: '#0084ff',
+      link: 'https://www.zhihu.com/people/halo-67-80',
+      text: 'followers',
+      api: 'zhihu/halo-67-80'
+    },
+    {
+      platform: 'HAFW',
+      icon: 'link',
+      color: '#2563eb',
+      link: 'https://hafw.halo26812.eu.org/',
+      text: 'HAFW',
+      api: ''
+    }
+  ]}
+/>
+
+{/* about-blog */}
+<h2 id='about-blog'>{d.about.aboutBlog}</h2>
+<p>{d.about.aboutBlogIntro}</p>
+<Timeline
+  events={[
+    {
+      date: '2026-04-07',
+      content: `${d.about.timeline.created} <a href="https://astro.build/" target="_blank">Astro</a> + <a href="https://github.com/cworld1/astro-theme-pure" target="_blank">Astro Theme Pure</a>`
+    },
+    {
+      date: '2026-05-21',
+      content: d.about.timeline.migrated
+    },
+    {
+      date: '2026-05-22',
+      content: d.about.timeline.ai
+    }
+  ]}
+/>
+<p>{d.about.supportIntro}</p>
+<ul>
+  <li>
+    {d.about.supportItems.domain}
+    <a href='https://blog.halo26812.eu.org' target='_blank'>blog.halo26812.eu.org</a>
+  </li>
+  <li>
+    {d.about.supportItems.framework}
+    <a href='https://astro.build/' target='_blank'>Astro</a> + <a
+      href='https://github.com/cworld1/astro-theme-pure'
+      target='_blank'>Astro Theme Pure</a
+    >
+  </li>
+  <li>
+    {d.about.supportItems.hosting}
+    <a href='https://vercel.com/' target='_blank'>Vercel</a>
+  </li>
+  <li>
+    {d.about.supportItems.cicd}
+    <a href='https://vercel.com/workflow' target='_blank'>Vercel Workflow</a>
+  </li>
+  <li>
+    {d.about.supportItems.comment}
+    <a href='https://waline.js.org' target='_blank'>Waline</a>
+  </li>
+  <li>
+    {d.about.supportItems.analytics}
+    <a href='https://supabase.com/' target='_blank'>Supabase</a> + <a
+      href='https://waline.js.org/'
+      target='_blank'>Waline</a
+    >
+  </li>
+</ul>

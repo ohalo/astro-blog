@@ -5,19 +5,30 @@
  * - 天气：Open-Meteo（免费、无需 API Key、CORS 友好）
  * - 结果缓存 localStorage 10 分钟，避免重复请求
  */
+import type { Locale } from '@/i18n'
+
+interface Props {
+  locale?: Locale
+}
+
+const { locale = 'zh' } = Astro.props
 ---
 
 <div
   id='visitor-info'
   class='flex flex-col items-center gap-y-0.5 rounded-2xl border bg-muted px-4 py-2 text-center text-sm text-muted-foreground'
-  title='基于 IP 的城市级定位 · 不收集、不存储任何信息'
+  title={
+    locale === 'en'
+      ? 'City-level location based on your IP address · nothing is collected or stored'
+      : '基于 IP 的城市级定位 · 不收集、不存储任何信息'
+  }
 >
   <span id='visitor-info-main'>🌍 定位中…</span>
   <span id='visitor-info-sub' class='text-xs opacity-80'></span>
 </div>
 
-<script>
-  const CACHE_KEY = 'visitor-info'
+<script define:vars={{ locale }}>
+  const CACHE_KEY = `visitor-info-${locale}`
   const TTL = 10 * 60 * 1000 // 10 分钟
 
   /** WMO 天气代码 → [图标, 中文描述] */
@@ -123,7 +134,11 @@
     const [tIcon] = WMO[d.wx.tCode] ?? ['🌡']
     if ($main)
       $main.textContent = `📍 ${d.city} · ${icon} ${desc} ${d.wx.temp}°C`
-    if ($sub) $sub.textContent = `今天 ${d.wx.min}~${d.wx.max}° · 明天 ${tIcon} ${d.wx.tMin}~${d.wx.tMax}°`
+    if ($sub)
+      $sub.textContent =
+        locale === 'en'
+          ? `Today ${d.wx.min}~${d.wx.max}° · Tomorrow ${tIcon} ${d.wx.tMin}~${d.wx.tMax}°`
+          : `今天 ${d.wx.min}~${d.wx.max}° · 明天 ${tIcon} ${d.wx.tMin}~${d.wx.tMax}°`
   }
 
   async function load() {
@@ -149,7 +164,10 @@
       ).then((r) => r.json())
       const data: VisitorData = {
         ts: Date.now(),
-        city: CITY_ZH[geo.city] ?? geo.city ?? geo.region ?? '未知地区',
+        city:
+          locale === 'en'
+            ? (geo.city ?? geo.region ?? 'Unknown')
+            : (CITY_ZH[geo.city] ?? geo.city ?? geo.region ?? '未知地区'),
         wx: {
           temp: Math.round(w.current.temperature_2m),
           code: w.current.weather_code,

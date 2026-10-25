@@ -1,0 +1,34 @@
+---
+import { type CollectionEntry, render } from 'astro:content'
+
+import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
+import PostLayout from '@/layouts/BlogPost.astro'
+import { dict, getLocale } from '@/i18n'
+
+export const prerender = true
+
+export async function getStaticPaths() {
+  const posts = sortMDByDate(await getBlogCollection())
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post, posts }
+  }))
+}
+
+type Props = {
+  post: CollectionEntry<'blog'>
+  posts: CollectionEntry<'blog'>[]
+}
+
+const { post, posts } = Astro.props
+const { Content, headings, remarkPluginFrontmatter } = await render(post)
+const locale = getLocale(Astro.url.pathname)
+const d = dict(locale)
+---
+
+<PostLayout {post} {posts} {headings} {remarkPluginFrontmatter} {locale}>
+  <p class='not-prose mb-6 rounded-xl border bg-muted px-4 py-2.5 text-sm text-muted-foreground'>
+    {d.post.originalNotice}
+  </p>
+  <Content />
+</PostLayout>

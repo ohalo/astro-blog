@@ -1,0 +1,81 @@
+---
+import { Button, Collapse, Icon } from 'astro-pure/user'
+import PageLayout from '@/layouts/CommonPage.astro'
+import ProjectSection from '@/components/projects/ProjectSection.astro'
+import { dict, getLocale } from '@/i18n'
+
+const locale = getLocale(Astro.url.pathname)
+const d = dict(locale)
+
+const headings = [
+  { depth: 2, slug: 'programs', text: d.projects.headings.programs },
+  { depth: 2, slug: 'learnings', text: d.projects.headings.learnings },
+  { depth: 2, slug: 'others', text: d.projects.headings.others }
+]
+---
+
+<PageLayout title={d.projects.title} headings={headings} view>
+  <p>{d.projects.activity}</p>
+  <p>
+    <img
+      src='https://ghchart.rshah.org/659eb9/ohalo'
+      alt='GitHub activity'
+      loading='lazy'
+    />
+  </p>
+
+  <p>{d.projects.intro}</p>
+
+  <h2 id='programs'>{d.projects.headings.programs}</h2>
+  <ProjectSection
+    projects={[
+      {
+        name: 'HAFW',
+        description:
+          'An AI-assisted platform for managing and collaborating on software development, covering the full workflow from requirements analysis to deployment and operations',
+        image: 'hafw.png',
+        links: [
+          { type: 'site', href: 'https://hafw.halo26812.eu.org/' },
+          { type: 'github', href: 'https://github.com/ohalo/hafw-platform' },
+          { type: 'doc', href: 'https://hafw.halo26812.eu.org/repo/INSTALL.md' }
+        ]
+      },
+      {
+        name: 'Bookmarks Topic',
+        description:
+          'A smart bookmark manager browser extension with WebDAV sync, broken-link detection, duplicate merging and usage statistics',
+        image: 'bookmarkstopic.png',
+        links: [{ type: 'github', href: 'https://github.com/ohalo/bookmarkstopic' }]
+      },
+      {
+        name: 'Cybermap',
+        description:
+          'A cybersecurity map and resource navigator that visualises the global security landscape',
+        image: 'cybermap.png',
+        links: [
+          { type: 'site', href: 'https://cybermap.halo26812.eu.org/' },
+          { type: 'github', href: 'https://github.com/ohalo/cyberMap' }
+        ]
+      }
+    ]}
+  />
+
+  <h2 id='learnings'>{d.projects.headings.learnings}</h2>
+  <ProjectSection
+    class='my-2'
+    projects={[
+      // 在这里添加你的学习项目
+    ]}
+  />
+
+  <h2 id='others'>{d.projects.headings.others}</h2>
+  <ProjectSection
+    projects={[
+      {
+        name: 'halo on GitHub',
+        description: 'My GitHub profile',
+        links: [{ type: 'github', href: 'https://github.com/ohalo' }]
+      }
+    ]}
+  />
+</PageLayout>

@@ -1,0 +1,63 @@
+---
+import links from '@/public/links.json'
+import config from 'virtual:config'
+
+import { Collapse, Timeline } from 'astro-pure/user'
+import PageLayout from '@/layouts/CommonPage.astro'
+import FriendList from '@/components/links/FriendList.astro'
+import { dict, getLocale } from '@/i18n'
+
+const locale = getLocale(Astro.url.pathname)
+const d = dict(locale)
+
+const headings = [
+  { depth: 2, slug: 'common-links', text: d.linksPage.commonLinks },
+  { depth: 2, slug: 'special-links', text: d.linksPage.specialLinks },
+  { depth: 2, slug: 'apply-links', text: d.linksPage.applyLinks }
+]
+
+const { friends } = links
+const linksConf = config.integ.links
+const linkEditPage = 'https://github.com/cworld1/astro-theme-pure/blob/main/public/links.json'
+---
+
+<PageLayout title={d.linksPage.title} {headings} comment>
+  <p>{d.linksPage.randomNote}</p>
+  <h2 id='common-links'>{d.linksPage.commonLinks}</h2>
+  <FriendList list={friends[0]} />
+  <Collapse title={d.linksPage.badStatus}>
+    <FriendList list={friends[1]} />
+  </Collapse>
+  <Collapse title={d.linksPage.history}>
+    <Timeline events={linksConf.logbook} />
+  </Collapse>
+  <h2 id='special-links'>{d.linksPage.specialLinks}</h2>
+  <FriendList list={friends[2]} />
+
+  <h2 id='apply-links'>{d.linksPage.applyLinks}</h2>
+  <p>{d.linksPage.applyIntro}</p>
+  <blockquote class='not-prose grid grid-cols-[auto_1fr] gap-x-2 break-words border-s-4 ps-4'>
+    {
+      linksConf.applyTip.map(({ name, val }) => {
+        const script = `navigator.clipboard.writeText('${val}');document.dispatchEvent(new CustomEvent('toast',{detail:{message:'Copied "${val}" to clipboard!'}}))`
+        return (
+          <>
+            <span class='text-end'>{name}:</span>
+            <samp class='cursor-pointer' onclick={script}>
+              {val}
+            </samp>
+          </>
+        )
+      })
+    }
+  </blockquote>
+
+  <p>
+    {d.linksPage.applyOutro} <a href={linkEditPage} target='_blank'>Submit a PR</a>.
+  </p>
+  <ul>
+    {d.linksPage.applyRules.map((rule) => (
+      <li>{rule}</li>
+    ))}
+  </ul>
+</PageLayout>

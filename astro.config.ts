@@ -31,6 +31,15 @@ export default defineConfig({
   // base: '/astro-pure/',
   trailingSlash: 'never',
   // root: './my-project-directory',
+
+  // [i18n] 中文为默认语言（URL 不加前缀，保护已有中文链接与外链），英文在 /en/ 下
+  i18n: {
+    defaultLocale: 'zh-CN',
+    locales: ['zh-CN', 'en'],
+    routing: {
+      prefixDefaultLocale: false
+    }
+  },
   server: { host: true },
   // https://docs.astro.build/en/guides/prefetch/
   prefetch: {
