@@ -14,5 +14,7 @@ const locale = getLocale(Astro.url.pathname)
   {locale}
 >
   <HomeContent {locale} />
-  <Quote class='mt-12' />
+  <div class='mt-12 flex w-full justify-center'>
+    <Quote />
+  </div>
 </PageLayout>
