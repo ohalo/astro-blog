@@ -5,6 +5,7 @@ language: Chinese
 description: "冰山订单检测与交易策略 - halo的技术博客"
 tags: [量化交易, 高频交易, 订单流, 市场微观结构]
 summary: "深入剖析冰山订单的识别方法与交易策略，利用订单流数据分析隐藏流动性并捕捉短期价格动向。"
+difficulty: advanced
 ---
 
 # 冰山订单检测与交易策略

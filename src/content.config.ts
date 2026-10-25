@@ -36,6 +36,8 @@ const blog = defineCollection({
       tags: z.array(z.string()).default([]).transform(removeDupsAndLowerCase),
       language: z.string().optional(),
       draft: z.boolean().default(false),
+      // 难度分级：入门 / 进阶 / 高阶（quant-column 页面分类用）
+      difficulty: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
       // Special fields
       comment: z.boolean().default(true)
     })
