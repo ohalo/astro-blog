@@ -18,6 +18,7 @@
       "@/public/*": ["./public/*"],
       "@/components/*": ["./src/components/*"],
       "@/layouts/*": ["./src/layouts/*"],
+      "@/data/*": ["./src/data/*"],
       "@/utils": ["./src/utils/index.ts"],
       "@/utils/*": ["./src/utils/*"],
       "@/plugins/*": ["./src/plugins/*"],

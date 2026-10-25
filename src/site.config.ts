@@ -50,6 +50,7 @@ export const theme: ThemeUserConfig = {
     menu: [
       { title: '博客', link: '/blog' },
       { title: '量化专栏', link: '/quant-column' },
+      { title: '网址导航', link: '/stock-links' },
       { title: '关于', link: '/about' }
     ]
   },

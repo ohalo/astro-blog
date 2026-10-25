@@ -10,6 +10,7 @@ import ProjectCard from '@/components/home/ProjectCard.astro'
 import Section from '@/components/home/Section.astro'
 import SkillLayout from '@/components/home/SkillLayout.astro'
 import VisitorInfo from '@/components/home/VisitorInfo.astro'
+import { stockLinkCategories, stockLinkStats } from '@/data/stock-links'
 import config from '@/site-config'
 
 const languages = ['Java', 'Python', 'C++', 'Qt', 'PHP', 'Go', 'HTML', 'JavaScript', 'CSS', 'Shell']
@@ -107,6 +108,26 @@ if (!images[imagePath])
           </span>
         </div>
         <Button title='进入量化专栏' class='w-fit self-end' href='/quant-column' variant='ahead' />
+      </Section>
+
+      <Section title='网址导航'>
+        <p class='text-muted-foreground'>
+          股票与量化投资相关的常用站点导航：{stockLinkStats.total} 个链接按 {stockLinkStats.categories}
+          个主题分类整理（行情交易、数据研究、学术论文、量化框架、因子策略、财经媒体、监管公告、券商开户、社区交流、加密货币、学习资源），支持站内搜索。
+        </p>
+        <div class='flex flex-wrap items-center gap-2'>
+          {
+            stockLinkCategories.slice(0, 6).map((c) => (
+              <span class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'>
+                {c.emoji} {c.name}
+              </span>
+            ))
+          }
+          <span class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'>
+            +{stockLinkCategories.length - 6} 个分类
+          </span>
+        </div>
+        <Button title='打开网址导航' class='w-fit self-end' href='/stock-links' variant='ahead' />
       </Section>
       {
         allPostsByDate.length > 0 && (
