@@ -250,7 +250,7 @@ def gen_survival_cox():
         print(f"PD12({lab}): 首月 {pd12[lab][0]*100:.2f}% → 末年 {pd12[lab][-1]*100:.2f}%")
     for lab in surv_model:
         print(f"S(60) {lab}: 模型 {surv_model[lab][-1]*100:.1f}% vs KM {km[lab][-1]*100:.1f}%")
-    print(f"高风险组 m=0: 静态PD12 {pd12_static_hi*100:.2f}% | 逐月重评PD12 {pd12_rescored_hi*100:.2f}% | 实际12月违约率 {realized_hi*100:.2f}%")
+    print(f"高风险组 m=0: 静态PD12 {pd12_static_hi*100:.2f}% | 实际12月违约率 {realized_hi*100:.2f}%")
     ev_all = np.where(event == 1)[0]
     d_idx = ev_all[:3]
     for i in d_idx:
@@ -319,7 +319,7 @@ def gen_survival_cox():
         "surv_model": {k: v.tolist() for k, v in surv_model.items()},
         "km": {k: v.tolist() for k, v in km.items()},
         "lam0_interp": lam0_interp.tolist(), "lam0_true": lam0_true_arr.tolist(),
-        "pd12_static_hi": float(pd12_static_hi), "pd12_rescored_hi": float(pd12_rescored_hi), "realized_hi": float(realized_hi),
+        "pd12_static_hi": float(pd12_static_hi), "realized_hi": float(realized_hi),
         "d_mean": {"lev": float(lev[ev_all, exit_t[ev_all]].mean()), "vol": float(vol[ev_all, exit_t[ev_all]].mean()), "roa": float(roa[ev_all, exit_t[ev_all]].mean())},
         "s_mean": {"lev": float(lev[surv_idx, T-1].mean()), "vol": float(vol[surv_idx, T-1].mean()), "roa": float(roa[surv_idx, T-1].mean())},
         "cum5_true": float(1 - np.exp(-cum5_true)),
