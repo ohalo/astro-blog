@@ -1,0 +1,114 @@
+{
+ "main": {
+  "n": 6000,
+  "alpha": 0.01,
+  "seed": 1,
+  "edges": "7/7",
+  "false_edges": 0,
+  "arcs_ok": "5/5",
+  "wrong_arcs": [],
+  "undirected": [
+   [
+    "S",
+    "V"
+   ],
+   [
+    "S",
+    "Vo"
+   ]
+  ],
+  "ci_tests": 47
+ },
+ "collider": {
+  "corr_MoS": -0.0012007097080414641,
+  "p0": 0.9259167774113832,
+  "corr_MoS_given_To": -0.38262903373942597,
+  "p1": 0.0
+ },
+ "alpha_scan": [
+  {
+   "alpha": 0.001,
+   "recall": 1.0,
+   "false": 0,
+   "tests": 47
+  },
+  {
+   "alpha": 0.005,
+   "recall": 1.0,
+   "false": 0,
+   "tests": 47
+  },
+  {
+   "alpha": 0.01,
+   "recall": 1.0,
+   "false": 0,
+   "tests": 47
+  },
+  {
+   "alpha": 0.05,
+   "recall": 1.0,
+   "false": 0,
+   "tests": 47
+  },
+  {
+   "alpha": 0.1,
+   "recall": 1.0,
+   "false": 0,
+   "tests": 47
+  },
+  {
+   "alpha": 0.2,
+   "recall": 1.0,
+   "false": 0,
+   "tests": 52
+  }
+ ],
+ "n_scan": [
+  {
+   "n": 500,
+   "perfect_cpdag": 0.0,
+   "avg_wrong_arcs": 1.8333333333333333
+  },
+  {
+   "n": 1000,
+   "perfect_cpdag": 0.5833333333333334,
+   "avg_wrong_arcs": 1.0
+  },
+  {
+   "n": 2000,
+   "perfect_cpdag": 0.6666666666666666,
+   "avg_wrong_arcs": 0.75
+  },
+  {
+   "n": 4000,
+   "perfect_cpdag": 0.9166666666666666,
+   "avg_wrong_arcs": 0.3333333333333333
+  },
+  {
+   "n": 6000,
+   "perfect_cpdag": 0.9166666666666666,
+   "avg_wrong_arcs": 0.25
+  },
+  {
+   "n": 10000,
+   "perfect_cpdag": 1.0,
+   "avg_wrong_arcs": 0.0
+  }
+ ],
+ "oos": {
+  "means": {
+   "Mo2": 0.9136836709589745,
+   "naive": 0.8315424166725935,
+   "causal": 0.8011970524219819,
+   "all5": 0.8013076874038223
+  },
+  "naive_members": {
+   "Mo+To+V": 7,
+   "Mo+V+To": 4,
+   "V+Mo+To": 1
+  },
+  "pct_seeds_To_selected": 100.0,
+  "pct_seeds_Vo_dropped": 100.0,
+  "loss_naive_vs_causal_pct": 3.7875032314308887
+ }
+}
