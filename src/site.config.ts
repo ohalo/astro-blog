@@ -51,6 +51,7 @@ export const theme: ThemeUserConfig = {
       { title: '博客', link: '/blog' },
       { title: '量化专栏', link: '/quant-column' },
       { title: '网址导航', link: '/stock-links' },
+      { title: '股票查询', link: '/stock' },
       { title: '关于', link: '/about' }
     ]
   },

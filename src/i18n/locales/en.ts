@@ -6,6 +6,7 @@ export const en: Dictionary = {
     blog: 'Blog',
     quant: 'Quant Column',
     links: 'Site Map',
+    stock: 'Stocks',
     about: 'About',
     home: 'Home'
   },

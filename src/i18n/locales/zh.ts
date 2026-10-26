@@ -7,6 +7,7 @@ export const zh = {
     blog: '博客',
     quant: '量化专栏',
     links: '网址导航',
+    stock: '股票查询',
     about: '关于',
     home: '首页'
   },

@@ -1,0 +1,14 @@
+---
+import StockQuote from '@/components/stock/StockQuote.astro'
+import PageLayout from '@/layouts/CommonPage.astro'
+import { dict, getLocale } from '@/i18n'
+
+const locale = getLocale(Astro.url.pathname)
+const d = dict(locale)
+const title = 'Stock Lookup'
+const desc = 'Enter a stock code to view real-time quotes, K-line, fund flow and key facts.'
+---
+
+<PageLayout title={title} meta={{ title, description: desc }}>
+  <StockQuote locale='en' />
+</PageLayout>
