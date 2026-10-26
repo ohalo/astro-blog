@@ -153,11 +153,62 @@ const { locale = 'zh' } = Astro.props
     color: var(--down);
   }
 
-  .sq-kline {
+  .sq-kline-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-top: 14px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .sq-legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .sq-legend .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    display: inline-block;
+    margin: 0 2px 0 8px;
+  }
+  .sq-legend .dot.up {
+    background: var(--up);
+  }
+  .sq-legend .dot.down {
+    background: var(--down);
+  }
+  .sq-kline {
+    margin-top: 6px;
     width: 100%;
-    height: 120px;
+    height: auto;
     display: block;
+  }
+  /* K线 SVG 颜色（用 class 而非 presentation 上的 var()，确保 CSS 变量生效） */
+  .sq-grid-line {
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+  .sq-axis-txt {
+    fill: var(--muted);
+    font-size: 10px;
+    font-family:
+      -apple-system, 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  }
+  .sq-c-up {
+    fill: var(--up);
+  }
+  .sq-c-down {
+    fill: var(--down);
+  }
+  .sq-w-up {
+    stroke: var(--up);
+    stroke-width: 1;
+  }
+  .sq-w-down {
+    stroke: var(--down);
+    stroke-width: 1;
   }
 
   .sq-grid {
@@ -303,7 +354,10 @@ const { locale = 'zh' } = Astro.props
       small: '小单',
       shares: '亿股',
       yi: '亿',
-      wan: '万手'
+      wan: '万手',
+      klineTitle: 'K线（近60日）',
+      upLegend: '涨',
+      downLegend: '跌'
     },
     en: {
       search: 'Search',
@@ -339,7 +393,10 @@ const { locale = 'zh' } = Astro.props
       small: 'Small',
       shares: 'B sh',
       yi: 'B',
-      wan: 'W lots'
+      wan: 'W lots',
+      klineTitle: 'Candlestick (60d)',
+      upLegend: 'Up',
+      downLegend: 'Down'
     }
   }
 
@@ -356,24 +413,88 @@ const { locale = 'zh' } = Astro.props
   function esc(s: string): string {
     return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] || c))
   }
-  function klineSVG(closes: number[], up: boolean): string {
-    if (!closes || closes.length < 2) return ''
-    const W = 860,
-      H = 120,
-      pad = 8
-    const min = Math.min(...closes),
-      max = Math.max(...closes)
-    const span = max - min || 1
-    const pts = closes
-      .map((v, i) => {
-        const x = pad + (i / (closes.length - 1)) * (W - pad * 2)
-        const y = pad + (1 - (v - min) / span) * (H - pad * 2)
-        return `${x.toFixed(1)},${y.toFixed(1)}`
-      })
-      .join(' ')
-    const color = up ? 'var(--up)' : 'var(--down)'
-    return `<svg class='sq-kline' viewBox='0 0 ${W} ${H}' preserveAspectRatio='none'>
-      <polyline fill='none' stroke='${color}' stroke-width='2' points='${pts}'/>
+  function candleSVG(kl: any[], L: any): string {
+    if (!kl || kl.length < 2) return ''
+    const W = 900,
+      Lm = 52,
+      Rm = 12,
+      T = 12
+    const priceH = 150,
+      gap = 22,
+      volH = 46,
+      B = 26
+    const H = T + priceH + gap + volH + B
+    const plotL = Lm,
+      plotR = W - Rm,
+      plotW = plotR - plotL
+    const priceTop = T,
+      priceBot = T + priceH
+    const volTop = priceBot + gap,
+      volBot = volTop + volH
+
+    let minP = Math.min(...kl.map((d) => d.l))
+    let maxP = Math.max(...kl.map((d) => d.h))
+    const pad = (maxP - minP) * 0.08 || maxP * 0.05 || 1
+    minP -= pad
+    maxP += pad
+    const span = maxP - minP || 1
+    const yOf = (p: number) => priceTop + (1 - (p - minP) / span) * priceH
+
+    const n = kl.length
+    const slot = plotW / n
+    const cw = Math.max(2, Math.min(slot * 0.62, 14))
+    const vMax = Math.max(...kl.map((d) => d.v)) || 1
+
+    // Y 轴网格 + 价格刻度
+    let yaxis = ''
+    const ticks = 5
+    for (let i = 0; i < ticks; i++) {
+      const p = minP + (span * i) / (ticks - 1)
+      const y = yOf(p)
+      yaxis += `<line class='sq-grid-line' x1='${plotL}' y1='${y.toFixed(1)}' x2='${plotR}' y2='${y.toFixed(1)}'/>
+        <text class='sq-axis-txt' x='${plotL - 6}' y='${(y + 3.5).toFixed(1)}' text-anchor='end'>${fmt(p)}</text>`
+    }
+
+    // 蜡烛 + 成交量柱
+    let candles = '',
+      vols = ''
+    kl.forEach((d, i) => {
+      const cx = plotL + (i + 0.5) * slot
+      const up = d.c >= d.o
+      const wCls = up ? 'sq-w-up' : 'sq-w-down'
+      const bCls = up ? 'sq-c-up' : 'sq-c-down'
+      const yO = yOf(d.o),
+        yC = yOf(d.c),
+        yH = yOf(d.h),
+        yL = yOf(d.l)
+      const top = Math.min(yO, yC)
+      const bh = Math.max(Math.abs(yC - yO), 1)
+      candles += `<line class='${wCls}' x1='${cx.toFixed(1)}' y1='${yH.toFixed(1)}' x2='${cx.toFixed(1)}' y2='${yL.toFixed(1)}'/>
+        <rect class='${bCls}' x='${(cx - cw / 2).toFixed(1)}' y='${top.toFixed(1)}' width='${cw.toFixed(1)}' height='${bh.toFixed(1)}'/>`
+      const vh = (d.v / vMax) * volH
+      vols += `<rect class='${bCls}' x='${(cx - cw / 2).toFixed(1)}' y='${(volBot - vh).toFixed(1)}' width='${cw.toFixed(1)}' height='${vh.toFixed(1)}' opacity='0.55'/>`
+    })
+
+    // X 轴日期刻度
+    let xlabels = ''
+    const xticks = Math.min(6, n)
+    for (let i = 0; i < xticks; i++) {
+      const idx = Math.round((i * (n - 1)) / (xticks - 1))
+      const d = kl[idx]
+      const cx = plotL + (idx + 0.5) * slot
+      const mmdd = String(d.t).slice(5)
+      const anchor = i === 0 ? 'start' : i === xticks - 1 ? 'end' : 'middle'
+      const tx = i === 0 ? plotL : i === xticks - 1 ? plotR : cx
+      xlabels += `<text class='sq-axis-txt' x='${tx.toFixed(1)}' y='${(volBot + 16).toFixed(1)}' text-anchor='${anchor}'>${mmdd}</text>`
+    }
+
+    return `<svg class='sq-kline' viewBox='0 0 ${W} ${H}' preserveAspectRatio='xMidYMid meet'>
+      ${yaxis}
+      ${candles}
+      ${vols}
+      ${xlabels}
+      <text class='sq-axis-txt' x='${plotL}' y='${priceTop - 2}'>${L.klineTitle}</text>
+      <text class='sq-axis-txt' x='${plotR}' y='${(volTop - 7).toFixed(1)}' text-anchor='end'>VOL</text>
     </svg>`
   }
   function flowBars(ff: any, L: any): string {
@@ -441,7 +562,7 @@ const { locale = 'zh' } = Astro.props
     const up = d.change >= 0
     const dirCls = up ? 'up' : 'down'
     const sign = up ? '+' : ''
-    const trendUp = d.kline.length > 1 ? d.kline[d.kline.length - 1] >= d.kline[0] : up
+    const trendUp = d.kline.length > 1 ? d.kline[d.kline.length - 1].c >= d.kline[0].c : up
     const grid = [
       [L.open, fmt(d.open), ''],
       [L.prevClose, fmt(d.prevClose), ''],
@@ -490,7 +611,11 @@ const { locale = 'zh' } = Astro.props
           <span class='sq-chg ${dirCls}'>${sign}${fmt(d.change)}　${sign}${fmt(d.changePct)}%</span>
           <span class='sq-time'>${esc(d.time)}</span>
         </div>
-        ${klineSVG(d.kline, trendUp)}
+        <div class='sq-kline-head'>
+          <span>${L.klineTitle}</span>
+          <span class='sq-legend'><i class='dot up'></i>${L.upLegend}　<i class='dot down'></i>${L.downLegend}</span>
+        </div>
+        ${candleSVG(d.kline, L)}
         <div class='sq-grid'>${grid}</div>
       </div>
 

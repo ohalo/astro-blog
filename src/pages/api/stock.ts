@@ -10,6 +10,15 @@ export const prerender = false
 
 import type { APIRoute } from 'astro'
 
+interface KlineDaily {
+  t: string // 日期 YYYY-MM-DD
+  o: number // 开盘
+  c: number // 收盘
+  h: number // 最高
+  l: number // 最低
+  v: number // 成交量（手）
+}
+
 interface StockResult {
   code: string
   name: string
@@ -37,7 +46,7 @@ interface StockResult {
   week52Low: number | null
   industry: string | null
   time: string // YYYYMMDDHHMMSS
-  kline: number[] // 收盘价序列（近 60 日）
+  kline: KlineDaily[] // 近 60 日 K 线（OHLC + 成交量）
   fundFlow: {
     main: number // 主力净流入 元
     huge: number // 超大单 元
@@ -125,7 +134,7 @@ async function getQuote(code: string, prefix: string) {
   }
 }
 
-async function getKline(secid: string): Promise<number[]> {
+async function getKline(secid: string): Promise<KlineDaily[]> {
   const url =
     `https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=${secid}` +
     `&klt=101&fqt=0&lmt=60&end=20500101` +
@@ -136,7 +145,18 @@ async function getKline(secid: string): Promise<number[]> {
   })
   const j = await r.json()
   const klines: string[] = j?.data?.klines || []
-  return klines.map((k) => Number(k.split(',')[2])) // 收盘价
+  // 字段顺序：日期,开盘,收盘,最高,最低,成交量
+  return klines.map((k) => {
+    const p = k.split(',')
+    return {
+      t: p[0],
+      o: Number(p[1]),
+      c: Number(p[2]),
+      h: Number(p[3]),
+      l: Number(p[4]),
+      v: Number(p[5])
+    }
+  })
 }
 
 async function getFundFlow(secid: string) {
