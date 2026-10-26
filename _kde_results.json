@@ -1,0 +1,38 @@
+{
+ "E1": {
+  "hist_kl": [
+   0.0137,
+   0.0177,
+   0.0256,
+   0.0422
+  ],
+  "kde_kl": 0.0041,
+  "h": 0.2662
+ },
+ "E2": {
+  "h_star": 0.277,
+  "ll_star": -1281.5,
+  "silverman": 0.271,
+  "scott": 0.489,
+  "loo_at_silverman": -1281.5,
+  "loo_at_scott": -1288.4
+ },
+ "E3": {
+  "n_calm": 1698,
+  "n_panic": 702,
+  "post_at_-2": 0.054,
+  "post_at_0": 0.092,
+  "post_at_3": 0.999
+ },
+ "E4": {
+  "r_kde": 0.9971,
+  "r_bin": 0.9961,
+  "ece_kde": 0.023,
+  "ece_bin": 0.029
+ },
+ "E5": {
+  "n": 120,
+  "rel_err_median_tail": 0.309,
+  "rel_err_right_edge": 0.985
+ }
+}
