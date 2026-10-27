@@ -95,6 +95,6 @@ Claude Code是这三个工具中最"不像IDE工具"的一个——它本质上�
 
 最后说一个反直觉的观点：AI编程工具最终不会"赢者通吃"。Copilot、Cursor、Claude Code各自解决不同层次的问题，组合使用的效果远大于任何一个单独工具。这才是AI真正改变编程的方式——不是取代程序员，而是让程序员的精力更多地集中在真正需要人类判断的地方。
 
-![三大AI编程工具界面](/images/2026-05-26-ai-coding-tool-comparison/01.jpg)
+![三大AI编程工具界面](/images/2026-05-26-ai-coding-tool-comparison/1.jpg)
 
-![Claude Code工作流示意](/images/2026-05-26-ai-coding-tool-comparison/02.jpg)
+![Claude Code工作流示意](/images/2026-05-26-ai-coding-tool-comparison/2.jpg)

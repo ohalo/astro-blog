@@ -37,7 +37,7 @@ ax.legend(loc='best', fontsize=12)
 ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/price_series.png',
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration/price_series.png',
             dpi=300, bbox_inches='tight')
 print("✓ Figure 1 generated: price_series.png")
 plt.close()
@@ -91,7 +91,7 @@ ax3.legend(loc='best', fontsize=11)
 ax3.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/backtest_results.png',
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration/backtest_results.png',
             dpi=300, bbox_inches='tight')
 print("✓ Figure 2 generated: backtest_results.png")
 plt.close()
@@ -128,7 +128,7 @@ cbar = plt.colorbar(im, ax=ax)
 cbar.set_label('Sharpe Ratio', rotation=270, labelpad=20, fontsize=11)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/parameter_optimization.png',
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration/parameter_optimization.png',
             dpi=300, bbox_inches='tight')
 print("✓ Figure 3 generated: parameter_optimization.png")
 plt.close()
@@ -179,10 +179,10 @@ ax4.set_ylabel('Frequency')
 ax4.grid(True, alpha=0.3, axis='y')
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/cointegration_concepts.png',
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration/cointegration_concepts.png',
             dpi=300, bbox_inches='tight')
 print("✓ Figure 4 generated: cointegration_concepts.png")
 plt.close()
 
 print("\n✅ All images for Post 2 generated successfully!")
-print("Location: /Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/")
+print("Location: /Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration/")

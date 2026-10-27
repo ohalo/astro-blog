@@ -317,7 +317,7 @@ plt.title('投资组合有效前沿', fontsize=14, fontweight='bold')
 plt.legend(fontsize=10)
 plt.grid(True, alpha=0.3)
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/markowitz-portfolio-optimization/markowitz_efficient_frontier.svg', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/markowitz-portfolio-optimization/markowitz_efficient_frontier.svg', 
             format='svg', bbox_inches='tight')
 plt.show()
 ```
@@ -457,7 +457,7 @@ plt.title('投资组合累计收益对比', fontsize=14, fontweight='bold')
 plt.legend(fontsize=10)
 plt.grid(True, alpha=0.3)
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/markowitz-portfolio-optimization/cumulative_returns.svg', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/markowitz-portfolio-optimization/cumulative_returns.svg', 
             format='svg', bbox_inches='tight')
 plt.show()
 ```

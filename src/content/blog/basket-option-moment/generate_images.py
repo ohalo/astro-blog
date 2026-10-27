@@ -29,7 +29,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 
-BASE = "/Users/halo/workspace/astro-blog/public/images"
+BASE = "/Users/halo123456/workspace/astro-blog/public/images"
 D = os.path.join(BASE, "basket-option-moment")
 os.makedirs(D, exist_ok=True)
 

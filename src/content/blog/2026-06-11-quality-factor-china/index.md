@@ -66,7 +66,7 @@ Quality_Score =
 
 #### 结果1：质量因子在A股显著有效
 
-![质量因子累计收益率曲线](/images/2026-06-11-quality-factor-china/quality_factor_cumulative_return.jpg)
+![质量因子累计收益率曲线](/images/2026-06-11-quality-factor-china/cumulative_return.png)
 
 （图：高质量组合 vs. 低质量组合 vs. 沪深300，2010-2025）
 

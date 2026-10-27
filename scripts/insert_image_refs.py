@@ -4,7 +4,7 @@
 import re
 
 # ===== Article 1: multi-factor-risk-decomposition =====
-with open('/Users/halo/workspace/astro-blog/src/content/blog/multi-factor-risk-decomposition/index.md', 'r') as f:
+with open('/Users/halo123456/workspace/astro-blog/src/content/blog/multi-factor-risk-decomposition/index.md', 'r') as f:
     content1 = f.read()
 
 # 在「Python 实现」代码块结束后插入第一张图
@@ -34,12 +34,12 @@ if insert_before in content1:
 """
     content1 = content1.replace(insert_before, img_block2 + insert_before)
 
-with open('/Users/halo/workspace/astro-blog/src/content/blog/multi-factor-risk-decomposition/index.md', 'w') as f:
+with open('/Users/halo123456/workspace/astro-blog/src/content/blog/multi-factor-risk-decomposition/index.md', 'w') as f:
     f.write(content1)
 print("✅ Article 1 图片引用已插入")
 
 # ===== Article 2: pair-trading-cointegration =====
-with open('/Users/halo/workspace/astro-blog/src/content/blog/pair-trading-cointegration/index.md', 'r') as f:
+with open('/Users/halo123456/workspace/astro-blog/src/content/blog/pair-trading-cointegration/index.md', 'r') as f:
     content2 = f.read()
 
 # 在第一个 Python 代码块结束后插入协整检验图示
@@ -74,7 +74,7 @@ if insert_before3 in content2:
 """
     content2 = content2.replace(insert_before3, img_block4 + insert_before3)
 
-with open('/Users/halo/workspace/astro-blog/src/content/blog/pair-trading-cointegration/index.md', 'w') as f:
+with open('/Users/halo123456/workspace/astro-blog/src/content/blog/pair-trading-cointegration/index.md', 'w') as f:
     f.write(content2)
 print("✅ Article 2 图片引用已插入")
 

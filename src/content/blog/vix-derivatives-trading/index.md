@@ -193,7 +193,7 @@ def visualize_vix_data(market_data):
              fontsize=12, bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
     
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/vix-derivatives-trading/vix-analysis.png', 
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/vix-derivatives-trading/vix-analysis.png', 
                 dpi=300, bbox_inches='tight')
     plt.show()
 
@@ -307,7 +307,7 @@ def vix_term_structure_strategy():
     ax4.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/vix-derivatives-trading/term-structure.png', 
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/vix-derivatives-trading/term-structure.png', 
                 dpi=300, bbox_inches='tight')
     plt.show()
     
@@ -459,7 +459,7 @@ def vix_option_strategy():
     ax4.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/vix-derivatives-trading/option-strategy.png', 
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/vix-derivatives-trading/option-strategy.png', 
                 dpi=300, bbox_inches='tight')
     plt.show()
     
@@ -582,7 +582,7 @@ def vix_etn_strategy():
     ax4.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/vix-derivatives-trading/etn-strategy.png', 
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/vix-derivatives-trading/etn-strategy.png', 
                 dpi=300, bbox_inches='tight')
     plt.show()
     

@@ -136,7 +136,7 @@ print(f"99% VaR (蒙特卡洛): {var_99_mc:.2%}")
 
 VaR有一个**致命缺陷**：它不告诉你"超出VaR的部分有多大"。
 
-![VaR与CVaR对比示意图](/images/2026-06-02-var-cvar-practice/var-vs-cvar.png)
+![VaR与CVaR对比示意图](/images/2026-06-02-var-cvar-practice/var-vs-cvar.svg)
 
 如上图所示：
 - VaR是**分位数**（95%或99%）
@@ -338,7 +338,7 @@ def plot_risk_dashboard(returns, var_series, cvar_series):
 plot_risk_dashboard(returns, rolling_var, rolling_cvar)
 ```
 
-![VaR与CVaR风险仪表盘](/images/2026-06-02-var-cvar-practice/risk-dashboard.png)
+![VaR与CVaR风险仪表盘](/images/2026-06-02-var-cvar-practice/risk-dashboard.svg)
 
 ## A股实战：沪深300的VaR/CVaR分析
 

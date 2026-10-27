@@ -39,7 +39,7 @@ fig.legend(loc='upper left', bbox_to_anchor=(0.12, 0.88), fontsize=10)
 ax1.grid(alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/llm-factor-miner/llm_sentiment_price.png', dpi=150, bbox_inches='tight')
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/llm-factor-miner/llm_sentiment_price.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("图1已保存: llm_sentiment_price.png")
 
@@ -78,7 +78,7 @@ ax.annotate(f'基准: +{bh_cagr:.1f}%', xy=(days_bt-1, buyhold_nav[-1]),
            xytext=(10, 0), textcoords='offset points', fontsize=10, color='black')
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/llm-factor-miner/prompt_backtest.png', dpi=150, bbox_inches='tight')
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/llm-factor-miner/prompt_backtest.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("图2已保存: prompt_backtest.png")
 
@@ -107,7 +107,7 @@ for bar, ic in zip(bars, ics):
             f'{ic:.3f}', ha='center', va='bottom', fontsize=11, fontweight='bold')
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/llm-factor-miner/prompt_ic_comparison.png', dpi=150, bbox_inches='tight')
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/llm-factor-miner/prompt_ic_comparison.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("图3已保存: prompt_ic_comparison.png")
 

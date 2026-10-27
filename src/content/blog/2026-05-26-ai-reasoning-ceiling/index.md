@@ -71,6 +71,6 @@ Gemini 2.5在这类任务上有所突破，但距离真正可靠的长期结构�
 
 当AI能够在越来越多领域做到"足够好"，人类在这些领域中的角色就会发生变化——不是被替代，而是被重新定义。这是比任何具体技术突破都更值得思考的问题。
 
-![AI推理能力发展曲线](/images/2026-05-26-ai-reasoning-ceiling/01.jpg)
+![AI推理能力发展曲线](/images/2026-05-26-ai-reasoning-ceiling/1.jpg)
 
-![复杂推理任务示意图](/images/2026-05-26-ai-reasoning-ceiling/02.jpg)
+![复杂推理任务示意图](/images/2026-05-26-ai-reasoning-ceiling/2.jpg)

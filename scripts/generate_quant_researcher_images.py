@@ -8,7 +8,7 @@ import matplotlib.patches as mpatches
 from matplotlib.patches import FancyBboxPatch
 import os
 
-OUTPUT_DIR = '/Users/halo/workspace/astro-blog/public/images/quant-researcher-research-directions'
+OUTPUT_DIR = '/Users/halo123456/workspace/astro-blog/public/images/quant-researcher-research-directions'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Set Chinese font

@@ -13,7 +13,7 @@ plt.rcParams['axes.unicode_minus'] = False
 
 # 创建输出目录
 import os
-os.makedirs('/Users/halo/workspace/astro-blog/public/images/factor-crowding', exist_ok=True)
+os.makedirs('/Users/halo123456/workspace/astro-blog/public/images/factor-crowding', exist_ok=True)
 
 # 模拟因子拥挤的形成过程
 np.random.seed(42)
@@ -107,7 +107,7 @@ ax4.grid(True, alpha=0.3, axis='y')
 ax4.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.2%}'))
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/cover.jpg', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/factor-crowding/cover.jpg', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 
@@ -143,7 +143,7 @@ ax.grid(True, alpha=0.3)
 plt.xticks(rotation=45)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/volatility_monitoring.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/factor-crowding/volatility_monitoring.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 
@@ -208,7 +208,7 @@ ax3.grid(True, alpha=0.3)
 plt.xticks(rotation=45)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/value_factor_2020_crash.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/factor-crowding/value_factor_2020_crash.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 
@@ -249,7 +249,7 @@ for i, factor in enumerate(factors):
     ax_twin.set_ylim([0, 100])
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/crowding_dashboard.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/factor-crowding/crowding_dashboard.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 

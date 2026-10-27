@@ -46,3 +46,20 @@ err.txt
 
 # 生成脚本临时产物
 tmp/
+
+### 自动化产物防污染（2026-10-27 整理新增）###
+/_archive/
+/*_results.json
+/*_run.log
+/*_stats.json
+/*_metrics.json
+/*_summary.json
+/*_numbers.json
+/quant-blog-*.md
+/cron-task-*.md
+/task-*.md
+/*_task.md
+/_gen/
+/scripts_gen/
+/scripts_tmp/
+/scan_issues.txt

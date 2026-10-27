@@ -408,7 +408,7 @@ def plot_predictions(y_true, y_pred, title='LSTM Stock Price Prediction'):
     plt.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/lstm-stock-prediction-practical/prediction_result.jpg', 
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/lstm-stock-prediction-practical/prediction_result.jpg', 
                 dpi=300, 
                 bbox_inches='tight',
                 facecolor='white')
@@ -509,7 +509,7 @@ plt.xlabel('Sequence Length', fontsize=12)
 plt.ylabel('MAE', fontsize=12)
 plt.title('Effect of Sequence Length on Model Performance', fontsize=14, fontweight='bold')
 plt.grid(True, alpha=0.3)
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/lstm-stock-prediction-practical/seq_length_effect.jpg', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/lstm-stock-prediction-practical/seq_length_effect.jpg', 
             dpi=300, 
             bbox_inches='tight',
             facecolor='white')

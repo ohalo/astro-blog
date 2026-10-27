@@ -15,7 +15,7 @@ matplotlib.rcParams['axes.unicode_minus'] = False
 
 # 创建输出目录
 import os
-os.makedirs('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration', exist_ok=True)
+os.makedirs('/Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration', exist_ok=True)
 
 # 生成模拟的配对交易数据
 np.random.seed(42)
@@ -63,7 +63,7 @@ ax.legend(loc='upper left', fontsize=10)
 ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/cover.jpg', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration/cover.jpg', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 
@@ -119,7 +119,7 @@ axes[1, 1].set_title('伪回归：残差非平稳\n(无均值回归)', fontsize=
 axes[1, 1].grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/cointegration_vs_spurious.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration/cointegration_vs_spurious.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 
@@ -162,7 +162,7 @@ ax.grid(True, alpha=0.3)
 ax.set_ylim([-4, 4])
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/z_score_signals.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration/z_score_signals.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 
@@ -227,7 +227,7 @@ ax.grid(True, alpha=0.3)
 ax.set_ylim([cumulative.min() * 0.95, cumulative.max() * 1.05])
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/cumulative_returns.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration/cumulative_returns.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 

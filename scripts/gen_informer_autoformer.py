@@ -24,7 +24,7 @@ for f in ["Arial Unicode MS", "PingFang SC", "Hiragino Sans GB"]:
         continue
 plt.rcParams["axes.unicode_minus"] = False
 
-ROOT = "/Users/halo/workspace/astro-blog/public/images"
+ROOT = "/Users/halo123456/workspace/astro-blog/public/images"
 DIR_INF = os.path.join(ROOT, "informer-financial")
 DIR_AUT = os.path.join(ROOT, "autoformer-financial")
 os.makedirs(DIR_INF, exist_ok=True)

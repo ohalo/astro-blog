@@ -34,7 +34,7 @@ ax2.set_title('Q-Q图：尾部偏离正态的程度', fontsize=13, fontweight='b
 ax2.grid(alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/score-matching-return-distribution/return_distribution_tail.png', dpi=150, bbox_inches='tight')
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/score-matching-return-distribution/return_distribution_tail.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("图1已保存: return_distribution_tail.png")
 
@@ -69,7 +69,7 @@ ax.annotate('右尾：极端正收益\n同样厚于正态', xy=(0.045, 1.5), fon
             bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.8))
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/score-matching-return-distribution/score_matching_density.png', dpi=150, bbox_inches='tight')
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/score-matching-return-distribution/score_matching_density.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("图2已保存: score_matching_density.png")
 
@@ -103,7 +103,7 @@ for i, (h, n) in enumerate(zip(hist_vars, normal_vars)):
                    arrowprops=dict(arrowstyle='->', color='gray', lw=0.8))
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/score-matching-return-distribution/var_comparison.png', dpi=150, bbox_inches='tight')
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/score-matching-return-distribution/var_comparison.png', dpi=150, bbox_inches='tight')
 plt.close()
 print("图3已保存: var_comparison.png")
 

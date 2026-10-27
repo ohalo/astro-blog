@@ -11,7 +11,7 @@ from matplotlib import rcParams
 rcParams["font.sans-serif"] = ["Arial Unicode MS", "PingFang SC", "Heiti SC", "sans-serif"]
 rcParams["axes.unicode_minus"] = False
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/regime-switching-kelly"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/regime-switching-kelly"
 os.makedirs(OUT, exist_ok=True)
 np.random.seed(42)
 

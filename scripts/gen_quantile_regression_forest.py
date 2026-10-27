@@ -32,7 +32,7 @@ from matplotlib import rcParams
 rcParams["font.sans-serif"] = ["Arial Unicode MS", "PingFang SC", "SimHei", "DejaVu Sans"]
 rcParams["axes.unicode_minus"] = False
 
-BASE = "/Users/halo/workspace/astro-blog/public/images"
+BASE = "/Users/halo123456/workspace/astro-blog/public/images"
 D = os.path.join(BASE, "quantile-regression-forest")
 os.makedirs(D, exist_ok=True)
 

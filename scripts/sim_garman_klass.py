@@ -32,7 +32,7 @@ plt.rcParams["axes.unicode_minus"] = False
 plt.rcParams["figure.dpi"] = 110
 plt.rcParams["savefig.bbox"] = "tight"
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/garman-klass-volatility"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/garman-klass-volatility"
 SEED = 20260801
 rng = np.random.default_rng(SEED)
 

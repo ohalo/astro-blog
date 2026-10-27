@@ -109,6 +109,6 @@ language: Chinese
 
 最后说一句：NAS是个"买了会后悔——后悔没早买"的东西。如果你确认自己确实有集中存储和备份的需求，别犹豫，它会彻底改变你管理数字资产的方式。
 
-![NAS产品示意图](/images/2026-05-26-nas-buying-guide/01.jpg)
+![NAS产品示意图](/images/2026-05-26-nas-buying-guide/1.jpg)
 
-![NAS系统界面](/images/2026-05-26-nas-buying-guide/02.jpg)
+![NAS系统界面](/images/2026-05-26-nas-buying-guide/2.jpg)

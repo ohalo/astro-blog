@@ -8,7 +8,7 @@ plt.rcParams["font.sans-serif"] = ["PingFang SC", "Hiragino Sans GB", "Arial Uni
 plt.rcParams["axes.unicode_minus"] = False
 
 import os
-OUT = "/Users/halo/workspace/astro-blog/public/images/northbound-flow-factor"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/northbound-flow-factor"
 os.makedirs(OUT, exist_ok=True)
 
 rng = np.random.default_rng(2026)

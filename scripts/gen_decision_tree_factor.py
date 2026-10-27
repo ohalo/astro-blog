@@ -33,7 +33,7 @@ from sklearn.metrics import roc_auc_score, accuracy_score
 rcParams["font.sans-serif"] = ["Arial Unicode MS", "PingFang SC", "Heiti SC", "sans-serif"]
 rcParams["axes.unicode_minus"] = False
 
-BASE = "/Users/halo/workspace/astro-blog/public/images"
+BASE = "/Users/halo123456/workspace/astro-blog/public/images"
 D = os.path.join(BASE, "decision-tree-interpretable-factor")
 os.makedirs(D, exist_ok=True)
 

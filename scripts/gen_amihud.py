@@ -9,7 +9,7 @@ import os
 plt.rcParams["font.sans-serif"] = ["PingFang SC", "Hiragino Sans GB", "Arial Unicode MS"]
 plt.rcParams["axes.unicode_minus"] = False
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/amihud-illiquidity-factor"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/amihud-illiquidity-factor"
 os.makedirs(OUT, exist_ok=True)
 rng = np.random.default_rng(7)
 

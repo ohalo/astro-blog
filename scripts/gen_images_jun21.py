@@ -29,7 +29,7 @@ np.random.seed(20240621)
 # ========================
 # 文章1: 多因子模型风险分解
 # ========================
-out1 = "/Users/halo/workspace/astro-blog/public/images/2026-06-21-multi-factor-risk-decomposition"
+out1 = "/Users/halo123456/workspace/astro-blog/public/images/2026-06-21-multi-factor-risk-decomposition"
 os.makedirs(out1, exist_ok=True)
 
 # 图1: 因子风险贡献条形图
@@ -98,7 +98,7 @@ print(f"✅ 文章1配图已生成: {out1}")
 # ========================
 # 文章2: 配对交易与协整分析
 # ========================
-out2 = "/Users/halo/workspace/astro-blog/public/images/2026-06-21-pair-trading-cointegration"
+out2 = "/Users/halo123456/workspace/astro-blog/public/images/2026-06-21-pair-trading-cointegration"
 os.makedirs(out2, exist_ok=True)
 
 # 图1: 配对股票价差与信号

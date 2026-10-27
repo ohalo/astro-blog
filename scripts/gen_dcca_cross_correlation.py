@@ -18,7 +18,7 @@ for name in ["PingFang SC", "Heiti TC", "Arial Unicode MS", "STSong"]:
         continue
 plt.rcParams["axes.unicode_minus"] = False
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/dcca-cross-correlation"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/dcca-cross-correlation"
 os.makedirs(OUT, exist_ok=True)
 
 BLUE, RED, GRAY, GREEN, ORANGE = "#2c6fbb", "#c0392b", "#7f8c8d", "#27ae60", "#e67e22"

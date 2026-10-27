@@ -16,7 +16,7 @@ difficulty: intermediate
 
 1992年，高盛的Fischer Black和Robert Litterman提出了一种优雅的解决方案：**将市场均衡收益作为"基准"，再用投资者的主观观点去"修正"它**。
 
-![Black-Litterman模型框架](/images/2026-06-13-black-litterman-china/bl_framework.jpg)
+![Black-Litterman模型框架](/images/2026-06-13-black-litterman-china/bl_framework.svg)
 
 ## Black-Litterman模型的核心数学
 

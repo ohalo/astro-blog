@@ -9,7 +9,7 @@ plt.rcParams["font.sans-serif"] = ["PingFang SC", "Hiragino Sans GB", "Arial Uni
 plt.rcParams["axes.unicode_minus"] = False
 
 rng = np.random.default_rng(42)
-OUT = "/Users/halo/workspace/astro-blog/public/images/gamma-exposure-gex"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/gamma-exposure-gex"
 import os
 os.makedirs(OUT, exist_ok=True)
 

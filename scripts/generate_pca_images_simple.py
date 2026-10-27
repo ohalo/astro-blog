@@ -12,7 +12,7 @@ plt.rcParams['axes.unicode_minus'] = False
 
 # 创建输出目录
 import os
-os.makedirs('/Users/halo/workspace/astro-blog/public/images/pca-statistical-arbitrage', exist_ok=True)
+os.makedirs('/Users/halo123456/workspace/astro-blog/public/images/pca-statistical-arbitrage', exist_ok=True)
 
 print("开始生成配图...")
 
@@ -70,7 +70,7 @@ ax4.grid(True, alpha=0.3, axis='x')
 ax4.axvline(x=0, color='black', linewidth=0.8)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pca-statistical-arbitrage/cover.jpg', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pca-statistical-arbitrage/cover.jpg', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 print("✅ 封面图已生成: cover.jpg")
@@ -96,7 +96,7 @@ ax.legend(fontsize=12, loc='upper left')
 ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pca-statistical-arbitrage/factor_model.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pca-statistical-arbitrage/factor_model.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 print("✅ 因子模型图已生成: factor_model.png")
@@ -179,7 +179,7 @@ ax3.set_title('Cumulative Returns', fontsize=14)
 ax3.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pca-statistical-arbitrage/pairs_trading.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pca-statistical-arbitrage/pairs_trading.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 print("✅ 配对交易策略图已生成: pairs_trading.png")
@@ -226,7 +226,7 @@ ax.text(0.02, 0.97, textstr, transform=ax.transAxes, fontsize=11,
         verticalalignment='top', bbox=props)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pca-statistical-arbitrage/performance_comparison.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pca-statistical-arbitrage/performance_comparison.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 print("✅ 性能对比图已生成: performance_comparison.png")

@@ -25,7 +25,7 @@ plt.rcParams["axes.grid"] = True
 plt.rcParams["grid.alpha"] = 0.25
 plt.rcParams["figure.facecolor"] = "white"
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/pairs-trading-copula-tail"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/pairs-trading-copula-tail"
 os.makedirs(OUT, exist_ok=True)
 
 SEED = 20260806

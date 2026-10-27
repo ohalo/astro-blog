@@ -314,7 +314,7 @@ def plot_strategy_results(market_data, cumulative_returns, buyhold_cumulative, p
     axes[2].grid(True, alpha=0.3, linestyle=':')
     
     plt.tight_layout(h_pad=3.0)
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/volatility-targeting-dynamic-position/strategy_results.png', 
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/volatility-targeting-dynamic-position/strategy_results.png', 
                 dpi=300, bbox_inches='tight')
     plt.close()
     

@@ -91,6 +91,6 @@ language: Chinese
 
 所以与其焦虑年龄，不如焦虑自己：现在解决的问题，比三年前的问题难度高了多少？如果答案不明显，也许是时候调整了。
 
-![程序员职业发展路径图](/images/2026-05-26-programmer-after-30/01.jpg)
+![程序员职业发展路径图](/images/2026-05-26-programmer-after-30/1.jpg)
 
-![技术深度vs广度选择](/images/2026-05-26-programmer-after-30/02.jpg)
+![技术深度vs广度选择](/images/2026-05-26-programmer-after-30/2.jpg)

@@ -32,7 +32,7 @@ plt.rcParams["axes.unicode_minus"] = False
 plt.rcParams["figure.dpi"] = 110
 plt.rcParams["savefig.bbox"] = "tight"
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/yang-zhang-volatility-estimator"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/yang-zhang-volatility-estimator"
 SEED = 20260801
 rng = np.random.default_rng(SEED)
 

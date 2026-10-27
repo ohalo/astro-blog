@@ -61,7 +61,7 @@ for i in range(len(factors)):
                 arrowprops=dict(arrowstyle='->', color='white', lw=2, alpha=0.6))
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-timing/hero.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/factor-timing/hero.png', 
             dpi=150, bbox_inches='tight', facecolor='#1a1a2e')
 plt.close()
 
@@ -132,7 +132,7 @@ ax.text(0.02, 0.98, 'Red = Negative Return | Green = Positive Return\nDarker = L
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-timing/factor-rotation.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/factor-timing/factor-rotation.png', 
             dpi=150, bbox_inches='tight')
 plt.close()
 

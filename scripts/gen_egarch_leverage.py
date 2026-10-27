@@ -17,7 +17,7 @@ for cand in ["PingFang SC", "Hiragino Sans GB", "Arial Unicode MS", "Heiti SC", 
         continue
 plt.rcParams["axes.unicode_minus"] = False
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/egarch-gjr-leverage-effect"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/egarch-gjr-leverage-effect"
 os.makedirs(OUT, exist_ok=True)
 
 BLUE = "#2c6fbb"

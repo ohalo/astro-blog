@@ -178,8 +178,6 @@ portfolio = vbt.Portfolio.from_signals(
 **推荐**：自研框架 或 QuantConnect
 **理由**：商业化框架有license成本，但技术支持好；自研框架可控性强，但需要投入开发资源
 
-![Python量化工具选择决策树](/images/2026-06-01-python-quant-tools/tool-selection-tree.jpg)
-
 ## 框架只是工具，策略才是核心
 
 最后，我想强调一个观点：**不要纠结于"哪个框架最好"，而要想清楚"我要解决什么问题"。**

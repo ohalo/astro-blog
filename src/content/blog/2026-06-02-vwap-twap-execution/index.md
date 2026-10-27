@@ -659,7 +659,7 @@ def execution_dashboard(order_id):
 execution_dashboard('ORDER_20260602_001')
 ```
 
-![订单执行监控仪表盘](/images/2026-06-02-vwap-twap-execution/execution-dashboard.png)
+![订单执行监控仪表盘](/images/2026-06-02-vwap-twap-execution/execution-dashboard.svg)
 
 ## 结论
 

@@ -122,7 +122,7 @@ ax4.legend(loc='upper left', fontsize=10)
 ax4.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/crowding_analysis.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/factor-crowding/crowding_analysis.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 print("✓ 生成图1: crowding_analysis.png")
 plt.close()
@@ -164,7 +164,7 @@ ax2.axvline(current_date, color='black', linestyle=':', linewidth=2,
             label='当前时间', alpha=0.5)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/factor_comparison.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/factor-crowding/factor_comparison.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 print("✓ 生成图2: factor_comparison.png")
 plt.close()
@@ -209,10 +209,10 @@ ax3.set_xlabel('月份', fontsize=12)
 ax3.set_ylabel('股票代码', fontsize=12)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/crowding_heatmap.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/factor-crowding/crowding_heatmap.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 print("✓ 生成图3: crowding_heatmap.png")
 plt.close()
 
 print("\n✅ 所有配图生成完成！")
-print(f"位置: /Users/halo/workspace/astro-blog/public/images/factor-crowding/")
+print(f"位置: /Users/halo123456/workspace/astro-blog/public/images/factor-crowding/")

@@ -14,7 +14,7 @@ fm.fontManager.addfont(_CJK)
 _CJK_NAME = fm.FontProperties(fname=_CJK).get_name()
 
 np.random.seed(20260715)
-BASE = "/Users/halo/workspace/astro-blog/public/images"
+BASE = "/Users/halo123456/workspace/astro-blog/public/images"
 CH = "#2c7fb8"   # primary
 CH2 = "#d95f0e"  # accent
 CH3 = "#1b9e77"  # third

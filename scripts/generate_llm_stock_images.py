@@ -7,7 +7,7 @@ import numpy as np
 from matplotlib.patches import FancyBboxPatch
 import os
 
-OUTPUT_DIR = '/Users/halo/workspace/astro-blog/public/images/training-llm-stock-prediction'
+OUTPUT_DIR = '/Users/halo123456/workspace/astro-blog/public/images/training-llm-stock-prediction'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 plt.rcParams['font.sans-serif'] = ['PingFang SC', 'Heiti SC', 'STHeiti', 'Arial Unicode MS', 'SimHei']

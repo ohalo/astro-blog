@@ -17,7 +17,7 @@ for cand in ["PingFang SC", "Hiragino Sans GB", "Arial Unicode MS", "Heiti SC", 
         continue
 plt.rcParams["axes.unicode_minus"] = False
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/momentum-crash-tail-risk"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/momentum-crash-tail-risk"
 os.makedirs(OUT, exist_ok=True)
 
 BLUE = "#2c6fbb"

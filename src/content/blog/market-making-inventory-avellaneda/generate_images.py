@@ -37,7 +37,7 @@ rcParams = matplotlib.rcParams
 rcParams["font.sans-serif"] = ["PingFang SC", "Arial Unicode MS", "SimHei", "DejaVu Sans"]
 rcParams["axes.unicode_minus"] = False
 
-BASE = "/Users/halo/workspace/astro-blog/public/images"
+BASE = "/Users/halo123456/workspace/astro-blog/public/images"
 D = os.path.join(BASE, "market-making-inventory-avellaneda")
 os.makedirs(D, exist_ok=True)
 

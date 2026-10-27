@@ -10,7 +10,7 @@ matplotlib.rcParams['font.sans-serif'] = ['PingFang SC', 'Hiragino Sans GB', 'Ar
 matplotlib.rcParams['axes.unicode_minus'] = False
 
 import os
-OUT = "/Users/halo/workspace/astro-blog/public/images/equity-pledge-risk-factor"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/equity-pledge-risk-factor"
 os.makedirs(OUT, exist_ok=True)
 
 rng = np.random.default_rng(7)

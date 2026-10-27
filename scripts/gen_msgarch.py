@@ -12,7 +12,7 @@ CJK = "/System/Library/Fonts/Hiragino Sans GB.ttc"
 fm.fontManager.addfont(CJK)
 CJK_NAME = fm.FontProperties(fname=CJK).get_name()
 
-BASE = "/Users/halo/workspace/astro-blog/public/images/markov-switching-garch"
+BASE = "/Users/halo123456/workspace/astro-blog/public/images/markov-switching-garch"
 os.makedirs(BASE, exist_ok=True)
 
 plt.rcParams.update({

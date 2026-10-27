@@ -76,7 +76,7 @@ def generate_factor_crowding_images():
     ax4.legend(loc='upper left', fontsize=8)
     
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/crowding_indicators.png', 
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/factor-crowding/crowding_indicators.png', 
                 dpi=150, bbox_inches='tight', facecolor='white')
     plt.close()
     
@@ -118,7 +118,7 @@ def generate_factor_crowding_images():
     ax.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/factor-crowding/crowding_history.png', 
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/factor-crowding/crowding_history.png', 
                 dpi=150, bbox_inches='tight', facecolor='white')
     plt.close()
     
@@ -167,7 +167,7 @@ def generate_xgboost_lightgbm_images():
     
     plt.suptitle('XGBoost vs LightGBM 性能对比', fontsize=16, fontweight='bold', y=1.02)
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/xgboost-lightgbm-stock-selection/model_comparison.png', 
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/xgboost-lightgbm-stock-selection/model_comparison.png', 
                 dpi=150, bbox_inches='tight', facecolor='white')
     plt.close()
     
@@ -197,7 +197,7 @@ def generate_xgboost_lightgbm_images():
     ax.grid(True, axis='x', alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/xgboost-lightgbm-stock-selection/feature_importance.png', 
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/xgboost-lightgbm-stock-selection/feature_importance.png', 
                 dpi=150, bbox_inches='tight', facecolor='white')
     plt.close()
     
@@ -237,7 +237,7 @@ def generate_xgboost_lightgbm_images():
     
     plt.suptitle('XGBoost vs LightGBM 效率对比', fontsize=16, fontweight='bold', y=1.02)
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/xgboost-lightgbm-stock-selection/efficiency_comparison.png', 
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/xgboost-lightgbm-stock-selection/efficiency_comparison.png', 
                 dpi=150, bbox_inches='tight', facecolor='white')
     plt.close()
     

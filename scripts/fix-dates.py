@@ -11,7 +11,7 @@ from pathlib import Path
 
 # 配置
 JEKYLL_BLOG = Path("/Users/halo/workspace/blog-repo")
-ASTRO_BLOG = Path("/Users/halo/workspace/astro-blog")
+ASTRO_BLOG = Path("/Users/halo123456/workspace/astro-blog")
 ASTRO_CONTENT = ASTRO_BLOG / "src/content/blog"
 
 def extract_date_from_filename(filename):

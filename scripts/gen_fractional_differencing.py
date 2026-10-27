@@ -21,7 +21,7 @@ plt.rcParams["savefig.bbox"] = "tight"
 plt.rcParams["axes.grid"] = True
 plt.rcParams["grid.alpha"] = 0.25
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/fractional-differencing-stationarity"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/fractional-differencing-stationarity"
 os.makedirs(OUT, exist_ok=True)
 SEED = 20260801
 C_A, C_B, C_C, C_D = "#2563eb", "#dc2626", "#16a34a", "#f59e0b"

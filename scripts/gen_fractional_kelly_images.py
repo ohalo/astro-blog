@@ -11,7 +11,7 @@ from matplotlib import rcParams
 rcParams["font.sans-serif"] = ["Arial Unicode MS", "PingFang SC", "Heiti SC", "sans-serif"]
 rcParams["axes.unicode_minus"] = False
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/fractional-kelly-drawdown"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/fractional-kelly-drawdown"
 os.makedirs(OUT, exist_ok=True)
 rng = np.random.default_rng(42)
 

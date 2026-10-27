@@ -45,7 +45,7 @@ Delta中性策略通过动态对冲保持组合Delta接近零，主要赚取thet
 | Gamma风险 | 临近到期时减少对冲频率 |
 | 流动性风险 | 只交易日成交量超1000手的期权 |
 
-![波动率曲面示意图](/images/2026-06-05-option-volatility-trading/volatility_surface.jpg)
+![波动率曲面示意图](/images/2026-06-05-option-volatility-trading/vol_surface.jpg)
 
 *隐含波动率曲面：不同行权价和到期日的IV分布*
 

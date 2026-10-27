@@ -9,8 +9,8 @@ import os
 rng = np.random.default_rng(20260828)
 
 # ─── paths ───
-ROPE_DIR = "/Users/halo/workspace/astro-blog/public/images/rope-rotary-position-finance"
-DT_DIR   = "/Users/halo/workspace/astro-blog/public/images/decision-tree-interpretable-factor"
+ROPE_DIR = "/Users/halo123456/workspace/astro-blog/public/images/rope-rotary-position-finance"
+DT_DIR   = "/Users/halo123456/workspace/astro-blog/public/images/decision-tree-interpretable-factor"
 os.makedirs(ROPE_DIR, exist_ok=True)
 os.makedirs(DT_DIR, exist_ok=True)
 

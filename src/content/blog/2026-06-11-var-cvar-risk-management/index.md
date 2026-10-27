@@ -389,7 +389,7 @@ def plot_var_cvar(returns, confidence_level=0.95, portfolio_value=1000000):
     axes[1].grid(alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/2026-06-11-var-cvar-risk-management/var-cvar-plot.png', dpi=300, bbox_inches='tight')
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/2026-06-11-var-cvar-risk-management/var-cvar-plot.png', dpi=300, bbox_inches='tight')
     plt.close()
 
 plot_var_cvar(returns)
@@ -519,7 +519,7 @@ def monte_carlo_stress_test(returns, n_simulations=10000, horizon=22):
     ax.grid(alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/2026-06-11-var-cvar-risk-management/stress-test.png', dpi=300, bbox_inches='tight')
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/2026-06-11-var-cvar-risk-management/stress-test.png', dpi=300, bbox_inches='tight')
     plt.close()
     
     return var_95, cvar_95

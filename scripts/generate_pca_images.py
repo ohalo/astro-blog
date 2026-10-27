@@ -13,7 +13,7 @@ plt.rcParams['axes.unicode_minus'] = False
 
 # 创建输出目录
 import os
-os.makedirs('/Users/halo/workspace/astro-blog/public/images/pca-statistical-arbitrage', exist_ok=True)
+os.makedirs('/Users/halo123456/workspace/astro-blog/public/images/pca-statistical-arbitrage', exist_ok=True)
 
 # 生成示例数据
 np.random.seed(42)
@@ -162,7 +162,7 @@ ax4.grid(True, alpha=0.3, axis='x')
 ax4.axvline(x=0, color='black', linewidth=0.8)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pca-statistical-arbitrage/cover.jpg', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pca-statistical-arbitrage/cover.jpg', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 
@@ -194,7 +194,7 @@ ax.grid(True, alpha=0.3)
 plt.xticks(rotation=45)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pca-statistical-arbitrage/factor_model.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pca-statistical-arbitrage/factor_model.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 
@@ -294,7 +294,7 @@ ax3.grid(True, alpha=0.3)
 
 plt.xticks(rotation=45)
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pca-statistical-arbitrage/pairs_trading.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pca-statistical-arbitrage/pairs_trading.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 
@@ -338,7 +338,7 @@ for i, pair in enumerate(pair_names):
             bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pca-statistical-arbitrage/portfolio_performance.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pca-statistical-arbitrage/portfolio_performance.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 
@@ -390,7 +390,7 @@ ax.text(0.02, 0.97, textstr, transform=ax.transAxes, fontsize=11,
         verticalalignment='top', bbox=props)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pca-statistical-arbitrage/performance_comparison.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pca-statistical-arbitrage/performance_comparison.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 plt.close()
 

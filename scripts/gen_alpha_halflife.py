@@ -15,7 +15,7 @@ for f in ["/System/Library/Fonts/PingFang.ttc", "/System/Library/Fonts/STHeiti L
 plt.rcParams["axes.unicode_minus"] = False
 
 rng = np.random.default_rng(42)
-OUT = "/Users/halo/workspace/astro-blog/public/images/turnover-decay-alpha-halflife"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/turnover-decay-alpha-halflife"
 os.makedirs(OUT, exist_ok=True)
 
 # ---------- 模拟：N 只股票，T 天，信号 AR(1) 衰减 ----------
@@ -199,5 +199,5 @@ summary = {
                             "sharpe": round(max(backtest_ema(s, cb) for s in spans), 2)} for cb in [10, 30, 60]},
 }
 print(json.dumps(summary, ensure_ascii=False, indent=2))
-with open("/Users/halo/workspace/astro-blog/scripts/_halflife_results.json", "w") as f:
+with open("/Users/halo123456/workspace/astro-blog/scripts/_halflife_results.json", "w") as f:
     json.dump(summary, f, ensure_ascii=False, indent=2)

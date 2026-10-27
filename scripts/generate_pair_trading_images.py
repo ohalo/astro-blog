@@ -52,7 +52,7 @@ ax.text(0.5, 6, 'Spread: 均值回归', fontsize=14, color='#ff6b6b',
 ax.set_title('Pairs Trading Strategy', fontsize=20, fontweight='bold', pad=20, color='white')
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/hero.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration/hero.png', 
             dpi=150, bbox_inches='tight', facecolor='#0a0e27')
 plt.close()
 
@@ -111,7 +111,7 @@ from matplotlib.ticker import PercentFormatter
 ax.yaxis.set_major_formatter(PercentFormatter(1.0))
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/equity-curve.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration/equity-curve.png', 
             dpi=150, bbox_inches='tight')
 plt.close()
 

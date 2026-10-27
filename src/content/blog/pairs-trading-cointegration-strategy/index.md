@@ -198,7 +198,7 @@ plt.title('配对交易策略累计收益')
 plt.xlabel('日期')
 plt.ylabel('累计收益')
 plt.grid(True)
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pairs-trading-cointegration-strategy/equity_curve.png')
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pairs-trading-cointegration-strategy/equity_curve.png')
 plt.close()
 ```
 

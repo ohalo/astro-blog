@@ -1077,7 +1077,7 @@ class ExecutionQualityAnalyzer:
             axes[1, 1].legend()
         
         plt.tight_layout()
-        plt.savefig('/Users/halo/workspace/astro-blog/public/images/execution-slippage-control/execution_quality_analysis.svg', 
+        plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/execution-slippage-control/execution_quality_analysis.svg', 
                     format='svg', bbox_inches='tight')
         plt.show()
         

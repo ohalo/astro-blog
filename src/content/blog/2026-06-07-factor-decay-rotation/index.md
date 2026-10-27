@@ -39,7 +39,7 @@ difficulty: advanced
 - 因子共振时暴涨
 - 因子失效时集体踩踏
 
-![因子拥挤效应示意图](/images/2026-06-07-factor-decay-rotation/factor_crowding.jpg)
+![因子拥挤效应示意图](/images/2026-06-07-factor-decay-rotation/factor-crowding.jpg)
 
 #### 机制3：市场结构变化
 监管、技术、参与者结构变化，使因子逻辑不再成立。
@@ -113,7 +113,7 @@ A股有一些独特因子，其衰减模式也不同：
 - **衰减情况**：2017-2020年非常有效，2021年后衰减
 - **原因**：内资跟风，溢价消失
 
-![A股因子衰减对比图](/images/2026-06-07-factor-decay-rotation/a_share_factor_decay.jpg)
+![A股因子衰减对比图](/images/2026-06-07-factor-decay-rotation/a-share-factor-decay.jpg)
 
 ## 三、因子轮动：捕捉因子的"周期性"
 

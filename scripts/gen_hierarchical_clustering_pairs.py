@@ -13,7 +13,7 @@ from scipy.spatial.distance import squareform
 rcParams["font.sans-serif"] = ["Arial Unicode MS", "PingFang SC", "Heiti SC", "sans-serif"]
 rcParams["axes.unicode_minus"] = False
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/hierarchical-clustering-pairs"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/hierarchical-clustering-pairs"
 os.makedirs(OUT, exist_ok=True)
 np.random.seed(7)
 

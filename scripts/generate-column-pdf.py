@@ -250,7 +250,7 @@ def main():
     
     # 1. 生成HTML
     html_content = generate_pdf_html()
-    html_path = "/Users/halo/workspace/astro-blog/public/quant-column-pdf.html"
+    html_path = "/Users/halo123456/workspace/astro-blog/public/quant-column-pdf.html"
     
     with open(html_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
@@ -258,7 +258,7 @@ def main():
     print(f"✅ HTML已生成: {html_path}")
     
     # 2. 转换为PDF
-    pdf_path = "/Users/halo/workspace/astro-blog/public/quant-column-complete.pdf"
+    pdf_path = "/Users/halo123456/workspace/astro-blog/public/quant-column-complete.pdf"
     print("🔄 转换为PDF...")
     
     try:

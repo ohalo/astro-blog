@@ -79,7 +79,7 @@ for factor, x, y in zip(factors, factor_exposures, factor_risk_contrib):
                 fontsize=10, alpha=0.7)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/multi-factor-risk-decomposition/risk_decomposition.png',
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/multi-factor-risk-decomposition/risk_decomposition.png',
             dpi=300, bbox_inches='tight')
 print("✓ Figure 1 generated: risk_decomposition.png")
 plt.close()
@@ -117,7 +117,7 @@ for bar, value in zip(bars, factor_rets):
             f'{value:.2%}', ha='center', va='bottom' if value > 0 else 'top')
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/multi-factor-risk-decomposition/return_attribution.png',
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/multi-factor-risk-decomposition/return_attribution.png',
             dpi=300, bbox_inches='tight')
 print("✓ Figure 2 generated: return_attribution.png")
 plt.close()
@@ -152,10 +152,10 @@ ax.legend(loc='best')
 ax.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/multi-factor-risk-decomposition/factor_cumulative_returns.png',
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/multi-factor-risk-decomposition/factor_cumulative_returns.png',
             dpi=300, bbox_inches='tight')
 print("✓ Figure 3 generated: factor_cumulative_returns.png")
 plt.close()
 
 print("\n✅ All images for Post 1 generated successfully!")
-print("Location: /Users/halo/workspace/astro-blog/public/images/multi-factor-risk-decomposition/")
+print("Location: /Users/halo123456/workspace/astro-blog/public/images/multi-factor-risk-decomposition/")

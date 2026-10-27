@@ -71,7 +71,7 @@ def generate_spread_analysis_chart():
     ax3.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/statistical-arbitrage-mean-reversion/spread_analysis.png', 
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/statistical-arbitrage-mean-reversion/spread_analysis.png', 
                 dpi=300, bbox_inches='tight')
     print("✓ Generated spread analysis chart")
     plt.close()
@@ -118,7 +118,7 @@ def generate_pairs_performance_chart():
     ax2.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/statistical-arbitrage-mean-reversion/pairs_performance.png', 
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/statistical-arbitrage-mean-reversion/pairs_performance.png', 
                 dpi=300, bbox_inches='tight')
     print("✓ Generated pairs performance chart")
     plt.close()
@@ -175,7 +175,7 @@ def generate_cointegration_test_chart():
     ax4.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/statistical-arbitrage-mean-reversion/cointegration_test.png', 
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/statistical-arbitrage-mean-reversion/cointegration_test.png', 
                 dpi=300, bbox_inches='tight')
     print("✓ Generated cointegration test chart")
     plt.close()

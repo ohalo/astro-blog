@@ -50,7 +50,7 @@ Delta中性是一种市场中性策略，通过调整持仓使组合的整体Del
 - 当标的资产价格上涨，看涨期权Delta增加，需要增加做空股票数量
 - 当标的资产价格下跌，看涨期权Delta减少，需要减少做空股票数量
 
-![Delta中性对冲](/images/options-volatility-trading/delta_hedging.jpg)
+![Delta中性对冲](/images/options-volatility-trading/greeks_visualization.jpg)
 
 ## 备兑开仓策略
 

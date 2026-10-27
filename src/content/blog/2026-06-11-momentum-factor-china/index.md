@@ -283,7 +283,7 @@ def plot_momentum_results(results_df):
     axes[1, 1].grid(alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig('/Users/halo/workspace/astro-blog/public/images/2026-06-11-momentum-factor-china/momentum-backtest.png', dpi=300, bbox_inches='tight')
+    plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/2026-06-11-momentum-factor-china/momentum-backtest.png', dpi=300, bbox_inches='tight')
     plt.close()
 
 plot_momentum_results(results_df)

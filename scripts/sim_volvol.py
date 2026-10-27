@@ -12,7 +12,7 @@ for f in ["PingFang SC", "Heiti SC", "Songti SC", "STHeiti", "Arial Unicode MS"]
         plt.rcParams["font.sans-serif"] = [f]; break
 plt.rcParams["axes.unicode_minus"] = False
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/volatility-of-volatility-factor"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/volatility-of-volatility-factor"
 os.makedirs(OUT, exist_ok=True)
 R = {}
 

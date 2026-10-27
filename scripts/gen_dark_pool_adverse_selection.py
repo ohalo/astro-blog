@@ -22,7 +22,7 @@ plt.rcParams["axes.grid"] = True
 plt.rcParams["grid.alpha"] = 0.25
 plt.rcParams["figure.facecolor"] = "white"
 
-IMG_DIR = "/Users/halo/workspace/astro-blog/public/images/dark-pool-adverse-selection"
+IMG_DIR = "/Users/halo123456/workspace/astro-blog/public/images/dark-pool-adverse-selection"
 os.makedirs(IMG_DIR, exist_ok=True)
 
 SEED = 20260806

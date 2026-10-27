@@ -10,7 +10,7 @@ import os
 plt.rcParams["font.sans-serif"] = ["PingFang SC", "Hiragino Sans GB", "Arial Unicode MS"]
 plt.rcParams["axes.unicode_minus"] = False
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/pbo-overfitting-probability"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/pbo-overfitting-probability"
 os.makedirs(OUT, exist_ok=True)
 
 rng = np.random.default_rng(7)

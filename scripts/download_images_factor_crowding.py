@@ -12,7 +12,7 @@ import os
 matplotlib.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS', 'DejaVu Sans']
 matplotlib.rcParams['axes.unicode_minus'] = False
 
-output_dir = '/Users/halo/workspace/astro-blog/public/images/factor-crowding'
+output_dir = '/Users/halo123456/workspace/astro-blog/public/images/factor-crowding'
 os.makedirs(output_dir, exist_ok=True)
 
 # 图1: 因子拥挤度传导机制示意图

@@ -8,7 +8,7 @@ import os
 import re
 from pathlib import Path
 
-ASTRO_CONTENT = Path("/Users/halo/workspace/astro-blog/src/content/blog")
+ASTRO_CONTENT = Path("/Users/halo123456/workspace/astro-blog/src/content/blog")
 
 # 需要修复的文章列表
 ARTICLES = [

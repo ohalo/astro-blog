@@ -115,7 +115,7 @@ def create_article_file(topic, difficulty, tags=None):
     content = generate_article_content(topic, difficulty)
     
     # 文件路径
-    file_path = f"/Users/halo/workspace/astro-blog/src/content/blog/{slug}.md"
+    file_path = f"/Users/halo123456/workspace/astro-blog/src/content/blog/{slug}.md"
     
     # 写入文件
     with open(file_path, 'w', encoding='utf-8') as f:
@@ -131,7 +131,7 @@ def create_article_file(topic, difficulty, tags=None):
 
 def update_column_data(slug, title, difficulty, description, read_time=20):
     """更新专栏数据文件"""
-    data_file = "/Users/halo/workspace/astro-blog/src/data/quant-column.ts"
+    data_file = "/Users/halo123456/workspace/astro-blog/src/data/quant-column.ts"
     
     # 读取现有数据
     with open(data_file, 'r', encoding='utf-8') as f:
@@ -156,13 +156,13 @@ def update_column_data(slug, title, difficulty, description, read_time=20):
 def regenerate_column_html():
     """重新生成专栏HTML"""
     print("🔄 重新生成专栏HTML...")
-    os.system("cd /Users/halo/workspace/astro-blog && python3 generate-column-html.py")
+    os.system("cd /Users/halo123456/workspace/astro-blog && python3 generate-column-html.py")
     print("✅ 专栏HTML已更新")
 
 def regenerate_column_pdf():
     """重新生成专栏PDF"""
     print("🔄 重新生成专栏PDF...")
-    os.system("cd /Users/halo/workspace/astro-blog && weasyprint public/quant-column.html public/quant-column.pdf")
+    os.system("cd /Users/halo123456/workspace/astro-blog && weasyprint public/quant-column.html public/quant-column.pdf")
     print("✅ 专栏PDF已更新")
 
 def main():

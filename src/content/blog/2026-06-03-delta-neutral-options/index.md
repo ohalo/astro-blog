@@ -163,7 +163,7 @@ if abs(portfolio_delta) > delta_threshold:
 - 每周固定调整一次
 - 重大事件前（财报、FOMC）提前调整
 
-![Delta对冲示意图](/images/2026-06-03-delta-neutral-options/delta_hedging.jpg)
+![Delta对冲示意图](/images/2026-06-03-delta-neutral-options/delta_vs_time.jpg)
 
 ## 国内期权市场应用
 

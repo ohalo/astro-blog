@@ -15,7 +15,7 @@ for f in ["/System/Library/Fonts/PingFang.ttc", "/System/Library/Fonts/STHeiti L
 plt.rcParams["axes.unicode_minus"] = False
 
 rng = np.random.default_rng(7)
-OUT = "/Users/halo/workspace/astro-blog/public/images/order-imbalance-slope-signal"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/order-imbalance-slope-signal"
 os.makedirs(OUT, exist_ok=True)
 
 # ---------- 模拟盘口快照序列 ----------
@@ -172,5 +172,5 @@ summary = {
     "gross_per_trade_bp": {k: round(float(v[0]), 3) for k, v in res_cost.items()},
 }
 print(json.dumps(summary, ensure_ascii=False, indent=2))
-with open("/Users/halo/workspace/astro-blog/scripts/_obslope_results.json", "w") as f:
+with open("/Users/halo123456/workspace/astro-blog/scripts/_obslope_results.json", "w") as f:
     json.dump(summary, f, ensure_ascii=False, indent=2)

@@ -70,7 +70,7 @@ Herming H = | Rit - Rmt| / Rmt
 
 #### 结果2：小盘股羊群效应更强
 
-![小盘股与大盘股羊群效应对比](/images/2026-06-11-behavioral-finance-herding/herding_small_vs_large_cap.jpg)
+![小盘股与大盘股羊群效应对比](/images/2026-06-11-behavioral-finance-herding/herding_small_vs_large_cap.png)
 
 （图：小盘股CSSD分布更集中，说明收益率趋同度更高）
 

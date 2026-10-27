@@ -128,7 +128,7 @@ ax3.legend(loc='upper right', fontsize=10, framealpha=0.9)
 ax3.grid(True, alpha=0.3)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/pairs_analysis.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration/pairs_analysis.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 print("✓ 生成图1: pairs_analysis.png")
 plt.close()
@@ -238,7 +238,7 @@ ax6.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.0%}'))
 ax6.set_ylim(drawdown.min() - 0.03, 0.02)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/backtest_results.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration/backtest_results.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 print("✓ 生成图2: backtest_results.png")
 plt.close()
@@ -323,13 +323,13 @@ ax10.set_xlim(0, 1)
 ax10.set_ylim(0, 1)
 
 plt.tight_layout()
-plt.savefig('/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/strategy_concepts.png', 
+plt.savefig('/Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration/strategy_concepts.png', 
             dpi=300, bbox_inches='tight', facecolor='white')
 print("✓ 生成图3: strategy_concepts.png")
 plt.close()
 
 print("\n✅ 所有配图生成完成！")
-print(f"位置: /Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration/")
+print(f"位置: /Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration/")
 print("\n生成的文件:")
 print("  - pairs_analysis.png (配对分析图)")
 print("  - backtest_results.png (回测结果图)")

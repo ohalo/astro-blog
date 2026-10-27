@@ -12,7 +12,7 @@ import os
 matplotlib.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS', 'DejaVu Sans']
 matplotlib.rcParams['axes.unicode_minus'] = False
 
-output_dir = '/Users/halo/workspace/astro-blog/public/images/pair-trading-cointegration'
+output_dir = '/Users/halo123456/workspace/astro-blog/public/images/pair-trading-cointegration'
 os.makedirs(output_dir, exist_ok=True)
 
 # 图1: 配对交易原理示意图（价差均值回归）

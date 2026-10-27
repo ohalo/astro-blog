@@ -13,7 +13,7 @@ from scipy.sparse import lil_matrix, csr_matrix
 rcParams["font.sans-serif"] = ["Arial Unicode MS", "PingFang SC", "Heiti SC", "sans-serif"]
 rcParams["axes.unicode_minus"] = False
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/drawdown-at-risk-cdar"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/drawdown-at-risk-cdar"
 os.makedirs(OUT, exist_ok=True)
 rng = np.random.default_rng(int(os.environ.get("SEED", 11)))
 

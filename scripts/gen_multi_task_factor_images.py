@@ -10,7 +10,7 @@ from matplotlib.patches import Patch
 rcParams["font.family"] = "DejaVu Sans"
 rcParams["axes.unicode_minus"] = False
 
-OUT_DIR = "/Users/halo/workspace/astro-blog/public/images/multi-task-factor-learning"
+OUT_DIR = "/Users/halo123456/workspace/astro-blog/public/images/multi-task-factor-learning"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 rng = np.random.default_rng(7)

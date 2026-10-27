@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 from scipy.special import logsumexp
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/regime-switching-hmm-allocation"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/regime-switching-hmm-allocation"
 os.makedirs(OUT, exist_ok=True)
 SEED = 42
 np.random.seed(SEED)

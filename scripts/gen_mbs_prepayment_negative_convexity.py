@@ -26,7 +26,7 @@ plt.rcParams["axes.grid"] = True
 plt.rcParams["grid.alpha"] = 0.25
 plt.rcParams["figure.facecolor"] = "white"
 
-OUT = "/Users/halo/workspace/astro-blog/public/images/mbs-prepayment-negative-convexity"
+OUT = "/Users/halo123456/workspace/astro-blog/public/images/mbs-prepayment-negative-convexity"
 os.makedirs(OUT, exist_ok=True)
 
 SEED = 20260806

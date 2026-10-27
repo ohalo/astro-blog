@@ -64,8 +64,6 @@ AI Agent工作流自动化Agent-FirstLangChainAutoGen
   * 流程是被动的，有输入才触发，不主动优化
   * 没有学习机制，同样的错误会重复发生
 
-
-
 这些问题在有人参与时是正常的——人需要节点来控制风险。但 AI 不需要这种控制感，它需要的是**目标** 和**边界** 。
 
 ## 实战：用代码搭一个 Agent-First 客户支持系统
@@ -168,10 +166,6 @@ Agent 不是万能的，关键时刻必须能升级人工。
   * **AutoGen** ：微软出的，多 Agent 协作场景很强。如果你需要多个 Agent 互相配合（比如一个写代码，一个审查），AutoGen 比 LangChain 更直接。
   * **Temporal** ：适合工作流可靠性要求高的场景。比如支付流程、订单处理这种不能出错的操作，Temporal 的容错机制很强。
 
-
-
-![LangChain](/images/agent-first-workflow/langchain-logo.png) ![Prefect](/images/agent-first-workflow/prefect-logo.png) ![Temporal](/images/agent-first-workflow/temporal-logo.png)
-
 如果只是快速验证想法，LangChain + 一个好的 Prompt 就够了。等需求复杂了，再按场景引入其他工具。
 
 ## 我自己用下来的真实感受
@@ -184,15 +178,11 @@ Agent 不是万能的，关键时刻必须能升级人工。
   * 数据录入和整理（从邮件/文档里提取信息）
   * 多系统协调（比如订单状态同步到多个平台）
 
-
-
 **不适合的场景：**
 
   * 需要强合规约束的操作（比如金融交易、法律文件）
   * 流程经常变化的场景（每次改需求都要重新配 Agent，成本反而高）
   * 需要 100% 可解释性的场景（Agent 的决策链路有时候不太好追溯）
-
-
 
 **核心体会** ：Agent-First 不是让 AI 更快，是让 AI **更可预测** 。流程从"你告诉 AI 每一步怎么做"变成"你告诉 AI 要达成什么，它自己决定怎么做"。后者灵活得多，但前提是你把约束写清楚。
 

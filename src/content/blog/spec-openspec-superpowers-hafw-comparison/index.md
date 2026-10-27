@@ -19,8 +19,6 @@ AI编程工作流框架Spec-KitOpenSpecSuperpowers
 
 今天把三个最主流的框架放在一起横评，不吹不黑，说清楚每个的适用场景。
 
-![Spec-Kit Logo](/images/ai-workflow-comparison/speckit-logo.webp)
-
 ## 一、Spec-Kit：GitHub官方出品，阶段门控最严格
 
 **背景** ：GitHub官方2025年初推出，Den Delimarsky和John Lam主导开发，82.5K Star。
@@ -48,8 +46,6 @@ AI编程工作流框架Spec-KitOpenSpecSuperpowers
   * plan.md 和 tasks.md 由AI自动生成
   * 支持模板引擎 + 扩展系统，定制性很强
 
-
-
 **适合谁** ：多人协作的企业级项目，需要严格质量管控的团队。
 
 **不适合谁** ：想快速跑通一个Demo的独立开发者（流程太重了）。
@@ -67,8 +63,6 @@ AI编程工作流框架Spec-KitOpenSpecSuperpowers
 
 每个功能变更是一个独立目录，包含proposal.md、design.md、tasks.md和specs/。完成后归档到知识库，成为项目的"记忆"。
 
-![OpenSpec Dashboard 预览](/images/ai-workflow-comparison/openspec-dashboard.png)
-
 **技术栈** ：TypeScript（npm安装）
 
 **AI支持** ：20+工具（覆盖最广，包括Claude Code、Cursor、Windsurf、Codex等）
@@ -78,8 +72,6 @@ AI编程工作流框架Spec-KitOpenSpecSuperpowers
   * 无需API Key和MCP，通用性最强
   * Brownfield优先设计——明确面向现有代码库的渐进式改造
   * 团队协作功能目前还在开发中
-
-
 
 **适合谁** ：需要快速迭代的个人开发者或小团队，想要轻量约束但不想被流程绑死。
 
@@ -102,8 +94,6 @@ AI编程工作流框架Spec-KitOpenSpecSuperpowers
   3. 你点头之后，它出一份执行计划——写得连"热情但品味差、不爱写测试的初级工程师"都能照着做
   4. 你说"开搞"，它启动子代理分工干活，自己巡检、review、推进
 
-
-
 而且技能都是自动触发的，你不用特意做什么，你的coding agent就自动有了Superpowers。
 
 **技术栈** ：Shell/JavaScript
@@ -115,8 +105,6 @@ AI编程工作流框架Spec-KitOpenSpecSuperpowers
   * 强制RED-GREEN-REFACTOR TDD循环——三家里唯一强制TDD的
   * 核心技能包括：test-driven-development、systematic-debugging、brainstorming、subagent-driven-development
   * 基于Git Worktrees管理变更状态
-
-
 
 **适合谁** ：对测试有硬性要求的团队，想让AI自动走TDD流程。
 
@@ -144,8 +132,6 @@ AI编程工作流框架Spec-KitOpenSpecSuperpowers
   * **担心AI乱来、不按规范走** → Spec-Kit（阶段门控最严格）
   * **担心流程太重、拖慢速度** → OpenSpec（轻量灵活）
   * **担心代码质量、想要强制TDD** → Superpowers（TDD唯一强制）
-
-
 
 如果你非要我给一个推荐——**个人开发者先试OpenSpec** ，上手快、通用性强，用一个月你就知道自己缺什么了。
 

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-OUT = '/Users/halo/workspace/astro-blog/public/images/llm-financial-sentiment-alpha'
+OUT = '/Users/halo123456/workspace/astro-blog/public/images/llm-financial-sentiment-alpha'
 os.makedirs(OUT, exist_ok=True)
 
 # ─────────────────────────────────────────────
