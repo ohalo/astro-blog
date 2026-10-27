@@ -269,6 +269,19 @@ const { locale = 'zh' } = Astro.props
     font-variant-numeric: tabular-nums;
   }
 
+  .sq-empty {
+    margin-top: 8px;
+    padding: 18px 16px;
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+    background: #17150f;
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+  }
+  .sq-empty-kline {
+    padding: 54px 16px;
+  }
   .sq-flow {
     margin-top: 6px;
   }
@@ -357,7 +370,10 @@ const { locale = 'zh' } = Astro.props
       wan: '万手',
       klineTitle: 'K线（近60日）',
       upLegend: '涨',
-      downLegend: '跌'
+      downLegend: '跌',
+      klineNA: 'K线数据暂不可用（上游数据源受限，请稍后重试）',
+      flowNA: '今日资金流数据暂不可用（指数、停牌或新股无此项）',
+      retry: '重试'
     },
     en: {
       search: 'Search',
@@ -396,7 +412,10 @@ const { locale = 'zh' } = Astro.props
       wan: 'W lots',
       klineTitle: 'Candlestick (60d)',
       upLegend: 'Up',
-      downLegend: 'Down'
+      downLegend: 'Down',
+      klineNA: 'Candlestick data unavailable (upstream source limited, retry later)',
+      flowNA: 'Fund flow unavailable today (index, halted or newly listed)',
+      retry: 'Retry'
     }
   }
 
@@ -498,7 +517,7 @@ const { locale = 'zh' } = Astro.props
     </svg>`
   }
   function flowBars(ff: any, L: any): string {
-    if (!ff) return ''
+    if (!ff) return `<div class='sq-empty'>${L.flowNA}</div>`
     const rows = [
       { lbl: L.huge, v: ff.huge },
       { lbl: L.big, v: ff.big },
@@ -615,7 +634,7 @@ const { locale = 'zh' } = Astro.props
           <span>${L.klineTitle}</span>
           <span class='sq-legend'><i class='dot up'></i>${L.upLegend}　<i class='dot down'></i>${L.downLegend}</span>
         </div>
-        ${candleSVG(d.kline, L)}
+        ${candleSVG(d.kline, L) || `<div class='sq-empty sq-empty-kline'>${L.klineNA}</div>`}
         <div class='sq-grid'>${grid}</div>
       </div>
 
@@ -623,7 +642,10 @@ const { locale = 'zh' } = Astro.props
         <div class='sq-card'><h3>${L.basic}</h3>${basic}</div>
         <div class='sq-card'><h3>${L.flow}</h3>${flowBars(d.fundFlow, L)}</div>
       </div>
-      <div class='sq-foot'>数据来源：腾讯财经 + 东方财富（经服务端代理）· 仅供参考，投资有风险</div>
+      <div class='sq-foot'>
+        数据来源：腾讯财经（行情 / K线）+ 新浪财经（资金流）· 经服务端代理 ·
+        仅供参考，投资有风险
+      </div>
     `
   }
 
