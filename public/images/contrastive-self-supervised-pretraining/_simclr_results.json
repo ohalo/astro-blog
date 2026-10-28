@@ -1,0 +1,44 @@
+{
+ "train_loss": {
+  "final": 4.2674,
+  "first": 5.4483,
+  "drop_pct": 21.7
+ },
+ "probe_curve": {
+  "epochs": [
+   1,
+   21,
+   41,
+   61,
+   81,
+   101,
+   121,
+   141,
+   150
+  ],
+  "acc": [
+   0.9933,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0,
+   1.0
+  ]
+ },
+ "eval": {
+  "n_class": 4,
+  "L": 64,
+  "n_train": 700,
+  "n_test": 300,
+  "acc_probe_simclr": 1.0,
+  "acc_probe_raw": 0.5033,
+  "acc_random": 0.25,
+  "acc_knn_simclr": 1.0,
+  "acc_knn_raw": 1.0,
+  "sep_ratio_rep": 40.02,
+  "sep_ratio_raw": 0.02
+ }
+}
