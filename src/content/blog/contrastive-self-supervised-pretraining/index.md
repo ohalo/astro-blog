@@ -45,7 +45,7 @@ SimCLR（Chen et al., 2020）是对比学习里最干净的一招，分四步：
 
 ## 二、NT-Xent：让正样本对靠近、负样本远离
 
-![](images/contrastive-self-supervised-pretraining/fig2_loss.png)
+![](/images/contrastive-self-supervised-pretraining/fig2_loss.png)
 
 损失曲线从 5.45 平缓降到 4.27。注意 NT-Xent 的量级：因为相似度是「点积除以温度」后再做 softmax，值在几个 nat 的量级，不像 MSE 那样趋近于 0。判定对比学习有没有在学，不看损失绝对值，看**下游探测准确率**——那才是真金。
 
@@ -53,13 +53,13 @@ SimCLR（Chen et al., 2020）是对比学习里最干净的一招，分四步：
 
 把测试集表征做 PCA 降到二维、按真实频率着色：
 
-![](images/contrastive-self-supervised-pretraining/fig3_embedding_pca.png)
+![](/images/contrastive-self-supervised-pretraining/fig3_embedding_pca.png)
 
 四个频率各成一簇，几乎没有交叠。对比右图（若画原始信号的 PCA，四个频率的点会互相穿插——因为相位/振幅的方差远大于频率差异，把簇冲散了）。分离比 40.0 vs 0.02 就是这个视觉差异的定量版。
 
 ## 四、线性探测 / KNN：SimCLR 的真正价值是「线性可分」
 
-![](images/contrastive-self-supervised-pretraining/fig4_probe.png)
+![](/images/contrastive-self-supervised-pretraining/fig4_probe.png)
 
 这张图是本篇最核心的一张。横轴三个基线：SimCLR 表征、原始信号、随机。**线性探测**那组（红+灰）才是重点——SimCLR **100%**、原始信号 **50.3%**、随机 25%。而 **KNN**（绿+蓝）两侧都是 **100%**：原始信号虽然线性划不开，但近邻能靠形状认出频率。
 
@@ -67,7 +67,7 @@ SimCLR（Chen et al., 2020）是对比学习里最干净的一招，分四步：
 
 ## 五、收敛：清晰语义下，SimCLR 首轮即到位
 
-![](images/contrastive-self-supervised-pretraining/fig5_probe_curve.png)
+![](/images/contrastive-self-supervised-pretraining/fig5_probe_curve.png)
 
 线性探测准确率在 epoch 1 就 0.9933、epoch 21 起满 100%。曲线本身没有戏剧性，但它传递一个诚实的信号：当底层语义（频率）清晰、与其他维度解耦良好时，SimCLR 收敛极快；真实金融序列的语义被微观结构噪声、 regime 切换、幸存者偏差层层包裹，那时才需要更长的训练、更讲究的增广（比如保留趋势/翻转不变性、丢弃绝对价位），以及更大的 batch 和更多负样本。
 
