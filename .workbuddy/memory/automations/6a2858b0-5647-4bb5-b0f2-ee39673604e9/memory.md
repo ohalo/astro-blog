@@ -18,3 +18,12 @@
 - **教训 2**：统计滞后映射字典以 CPS 值为键，画图时用 `d.get(j)`（j=0..4 索引）会全 nan 且无任何报错——图表画完要目测/程序化查 NaN。
 - **教训 3**：图文必须一致——图例声称"5% 虚警校准"而实测 FAR 0.284 次/天就是自相矛盾，用中性标签（"重尾置换峰值校准阈值"）；直方图 bins 容纳不下的失败样本（滞后≥60）要在图上加注释框说明，否则读者看不到 2 次未检出。
 - quant-column.md 置顶第二个 2026-10-27 分组；本次 pull --rebase 无冲突；push e49ee5cf；Vercel 约 3 分钟部署（10 次轮询），quant-column/2 文章/2 图 curl 均 200（文章页用 -L）。
+
+## 2026-10-28（第 3 次）
+- 主题（select_blog_topics.py）：diffusion-model-market-path-generation、mcts-portfolio-optimization（与现有目录查重通过）
+- 脚本：gen_ddpm_market_paths.py（手写最小 DDPM：两层 MLP 噪声预测器、T=40、3000 轮，seed=20261028，标准化后训练再反标准化）、gen_mcts_portfolio.py（手写 UCB1 MCTS 选择/扩展/模拟/回传，C(15,5)=3003 穷举 ground truth，2000 评估预算）
+- **MCTS 关键 bug**：select_expand 每次只扩展 1 个新子节点，2000 迭代内树到不了深度 K 的终节点 → best_sel_m 恒为 None 崩。修法：rollout 返回 (val, completed_set)，用模拟补全出的完整子集跟踪最优，并据此算入选频率/剪枝比（distinct_evaluated=1483）。另加 `_ser` 把 numpy int64 序列化为 JSON（rng.choice 出的元素是 int64）。
+- **诚实结论**：DDPM 复刻分布肚子（波动率误差 1.9%、KS D=0.066）但压扁尾部（超额峰度 7.10→0.87、差 87.8%；P99 差 24.6%）——MSE 训练扩散的固有代价；MCTS 精确命中穷举最优 Sharpe 0.2321（差距 0%）、随机同预算只到 0.218（差 6.07%），仅评估 1483/3003 子集（省 50.6%）。两篇都写明局限，未粉饰。
+- quant-column.md 在「## 最新文章」下置顶新增 2026-10-28 分组（含本 2 条），保留已有的 2026-10-28（Neural ODE/SimCLR）分组在其后。
+- 先 commit 再 `git pull --rebase`（无冲突），push 3846ba11。本地 `npm run build` 先 mv .vercel/output 挪开避 safe-delete 拦截，build 通过（0 schema 错）。
+- **部署**：Vercel 本约 4-5 分钟才生效——推送后首轮 curl 文章页 404、quant-column 无新链接，约 5 分钟（sleep 累计 ~3.5 分钟 + 轮询）后才 quant-column 200 含新链接、两文章页 200。验证务必加 `?cb=<ts>` cache-buster 并耐心等部署。
