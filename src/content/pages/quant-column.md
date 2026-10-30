@@ -10,6 +10,11 @@ layout: page
 
 ## 最新文章
 
+### 2026-10-30 发布（Regime-Switching 组合择时 / 蒙特卡洛误差量化）
+
+- [2026-10-30 - Regime-Switching Portfolio Timing：让组合权重随牛熊自动呼吸](/blog/regime-switching-portfolio-timing/) - 🔄 用隐马尔可夫模型（HMM）识别牛/熊/震荡三个 regime，再给每个 regime 配一套最优权重——不是预测行情，是让组合自己适配行情。手写 Baum-Welch EM + Viterbi 解码，OOS 回测 Sharpe 0.86 远超等权基准 0.45 和静态 MVO 0.22。附完整可运行代码与五张真实计算图。
+- [2026-10-30 - 蒙特卡洛误差量化：给你的回测结果配一个可信区间](/blog/monte-carlo-error-quantification/) - 📏 蒙特卡洛模拟的误差随 sqrt(N) 衰减，但 N 多大才算够？用 Bootstrap 重抽样和 Batch Mean 法给 Sharpe 率算出 95% CI（1.21~1.63），别再拿点估计当结论。收敛诊断显示 N=5000 时 CI 宽度稳定在 0.03 以下。附完整可运行代码与五张真实计算图。
+
 ### 2026-10-30 发布（平均场博弈多代理人做市 / 准蒙特卡洛反同类方差）
 
 - [2026-10-30 - 平均场博弈多代理人：用 N 人博弈的对称均衡解做做市策略](/blog/mean-field-game-multiaagent/) - 🎮 手写 N 代理人平均场博弈（AFG），把每个做市商的库存-价差决策耦合进一个 McKee-Fokker-Numen 方程组：N→∞ 极限下对称均衡由分布均值库存的线性响应给出，500 个 Agent 仿真与解析解对拍（价差偏差 <3%）。附完整可运行代码与五张真实计算图。
