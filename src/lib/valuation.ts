@@ -111,7 +111,7 @@ export function dcfScenario(
   }
 }
 
-/** DCF 三情景：对 WACC 与 g 做 ± 调整，悲观收紧、乐观放松。保证 g<WACC。 */
+/** DCF 三情景：对 WACC 与 g 做 ± 调整，悲观收紧（WACC↑、g↓）、乐观放松（WACC↓、g↑）。保证 g<WACC。 */
 export interface DcfTrio {
   low: number
   mid: number
@@ -126,14 +126,19 @@ export function dcfTrio(
   netDebt = 0,
   minority = 0
 ): DcfTrio {
-  const waccP = Math.min(wacc + 0.015, (wacc + g) / 2 - 0.001) // 悲观：折现率更高
-  const gP = Math.max(g - 0.005, 0)
-  const waccO = Math.max(wacc - 0.015, 0.03) // 乐观：折现率更低
-  const gO = g + 0.005
+  const spread = 0.015
+  const waccP = wacc + spread // 悲观：折现率更高 → 价值更低
+  const gP = Math.max(g - spread, 0)
+  const waccO = Math.max(wacc - spread, 0.02) // 乐观：折现率更低 → 价值更高
+  const gO = Math.min(g + spread, waccO - 0.001)
   const mid = dcfScenario(shares, fcff, wacc, g, netDebt, minority).perShare
   const low = dcfScenario(shares, fcff, waccP, gP, netDebt, minority).perShare
   const high = dcfScenario(shares, fcff, waccO, gO, netDebt, minority).perShare
-  return { low: Math.min(low, mid, high), mid, high: Math.max(low, mid, high) }
+  return {
+    low: Math.min(low, mid, high),
+    mid,
+    high: Math.max(low, mid, high)
+  }
 }
 
 export interface Zone {
