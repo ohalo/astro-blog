@@ -1,13 +1,12 @@
 ---
 title: "平均场博弈多代理人：用 N 人博弈的对称均衡解做做市策略"
 description: "手写 N 代理人平均场博弈（AFG），把每个做市商的库存-价差决策耦合进一个 McKee-Fokker-Numen 方程组：N→∞ 极限下对称均衡由分布均值库存的线性响应给出，500 个 Agent 仿真与解析解对拍（价差偏差 <3%）。"
+publishDate: '2026-10-30'
 tags:
   - 平均场博弈
   - 多代理人
   - 做市策略
   - McKean-Fokker-Numen
-date: 2026-10-30
-lastUpdated: 2026-10-30
 ---
 
 ## 从 N 个做市商到平均场

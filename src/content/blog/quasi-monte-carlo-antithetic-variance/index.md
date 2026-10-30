@@ -1,14 +1,13 @@
 ---
 title: "准蒙特卡洛反同类方差：从 Sobol 序列到 n^{-1} 收敛"
 description: "用 Sobol + Antithetic 序列替代随机数，把欧式期权定价的 MC 收敛率从 n^{-1/2} 推到 n^{-1}。64 维下实测 Sobol 收敛率 p=0.53、Antithetic p=1.00，诚实讨论高维局限。"
+publishDate: '2026-10-30'
 tags:
   - 准蒙特卡洛
   - Sobol 序列
   - 反同类方差
   - 控制变量法
   - 期权定价
-date: 2026-10-30
-lastUpdated: 2026-10-30
 ---
 
 ## 为什么随机数不够好？
