@@ -10,5 +10,19 @@ const desc = '输入股票代码，实时查询行情、K线、资金流向与�
 ---
 
 <PageLayout title={title} meta={{ title, description: desc }}>
+  <div slot='sidebar'>
+    <div class='sq-watch' id='sq-watch'>
+      <div class='sq-watch-head'>
+        <span class='sq-watch-title'>自选列表</span>
+        <span class='sq-watch-hint'>点击代码直接查看 · × 移除</span>
+      </div>
+      <div class='sq-watch-list' id='sq-watchlist'></div>
+      <div class='sq-watch-add'>
+        <input id='sq-watch-add' class='sq-input' inputmode='numeric' placeholder='添加代码，如 600519' autocomplete='off' />
+        <button class='sq-btn' id='sq-watch-add-btn' type='button'>添加</button>
+      </div>
+    </div>
+  </div>
+
   <StockQuote locale='zh' />
 </PageLayout>
