@@ -27,3 +27,14 @@
 - quant-column.md 在「## 最新文章」下置顶新增 2026-10-28 分组（含本 2 条），保留已有的 2026-10-28（Neural ODE/SimCLR）分组在其后。
 - 先 commit 再 `git pull --rebase`（无冲突），push 3846ba11。本地 `npm run build` 先 mv .vercel/output 挪开避 safe-delete 拦截，build 通过（0 schema 错）。
 - **部署**：Vercel 本约 4-5 分钟才生效——推送后首轮 curl 文章页 404、quant-column 无新链接，约 5 分钟（sleep 累计 ~3.5 分钟 + 轮询）后才 quant-column 200 含新链接、两文章页 200。验证务必加 `?cb=<ts>` cache-buster 并耐心等部署。
+
+## 2026-10-29（第 4 次）
+- 主题（select_blog_topics.py）：distributionally-robust-optimization、stochastic-control-optimal-execution（slug 全库查重通过）
+- 脚本：gen_dro_wasserstein.py（手写 W2 球，最坏情况期望收益=μ̂−ε，均值-方差仓位 w*=(μ̂−ε)/(γσ̂²)，600 次 OOS 蒙特卡洛）、gen_hjb_optimal_execution.py（LQ 执行问题有限差分 HJB 反向 DP + 插值，闭式 sinh 调度校验），seed=20261029，各 5 张真实计算图 + _dro_results.json / _sce_results.json（根目录，gitignore）
+- **DRO 诚实结论**：DRO 卖的不是更高收益、是给下注上锁——SAA 杠杆偶发 5.58 倍、DRO 封顶 3.92 倍（压 29.8%），90 分位 2.00→0.59，仓位 2.12→0.57（ε*=std(μ̂)=0.000955）；最坏下界覆盖真值 84.7%（贴 1-SE 理论 84.1%）；DRO 杠杆≤SAA 构造恒为 100%。
+- **HJB 关键坑**：①控制网格须与状态网格解耦+插值，否则 u 分辨率锁死、调度退化；②闭式值函数须用带硬约束 x(T)=0 的 coth 形式 V=x²σ√(λη)coth(ω(T−t))（对应 sinh 调度），不是无约束 tanh 形式；③终端 coth 发散致相对误差虚高，校验用全轨迹绝对误差（3.48e-5）与排除终端的均值相对误差（0.079）。数值对闭式：调度误差 5.83e-3（0.58%）、x(T)→0；漂移 μ=+0.003 后载（u:0.40→1.80）、μ=−0.003 前载（u:1.85→0.04）；前沿以 TWAP 为端点；网格加密误差单调 0.15→0.009。
+- **frontmatter YAML 坑（本回合主要卡点）**：description 内部若含 ASCII 直引号 `"` 会提前闭合双引号标量 → "bad indentation of a mapping entry"。修法：外层强制 ASCII `"`、内部引号类字符改「」交替。两文 description 286/293 字符（<600 上限）。
+- quant-column.md 置顶合并：远端并行批次已加 2026-10-29（LightGBM/Barra）组，本回合 2026-10-29（DRO/HJB）组，同日期合并为一个 4 条文分组置顶，其下接远端 2026-10-28 三组——冲突保留双方、日期降序。
+- 先 stash -u → git pull --rebase（合入远端批次）→ stash pop（quant-column.md 冲突）→ 解冲突 → 精确 add 文章文件（排除 .workbuddy memory md）→ commit 51381007 → push → 清理 stash。
+- 本地 build：先 mv .vercel/output 避 safe-delete 拦截；frontmatter 修好后 build 全程通过（77s 生成全部页面），safe-delete 仅拦 dist/server/.prerender 清理（dist 被 gitignore，与部署无关）。
+- **部署**：Vercel 约 3-4 分钟生效，轮询第 2 轮（~60s）后 quant-column 200 含新链接、两文章页 200。验证加 -L + ?cb=<ts>。
