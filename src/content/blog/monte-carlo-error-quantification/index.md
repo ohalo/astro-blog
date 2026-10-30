@@ -1,7 +1,7 @@
 ---
 title: '蒙特卡洛误差量化：给你的回测结果配一个可信区间'
 description: '蒙特卡洛模拟的误差随 sqrt(N) 衰减，但 N 多大才算够？用 Bootstrap 重抽样和 Batch Mean 法给回测夏普率算出置信区间，别再拿点估计当结论了。'
-pubDate: 2026-10-30
+publishDate: 2026-10-30
 category: 实盘系统
 tags:
   - 蒙特卡洛

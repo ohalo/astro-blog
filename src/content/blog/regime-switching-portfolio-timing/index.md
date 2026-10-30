@@ -1,7 +1,7 @@
 ---
 title: 'Regime-Switching Portfolio Timing：让组合权重随牛熊自动呼吸'
 description: '用隐马尔可夫模型（HMM）识别牛/熊/震荡三个 regime，再给每个 regime 配一套最优权重——不是预测行情，是让组合自己适配行情。'
-pubDate: 2026-10-30
+publishDate: 2026-10-30
 category: 实盘系统
 tags:
   - 隐马尔可夫
