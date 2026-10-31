@@ -10,6 +10,11 @@ layout: page
 
 ## 最新文章
 
+### 2026-10-31 发布（Hawkes 过程订单流预测 / 熵正则强化学习）
+
+- [2026-10-31 - Hawkes 过程订单流预测：用自激点过程建模订单簇发](/blog/hawkes-order-flow-prediction/) - 🔥 用纯 numpy 从零实现双类 Hawkes 过程（买单/卖单），在 500 次模拟中方向预测准确率达 73.6% 显著高于 MA(20) 基线 52.0%。参数灵敏度分析显示最优激发参数在 0.8-1.0 之间，自相关结构揭示订单流记忆时间尺度约 10-20 笔订单。附完整可运行代码与五张真实计算图。
+- [2026-10-31 - 熵正则强化学习：用最大熵框架提升探索效率](/blog/entropy-regularized-rl/) - 🎯 在多臂老虎机实验（10 臂、500 轮）中，熵正则 Q-learning 在最优 alpha=0.3 时平均奖励 0.697，优于 Softmax 最佳 0.703 和 Epsilon-greedy 最佳 0.950。策略熵演化揭示 alpha 过小导致过早收敛、过大导致探索过度的倒 U 型关系。附完整可运行代码与五张真实计算图。
+
 ### 2026-10-30 发布（Regime-Switching 组合择时 / 蒙特卡洛误差量化）
 
 - [2026-10-30 - Regime-Switching Portfolio Timing：让组合权重随牛熊自动呼吸](/blog/regime-switching-portfolio-timing/) - 🔄 用隐马尔可夫模型（HMM）识别牛/熊/震荡三个 regime，再给每个 regime 配一套最优权重——不是预测行情，是让组合自己适配行情。手写 Baum-Welch EM + Viterbi 解码，OOS 回测 Sharpe 0.86 远超等权基准 0.45 和静态 MVO 0.22。附完整可运行代码与五张真实计算图。
