@@ -417,6 +417,91 @@ const { locale = 'zh' } = Astro.props
     padding: 0;
     margin-bottom: 0;
   }
+  /* 锚定与变化说明 */
+  .sq-anchor {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    background: rgba(212, 172, 55, 0.04);
+  }
+  .sq-anchor-row {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 12px;
+    padding: 3px 0;
+  }
+  .sq-anchor-row .k {
+    color: var(--muted);
+    flex: none;
+  }
+  .sq-anchor-row .v {
+    text-align: right;
+    color: var(--cream);
+  }
+  .sq-anchor-in {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 8px 0 4px;
+  }
+  .sq-val-chk {
+    align-items: center;
+  }
+  .sq-val-chk input[type='checkbox'] {
+    width: auto;
+    accent-color: var(--gold);
+  }
+  .sq-change {
+    margin-top: 8px;
+    padding: 9px 11px;
+    border-radius: 9px;
+    font-size: 12px;
+    line-height: 1.65;
+    background: rgba(63, 166, 106, 0.1);
+    border: 1px solid rgba(63, 166, 106, 0.3);
+    color: #cfeee0;
+  }
+  .sq-chg-warn {
+    background: rgba(226, 75, 74, 0.12);
+    border-color: rgba(226, 75, 74, 0.38);
+    color: #f6cfcf;
+  }
+  .sq-chg-edit {
+    background: rgba(212, 172, 55, 0.1);
+    border-color: var(--line);
+    color: var(--cream);
+  }
+  .sq-chg-diffs {
+    margin-top: 5px;
+    font-weight: 600;
+  }
+  .sq-chg-rng {
+    margin-top: 4px;
+    color: var(--muted);
+  }
+  /* 常驻一行摘要 */
+  .sq-anchor-brief {
+    margin: 10px 0 14px;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--ink-1);
+    line-height: 1.7;
+  }
+  .sq-anchor-brief b {
+    color: var(--cream);
+  }
+  .sq-brief-warn {
+    color: var(--up);
+  }
+  .sq-brief-na {
+    color: var(--muted);
+  }
   .sq-val h3 {
     font-size: 14px;
     color: var(--gold);
@@ -687,9 +772,14 @@ const { locale = 'zh' } = Astro.props
     dcfTrio,
     combineZones,
     bandOf,
+    deriveFundamentals,
+    deriveBands,
+    relChange,
     type PeScenario,
     type PbScenario,
-    type Zone
+    type Zone,
+    type Fundamentals,
+    type AnchorKind
   } from '../../lib/valuation'
 
   const LABELS = {
@@ -772,6 +862,29 @@ const { locale = 'zh' } = Astro.props
       zoneTitle: '综合估值区间',
       resetVal: '重置默认',
       saveNote: '假设已按代码保存',
+      /* 锚定与变化说明（价格无关） */
+      anchorTitle: '估值锚定与变化说明',
+      anchorRoe: 'ROE 推导（戈登增长 PB=(ROE−g)/(COE−g)，PE=PB/ROE）',
+      anchorPeg: 'PEG=1 锚点（ROE 不可用，按增速推 PE）',
+      anchorManual: '手动倍数（你指定的 PE/PB，不再自动随财报同步）',
+      anchorNone: '数据不足，请手填 PE/PB 或增速',
+      coe: '权益成本 COE %',
+      gPerp: '永续增长 g %',
+      autoAnchor: '自动锚定（由 ROE 推导，推荐）',
+      derivedFacts: '基本面（由行情推导，不含当日股价）',
+      factEps: 'EPS',
+      factBvps: 'BVPS',
+      factRoe: 'ROE',
+      factShares: '总股本',
+      asOfLabel: '锚定基准日',
+      changeInit: '首次计算：已按当前基本面建立锚定快照。此后区间【不随股价波动】，只有财报/净资产/股本变动才会移动。',
+      changeUnchanged:
+        '基本面未更新 → 估值区间与上次一致。股价波动【不改变内在价值区间】，只改变当前判定（现价落在低估/合理/高估哪一档）。',
+      changeFund:
+        '检测到基本面变化 → 估值区间已随之调整。区间变动只应由财报更新、股本变动、重组/增发等重大事项驱动，请核实是否有对应公告。',
+      changeEdited: '你修改了假设 → 区间已按新假设重算（此变化由人为假设调整触发，非基本面变动）。',
+      changeFrom: '由',
+      changeTo: '调整为',
       undervalued: '低估',
       fair: '合理',
       overvalued: '高估',
@@ -859,6 +972,29 @@ const { locale = 'zh' } = Astro.props
       zoneTitle: 'Combined valuation range',
       resetVal: 'Reset',
       saveNote: 'Assumptions saved per code',
+      anchorTitle: 'Anchoring & change log',
+      anchorRoe: 'ROE-derived (Gordon PB=(ROE−g)/(COE−g), PE=PB/ROE)',
+      anchorPeg: 'PEG=1 anchor (ROE unavailable, PE from growth)',
+      anchorManual: 'Manual multiples (your PE/PB; no longer auto-synced with reports)',
+      anchorNone: 'Insufficient data — fill PE/PB or growth manually',
+      coe: 'Cost of equity COE %',
+      gPerp: 'Perpetual growth g %',
+      autoAnchor: 'Auto-anchor (derive from ROE, recommended)',
+      derivedFacts: 'Fundamentals (derived from quotes, price-independent)',
+      factEps: 'EPS',
+      factBvps: 'BVPS',
+      factRoe: 'ROE',
+      factShares: 'Shares',
+      asOfLabel: 'Anchor date',
+      changeInit:
+        'First calc: anchored to current fundamentals. The range will NOT drift with daily price — only earnings / net assets / share-count changes move it.',
+      changeUnchanged:
+        'Fundamentals unchanged → range identical to last time. Price moves do NOT change intrinsic value, only which band (undervalued/fair/overvalued) price falls in.',
+      changeFund:
+        'Fundamentals changed → range adjusted accordingly. Such a move should only come from earnings updates, share-count changes, restructuring, etc. Please verify the announcement.',
+      changeEdited: 'You edited assumptions → range recomputed (triggered by your input, not by fundamentals).',
+      changeFrom: 'from',
+      changeTo: 'to',
       undervalued: 'Undervalued',
       fair: 'Fair',
       overvalued: 'Overvalued',
@@ -873,7 +1009,7 @@ const { locale = 'zh' } = Astro.props
   let L: any = LABELS.zh
 
   const WL_KEY = 'sq_watchlist_v1'
-  const A_KEY = 'sq_assump_v1'
+  const A_KEY = 'sq_val_v2'
 
   function fmt(n: number, d = 2): string {
     if (n == null || isNaN(n)) return '—'
@@ -938,7 +1074,12 @@ const { locale = 'zh' } = Astro.props
       .join('')
   }
 
-  /* ---------- 估值假设 localStorage ---------- */
+  /* ---------- 估值假设 localStorage ----------
+     v2：存 { a: 假设, snap: 上次基本面快照 }。
+     刻意【不存股价】——股价是波动量，存进去估值又会跟着价格走。
+     关键原则：合理倍数必须由基本面(ROE)推导，绝不能取当日 PE/PB；
+     否则 合理价 = EPS × 当日PE = 现价，区间退化成现价±20%，
+     每天随股价漂移且判定恒为「合理」，毫无信息量。 */
   interface Assump {
     eps: number
     bvps: number
@@ -947,51 +1088,111 @@ const { locale = 'zh' } = Astro.props
     pbLow: number
     pbHigh: number
     growth: number
+    coe: number // 权益成本（戈登口径折现率）
+    gPerp: number // 永续增长率
+    autoAnchor: boolean // true=由 ROE 自动推导合理倍数（价格无关）
     fcff: string
     wacc: number
     g: number
     netDebt: number
     method: string
   }
-  function loadAssump(code: string): Assump | null {
+  interface Snap {
+    fund: Fundamentals
+    zone: { low: number; mid: number; high: number }
+    asOf: string
+    anchor: AnchorKind
+  }
+  interface ValStore {
+    a: Assump
+    snap: Snap | null
+  }
+  function loadVal(code: string): ValStore | null {
     try {
       const all = JSON.parse(localStorage.getItem(A_KEY) || '{}')
-      return all[code] || null
+      const v = all[code]
+      return v && v.a ? (v as ValStore) : null
     } catch {
       return null
     }
   }
-  function saveAssump(code: string, a: Assump) {
+  function saveVal(code: string, a: Assump, snap: Snap | null) {
     try {
       const all = JSON.parse(localStorage.getItem(A_KEY) || '{}')
-      all[code] = a
+      all[code] = { a, snap }
       localStorage.setItem(A_KEY, JSON.stringify(all))
     } catch {
       /* ignore */
     }
   }
-  function defaultAssump(d: any): Assump {
-    const pe = d.peTTM && d.peTTM > 0 ? d.peTTM : 0
-    const pb = d.pb && d.pb > 0 ? d.pb : 0
+
+  /** 自动锚定：由基本面(ROE)推导合理倍数——不引用当日股价 */
+  function applyAnchor(a: Assump, f: Fundamentals): Assump {
+    if (!a.autoAnchor) return a
+    const b = deriveBands(f, a.coe, a.gPerp, a.growth)
+    if (b.kind === 'none') return a
     return {
-      eps: pe > 0 ? r2(d.price / pe) : 0,
-      bvps: pb > 0 ? r2(d.price / pb) : 0,
-      peLow: pe > 0 ? r2(pe * 0.8) : 0,
-      peHigh: pe > 0 ? r2(pe * 1.2) : 0,
-      pbLow: pb > 0 ? r2(pb * 0.8) : 0,
-      pbHigh: pb > 0 ? r2(pb * 1.2) : 0,
+      ...a,
+      peLow: r2(b.peLow),
+      peHigh: r2(b.peHigh),
+      pbLow: r2(b.pbLow),
+      pbHigh: r2(b.pbHigh)
+    }
+  }
+  function anchorKindOf(a: Assump, f: Fundamentals): AnchorKind {
+    if (!a.autoAnchor) return 'manual'
+    return deriveBands(f, a.coe, a.gPerp, a.growth).kind
+  }
+  function defaultAssump(_d: any, f: Fundamentals): Assump {
+    const base: Assump = {
+      eps: r2(f.eps),
+      bvps: r2(f.bvps),
+      peLow: 0,
+      peHigh: 0,
+      pbLow: 0,
+      pbHigh: 0,
       growth: 12,
+      coe: 0.1,
+      gPerp: 0.03,
+      autoAnchor: true,
       fcff: '',
       wacc: 0.1,
       g: 0.025,
       netDebt: 0,
       method: 'all'
     }
+    return applyAnchor(base, f)
+  }
+  /** 基本面快照：只含价格无关项（EPS/BVPS/ROE/股本） */
+  function fundamentalsOf(d: any): Fundamentals {
+    return deriveFundamentals(d.price, d.peTTM, d.pb, d.totalShares)
+  }
+  interface Change {
+    type: 'init' | 'unchanged' | 'fundamentals' | 'edited'
+    prevZone?: { low: number; mid: number; high: number }
+    diffs?: { label: string; old: number; now: number; rel: number }[]
+  }
+  /** 与上次快照对比：判断估值区间是否「应该」变化，以及变化由什么驱动 */
+  function diffSnap(prev: Snap | null, f: Fundamentals): Change {
+    if (!prev || !prev.fund) return { type: 'init' }
+    const TOL = 0.005 // 0.5% 容差，吸收数据源四舍五入
+    const items: { label: string; old: number; now: number; rel: number }[] = []
+    const push = (label: string, o: number, n: number) => {
+      const rel = relChange(o, n)
+      if (Math.abs(rel) > TOL) items.push({ label, old: o, now: n, rel })
+    }
+    push('EPS', prev.fund.eps, f.eps)
+    push('BVPS', prev.fund.bvps, f.bvps)
+    push('ROE', prev.fund.roe, f.roe)
+    push('总股本', prev.fund.shares, f.shares)
+    if (!items.length) return { type: 'unchanged', prevZone: prev.zone }
+    return { type: 'fundamentals', diffs: items, prevZone: prev.zone }
   }
 
   /* ---------- 估值计算（与技能脚本一致） ---------- */
   function readAssumpFromDom(): Assump {
     const g = (id: string) => (document.getElementById(id) as HTMLInputElement)?.value ?? ''
+    const chk = (id: string) => (document.getElementById(id) as HTMLInputElement)?.checked ?? true
     return {
       eps: parseNum(g('sq_i_eps')),
       bvps: parseNum(g('sq_i_bvps')),
@@ -1000,12 +1201,43 @@ const { locale = 'zh' } = Astro.props
       pbLow: parseNum(g('sq_i_pbLow')),
       pbHigh: parseNum(g('sq_i_pbHigh')),
       growth: parseNum(g('sq_i_growth')),
+      coe: parseNum(g('sq_i_coe')) / 100 || 0.1,
+      gPerp: parseNum(g('sq_i_gPerp')) / 100 || 0.03,
+      autoAnchor: chk('sq_i_auto'),
       fcff: g('sq_i_fcff'),
       wacc: parseNum(g('sq_i_wacc')),
       g: parseNum(g('sq_i_g')),
       netDebt: parseNum(g('sq_i_netDebt')),
       method: (document.getElementById('sq_method') as HTMLSelectElement)?.value || 'all'
     }
+  }
+
+  /**
+   * 解析本次估值：推导基本面 → 载入/初始化假设 → 自动锚定倍数 → 与上次快照对比。
+   * 返回的 change 用于向用户说明「区间为何变化 / 为何没变」。
+   */
+  function resolveValuation(d: any): {
+    a: Assump
+    fund: Fundamentals
+    zone: Zone | null
+    change: Change
+    anchor: AnchorKind
+  } {
+    const fund = fundamentalsOf(d)
+    const stored = loadVal(d.code)
+    let a: Assump = stored?.a ?? defaultAssump(d, fund)
+    if (a.autoAnchor) {
+      // 自动模式：EPS/BVPS 是事实（随财报更新），倍数由 ROE 推导（不含股价）
+      a = applyAnchor({ ...a, eps: r2(fund.eps), bvps: r2(fund.bvps) }, fund)
+    }
+    const change = diffSnap(stored?.snap ?? null, fund)
+    const { zone } = computeZone(d, a)
+    return { a, fund, zone, change, anchor: anchorKindOf(a, fund) }
+  }
+  function todayStr(): string {
+    const t = new Date()
+    const p = (n: number) => String(n).padStart(2, '0')
+    return `${t.getFullYear()}-${p(t.getMonth() + 1)}-${p(t.getDate())}`
   }
 
   function computeZone(d: any, a: Assump): { zone: Zone | null; pe: PeScenario | null; pb: PbScenario | null; dcf: { low: number; mid: number; high: number } | null } {
@@ -1195,12 +1427,75 @@ const { locale = 'zh' } = Astro.props
   }
 
   /* ---------- 估值面板 HTML ---------- */
-  function valuationHTML(d: any, a: Assump, L: any): string {
+  /** 变化说明文案：未变 / 基本面驱动 / 人为改假设 / 首次 */
+  function changeHTML(change: Change, zoneNow: Zone | null, L: any): string {
+    if (change.type === 'init') return L.changeInit
+    if (change.type === 'unchanged') return L.changeUnchanged
+    if (change.type === 'edited') return L.changeEdited
+    const diffs = (change.diffs || [])
+      .map(
+        (x) =>
+          `${x.label} ${fmt(x.old)} → ${fmt(x.now)} (${x.rel > 0 ? '+' : ''}${(x.rel * 100).toFixed(1)}%)`
+      )
+      .join('　·　')
+    const prev = change.prevZone
+    const rng =
+      prev && zoneNow
+        ? `<div class='sq-chg-rng'>${L.changeFrom} ${fmt(prev.low)} – ${fmt(prev.high)}　${L.changeTo} ${fmt(zoneNow.low)} – ${fmt(zoneNow.high)}</div>`
+        : ''
+    return `${L.changeFund}<div class='sq-chg-diffs'>${diffs}</div>${rng}`
+  }
+
+  function valuationHTML(
+    d: any,
+    a: Assump,
+    L: any,
+    fund: Fundamentals,
+    change: Change,
+    anchor: AnchorKind,
+    asOf: string
+  ): string {
     const sel = (m: string) => (a.method === m ? 'active' : '')
+    const anchorText =
+      anchor === 'roe'
+        ? L.anchorRoe
+        : anchor === 'peg'
+          ? L.anchorPeg
+          : anchor === 'manual'
+            ? L.anchorManual
+            : L.anchorNone
+    const chgCls =
+      change.type === 'fundamentals' ? 'sq-chg-warn' : change.type === 'edited' ? 'sq-chg-edit' : ''
+    // 基本面发生变化时自动展开，确保「为什么变了」被看到
+    const openAttr = change.type === 'fundamentals' ? ' open' : ''
     return `
-    <details class='sq-val-details'>
+    <details class='sq-val-details'${openAttr}>
       <summary class='sq-val-summary'><span>${L.valTitle}</span><small>${L.valSub}</small></summary>
       <div class='sq-val'>
+      <div class='sq-anchor'>
+        <div class='sq-anchor-row'>
+          <span class='k'>${L.derivedFacts}</span>
+          <span class='v'>${L.factEps} ${fmt(fund.eps)}　${L.factBvps} ${fmt(fund.bvps)}　${L.factRoe} ${(fund.roe * 100).toFixed(1)}%　${L.factShares} ${(fund.shares / 1e8).toFixed(2)}亿股</span>
+        </div>
+        <div class='sq-anchor-row'>
+          <span class='k'>${L.asOfLabel}</span><span class='v'>${esc(asOf)}</span>
+        </div>
+        <div class='sq-anchor-row'>
+          <span class='k'>锚定</span><span class='v'>${anchorText}</span>
+        </div>
+        <div class='sq-anchor-in'>
+          <div class='sq-val-in'>
+            <label>${L.coe}</label><input id='sq_i_coe' type='number' step='0.5' value='${(a.coe * 100).toFixed(1)}' />
+          </div>
+          <div class='sq-val-in'>
+            <label>${L.gPerp}</label><input id='sq_i_gPerp' type='number' step='0.5' value='${(a.gPerp * 100).toFixed(1)}' />
+          </div>
+          <div class='sq-val-in sq-val-chk'>
+            <label>${L.autoAnchor}</label><input id='sq_i_auto' type='checkbox' ${a.autoAnchor ? 'checked' : ''} />
+          </div>
+        </div>
+        <div class='sq-change ${chgCls}'>${changeHTML(change, null, L)}</div>
+      </div>
       <div class='sq-method'>
         <span style='font-size:12px;color:var(--muted);align-self:center'>${L.methodLabel}</span>
         <button type='button' data-m='pe' class='${sel('pe')}'>${L.mPE}</button>
@@ -1301,9 +1596,21 @@ const { locale = 'zh' } = Astro.props
   /* ---------- 根据 DOM 输入重算估值（不重建输入框，保持焦点） ---------- */
   let curData: any = null
   let curCode = ''
+  let curVal: {
+    a: Assump
+    fund: Fundamentals
+    zone: Zone | null
+    change: Change
+    anchor: AnchorKind
+  } | null = null
+  let curAsOf = ''
   function recompute() {
-    if (!curData) return
-    const a = readAssumpFromDom()
+    if (!curData || !curVal) return
+    let a = readAssumpFromDom()
+    // 自动锚定：倍数由 ROE 推导（依旧不含当日股价）
+    if (a.autoAnchor) {
+      a = applyAnchor({ ...a, eps: r2(curVal.fund.eps), bvps: r2(curVal.fund.bvps) }, curVal.fund)
+    }
     const { zone, pe, pb, dcf } = computeZone(curData, a)
     const price = curData.price
 
@@ -1365,14 +1672,64 @@ const { locale = 'zh' } = Astro.props
     // 重绘图表（含区间）
     const chart = document.getElementById('sq-chart')
     if (chart) chart.innerHTML = candleSVG(curData.kline, L, zone, price)
-    // 保存假设
-    saveAssump(curCode, a)
+    // 保存假设 + 刷新快照（快照只含基本面与区间，刻意不含股价）
+    const edited = JSON.stringify(a) !== JSON.stringify(curVal.a)
+    const snapZone = zone ? { low: zone.low, mid: zone.mid, high: zone.high } : null
+    saveVal(
+      curCode,
+      a,
+      snapZone
+        ? {
+            fund: curVal.fund,
+            zone: snapZone,
+            asOf: curAsOf || todayStr(),
+            anchor: anchorKindOf(a, curVal.fund)
+          }
+        : null
+    )
+    // 用户改了假设 → 变化说明切为「人为调整」，区别于基本面变动
+    if (edited && curVal.change.type !== 'edited') {
+      curVal = { ...curVal, change: { type: 'edited' } }
+      const chg = document.querySelector('.sq-change')
+      if (chg) {
+        chg.className = 'sq-change sq-chg-edit'
+        chg.innerHTML = L.changeEdited
+      }
+      const brief = document.querySelector('.sq-brief-flag')
+      if (brief) brief.innerHTML = L.changeEdited
+    }
     const note = document.getElementById('sq_save_note')
     if (note) note.textContent = L.saveNote
   }
 
   /* ---------- 主渲染 ---------- */
-  function render(d: any, L: any): string {
+  /** 常驻可见的一行摘要：区间 + 是否变化 + 当前判定（面板可折叠，但这一行始终可见） */
+  function briefHTML(v: any, d: any, L: any): string {
+    const z = v.zone
+    const anchorText =
+      v.anchor === 'roe'
+        ? L.anchorRoe
+        : v.anchor === 'peg'
+          ? L.anchorPeg
+          : v.anchor === 'manual'
+            ? L.anchorManual
+            : L.anchorNone
+    if (!z) return `<span class='sq-brief-na'>${anchorText}</span>`
+    const band = bandOf(z, d.price)
+    const bandTxt =
+      band === 'undervalued' ? L.undervalued : band === 'overvalued' ? L.overvalued : L.fair
+    const flagTxt =
+      v.change.type === 'fundamentals'
+        ? `<b class='sq-brief-warn'>基本面已变，区间已调整</b>`
+        : v.change.type === 'unchanged'
+          ? '区间未变（基本面未更新）'
+          : v.change.type === 'edited'
+            ? '假设已改'
+            : '首次锚定'
+    return `区间 ${fmt(z.low)} – ${fmt(z.high)}（${anchorText}）　·　<span class='sq-brief-flag'>${flagTxt}</span>　·　现价 ${fmt(d.price)} → <b>${bandTxt}</b>`
+  }
+
+  function render(d: any, L: any, v: ReturnType<typeof resolveValuation>): string {
     const up = d.change >= 0
     const dirCls = up ? 'up' : 'down'
     const sign = up ? '+' : ''
@@ -1435,10 +1792,11 @@ const { locale = 'zh' } = Astro.props
             <i class='zdot' style='background:#e07b53'></i>${L.fairHigh}
           </span>
         </div>
-        <div id='sq-chart'>${candleSVG(d.kline, L, null, d.price) || `<div class='sq-empty sq-empty-kline'>${L.klineNA}</div>`}</div>
+        <div id='sq-chart'>${candleSVG(d.kline, L, v.zone, d.price) || `<div class='sq-empty sq-empty-kline'>${L.klineNA}</div>`}</div>
+        <div class='sq-anchor-brief'>${briefHTML(v, d, L)}</div>
         <div class='sq-grid'>${grid}</div>
       </div>
-      ${valuationHTML(d, loadAssump(d.code) || defaultAssump(d), L)}
+      ${valuationHTML(d, v.a, L, v.fund, v.change, v.anchor, curAsOf || todayStr())}
       <div class='sq-cols'>
         <div class='sq-card'><h3>${L.basic}</h3>${basic}</div>
         <div class='sq-card'><h3>${L.flow}</h3>${flowBars(d.fundFlow, L)}</div>
@@ -1476,12 +1834,29 @@ const { locale = 'zh' } = Astro.props
       if (!res.ok || data.error) throw new Error(data.error || 'error')
       curData = data
       curCode = data.code
-      // 若已有保存假设则使用，否则用默认（render 内已处理）
-      result.innerHTML = render(data, L)
+      // 解析估值：推导基本面 → 载入/初始化假设 → 自动锚定 → 与上次快照对比
+      const v = resolveValuation(data)
+      curVal = v
+      curAsOf = todayStr()
+      // 首次或基本面变化时落盘快照
+      if (v.change.type === 'init' || v.change.type === 'fundamentals') {
+        saveVal(
+          data.code,
+          v.a,
+          v.zone
+            ? {
+                fund: v.fund,
+                zone: { low: v.zone.low, mid: v.zone.mid, high: v.zone.high },
+                asOf: curAsOf,
+                anchor: v.anchor
+              }
+            : null
+        )
+      }
+      result.innerHTML = render(data, L, v)
       // 同步隐藏的 method 选择器为当前假设所用方法
-      const a = loadAssump(data.code) || defaultAssump(data)
       const sel = document.getElementById('sq_method') as HTMLSelectElement | null
-      if (sel) sel.value = a.method
+      if (sel) sel.value = v.a.method
       // 初始区间：用保存/默认假设计算后重绘图表 + 填充估值数值
       recompute()
       renderWatch(data.code)
@@ -1520,19 +1895,31 @@ const { locale = 'zh' } = Astro.props
       })
     })
     // 估值输入实时重算
-    const ids = ['sq_i_eps', 'sq_i_bvps', 'sq_i_peLow', 'sq_i_peHigh', 'sq_i_pbLow', 'sq_i_pbHigh', 'sq_i_growth', 'sq_i_fcff', 'sq_i_wacc', 'sq_i_g', 'sq_i_netDebt']
+    const ids = [
+      'sq_i_eps', 'sq_i_bvps', 'sq_i_peLow', 'sq_i_peHigh', 'sq_i_pbLow', 'sq_i_pbHigh',
+      'sq_i_growth', 'sq_i_coe', 'sq_i_gPerp', 'sq_i_fcff', 'sq_i_wacc', 'sq_i_g', 'sq_i_netDebt'
+    ]
     ids.forEach((id) => {
       const el = document.getElementById(id)
       el?.addEventListener('input', recompute)
     })
+    // 自动锚定开关用 change 事件（checkbox）
+    document.getElementById('sq_i_auto')?.addEventListener('change', recompute)
     // 重置默认
     document.getElementById('sq_reset_val')?.addEventListener('click', () => {
-      if (!curData) return
-      const a = defaultAssump(curData)
-      saveAssump(curCode, a)
-      // 重渲染整块估值面板以重置输入框
-      const valBox = document.querySelector('.sq-val')
-      if (valBox) valBox.outerHTML = valuationHTML(curData, a, L)
+      if (!curData || !curVal) return
+      const a = defaultAssump(curData, curVal.fund)
+      const anchor = anchorKindOf(a, curVal.fund)
+      // 重置：清掉快照，按默认假设重新锚定
+      saveVal(curCode, a, null)
+      curVal = { ...curVal, a, anchor, change: { type: 'init' } }
+      // 整块替换（含 details 外壳），以重置所有输入框
+      const valBox = document.querySelector('.sq-val-details')
+      if (valBox) {
+        valBox.outerHTML = valuationHTML(
+          curData, a, L, curVal.fund, curVal.change, anchor, curAsOf || todayStr()
+        )
+      }
       recompute()
       wireResult()
     })

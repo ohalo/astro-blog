@@ -167,3 +167,134 @@ export function bandOf(zone: Zone, price: number): ValuationBand {
   if (price > zone.high) return 'overvalued'
   return 'fair'
 }
+
+/* MARKER_ANCHOR_V1 */
+
+/* =========================================================================
+ * 基本面锚定（价格无关）
+ *
+ * 关键原则：内在价值区间【不能】由当日行情 PE/PB 反推。
+ * 若把「合理 PE」取成当日 PE，则 合理价 = EPS × 当日PE = (价/PE) × PE = 现价，
+ * 估值区间就退化成现价 ±20%，每天随股价漂移，且判定恒为「合理」——毫无信息量。
+ *
+ * 正确的锚点是价格无关的基本面：
+ *   EPS  = 价 / PE_TTM    （价与 PE 同向，比值只随财报更新变动）
+ *   BVPS = 价 / PB        （只随净资产更新变动）
+ *   ROE  = EPS / BVPS = PB / PE_TTM （价格无关）
+ * 再由 ROE 用戈登增长/剩余收益口径推合理倍数：
+ *   PB = (ROE - g) / (COE - g)
+ *   PE = PB / ROE
+ * 三者都不含当日股价，因此区间日间恒定；只有财报、净资产、股本变动才会移动。
+ * ========================================================================= */
+
+export interface Fundamentals {
+  eps: number
+  bvps: number
+  roe: number // 小数，如 0.203 表示 20.3%
+  shares: number
+}
+
+/** 由行情推导价格无关的基本面。PE/PB 缺失或为负时对应字段为 0（表示不可用）。 */
+export function deriveFundamentals(
+  price: number,
+  peTTM: number | null | undefined,
+  pb: number,
+  totalShares: number
+): Fundamentals {
+  const eps = price > 0 && peTTM != null && peTTM > 0 ? price / peTTM : 0
+  const bvps = price > 0 && pb > 0 ? price / pb : 0
+  const roe = bvps > 0 && eps > 0 ? eps / bvps : 0
+  return { eps, bvps, roe, shares: totalShares || 0 }
+}
+
+/**
+ * 合理 PB（戈登增长 / 剩余收益）：PB = (ROE - g) / (COE - g)
+ * COE-g 过小、或结果非正时压到下限 0.2（ROE<g 属价值毁损）。
+ */
+export function justifiedPb(roe: number, coe: number, g: number): number {
+  const denom = coe - g
+  if (!(denom > 0.005)) return 0
+  const v = (roe - g) / denom
+  if (!isFinite(v)) return 0
+  if (v <= 0.2) return 0.2
+  if (v > 20) return 20
+  return v
+}
+
+/** 合理 PE = 合理 PB / ROE（与 PB 口径内部一致）。 */
+export function justifiedPe(roe: number, coe: number, g: number): number {
+  const pb = justifiedPb(roe, coe, g)
+  if (!(roe > 0) || !(pb > 0)) return 0
+  return pb / roe
+}
+
+/**
+ * 三情景合理倍数：悲观(COE↑、g↓)→倍数更低→价值更低；乐观(COE↓、g↑)→价值更高。
+ * 返回的 low/high 即悲观/乐观，用于构造估值区间。
+ */
+export function justifiedBands(
+  roe: number,
+  coe: number,
+  g: number,
+  spread = 0.015
+): { pbLow: number; pbHigh: number; peLow: number; peHigh: number } {
+  const gP = Math.max(g - spread / 2, 0)
+  const pbP = justifiedPb(roe, coe + spread, gP)
+  const pbM = justifiedPb(roe, coe, g)
+  const coeO = Math.max(coe - spread, 0.02)
+  const gO = Math.min(g + spread / 2, Math.max(coeO - 0.01, 0))
+  const pbO = justifiedPb(roe, coeO, gO)
+  const toPe = (pb: number) => (roe > 0 && pb > 0 ? pb / roe : 0)
+  const pes = [toPe(pbP), toPe(pbM), toPe(pbO)].filter((x) => x > 0)
+  const pbs = [pbP, pbM, pbO].filter((x) => x > 0)
+  return {
+    pbLow: pbs.length ? Math.min(...pbs) : 0,
+    pbHigh: pbs.length ? Math.max(...pbs) : 0,
+    peLow: pes.length ? Math.min(...pes) : 0,
+    peHigh: pes.length ? Math.max(...pes) : 0
+  }
+}
+
+/** PEG=1 锚点（ROE 不可用时的回退）：合理 PE ≈ 净利增速%，悲观/乐观 ±15%。 */
+export function pegBands(growthPct: number): { peLow: number; peHigh: number } {
+  if (!(growthPct > 0)) return { peLow: 0, peHigh: 0 }
+  return { peLow: growthPct * 0.85, peHigh: growthPct * 1.15 }
+}
+
+export type AnchorKind = 'roe' | 'peg' | 'manual' | 'none'
+
+/**
+ * 依据基本面推导合理倍数区间（自动锚定）。
+ * 优先 ROE 推导；ROE 不可用则退回 PEG=1；都不行返回 none，需用户手填假设。
+ */
+export function deriveBands(
+  f: Fundamentals,
+  coe: number,
+  g: number,
+  growthPct: number
+): { kind: AnchorKind; peLow: number; peHigh: number; pbLow: number; pbHigh: number } {
+  if (f.roe > 0) {
+    const b = justifiedBands(f.roe, coe, g)
+    if (b.peLow > 0 && b.peHigh > 0) {
+      return { kind: 'roe', peLow: b.peLow, peHigh: b.peHigh, pbLow: b.pbLow, pbHigh: b.pbHigh }
+    }
+  }
+  const p = pegBands(growthPct)
+  if (p.peLow > 0) {
+    return { kind: 'peg', peLow: p.peLow, peHigh: p.peHigh, pbLow: 0, pbHigh: 0 }
+  }
+  return { kind: 'none', peLow: 0, peHigh: 0, pbLow: 0, pbHigh: 0 }
+}
+
+/** 相对变化率；(old,new) 都为 0 视为未变。 */
+export function relChange(oldV: number, newV: number): number {
+  if (oldV === 0 && newV === 0) return 0
+  if (oldV === 0) return 1
+  return (newV - oldV) / Math.abs(oldV)
+}
+
+/** 基本面是否在容差内未变（默认 0.5%）。用于判断估值区间是否应保持不变。 */
+export function fundamentalsEqual(a: Fundamentals, b: Fundamentals, tol = 0.005): boolean {
+  const eq = (x: number, y: number) => Math.abs(relChange(x, y)) <= tol
+  return eq(a.eps, b.eps) && eq(a.bvps, b.bvps) && eq(a.roe, b.roe) && eq(a.shares, b.shares)
+}
