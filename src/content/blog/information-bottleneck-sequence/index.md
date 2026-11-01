@@ -1,6 +1,7 @@
 ---
 title: "信息瓶颈在序列预测中的应用：压缩预测什么，什么就能被预测"
-date: 2026-11-01
+publishDate: 2026-11-01
+language: zh
 tags: [机器学习, 序列预测, 信息论]
 description: "用信息瓶颈理论在时序预测中实现最优压缩——证明压缩什么、什么就能被预测，并给出可运行的 Python 实现。"
 image: "images/information-bottleneck-sequence/cover.png"

@@ -1,6 +1,7 @@
 ---
 title: "PC算法因果发现：从条件独立推断因子因果图"
-date: 2026-11-01
+publishDate: 2026-11-01
+language: zh
 tags: [因果推断, 因子模型, 统计检验]
 description: "用PC算法从金融数据中自动发现因子间的因果结构，区分真正的因果因子与伪相关因子，并给出可运行的Python实现。"
 image: "images/pc-algorithm-causal-factor/cover.png"
