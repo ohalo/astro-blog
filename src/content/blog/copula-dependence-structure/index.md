@@ -2,7 +2,8 @@
 title: "Copula 尾部依赖建模：用 Copula 捕捉资产间非线性依赖"
 publishDate: 2026-11-07
 language: zh
-tags: [Copula, 尾部依赖, IFM估计, 风险建模]
+tags: [Copula, 尾部依赖, IFM估计, 风险建模, 量化]
+difficulty: advanced
 description: "从 Sklar 定理出发，用正确的 Student-t Copula 尾部依赖公式与 IFM 极大似然估计，配合 40 万次蒙特卡洛实算联合尾部概率。结论：ν̂=3、λ=0.3674，1% 分位下 t-Copula 的联合下尾概率是 Gaussian 的 4.23 倍，组合 ES 放大 17.0%。附完整可运行代码与五张真实计算图。"
 image: "images/copula-dependence-structure/copula_1_heatmap.png"
 ---

@@ -2,7 +2,8 @@
 title: "粒子滤波波动率估计：从噪声价格中提取隐藏波动率"
 publishDate: 2026-11-07
 language: zh
-tags: [随机波动率, 粒子滤波, 状态空间模型, Heston模型]
+tags: [随机波动率, 粒子滤波, 状态空间模型, Heston模型, 量化]
+difficulty: advanced
 description: "用 bootstrap 粒子滤波从可观测价格反推 Heston 隐藏波动率，与实现波动率、EWMA 在同一年化口径下对拍。诚实结论：模型匹配时 MAE 只降 9.11%，参数一旦设错反而落后 19.16%——粒子滤波卖的是模型知识，不是算法魔法。附完整可运行代码、结果 JSON 与五张真实计算图。"
 image: "images/particle-filter-volatility/pf_1_paths.png"
 ---
