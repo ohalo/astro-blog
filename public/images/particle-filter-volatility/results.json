@@ -1,0 +1,64 @@
+{
+  "seed": 20261107,
+  "T": 500,
+  "N": 500,
+  "window_rv": 20,
+  "params": {
+    "kappa": 3.0,
+    "theta": 0.04,
+    "sigma_v": 0.5,
+    "v0": 0.04,
+    "mu": 0.05,
+    "dt": 0.003968253968253968
+  },
+  "rho_main": 0.0,
+  "pf_mae": 0.038071,
+  "rv_mae": 0.041887,
+  "ewma_mae": 0.039303,
+  "pf_corr": 0.8934,
+  "rv_corr": 0.8698,
+  "ewma_corr": 0.8917,
+  "pf_pred_mae": 0.040015,
+  "rv_pred_mae": 0.04366,
+  "resample_count": 47,
+  "ess_mean": 355.3,
+  "true_vol_mean": 0.211656,
+  "pf_vol_mean": 0.207713,
+  "N_sensitivity": {
+    "25": 0.039864,
+    "50": 0.037853,
+    "100": 0.038548,
+    "200": 0.038005,
+    "500": 0.038071,
+    "1000": 0.037227
+  },
+  "misspec_params": {
+    "kappa": 0.5,
+    "theta": 0.04,
+    "sigma_v": 0.1,
+    "v0": 0.04,
+    "mu": 0.05,
+    "dt": 0.003968253968253968
+  },
+  "misspec_pf_mae": 0.049912,
+  "misspec_rv_mae": 0.041887,
+  "mae_improve_pct": 9.11,
+  "mae_improve_pct_misspec": -19.16,
+  "snapshots": {
+    "50": {
+      "true_vol": 0.2364,
+      "pf_vol": 0.2178,
+      "ess": 333.3
+    },
+    "200": {
+      "true_vol": 0.3765,
+      "pf_vol": 0.2991,
+      "ess": 270.3
+    },
+    "400": {
+      "true_vol": 0.0809,
+      "pf_vol": 0.1057,
+      "ess": 200.3
+    }
+  }
+}
