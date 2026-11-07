@@ -1,0 +1,128 @@
+{
+ "n_scan": {
+  "100": {
+   "precision": 0.9682,
+   "recall": 0.7186,
+   "shd": 3.25,
+   "shd_std": 1.841,
+   "recall_std": 0.12
+  },
+  "200": {
+   "precision": 0.9537,
+   "recall": 0.8023,
+   "shd": 2.6,
+   "shd_std": 1.715,
+   "recall_std": 0.1188
+  },
+  "500": {
+   "precision": 0.9685,
+   "recall": 0.8159,
+   "shd": 2.35,
+   "shd_std": 1.152,
+   "recall_std": 0.0758
+  },
+  "1000": {
+   "precision": 0.983,
+   "recall": 0.8844,
+   "shd": 1.45,
+   "shd_std": 0.973,
+   "recall_std": 0.074
+  },
+  "2000": {
+   "precision": 0.9846,
+   "recall": 0.9287,
+   "shd": 0.9,
+   "shd_std": 0.768,
+   "recall_std": 0.0569
+  },
+  "5000": {
+   "precision": 0.9813,
+   "recall": 0.9179,
+   "shd": 1.15,
+   "shd_std": 1.014,
+   "recall_std": 0.0726
+  }
+ },
+ "alpha_scan": {
+  "0.001": {
+   "precision": 0.9817,
+   "recall": 0.8354,
+   "shd": 2.0
+  },
+  "0.005": {
+   "precision": 1.0,
+   "recall": 0.8628,
+   "shd": 1.4
+  },
+  "0.01": {
+   "precision": 0.9616,
+   "recall": 0.8439,
+   "shd": 2.15
+  },
+  "0.05": {
+   "precision": 0.9756,
+   "recall": 0.8596,
+   "shd": 1.85
+  },
+  "0.1": {
+   "precision": 0.9714,
+   "recall": 0.8897,
+   "shd": 1.55
+  },
+  "0.2": {
+   "precision": 0.9156,
+   "recall": 0.9014,
+   "shd": 2.05
+  }
+ },
+ "best_alpha": 0.005,
+ "p_scan": {
+  "6": {
+   "shd": 0.0,
+   "n_tests": 83
+  },
+  "8": {
+   "shd": 1.0,
+   "n_tests": 257
+  },
+  "12": {
+   "shd": 10.833,
+   "n_tests": 1201
+  },
+  "16": {
+   "shd": 32.333,
+   "n_tests": 3027
+  }
+ },
+ "demo": {
+  "n_edges_truth": 12,
+  "n_edges_found": 11,
+  "precision": 1.0,
+  "recall": 0.9167,
+  "shd": 1,
+  "n_tests": 288
+ },
+ "collider": {
+  "200": {
+   "marginal_r": 0.112349,
+   "marginal_p": 0.11329,
+   "partial_r": -0.85182,
+   "partial_p": 0.0,
+   "declared_independent": false
+  },
+  "1000": {
+   "marginal_r": 0.036624,
+   "marginal_p": 0.247305,
+   "partial_r": -0.83076,
+   "partial_p": 0.0,
+   "declared_independent": false
+  },
+  "5000": {
+   "marginal_r": -0.009266,
+   "marginal_p": 0.512443,
+   "partial_r": -0.844581,
+   "partial_p": 0.0,
+   "declared_independent": false
+  }
+ }
+}
