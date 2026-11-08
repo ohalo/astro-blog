@@ -27,5 +27,17 @@
 - **共同随机数**：对照实验（如 β=0 vs β>0）必须让初始化与 minibatch 序列一致，重参数化噪声用独立流，否则差异被初始化噪声污染；报告验证集早停值，别用末点值把「过拟合更晚」当成泛化。
 - 代码与文章同源做法：核心实验放 `scripts/*_core.py`，用 `inspect.getsource` 拼装文章代码块，`run_*()` 返回 (可 JSON 化统计, 画图数组)，保证 exec 输出与 results.json 逐项一致。
 
+## 自动化选题与文件安全（2026-11-08 事故，必读）
+- `scripts/select_blog_topics.py` 的 662 个候选对已被 1510 个现有目录**全部占用**。核对 slug 只能用 Python `os.listdir('src/content/blog')`，别用 `subprocess.run(['ls', ...], shell=True)`（结果不可靠，曾误判两个已存在 slug 为未占用，导致覆盖旧文）。
+- 写入前双重确认：`git ls-files src/content/blog/<slug>` 与 `git ls-files public/images/<slug>`。**`public/images/{slug}/` 常已被旧文章占用，绝不整个 `rm -rf`**；误删用 `git checkout HEAD -- <dir>` 恢复。
+- 池耗尽后自造主题，先按关键词 grep 现有目录（本站覆盖极广：execution 28 篇、cointegration 22 篇、bootstrap/kelly/copula 等均有多篇），选互补进阶角度并交叉引用。
+
+## 数值实验实现坑（2026-11-08）
+- **BOCD**：常数 hazard 下 `P(r_t=0|x_1:t)` 恒等于 `H=1/λ`，与数据无关，不能当检测分数；改用短 run-length 后验质量 `Σ_{r=1..10} P(r_t=r)`。CUSUM 对照必须报警后清零统计量、δ 固定、基准只用前 calib 天（无前视偏差），否则 ROC 被调参污染。
+- **秩相关**：等相关矩阵经逐元素 `sin(πτ/2)` 后仍是等相关，结构上必然 PSD，用它测「非正定率」永远得 0；必须换异质相关矩阵（低秩因子+个体差异）才看得到边界（p=40,n=60 时 Kendall 100% 非 PSD 而 Pearson 已 0%）。
+- Kendall tau 向量化：`D=np.sign(R[None,:,:]-R[:,None,:])` → `einsum('abi,abj->ij')/(n(n-1))`，与 scipy 差 1.4e-17。
+- numpy 2.x 已删 `np.trapz`，用 `np.trapezoid`（写 fallback 兼容旧版）。
+- 文章与代码同源的更简做法：核心脚本本身就是文章代码块，md 里放占位符由 build 脚本注入，再抽出来 exec 深度比对 results.json。
+
 ## 本机沙箱坑
 - `.vercel/output` 有旧产物时 build 会触发 safe-delete 拦截（count>50）；先 `mv .vercel/output` 挪开再 build。

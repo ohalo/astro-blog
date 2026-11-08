@@ -71,3 +71,11 @@
 - **CDN 坑升级**：`?cb=<ts>` 这次被边缘缓存忽略（`x-vercel-cache: HIT`、age 已达 3271 秒仍返回 v1 内容）。可靠做法是加 `-H 'Cache-Control: no-cache' -H 'Pragma: no-cache'` 强制回源，看到 `MISS` + 新 `last-modified` 才算部署生效。
 - push：b3dd875e（v2 重写，28 文件）→ 0f06cb96（frontmatter 标签修复）。用户指定命令 `curl .../quant-column` 返回 200；3 页面 + 10 张新图全部 200。
 
+## 2026-11-08（第 9 次）
+- 脚本主题池 662 个候选已被 1510 个现有目录全部占用 → 手动设计 2 个全新 slug：`bayesian-online-changepoint-run-length`（BOCD 在线变点）、`kendall-tau-robust-covariance`（秩相关稳健性）。
+- **事故与恢复**：本回合最初用 `subprocess.run(['ls',...], shell=True)` 查 slug，误判 `meta-labeling-strategy` / `cppi-portfolio-insurance` 为未占用，覆盖了 7-30 的两篇旧文并 `rm -rf` 了它们的图片目录；已用 `git checkout HEAD -- src/content/blog/<两slug>/index.md public/images/<两slug>` 全部恢复，最终提交不含这两处改动。**后续必须用 `os.listdir` + `git ls-files` 双重核对，且绝不整个 rm -rf 图片目录。**
+- 两篇核心数值：BOCD 常数 hazard 下 `P(r_t=0)` 恒等于 1/λ（λ=80 时恒 0.0125）不可用，改短 run-length 后验质量；480 天三变点 TP=3/FP=1、滞后 1.00 天，13 序列 ROC AUC 0.9665 vs 重置式 CUSUM 0.6229。秩相关：干净高斯 Pearson 误差 0.1741 优于 Kendall 0.1858，1% 污染变 0.2675 对 0.1897、10% 变 0.6224 对 0.1998；GMV 波动只差 1.7%（矩阵误差≠业绩）；p=40/n=60 异质相关下 Kendall 100% 非 PSD。
+- 做法：`scripts/article_core_{bocd,kendall}_20261108.py` 即文章代码块本体，`build_verify_articles_20261108.py` 注入占位符并校验（代码块逐字一致、exec 重跑与 results.json 深度相等、字数 2726/2617、5 图引用+文件、frontmatter desc 266/306、tags/difficulty）——ALL CHECKS PASSED。
+- 本地 `npm run build` 71s 通过（先挪开 .vercel/output）；dist 内 quant-column 与两文章页均含新标题。commit `51690244`，先 commit → `git pull --rebase`（无新提交）→ push 成功。
+- 线上：任务指定的 `/quant-column` 返回 **200**。推送后首轮仍 `HIT` 旧构建、文章页 404；约 5 分钟后强制回源见 `MISS` + 新 last-modified（11-08 02:22:34 GMT）+ 两个新标题命中，两文章页 200、抽查 4 张配图 200，普通访问（无回源头）也已含新标题。
+

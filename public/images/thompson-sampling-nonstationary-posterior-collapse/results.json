@@ -1,0 +1,337 @@
+{
+  "config": {
+    "T": 1200,
+    "K": 5,
+    "changepoints": [
+      300,
+      600,
+      900
+    ],
+    "seed": 20261108,
+    "window": 100,
+    "recovery_horizon": 100
+  },
+  "main": {
+    "total_regret": {
+      "standard": 383.6300000000025,
+      "discount": 169.7300000000001,
+      "window": 161.64999999999998,
+      "ucb1": 101.26999999999994
+    },
+    "posterior_concentration_at_1199": {
+      "standard": 1210.0,
+      "discount": 109.99942159303077,
+      "window": 110.0,
+      "ucb1": 1210.0
+    },
+    "explore_rate_first100": {
+      "standard": 0.24,
+      "discount": 0.31,
+      "window": 0.24,
+      "ucb1": 0.45
+    },
+    "explore_rate_last100": {
+      "standard": 0.51,
+      "discount": 0.13,
+      "window": 0.13,
+      "ucb1": 0.08
+    },
+    "recovery_share": {
+      "standard": [
+        0.0,
+        0.03,
+        0.0
+      ],
+      "discount": [
+        0.24,
+        0.29,
+        0.65
+      ],
+      "window": [
+        0.24,
+        0.31,
+        0.46
+      ],
+      "ucb1": [
+        0.72,
+        0.63,
+        0.67
+      ]
+    },
+    "recovery_lag_days": {
+      "standard": [
+        100,
+        30,
+        100
+      ],
+      "discount": [
+        2,
+        9,
+        14
+      ],
+      "window": [
+        43,
+        10,
+        22
+      ],
+      "ucb1": [
+        14,
+        10,
+        34
+      ]
+    },
+    "stale_arm_share": {
+      "standard": [
+        0.8766666666666667,
+        0.22,
+        0.7233333333333334
+      ],
+      "discount": [
+        0.20333333333333334,
+        0.19,
+        0.12
+      ],
+      "window": [
+        0.17666666666666667,
+        0.16666666666666666,
+        0.11666666666666667
+      ],
+      "ucb1": [
+        0.07666666666666666,
+        0.06333333333333334,
+        0.10666666666666667
+      ]
+    },
+    "final_posterior_sd_dominant": {
+      "standard": 0.016712159300601707,
+      "discount": 0.05282494020829375,
+      "window": 0.05091429353697806,
+      "ucb1": 0.027482485496465637
+    },
+    "posterior_sd_at_299": {
+      "standard": 0.03003305755693837,
+      "discount": 0.05570163514530637,
+      "window": 0.05347407899331232,
+      "ucb1": 0.034879532716139215
+    }
+  },
+  "gamma_scan": [
+    {
+      "gamma": 1.0,
+      "total_regret": 383.6300000000025,
+      "final_concentration": 1210.0
+    },
+    {
+      "gamma": 0.999,
+      "total_regret": 247.3600000000002,
+      "final_concentration": 708.9865709065999
+    },
+    {
+      "gamma": 0.995,
+      "total_regret": 194.2099999999999,
+      "final_concentration": 209.51165483689533
+    },
+    {
+      "gamma": 0.99,
+      "total_regret": 169.7300000000001,
+      "final_concentration": 109.99942159303077
+    },
+    {
+      "gamma": 0.98,
+      "total_regret": 189.9600000000003,
+      "final_concentration": 59.99999999851996
+    },
+    {
+      "gamma": 0.95,
+      "total_regret": 292.76000000000164,
+      "final_concentration": 29.999999999999982
+    },
+    {
+      "gamma": 0.9,
+      "total_regret": 354.6400000000011,
+      "final_concentration": 20.0
+    }
+  ],
+  "length_scan": [
+    {
+      "regime_length": 50,
+      "best_gamma": 0.98,
+      "best_avg_regret": 0.2237499999999998,
+      "standard_avg_regret": 0.32365,
+      "curve": [
+        {
+          "gamma": 1.0,
+          "avg_regret": 0.32365
+        },
+        {
+          "gamma": 0.999,
+          "avg_regret": 0.32354999999999995
+        },
+        {
+          "gamma": 0.995,
+          "avg_regret": 0.3374000000000001
+        },
+        {
+          "gamma": 0.99,
+          "avg_regret": 0.3162500000000001
+        },
+        {
+          "gamma": 0.98,
+          "avg_regret": 0.2237499999999998
+        },
+        {
+          "gamma": 0.95,
+          "avg_regret": 0.31460000000000027
+        },
+        {
+          "gamma": 0.9,
+          "avg_regret": 0.3410500000000003
+        }
+      ]
+    },
+    {
+      "regime_length": 100,
+      "best_gamma": 0.98,
+      "best_avg_regret": 0.21177500000000019,
+      "standard_avg_regret": 0.32892500000000024,
+      "curve": [
+        {
+          "gamma": 1.0,
+          "avg_regret": 0.32892500000000024
+        },
+        {
+          "gamma": 0.999,
+          "avg_regret": 0.2938750000000003
+        },
+        {
+          "gamma": 0.995,
+          "avg_regret": 0.22952500000000053
+        },
+        {
+          "gamma": 0.99,
+          "avg_regret": 0.21637500000000023
+        },
+        {
+          "gamma": 0.98,
+          "avg_regret": 0.21177500000000019
+        },
+        {
+          "gamma": 0.95,
+          "avg_regret": 0.2780999999999998
+        },
+        {
+          "gamma": 0.9,
+          "avg_regret": 0.3210249999999997
+        }
+      ]
+    },
+    {
+      "regime_length": 200,
+      "best_gamma": 0.995,
+      "best_avg_regret": 0.15138749999999995,
+      "standard_avg_regret": 0.2656125000000004,
+      "curve": [
+        {
+          "gamma": 1.0,
+          "avg_regret": 0.2656125000000004
+        },
+        {
+          "gamma": 0.999,
+          "avg_regret": 0.2891625000000004
+        },
+        {
+          "gamma": 0.995,
+          "avg_regret": 0.15138749999999995
+        },
+        {
+          "gamma": 0.99,
+          "avg_regret": 0.16848749999999993
+        },
+        {
+          "gamma": 0.98,
+          "avg_regret": 0.1880124999999998
+        },
+        {
+          "gamma": 0.95,
+          "avg_regret": 0.2448750000000005
+        },
+        {
+          "gamma": 0.9,
+          "avg_regret": 0.29467500000000163
+        }
+      ]
+    },
+    {
+      "regime_length": 300,
+      "best_gamma": 0.99,
+      "best_avg_regret": 0.14144166666666674,
+      "standard_avg_regret": 0.31969166666666876,
+      "curve": [
+        {
+          "gamma": 1.0,
+          "avg_regret": 0.31969166666666876
+        },
+        {
+          "gamma": 0.999,
+          "avg_regret": 0.2061333333333335
+        },
+        {
+          "gamma": 0.995,
+          "avg_regret": 0.16184166666666658
+        },
+        {
+          "gamma": 0.99,
+          "avg_regret": 0.14144166666666674
+        },
+        {
+          "gamma": 0.98,
+          "avg_regret": 0.15830000000000025
+        },
+        {
+          "gamma": 0.95,
+          "avg_regret": 0.24396666666666803
+        },
+        {
+          "gamma": 0.9,
+          "avg_regret": 0.29553333333333426
+        }
+      ]
+    },
+    {
+      "regime_length": 600,
+      "best_gamma": 0.995,
+      "best_avg_regret": 0.08007083333333341,
+      "standard_avg_regret": 0.26681666666666454,
+      "curve": [
+        {
+          "gamma": 1.0,
+          "avg_regret": 0.26681666666666454
+        },
+        {
+          "gamma": 0.999,
+          "avg_regret": 0.12717916666666726
+        },
+        {
+          "gamma": 0.995,
+          "avg_regret": 0.08007083333333341
+        },
+        {
+          "gamma": 0.99,
+          "avg_regret": 0.10263333333333371
+        },
+        {
+          "gamma": 0.98,
+          "avg_regret": 0.1324541666666673
+        },
+        {
+          "gamma": 0.95,
+          "avg_regret": 0.229695833333332
+        },
+        {
+          "gamma": 0.9,
+          "avg_regret": 0.2796874999999992
+        }
+      ]
+    }
+  ]
+}
