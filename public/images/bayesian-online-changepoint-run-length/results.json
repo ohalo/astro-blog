@@ -1,0 +1,63 @@
+{
+  "seed": 20261108,
+  "n_days": 480,
+  "true_changepoints": [
+    120,
+    260,
+    380
+  ],
+  "true_sigmas": [
+    0.006,
+    0.022,
+    0.007,
+    0.02
+  ],
+  "lambda_main": 80.0,
+  "threshold_main": 0.5,
+  "short_runlength_cutoff": 10,
+  "detected_changepoints": [
+    122,
+    235,
+    258,
+    383
+  ],
+  "true_positives": 3,
+  "false_alarms": 1,
+  "mean_signed_delay": 1.0,
+  "hazard_scan": [
+    {
+      "lambda": 20.0,
+      "mean_delay": -0.25641025641025605,
+      "false_alarms_per_series": 7.3076923076923075,
+      "true_positives_per_series": 3.0
+    },
+    {
+      "lambda": 40.0,
+      "mean_delay": 3.025641025641026,
+      "false_alarms_per_series": 3.3076923076923075,
+      "true_positives_per_series": 2.923076923076923
+    },
+    {
+      "lambda": 80.0,
+      "mean_delay": 4.128205128205129,
+      "false_alarms_per_series": 1.4615384615384615,
+      "true_positives_per_series": 2.769230769230769
+    },
+    {
+      "lambda": 160.0,
+      "mean_delay": 4.410256410256411,
+      "false_alarms_per_series": 0.6923076923076923,
+      "true_positives_per_series": 2.5384615384615383
+    },
+    {
+      "lambda": 320.0,
+      "mean_delay": 3.6923076923076925,
+      "false_alarms_per_series": 0.38461538461538464,
+      "true_positives_per_series": 2.3846153846153846
+    }
+  ],
+  "roc_auc_bocd": 0.9665163895933127,
+  "roc_auc_cusum": 0.6229454306377383,
+  "n_series": 13,
+  "tol_days": 20
+}
