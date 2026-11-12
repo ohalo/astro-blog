@@ -95,3 +95,11 @@
 - 校验：`build_verify_articles_20261108night.py` ALL CHECKS PASSED（2377/2307 中文字、desc 371/305、代码块与 core 逐字一致、exec 复跑 JSON 深度相等、5 图 hash 全不同）。本地 build 83.77s，静态产物在 `dist/client/`，专栏页两新标题位置早于下午批次。同日第三批用 `publishDate 11:00/11:10 UTC` 置顶。
 - commit `7185c136`（先 commit → pull --rebase 无新提交 → push）；任务指定 `/quant-column` 返回 200。推送后前 4 轮仍旧构建（HIT、last-modified 09:25:38 GMT），第 5 轮（约 3 分钟）起 `MISS` + 新 last-modified 11:24:45 GMT + 两新标题命中且置顶，两文章页 200、抽查 2 图 + 2 JSON 200、普通访问也含新标题；补跑修正判定后连续两轮全通过。**判定坑**：连续两轮都要求 MISS 是错的，首次回源后 CDN 缓存新版本返回 HIT 属正常，只需「新 last-modified + 标题/页面/资产全命中」。
 
+## 2026-11-10（第 12 次）
+- 主题池仍耗尽（脚本返回 0 个并 assert 失败）。按关键词统计 1519 个目录后自造两个 0 覆盖角度：`block-bootstrap-coverage-block-length`（序列相关下 CI 覆盖度 / 块长与带宽）、`stochastic-dominance-portfolio-lp`（经验 SSD 约束 LP 的样本外破功）。`os.listdir` + `git ls-files` 双重查重通过，未触碰已有目录；两篇均带 `量化` tag + `difficulty: advanced`，publishDate 用 09:10/09:12 UTC 置顶。
+- **区块自助法结论**：真值已知 AR(1)+GARCH 上 400 路径 ×250 重抽，iid 覆盖 0.8350 / 朴素 SE 0.8500；MBB L=5 0.9200、CBB L=10 0.9200、HAC NW(5) 0.9275 最高，宽度 3.8779→5.2532；L=40 掉回 0.8600（倒 U）。三盆冷水：均值与夏普覆盖度几乎相同、HAC 滞后 40 阶掉到 0.8950、n 125→1000 时 iid 停在 0.8075→0.7900（长期方差漏估不随 n 消失）、t(6) 厚尾几乎无影响而 φ=0.6 把 iid 压到 0.7025。
+- **SSD 结论**：30 资产 / 240 训练 / 20 约束阈值 / 60 次切分，约束点上样本内 violation −1.9084e−05，200 点诊断网格上样本内已 +2.5443e−06（离散化泄漏），样本外平均 0.0003171、81.7% 轮次破功；训练集平均仅 1.9 个崩盘日、测试集 15.63 个。样本外 Sharpe SSD 0.5118 输最小方差 0.8449，CVaR 仅改善 4.2%、最大回撤反而更差，解平均仅 3.82 个有效持仓。S=60→960 使 violation −68% 同时样本内收益优势 −74%；ε 0→0.004 把 OOS violation 抬到 5.5 倍但收益增益非单调。
+- **本轮踩坑**：①最初的两个候选（block bootstrap IC / PIT-CRPS）与旧文概念重叠，按红线换成互补进阶角度；②SSD 初版 DGP 里高 alpha 恰好是低 beta 防御股 → 样本外占优真实成立，改成「1.5% 稀有崩盘 + alpha 与 beta 正相关」并把诊断网格改成全场景池分位数（否则训练窗口把左尾切掉，会伪造占优）；③violation 仅 1e−4，绝对短落曲线完全重叠看不出破功 → 必须画差值曲线 + 零线；④matplotlib 3.11 把 `boxplot(labels=)` 改成 `tick_labels=`；⑤所有扫描复用主实验同一批路径，避免同一 n=250 出现两个不同覆盖度。
+- 校验：`scripts/build_verify_articles_20261110.py` ALL CHECKS PASSED（2177/2148 中文字、desc 400/419、代码块与 core 逐字一致、exec 复跑 results.json 深度相等、5 图与站点资产逐字节相同、hash 全不同）。本地 build 58s（末尾仍是已知 safe-delete 拦截 `dist/server/.prerender`，静态产物在 `dist/client/`，专栏页两新标题命中且顺序正确）。
+- commit `b2ba10e9`（先 commit → `git pull --rebase` 无新提交 → push）。任务指定 `/quant-column` 返回 **200**。推送后约 4 分钟部署生效：第 5 轮强制回源 `MISS` + 新 last-modified 09:29:17 GMT，两新标题/两文章页/抽查 2 图/普通访问全命中，第 6 轮 `HIT` 但同样全命中 → 连续两轮通过。
+
