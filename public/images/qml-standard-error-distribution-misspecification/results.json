@@ -1,0 +1,324 @@
+{
+  "dgp": {
+    "B_rep": 400,
+    "T": 2000,
+    "alpha": 0.1,
+    "beta": 0.85,
+    "burn": 300,
+    "fitted_params_normal_sample": [
+      0.051231,
+      0.095312,
+      0.8506
+    ],
+    "kurtosis_normal_resid": 2.9495,
+    "kurtosis_t5_resid": 4.6647,
+    "omega": 0.05,
+    "persistence": 0.95,
+    "score_at_optimum_max_abs": 0.00035129,
+    "seed": 20261112,
+    "unconditional_variance": 1.0
+  },
+  "headline": {
+    "normal": {
+      "coverage_naive_alpha": 0.935,
+      "coverage_sand_alpha": 0.9275,
+      "naive_se_over_mc_sd_alpha": 1.0043,
+      "sand_se_over_mc_sd_alpha": 1.0068
+    },
+    "t(3)": {
+      "coverage_naive_alpha": 0.4197,
+      "coverage_sand_alpha": 0.8368,
+      "naive_se_over_mc_sd_alpha": 0.2033,
+      "sand_se_over_mc_sd_alpha": 0.6556
+    },
+    "t(5)": {
+      "coverage_naive_alpha": 0.7719,
+      "coverage_sand_alpha": 0.9148,
+      "naive_se_over_mc_sd_alpha": 0.5888,
+      "sand_se_over_mc_sd_alpha": 0.9585
+    }
+  },
+  "honest_boundaries": {
+    "discarded_fits": "non-converged or boundary fits are dropped and counted in each setting's discarded field.",
+    "initialisation": "variance filter uses a data-only backcast; results depend on this standard choice.",
+    "point_estimates": "QMLE is consistent, NOT unbiased: at persistence 0.95 and T=2000 omega/beta carry a known finite-sample bias; alpha bias is much smaller.",
+    "sandwich_at_t3": "t(3) has infinite fourth moment, so even the sandwich covariance is unreliable; its coverage does not return to 95%."
+  },
+  "main": {
+    "normal": {
+      "B_used": 400,
+      "bias": [
+        0.004687,
+        -0.00037,
+        -0.004934
+      ],
+      "coverage_naive": [
+        0.95,
+        0.935,
+        0.945
+      ],
+      "coverage_opg": [
+        0.9525,
+        0.9425,
+        0.9525
+      ],
+      "coverage_sand": [
+        0.94,
+        0.9275,
+        0.94
+      ],
+      "discarded": 0,
+      "mc_sd": [
+        0.018829,
+        0.017136,
+        0.029379
+      ],
+      "mean_theta": [
+        0.054687,
+        0.09963,
+        0.845066
+      ],
+      "qlike_1step": 0.001753,
+      "se_naive_mean": [
+        0.016076,
+        0.017209,
+        0.028055
+      ],
+      "se_opg_mean": [
+        0.01632,
+        0.017416,
+        0.028515
+      ],
+      "se_sand_mean": [
+        0.016086,
+        0.017252,
+        0.028065
+      ]
+    },
+    "t(3)": {
+      "B_used": 386,
+      "bias": [
+        0.01207,
+        0.01108,
+        -0.027226
+      ],
+      "coverage_naive": [
+        0.5,
+        0.4197,
+        0.5181
+      ],
+      "coverage_opg": [
+        0.2617,
+        0.2073,
+        0.2902
+      ],
+      "coverage_sand": [
+        0.8653,
+        0.8368,
+        0.8523
+      ],
+      "discarded": 14,
+      "mc_sd": [
+        0.052944,
+        0.080481,
+        0.094672
+      ],
+      "mean_theta": [
+        0.06207,
+        0.11108,
+        0.822774
+      ],
+      "qlike_1step": 0.020798,
+      "se_naive_mean": [
+        0.011304,
+        0.016359,
+        0.02399
+      ],
+      "se_opg_mean": [
+        0.005565,
+        0.007238,
+        0.012395
+      ],
+      "se_sand_mean": [
+        0.034656,
+        0.052764,
+        0.063559
+      ]
+    },
+    "t(5)": {
+      "B_used": 399,
+      "bias": [
+        0.00609,
+        0.003899,
+        -0.010062
+      ],
+      "coverage_naive": [
+        0.7794,
+        0.7719,
+        0.7845
+      ],
+      "coverage_opg": [
+        0.6015,
+        0.589,
+        0.6266
+      ],
+      "coverage_sand": [
+        0.9273,
+        0.9148,
+        0.9248
+      ],
+      "discarded": 1,
+      "mc_sd": [
+        0.021671,
+        0.026841,
+        0.039361
+      ],
+      "mean_theta": [
+        0.05609,
+        0.103899,
+        0.839938
+      ],
+      "qlike_1step": 0.004485,
+      "se_naive_mean": [
+        0.012542,
+        0.015803,
+        0.023489
+      ],
+      "se_opg_mean": [
+        0.008607,
+        0.010622,
+        0.01641
+      ],
+      "se_sand_mean": [
+        0.019907,
+        0.025727,
+        0.036527
+      ]
+    },
+    "t(8)": {
+      "B_used": 400,
+      "bias": [
+        0.005634,
+        -0.001404,
+        -0.005884
+      ],
+      "coverage_naive": [
+        0.8775,
+        0.87,
+        0.85
+      ],
+      "coverage_opg": [
+        0.805,
+        0.7825,
+        0.7775
+      ],
+      "coverage_sand": [
+        0.925,
+        0.9225,
+        0.9325
+      ],
+      "discarded": 0,
+      "mc_sd": [
+        0.019148,
+        0.020944,
+        0.033327
+      ],
+      "mean_theta": [
+        0.055634,
+        0.098596,
+        0.844116
+      ],
+      "qlike_1step": 0.002662,
+      "se_naive_mean": [
+        0.014255,
+        0.01605,
+        0.025724
+      ],
+      "se_opg_mean": [
+        0.011634,
+        0.013071,
+        0.021217
+      ],
+      "se_sand_mean": [
+        0.018282,
+        0.020522,
+        0.032603
+      ]
+    }
+  },
+  "prediction": {
+    "normal": 0.001753,
+    "t(3)": 0.020798,
+    "t(5)": 0.004485,
+    "t(8)": 0.002662
+  },
+  "sample_size_scan": {
+    "B_used": [
+      246,
+      250,
+      250,
+      250
+    ],
+    "T": [
+      500,
+      1000,
+      2000,
+      4000
+    ],
+    "coverage_naive_alpha": [
+      0.7317,
+      0.776,
+      0.788,
+      0.716
+    ],
+    "coverage_sand_alpha": [
+      0.8333,
+      0.912,
+      0.928,
+      0.9
+    ],
+    "discarded": [
+      4,
+      0,
+      0,
+      0
+    ],
+    "mc_sd_alpha": [
+      0.061248,
+      0.048044,
+      0.026571,
+      0.022798
+    ],
+    "se_naive_alpha": [
+      0.032913,
+      0.024056,
+      0.015626,
+      0.011002
+    ],
+    "se_sand_alpha": [
+      0.050509,
+      0.040215,
+      0.025405,
+      0.019718
+    ]
+  },
+  "wald_size": {
+    "nominal": 0.05,
+    "normal": {
+      "naive_reject": 0.065,
+      "sand_reject": 0.0725
+    },
+    "t(3)": {
+      "naive_reject": 0.5803,
+      "sand_reject": 0.1632
+    },
+    "t(5)": {
+      "naive_reject": 0.2281,
+      "sand_reject": 0.0852
+    },
+    "t(8)": {
+      "naive_reject": 0.13,
+      "sand_reject": 0.0775
+    }
+  }
+}

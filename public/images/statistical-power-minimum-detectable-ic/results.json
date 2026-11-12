@@ -1,0 +1,259 @@
+{
+  "design": {
+    "N": 50,
+    "R_main": 1500,
+    "R_n": 600,
+    "R_tail": 800,
+    "T": 250,
+    "alpha": 0.05,
+    "seed": 20261112,
+    "sigma_ic_theory": 0.142857,
+    "t_crit_249df": 1.969537,
+    "target_power": 0.8,
+    "z_80": 0.841621,
+    "z_975": 1.959964
+  },
+  "headline": {
+    "analytic_power_at_rho_002": 0.5964,
+    "mde_80": 0.025399,
+    "mde_80_mc": 0.025939,
+    "miss_rate_at_rho_002": 0.4067,
+    "power_at_rho_002": 0.5933,
+    "size_at_rho0": 0.0493
+  },
+  "heavy_tail": {
+    "daily_ic_sd": [
+      0.142661,
+      0.14314,
+      0.142719,
+      0.14267
+    ],
+    "empirical_size": [
+      0.0437,
+      0.0575,
+      0.04,
+      0.0362
+    ],
+    "excess_kurtosis_daily_ic": [
+      -0.112,
+      -0.1097,
+      -0.122,
+      -0.135
+    ],
+    "interpretation": "heavy tails do NOT lower power here; they distort the IC estimator and the size, so a higher rejection rate is not evidence of a better test",
+    "mean_daily_ic_at_true_002": [
+      0.020267,
+      0.020246,
+      0.020587,
+      0.022034
+    ],
+    "nu": [
+      "normal",
+      "8",
+      "5",
+      "3"
+    ],
+    "power_at_rho_002": [
+      0.61,
+      0.585,
+      0.6088,
+      0.7013
+    ],
+    "power_change_t3": 0.0913
+  },
+  "mde_scaling": {
+    "N_grid": [
+      25,
+      50,
+      100,
+      200
+    ],
+    "T_anchor": [
+      60,
+      125,
+      250
+    ],
+    "T_grid": [
+      60,
+      125,
+      250,
+      500,
+      1000
+    ],
+    "analytic_vs_mc_max_gap": 0.003036,
+    "mde_N": [
+      0.036292,
+      0.025399,
+      0.017869,
+      0.012603
+    ],
+    "mde_N_mc": [
+      0.037456,
+      0.026136,
+      0.018228,
+      0.015639
+    ],
+    "mde_T": [
+      0.052426,
+      0.036044,
+      0.025399,
+      0.017929,
+      0.012667
+    ],
+    "mde_T_mc": [
+      0.053092,
+      0.036884,
+      0.026783
+    ],
+    "mde_at_T60_N50": 0.052426
+  },
+  "multiple_testing": {
+    "M": [
+      1,
+      5,
+      20,
+      100,
+      500,
+      1000
+    ],
+    "bh_false_discovery_prop": [
+      0.0,
+      0.0453,
+      0.0376,
+      0.001,
+      0.0,
+      0.0
+    ],
+    "bh_power_rho004": [
+      0.9933,
+      0.96,
+      0.902,
+      0.7993,
+      0.6633,
+      0.6073
+    ],
+    "bonferroni_alpha": [
+      0.05,
+      0.01,
+      0.0025,
+      0.0005,
+      0.0001,
+      5e-05
+    ],
+    "bonferroni_fwer": [
+      0.0,
+      0.0533,
+      0.0233,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "bonferroni_mde": [
+      0.025399,
+      0.031057,
+      0.035201,
+      0.039472,
+      0.043334,
+      0.044899
+    ],
+    "bonferroni_power_rho004": [
+      0.9933,
+      0.96,
+      0.8993,
+      0.7993,
+      0.6633,
+      0.6073
+    ],
+    "mde_inflation_M100": 1.5541,
+    "mde_inflation_M1000": 1.7677
+  },
+  "power_curve": {
+    "analytic_power": [
+      0.0489,
+      0.0842,
+      0.1952,
+      0.3787,
+      0.5964,
+      0.7874,
+      0.9116,
+      0.9716,
+      0.993,
+      0.9998,
+      1.0,
+      1.0
+    ],
+    "max_abs_gap": 0.014,
+    "mc_power": [
+      0.0493,
+      0.09,
+      0.1953,
+      0.3647,
+      0.5933,
+      0.7773,
+      0.898,
+      0.9687,
+      0.9933,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "mde_analytic": 0.025399,
+    "mde_mc": 0.025939,
+    "rho": [
+      0.0,
+      0.005,
+      0.01,
+      0.015,
+      0.02,
+      0.025,
+      0.03,
+      0.035,
+      0.04,
+      0.05,
+      0.06,
+      0.08
+    ]
+  },
+  "serial_dependence": {
+    "empirical_size": [
+      0.048,
+      0.108,
+      0.2013,
+      0.338
+    ],
+    "empirical_size_hac_corrected": [
+      0.0673,
+      0.07,
+      0.0727,
+      0.0893
+    ],
+    "marginal_sd_calibrated": 0.143006,
+    "measured_lag1_autocorr": [
+      0.0022,
+      0.2027,
+      0.403,
+      0.6029
+    ],
+    "nominal": 0.05,
+    "phi": [
+      0.0,
+      0.2,
+      0.4,
+      0.6
+    ],
+    "theoretical_variance_inflation_phi06": 4.0
+  },
+  "winners_curse": {
+    "conditional_mean_hat_given_significant": 0.02564,
+    "inflation_factor": 1.2961,
+    "oos_mean_ic_all": 0.019502,
+    "oos_mean_ic_significant": 0.019545,
+    "posthoc_power_all": 0.5637,
+    "posthoc_power_given_nonsignificant": 0.2695,
+    "posthoc_power_given_significant": 0.7653,
+    "rho_true": 0.02,
+    "significant_fraction": 0.5933,
+    "true_power": 0.5933,
+    "unconditional_mean_hat": 0.019782
+  }
+}
