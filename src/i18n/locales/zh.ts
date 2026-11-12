@@ -182,6 +182,7 @@ export const zh = {
   },
   terms: {
     title: '站点政策',
+    intro: '本站的政策、声明与使用说明。',
     backHome: '返回首页'
   },
   linksPage: {
@@ -208,7 +209,10 @@ export const zh = {
     backHome: '返回首页'
   },
   footer: {
+    siteName: 'halo 的技术博客',
     sitePolicy: '站点政策',
+    rightsReserved: '保留所有权利',
+    disclaimer: '本站内容仅供学习交流，不构成任何投资建议。',
     themeBy: '主题',
     drivenBy: '驱动'
   },

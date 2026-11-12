@@ -1,5 +1,7 @@
 import type { CardListData, Config, IntegrationUserConfig, ThemeUserConfig } from 'astro-pure/types'
 
+import type { Locale } from './i18n'
+
 export const theme: ThemeUserConfig = {
   // [Basic]
   /** Title for your website. Will be used in metadata and as browser tab title. */
@@ -61,20 +63,11 @@ export const theme: ThemeUserConfig = {
     // Year format
     year: `© ${new Date().getFullYear()}`,
     // year: `© 2019 - ${new Date().getFullYear()}`,
-    links: [
-      // Registration link
-      {
-        title: 'Moe ICP 114514',
-        link: 'https://icp.gov.moe/?keyword=114514',
-        style: 'text-sm' // Uno/TW CSS class
-      },
-      // Privacy Policy link
-      {
-        title: '站点政策',
-        link: '/terms',
-        pos: 2 // position set to 2 will be appended to copyright line
-      }
-    ],
+    /**
+     * 本站没有 ICP 备案号，不展示备案信息。
+     * 底部文案与链接统一由 src/components/Footer.astro 按语言渲染，此处留空。
+     */
+    links: [],
     /** Enable displaying a “Astro & Pure theme powered” link in your site’s footer. */
     credits: false,
     /** Optional details about the social media accounts for this site. */
@@ -184,14 +177,22 @@ export const integ: IntegrationUserConfig = {
   }
 }
 
-export const terms: CardListData = {
-  title: '站点政策',
-  list: [
-    {
-      title: '隐私政策',
-      link: '/terms/privacy'
-    }
-  ]
+/** 站点政策页的卡片列表（中英文各一份） */
+export const terms: Record<Locale, CardListData> = {
+  zh: {
+    title: '站点政策',
+    list: [
+      {
+        title: '隐私政策',
+        // 主题内置的实际路由是 /terms/privacy-policy，/terms/privacy 是死链
+        link: '/terms/privacy-policy'
+      }
+    ]
+  },
+  en: {
+    title: 'Site Policies',
+    list: [{ title: 'Privacy Policy', link: '/terms/privacy-policy' }]
+  }
 }
 
 const config = { ...theme, integ } as Config

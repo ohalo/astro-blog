@@ -16,34 +16,27 @@ const { locale = getLocale(Astro.url.pathname) } = Astro.props
 const d = dict(locale)
 
 const social = config.footer.social || []
-const icp = config.footer.links?.find(({ pos }) => pos !== 2)
 ---
 
 <footer class='mx-auto mb-5 mt-16 w-full'>
   <div class='border-t pt-5'>
-    <div class='flex items-center gap-y-3 max-sm:flex-col sm:justify-between sm:gap-y-0'>
-      <div class='flex items-center gap-x-4 gap-y-2 text-muted-foreground max-sm:flex-col'>
-        {
-          icp && (
-            <div>
-              <a href={icp.link} target='_blank' class={icp.style}>
-                {icp.title}
-              </a>
-            </div>
-          )
-        }
-        <div>
-          {config.footer.year}
-          {config.author}
-          <span>
-            <a href={localePath(locale, '/terms')} target='_blank' class='text-sm'>
-              {d.footer.sitePolicy}
-            </a>
-          </span>
+    <div class='flex items-start gap-y-4 max-sm:flex-col sm:justify-between sm:gap-y-0'>
+      <div class='flex flex-col gap-y-1.5 text-muted-foreground'>
+        {/* 版权与政策链接 */}
+        <div class='flex flex-wrap items-center gap-x-2 gap-y-1'>
+          <span>{config.footer.year} {d.footer.siteName}</span>
+          <span aria-hidden='true'>·</span>
+          <span>{d.footer.rightsReserved}</span>
+          <span aria-hidden='true'>·</span>
+          <a href={localePath(locale, '/terms')}>{d.footer.sitePolicy}</a>
         </div>
+
+        {/* 本站含股票与量化内容，需明确非投资建议 */}
+        <p class='text-sm'>{d.footer.disclaimer}</p>
+
         {
           config.footer.credits && (
-            <span>
+            <span class='text-sm'>
               <a href='https://github.com/withastro/astro' target='_blank'>
                 Astro
               </a>

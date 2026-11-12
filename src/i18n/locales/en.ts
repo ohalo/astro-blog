@@ -182,6 +182,7 @@ export const en: Dictionary = {
   },
   terms: {
     title: 'Site Policies',
+    intro: 'Policies, disclaimers and terms of use for this site.',
     backHome: 'Back to Home'
   },
   linksPage: {
@@ -208,7 +209,10 @@ export const en: Dictionary = {
     backHome: 'Back to Home'
   },
   footer: {
+    siteName: "halo's Tech Blog",
     sitePolicy: 'Site Policies',
+    rightsReserved: 'All rights reserved',
+    disclaimer: 'For learning and discussion only — not investment advice.',
     themeBy: 'theme',
     drivenBy: 'powered by'
   },
