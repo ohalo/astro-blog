@@ -31,6 +31,30 @@ const {
   <head>
     <BaseHead {articleDate} {description} {ogImage} {title} />
     <ThemeProvider />
+
+    {/* Google tag (gtag.js) / GA4 —— Measurement ID: G-738KDCJ1C9
+        仅生产构建注入，避免 localhost 与本地预览流量污染统计报表。
+        本地联调时可把下方条件临时改为 true。
+        is:inline 保证 Astro 原样输出、不打包/不改执行时机，且维持两段脚本的先后顺序。 */}
+    {
+      import.meta.env.PROD && (
+        <>
+          <script
+            is:inline
+            async
+            src='https://www.googletagmanager.com/gtag/js?id=G-738KDCJ1C9'
+          ></script>
+          <script is:inline>
+            window.dataLayer = window.dataLayer || []
+            function gtag() {
+              dataLayer.push(arguments)
+            }
+            gtag('js', new Date())
+            gtag('config', 'G-738KDCJ1C9')
+          </script>
+        </>
+      )
+    }
   </head>
 
   <body class='flex justify-center bg-background text-foreground' {...props}>
