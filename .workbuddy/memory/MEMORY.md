@@ -64,3 +64,8 @@
 - `scripts/select_blog_topics.py` 主池+兜底池已全耗尽（assert 0 崩溃），dsh 内容半必须自行设计 2 个不重复主题（grep 现有 1520+ 目录查重）。
 - 迁移步骤：dsh 执行机装依赖(clone+npm+python 包+CJK 字体+github deploy key) → 跑通一次 entrypoint → 按建议每日（非每 6h）配 cron → 确认连续两次成功后再停用 WorkBuddy 自动化 6a2858b0。
 - `npm run build` 末尾 `Rearranging server assets` 会拦 `dist/server/.prerender` 的批量删除（count>50），但静态产物已完整写在 **`dist/client/`**（不是 `dist/` 根）。与 Vercel 部署无关。
+
+## 文章 stitch 与报表量纲（2026-11-15 傍晚）
+- md 里的 `<!--CODE-->` 代码占位符必须**裸写**（独占一行、不带 ```python 围栏）；若写在围栏内，`stitch()` 会注入整块围栏形成双嵌套，verify 报「代码块与 core 不一致」。
+- 数值报表量纲要与正文理论桥一致（例：HP 的 λ 必须按 σ_ε²/q 换算，不能用 1/q）；DP/最优停止的实现性校验对象是**鞅极限 p0**（可选停时定理），不是先知才能兑现的 E[max]。
+- 用户 WIP 挡 `git pull --rebase` 时先 `git fetch` 查远端是否真有更新：无更新直接 push 即可，别 stash 用户文件。批次提交一律 `git add` 精确点名，禁 `git add -A`。
