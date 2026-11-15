@@ -126,6 +126,17 @@ export default defineConfig({
     }
   },
 
+  // [Vite]
+  vite: {
+    optimizeDeps: {
+      // /dash 的 echarts 按需导入在服务器启动时一次性预构建；
+      // 否则访问 /dash 时才“发现”新依赖触发重新优化，首屏 K线 会因 504 Outdated Optimize Dep 卡死。
+      include: ['echarts/core', 'echarts/charts', 'echarts/components', 'echarts/renderers'],
+      // astro-pure 的 utils 模块引用 Astro 虚拟模块 virtual:config，esbuild 预构建阶段无法解析，需标记为 external。
+      esbuildOptions: { external: ['virtual:config'] }
+    }
+  },
+
   // [Integrations]
   integrations: [
     // astro-pure will automatically add sitemap, mdx & unocss

@@ -1,0 +1,110 @@
+---
+/**
+ * WatchList —— ②自选列表：codes.txt 驱动，public/data/watchlist.json 发布。
+ * 行内 60 日 sparkline 为真实收盘价序列（SVG，构建期生成）。点击派发 dash:select 供 ChartPanel 联动。
+ */
+interface WItem {
+  code: string
+  tsCode: string
+  name: string | null
+  price: number | null
+  prevClose: number | null
+  chg: number | null
+  chgPct: number | null
+  tradeDate: string | null
+  spark: (number | null)[]
+}
+interface Props {
+  items: WItem[]
+  active?: string
+}
+const { items, active } = Astro.props
+const f2 = (n: number | null) => (n == null || isNaN(n) ? '--' : n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+const cls = (n: number | null) => (n == null ? 'flat' : n > 0 ? 'up' : n < 0 ? 'down' : 'flat')
+const sparkSvg = (spark: (number | null)[]) => {
+  const vals = spark.filter((x): x is number => x != null)
+  if (vals.length < 2) return ''
+  const lo = Math.min(...vals), hi = Math.max(...vals)
+  const pts = vals.map((p, i) => `${((i * 100) / (vals.length - 1)).toFixed(1)},${(23 - ((p - lo) / (hi - lo || 1)) * 21).toFixed(1)}`).join(' ')
+  const last = vals[vals.length - 1], first = vals[0]
+  return `<svg viewBox="0 0 100 26" preserveAspectRatio="none" style="width:100%;height:26px"><polyline fill="none" stroke="${last >= first ? 'var(--qk-up)' : 'var(--qk-down)'}" stroke-width="1.4" points="${pts}"/></svg>`
+}
+const tradeDate = items.length ? items[0].tradeDate : null
+---
+
+<div class='qd-card qd-watch'>
+  <div class='qd-watch-head'>
+    <span>自选列表</span>
+    <span class='qd-watch-date num'>{tradeDate ?? ''}</span>
+  </div>
+  {
+    items.length ? (
+      items.map((r) => (
+        <div class={`qd-wrow ${r.code === active ? 'active' : ''}`} data-code={r.code} role='button' tabindex='0'>
+          <div class='qd-w-l'>
+            <div class='qd-w-nm'>{r.name ?? r.code}</div>
+            <div class='qd-w-cd num'>{r.code}</div>
+          </div>
+          <div class='qd-w-r'>
+            <div class={`num ${cls(r.chgPct)}`}>{f2(r.price)}</div>
+            <div class={`num ${cls(r.chgPct)}`}>{r.chgPct == null ? '--' : `${r.chgPct >= 0 ? '+' : ''}${f2(r.chgPct)}%`}</div>
+          </div>
+          <div class='qd-w-spark' set:html={sparkSvg(r.spark)} />
+        </div>
+      ))
+    ) : (
+      <div class='qd-dim'>
+        自选为空 —— 往 <code>platform/codes.txt</code> 加代码后跑 <code>qplat daily</code>
+      </div>
+    )
+  }
+  <div class='qd-watch-tip'>数据湖日线快照 · 点击切换主图</div>
+</div>
+
+<script>
+  const rows = document.querySelectorAll<HTMLElement>('.qd-wrow')
+  rows.forEach((r) => {
+    const pick = () => {
+      rows.forEach((x) => x.classList.remove('active'))
+      r.classList.add('active')
+      document.dispatchEvent(new CustomEvent('dash:select', { detail: { code: r.dataset.code } }))
+    }
+    r.addEventListener('click', pick)
+    r.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick() }
+    })
+  })
+</script>
+
+<style>
+  .qd-card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 12px;
+  }
+  .qd-watch { padding: 12px 12px 8px; position: sticky; top: 12px; }
+  .qd-watch-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 12px; font-weight: 600; color: hsl(var(--muted-foreground));
+    letter-spacing: .03em; padding: 0 6px 8px;
+  }
+  .qd-watch-date { font-weight: 400; font-size: 11px; }
+  .qd-wrow {
+    display: grid; grid-template-columns: 1fr auto; gap: 1px 8px;
+    padding: 9px 8px; border-radius: 8px; cursor: pointer;
+    border-bottom: 1px solid hsl(var(--border));
+  }
+  .qd-wrow:last-of-type { border-bottom: none; }
+  .qd-wrow:hover { background: hsl(var(--muted)); }
+  .qd-wrow.active { background: hsl(var(--muted)); box-shadow: inset 2px 0 0 var(--qk-gold); }
+  .qd-w-nm { font-size: 13px; font-weight: 600; color: hsl(var(--foreground)); }
+  .qd-w-cd { font-size: 11px; color: hsl(var(--muted-foreground)); }
+  .qd-w-r { text-align: right; font-size: 12px; font-weight: 600; grid-row: 1 / 3; align-self: center; display: grid; }
+  .qd-w-spark { grid-column: 1 / 3; height: 24px; margin-top: 3px; }
+  .qd-watch-tip { font-size: 11px; color: hsl(var(--muted-foreground)); padding: 6px 6px 2px; opacity: .8; }
+  .qd-dim { opacity: .6; font-size: 13px; padding: 8px 6px; }
+  .up { color: var(--qk-up); } .down { color: var(--qk-down); } .flat { color: hsl(var(--muted-foreground)); }
+  .num { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
+  code { font-size: 11px; background: hsl(var(--muted)); padding: 1px 4px; border-radius: 4px; }
+  @media (max-width: 900px) { .qd-watch { position: static; } }
+</style>

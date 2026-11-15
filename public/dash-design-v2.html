@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>量化工作台 · 高保真设计稿 v2（评审）</title>
+<!--
+  设计稿 v2 —— 用 web-artifact-designer 出稿，遵循 commercial-ui-ux 项目推断模式。
+  说明：本文件是「设计预览」，不是最终页面。最终页面落在 src/pages/dash/index.astro + src/components/dash/*。
+  设计决策全部基于真实发布数据（public/data/*.json），不伪造业务结论。
+-->
+<style>
+  :root{
+    /* —— 设计系统：一套 token，改主题只改这里 —— */
+    --bg:#0e1116; --bg-2:#12161c; --surface:#161b22; --surface-2:#1b212b;
+    --border:#232a34; --border-soft:#1d242e;
+    --text:#e6e9ee; --muted:#8b97a7; --muted-2:#5d6878;
+    --gold:#e8b341; --gold-soft:rgba(232,179,65,.14);
+    --up:#f2555a; --down:#2bcf8a; --flat:#8b97a7;
+    --ma1:#e8b341; --ma2:#5b9dff; --ma3:#c08bff; --ma4:#33c7d6;
+    --radius:12px; --radius-sm:8px;
+    --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.55;
+    padding:var(--sp-5) clamp(12px,3vw,32px) 48px;}
+  .num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--flat)}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .badge{font-size:10px;line-height:1;padding:3px 7px;border-radius:5px;font-weight:600;vertical-align:2px}
+  .badge.real{background:rgba(43,207,138,.14);color:var(--down)}
+  .badge.demo{background:var(--gold-soft);color:var(--gold)}
+  h1,h2,h3{font-weight:600}
+  .section-title{font-size:11px;font-weight:600;color:var(--muted-2);letter-spacing:.08em;
+    text-transform:uppercase;margin-bottom:10px}
+
+  /* —— 顶栏 —— */
+  .topbar{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+  .topbar h1{font-size:22px;letter-spacing:-.01em}
+  .topbar .tag{font-size:12px;color:var(--muted)}
+  .topbar .fresh{margin-left:auto;font-size:12px;color:var(--muted-2)}
+
+  /* —— ① 行情带 —— */
+  .strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:var(--sp-3);margin-bottom:16px}
+  .strip .card{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .strip .nm{font-size:12px;color:var(--muted)}
+  .strip .px{font-size:18px;font-weight:600;margin-top:2px}
+  .strip .rt{text-align:right}
+  .strip .pc{font-size:13px;font-weight:600}
+
+  /* —— 主网格 —— */
+  .grid{display:grid;grid-template-columns:clamp(216px,16vw,272px) minmax(0,1fr) clamp(264px,20vw,344px);
+    gap:var(--sp-4);align-items:start}
+  @media(max-width:1024px){.grid{grid-template-columns:200px minmax(0,1fr) 256px;gap:10px}}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+  /* ② 自选 */
+  .watch{padding:12px 10px 8px;position:sticky;top:12px}
+  .watch-head{display:flex;justify-content:space-between;align-items:baseline;
+    font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.04em;padding:0 6px 8px}
+  .wrow{display:grid;grid-template-columns:1fr auto;gap:1px 8px;padding:9px 8px;border-radius:var(--radius-sm);
+    cursor:pointer;border-bottom:1px solid var(--border-soft)}
+  .wrow:last-of-type{border-bottom:none}
+  .wrow:hover{background:var(--surface-2)}
+  .wrow.active{background:var(--surface-2);box-shadow:inset 2px 0 0 var(--gold)}
+  .w-nm{font-size:13px;font-weight:600;grid-row:1}
+  .w-cd{font-size:11px;color:var(--muted-2);grid-row:2}
+  .w-r{text-align:right;grid-row:1/3;align-self:center}
+  .w-r .p{font-size:13px;font-weight:600}
+  .w-r .c{font-size:11px;font-weight:600}
+  .w-spark{grid-column:1/3;height:24px;margin-top:3px}
+  .watch-tip{font-size:11px;color:var(--muted-2);padding:8px 6px 2px;opacity:.85}
+
+  /* ③ 主图 */
+  .panel{padding:14px 16px 10px;min-width:0}
+  .phead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:0 2px 12px}
+  .phead .nm{font-size:16px;font-weight:700}
+  .phead .cd{font-size:12px;color:var(--muted-2)}
+  .phead .bigpx{font-size:30px;font-weight:600;line-height:1}
+  .phead .bigchg{font-size:15px;font-weight:600}
+  .phead .pdate{margin-left:auto;font-size:11px;color:var(--muted-2)}
+  .toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:2px 2px 10px;
+    border-bottom:1px solid var(--border);margin-bottom:10px}
+  .seg{display:inline-flex;background:var(--bg-2);border-radius:9px;padding:3px;gap:2px}
+  .seg button{border:none;background:transparent;color:var(--muted);font-size:12px;
+    padding:5px 12px;border-radius:7px;cursor:pointer;transition:.15s}
+  .seg button:hover{color:var(--text)}
+  .seg button.on{background:var(--surface);color:var(--text);font-weight:600;box-shadow:var(--shadow)}
+  .chip{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border);border-radius:7px;
+    background:transparent;color:var(--muted);font-size:11px;padding:4px 9px;cursor:pointer;margin-right:5px;transition:.15s}
+  .chip:hover{background:var(--surface-2)}
+  .chip.on{border-color:currentColor;color:var(--text)}
+  .chip i{width:11px;height:2.5px;border-radius:2px;display:inline-block}
+  .range{margin-left:auto}
+  #kchart{width:100%;height:clamp(400px,52vh,560px);border-radius:8px;overflow:hidden}
+  .pfoot{display:flex;justify-content:space-between;font-size:11px;color:var(--muted-2);padding-top:8px;gap:12px}
+
+  /* ④ 侧栏画像 */
+  .side{display:flex;flex-direction:column;gap:var(--sp-4)}
+  .side .card{padding:12px 14px}
+  .side h3{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.03em;margin-bottom:10px;
+    display:flex;align-items:center;gap:6px}
+  .kv{display:grid;grid-template-columns:1fr auto;gap:7px 10px;font-size:12px}
+  .kv .k{color:var(--muted)}
+  .kv .v{text-align:right;font-weight:500;color:var(--text)}
+  .posbar{height:6px;border-radius:3px;position:relative;margin:16px 2px 9px;
+    background:linear-gradient(90deg,var(--down),var(--flat),var(--up))}
+  .posbar .dot{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;
+    background:var(--surface);border:2.5px solid var(--gold);transform:translate(-50%,-50%)}
+  .poslbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+  .poslbl .gold{color:var(--gold);font-weight:600}
+
+  /* ⑤ 底部里程碑 */
+  .pipe{display:grid;grid-template-columns:repeat(4,1fr) auto;gap:var(--sp-3);margin-top:16px;align-items:center}
+  .pipe .card{padding:12px 14px;display:flex;justify-content:space-between;align-items:center;
+    opacity:.5;cursor:default;transition:.15s}
+  .pipe .card.on{opacity:1;cursor:pointer;border-color:var(--gold)}
+  .pipe .card.on:hover{background:var(--surface-2)}
+  .pipe .t{font-size:13px;font-weight:600}
+  .pipe .m{font-size:11px;color:var(--muted-2)}
+  .pipe-doc{font-size:11px;color:var(--muted-2);text-decoration:none;padding-left:6px}
+  .pipe-doc:hover{color:var(--gold)}
+  @media(max-width:900px){.pipe{grid-template-columns:repeat(2,1fr)}.pipe-doc{grid-column:1/-1}}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>量化工作台</h1>
+    <span class="tag">每日复盘 · 本地量化数据湖（baostock）</span>
+    <span class="fresh num">快照 2026-11-15 08:39 · 交易日 11-13</span>
+  </div>
+
+  <!-- ① 行情带 -->
+  <section class="strip" aria-label="指数行情带">
+    <div class="card"><div><div class="nm">上证指数</div><div class="px num">3,634.35</div></div><div class="rt"><div class="pc down num">-0.59%</div><div class="nm">-21.48</div></div></div>
+    <div class="card"><div><div class="nm">深证成指</div><div class="px num">10,968.79</div></div><div class="rt"><div class="pc down num">-2.05%</div><div class="nm">-229.19</div></div></div>
+    <div class="card"><div><div class="nm">创业板指</div><div class="px num">2,426.08</div></div><div class="rt"><div class="pc down num">-3.32%</div><div class="nm">-83.34</div></div></div>
+    <div class="card"><div><div class="nm">沪深300</div><div class="px num">4,016.29</div></div><div class="rt"><div class="pc down num">-0.68%</div><div class="nm">-27.64</div></div></div>
+    <div class="card"><div><div class="nm">中证500</div><div class="px num">6,465.48</div></div><div class="rt"><div class="pc down num">-2.10%</div><div class="nm">-138.67</div></div></div>
+  </section>
+
+  <div class="grid">
+    <!-- ② 自选列表 -->
+    <aside class="card watch" aria-label="自选列表">
+      <div class="watch-head"><span>自选列表</span><span class="num">11-13</span></div>
+      <div class="wrow active">
+        <div class="w-nm">贵州茅台</div><div class="w-cd num">600519</div>
+        <div class="w-r"><div class="p num">1,435.26</div><div class="c num up">+1.77%</div></div>
+        <svg class="w-spark" viewBox="0 0 100 24" preserveAspectRatio="none">
+          <polyline fill="none" stroke="var(--up)" stroke-width="1.4" points="0,18 8,16 16,17 24,15 32,14 40,13 48,12 56,10 64,9 72,8 80,6 88,4 100,3"/>
+        </svg>
+      </div>
+      <div class="wrow">
+        <div class="w-nm">宁德时代</div><div class="w-cd num">300750</div>
+        <div class="w-r"><div class="p num">268.40</div><div class="c num down">-1.12%</div></div>
+        <svg class="w-spark" viewBox="0 0 100 24" preserveAspectRatio="none">
+          <polyline fill="none" stroke="var(--down)" stroke-width="1.4" points="0,6 8,7 16,8 24,9 32,11 40,12 48,13 56,14 64,15 72,16 80,17 88,18 100,19"/>
+        </svg>
+      </div>
+      <div class="wrow">
+        <div class="w-nm">招商银行</div><div class="w-cd num">600036</div>
+        <div class="w-r"><div class="p num">42.18</div><div class="c num up">+0.53%</div></div>
+        <svg class="w-spark" viewBox="0 0 100 24" preserveAspectRatio="none">
+          <polyline fill="none" stroke="var(--up)" stroke-width="1.4" points="0,14 8,13 16,13 24,12 32,12 40,11 48,12 56,11 64,10 72,11 80,10 88,9 100,8"/>
+        </svg>
+      </div>
+      <div class="wrow">
+        <div class="w-nm">五粮液</div><div class="w-cd num">000858</div>
+        <div class="w-r"><div class="p num">148.92</div><div class="c num flat">0.00%</div></div>
+        <svg class="w-spark" viewBox="0 0 100 24" preserveAspectRatio="none">
+          <polyline fill="none" stroke="var(--flat)" stroke-width="1.4" points="0,12 8,12 16,11 24,12 32,13 40,12 48,12 56,11 64,12 72,12 80,11 88,12 100,12"/>
+        </svg>
+      </div>
+      <div class="watch-tip">数据湖日线快照 · 点击切换主图</div>
+    </aside>
+
+    <!-- ③ 主图 -->
+    <section class="card panel" aria-label="K线主图">
+      <div class="phead">
+        <span class="nm">贵州茅台</span>
+        <span class="cd num">600519</span>
+        <span class="bigpx num up">1,435.26</span>
+        <span class="bigchg num up">+24.99 +1.77%</span>
+        <span class="badge real">未复权</span>
+        <span class="pdate num">交易日 2026-11-13</span>
+      </div>
+      <div class="toolbar">
+        <span class="seg" aria-label="周期">
+          <button data-p="min1">分时</button><button data-p="min5">五日</button>
+          <button data-p="d" class="on">日K</button><button data-p="w">周K</button>
+          <button data-p="m">月K</button><button data-p="y">年K</button>
+        </span>
+        <span id="ma-chips">
+          <button class="chip on" style="color:var(--ma1)"><i style="background:var(--ma1)"></i>MA20</button>
+          <button class="chip on" style="color:var(--ma2)"><i style="background:var(--ma2)"></i>MA60</button>
+        </span>
+        <span class="seg range" aria-label="区间">
+          <button data-r="21">1月</button><button data-r="63">3月</button><button data-r="126">6月</button>
+          <button data-r="250" class="on">1年</button><button data-r="750">3年</button><button data-r="0">全部</button>
+        </span>
+      </div>
+      <!-- 内联 SVG 手绘 K 线（近 40 日），颜色取自设计 token；真实渲染仍走 echarts -->
+      <div id="kchart">
+        <svg viewBox="0 0 900 470" preserveAspectRatio="none" style="width:100%;height:100%;display:block">
+          <defs>
+            <linearGradient id="upG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#f2555a"/><stop offset="1" stop-color="#f2555a" stop-opacity=".5"/>
+            </linearGradient>
+          </defs>
+          <line x1="60" y1="20" x2="60" y2="350" stroke="var(--border)"/>
+          <g id="grid" stroke="var(--border-soft)" stroke-dasharray="2 4"></g>
+          <!-- 40 根蜡烛：o/h/l/c 经最小-最大归一化到 40~340 区间 -->
+          <g id="candles"></g>
+          <!-- MA20 / MA60 两条线 -->
+          <polyline id="ma20" fill="none" stroke="var(--ma1)" stroke-width="1.2"/>
+          <polyline id="ma60" fill="none" stroke="var(--ma2)" stroke-width="1.2"/>
+          <!-- 成交量副图 -->
+          <g id="vol"></g>
+        </svg>
+      </div>
+      <div class="pfoot"><span id="fn-l">日线未复权 · 发布 2026-11-15 08:39</span><span id="fn-r">40 根 · 滚轮缩放/拖拽平移</span></div>
+    </section>
+
+    <!-- ④ 量化画像 -->
+    <aside class="side" aria-label="量化画像">
+      <div class="card">
+        <h3>价格档案 <span class="badge real">真实</span></h3>
+        <div class="kv">
+          <span class="k">昨收</span><span class="v num">1,410.27</span>
+          <span class="k">今开</span><span class="v num">1,404.00</span>
+          <span class="k">最高</span><span class="v num up">1,437.69</span>
+          <span class="k">最低</span><span class="v num down">1,394.00</span>
+          <span class="k">成交量</span><span class="v num">4.18 亿手</span>
+          <span class="k">成交额</span><span class="v num">59.55 亿元</span>
+          <span class="k">换手率</span><span class="v num">0.33%</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>52周位置 <span class="badge real">真实</span></h3>
+        <div class="posbar"><div class="dot" style="left:73%"></div></div>
+        <div class="poslbl"><span class="num">低 1,151.01</span><span class="num gold">73% 分位</span><span class="num">高 1,568.00</span></div>
+      </div>
+      <div class="card">
+        <h3>量能 <span class="badge real">真实</span></h3>
+        <div class="kv">
+          <span class="k">量比(对5日均量)</span><span class="v num up">1.28</span>
+          <span class="k">5日均量</span><span class="v num">3.26 亿手</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>波动率画像 <span class="badge real">真实</span></h3>
+        <div class="kv">
+          <span class="k">20日年化波动</span><span class="v num">25.91%</span>
+          <span class="k">20日动量</span><span class="v num up">+8.00%</span>
+          <span class="k">距52周高点</span><span class="v num down">-8.47%</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>估值 <span class="badge real">真实</span></h3>
+        <div class="kv">
+          <span class="k">PE-TTM</span><span class="v num">21.84</span>
+          <span class="k">PB</span><span class="v num">6.62</span>
+          <span class="k">PE十年分位</span><span class="v num">15.6%</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ⑤ 里程碑 -->
+  <nav class="pipe" aria-label="平台里程碑">
+    <a class="card on" href="/dash"><span class="t">行情看板</span><span class="m">M0 · 已上线</span></a>
+    <div class="card"><span class="t">因子看板</span><span class="m">M1 · 待点亮</span></div>
+    <div class="card"><span class="t">策略回测</span><span class="m">M2 · 待点亮</span></div>
+    <div class="card"><span class="t">模拟实盘</span><span class="m">M3 · 待点亮</span></div>
+    <a class="pipe-doc" href="/docs/quant-platform-plan.md">平台规划书 →</a>
+  </nav>
+
+<script>
+/* 用真实日线（近40根）手绘 K 线 + MA + 成交量，演示设计稿的数据可信度 */
+const BARS=[["09-11",1285.15,1286.15,1263.01,1275.16,34801],["09-14",1277.27,1285.53,1270.36,1277.96,16571],["09-15",1281.0,1284.5,1271.28,1272.75,13762],["09-16",1273.93,1274.98,1254.1,1258.0,26235],["09-17",1257.98,1267.6,1254.0,1266.98,17554],["09-18",1262.99,1265.88,1256.1,1257.12,24891],["09-21",1259.0,1259.95,1250.8,1252.57,25017],["09-22",1252.15,1265.88,1248.1,1253.8,24573],["09-23",1255.03,1271.5,1250.89,1251.24,30981],["09-24",1250.01,1256.13,1231.05,1237.0,31239],["09-28",1236.0,1244.01,1228.1,1243.88,28218],["09-29",1244.6,1245.87,1230.88,1235.58,26366],["09-30",1239.53,1268.0,1236.05,1258.62,38331],["10-08",1252.9,1258.0,1242.0,1255.79,25168],["10-09",1255.42,1282.0,1255.42,1263.0,35111],["10-12",1262.95,1288.0,1261.0,1288.0,31556],["10-13",1287.0,1288.48,1268.11,1274.89,26573],["10-14",1270.1,1286.75,1266.0,1286.0,23773],["10-15",1286.0,1317.76,1282.0,1312.97,57677],["10-16",1311.57,1329.88,1301.68,1329.0,38502],["10-19",1322.5,1348.6,1321.0,1324.97,39729],["10-20",1321.01,1335.0,1316.14,1331.88,34136],["10-21",1331.88,1331.98,1302.36,1309.69,33514],["10-22",1303.21,1322.0,1296.0,1318.49,42491],["10-23",1311.84,1343.88,1310.0,1335.0,57686],["10-26",1325.4,1350.0,1324.79,1349.98,41599],["10-27",1343.88,1357.0,1338.01,1355.9,38669],["10-28",1354.98,1354.98,1322.6,1330.75,38805],["10-29",1349.99,1356.0,1330.01,1354.0,42992],["10-30",1363.0,1393.37,1352.98,1392.05,59927],["11-02",1410.0,1447.0,1395.02,1439.1,82691],["11-03",1450.0,1480.0,1435.1,1480.0,74121],["11-04",1470.0,1480.6,1439.0,1446.44,65434],["11-05",1446.7,1466.0,1430.0,1452.0,46712],["11-06",1450.0,1457.72,1436.0,1453.0,42848],["11-09",1440.06,1449.99,1435.08,1444.99,24801],["11-10",1438.23,1444.5,1431.26,1439.0,23038],["11-11",1445.0,1445.62,1402.0,1402.3,39848],["11-12",1395.13,1411.0,1388.11,1410.27,32373],["11-13",1404.0,1437.69,1394.0,1435.26,41780]];
+const closes=BARS.map(b=>b[4]);
+const lo=Math.min(...BARS.map(b=>b[3])), hi=Math.max(...BARS.map(b=>b[2]));
+const vmax=Math.max(...BARS.map(b=>b[5]));
+const X0=60,X1=870,Y0=20,Y1=340, n=BARS.length, bw=(X1-X0)/n;
+const yOf=p=>Y1-(p-lo)/(hi-lo||1)*(Y1-Y0);
+const xOf=i=>X0+bw*i+bw/2;
+const NS='http://www.w3.org/2000/svg';
+const candles=document.getElementById('candles');
+const vol=document.getElementById('vol');
+BARS.forEach((b,i)=>{
+  const [t,o,h,l,c,v]=b; const up=c>=o; const col=up?'var(--up)':'var(--down)';
+  const x=xOf(i);
+  // 影线
+  const w=Math.max(1.5,bw*0.6);
+  const ln=document.createElementNS(NS,'line');
+  ln.setAttribute('x1',x);ln.setAttribute('x2',x);
+  ln.setAttribute('y1',yOf(h));ln.setAttribute('y2',yOf(l));
+  ln.setAttribute('stroke',col);ln.setAttribute('stroke-width','1');candles.appendChild(ln);
+  // 实体
+  const rect=document.createElementNS(NS,'rect');
+  const yo=yOf(o),yc=yOf(c);
+  rect.setAttribute('x',x-w/2);rect.setAttribute('y',Math.min(yo,yc));
+  rect.setAttribute('width',w);rect.setAttribute('height',Math.max(1,Math.abs(yc-yo)));
+  rect.setAttribute('fill',col);candles.appendChild(rect);
+  // 成交量
+  const vh=(v/vmax)*(470-360-8);
+  const vr=document.createElementNS(NS,'rect');
+  vr.setAttribute('x',x-w/2);vr.setAttribute('y',468-vh);
+  vr.setAttribute('width',w);vr.setAttribute('height',vh);
+  vr.setAttribute('fill',up?'rgba(242,85,90,.4)':'rgba(43,207,138,.4)');vol.appendChild(vr);
+});
+const ma=(d)=>closes.map((_,i)=>i<d-1?null:closes.slice(i-d+1,i+1).reduce((a,x)=>a+x,0)/d);
+const toPoly=arr=>arr.map((v,i)=>v==null?'':`${xOf(i)},${yOf(v)}`).filter(Boolean).join(' ');
+document.getElementById('ma20').setAttribute('points',toPoly(ma(20)));
+document.getElementById('ma60').setAttribute('points',toPoly(ma(60)));
+// 横向网格
+const g=document.getElementById('grid');
+[0,.25,.5,.75,1].forEach(f=>{const y=Y0+(Y1-Y0)*f;const ln=document.createElementNS(NS,'line');ln.setAttribute('x1',X0);ln.setAttribute('x2',X1);ln.setAttribute('y1',y);ln.setAttribute('y2',y);g.appendChild(ln);});
+</script>
+</body>
+</html>

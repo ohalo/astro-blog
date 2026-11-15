@@ -1,0 +1,100 @@
+---
+/**
+ * MarketStrip —— ①顶部行情带：指数快照（来源 public/data/index/daily.json，盘后发布）。
+ */
+interface IndexItem {
+  code: string
+  market: string
+  name: string
+  price: number | null
+  chg: number | null
+  chgPct: number | null
+  asOf: string | null
+}
+interface Props {
+  items: IndexItem[]
+  updatedAt?: string
+}
+const { items, updatedAt } = Astro.props
+const f2 = (n: number | null) => (n == null || isNaN(n) ? '--' : n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+const cls = (n: number | null) => (n == null ? 'flat' : n > 0 ? 'up' : n < 0 ? 'down' : 'flat')
+---
+
+<div class='qd-strip' data-qk-strip>
+  {
+    items.length ? (
+      items.map((i) => (
+        <div class='qd-card qd-strip-card'>
+          <div>
+            <div class='qd-nm'>{i.name}</div>
+            <div class='qd-px num'>{f2(i.price)}</div>
+          </div>
+          <div class='qd-right'>
+            <div class={`num ${cls(i.chgPct)}`}>{i.chgPct == null ? '--' : `${i.chgPct >= 0 ? '+' : ''}${f2(i.chgPct)}%`}</div>
+            <div class='qd-sub num'>{i.asOf ?? ''}</div>
+          </div>
+        </div>
+      ))
+    ) : (
+      <div class='qd-card qd-strip-card qd-dim'>
+        指数未入库 —— 运行 <code>qplat ingest-index &amp;&amp; qplat publish-indices</code>
+      </div>
+    )
+  }
+  {updatedAt && <div class='qd-strip-fresh num'>快照 {updatedAt.slice(0, 16).replace('T', ' ')}</div>}
+</div>
+
+<style>
+  .qd-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .qd-card {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: 12px;
+  }
+  .qd-strip-card {
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .qd-nm {
+    font-size: 12px;
+    color: hsl(var(--muted-foreground));
+  }
+  .qd-px {
+    font-size: 17px;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+  }
+  .qd-right {
+    text-align: right;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .qd-sub {
+    color: hsl(var(--muted-foreground));
+    font-weight: 400;
+    font-size: 11px;
+  }
+  .qd-strip-fresh {
+    grid-column: 1 / -1;
+    text-align: right;
+    font-size: 11px;
+    color: hsl(var(--muted-foreground));
+    margin-top: -4px;
+  }
+  .qd-dim {
+    opacity: 0.6;
+    font-size: 13px;
+  }
+  .up { color: var(--qk-up); }
+  .down { color: var(--qk-down); }
+  .flat { color: hsl(var(--muted-foreground)); }
+  .num { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
+</style>

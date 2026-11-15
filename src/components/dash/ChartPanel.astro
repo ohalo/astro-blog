@@ -1,0 +1,304 @@
+---
+/**
+ * ChartPanel —— ③主图工作台：六周期(分时/五日/日/周/月/年) + MA 多选 + 区间快捷 + 侧栏联动。
+ * 日/周/月/年直接读发布器 periods（无前端聚合）；分时/五日走 /api/stock-minute 实时代理。
+ * 切换股票：监听文档 dash:select 事件（WatchList 派发），并刷新右侧 SidePanels。
+ */
+interface Props {
+  initialCode: string
+}
+const { initialCode } = Astro.props
+---
+
+<div class='qd-card qd-panel' id='qk-panel' data-init={initialCode}>
+  <div class='qd-phead'>
+    <span class='nm' id='h-name'>--</span>
+    <span class='cd num' id='h-code'></span>
+    <span class='bigpx num' id='h-price'></span>
+    <span class='bigchg num' id='h-chg'></span>
+    <span class='qd-badge' id='h-badge'></span>
+    <span class='qd-pdate num' id='h-date'></span>
+  </div>
+  <div class='qd-toolbar'>
+    <span class='seg' id='seg-period'>
+      <button data-p='min1'>分时</button><button data-p='min5'>五日</button>
+      <button data-p='d' class='on'>日K</button><button data-p='w'>周K</button>
+      <button data-p='m'>月K</button><button data-p='y'>年K</button>
+    </span>
+    <span id='ma-chips'></span>
+    <span class='seg qd-range' id='seg-range'>
+      <button data-r='21'>1月</button><button data-r='63'>3月</button><button data-r='126'>6月</button>
+      <button data-r='250' class='on'>1年</button><button data-r='750'>3年</button><button data-r='0'>全部</button>
+    </span>
+  </div>
+  <div id='kchart'><div class='qd-loading'>加载 K线…</div></div>
+  <div class='qd-pfoot'><span id='fn-l'></span><span id='fn-r'></span></div>
+</div>
+
+<script>
+  import * as echarts from 'echarts/core'
+  import { BarChart, CandlestickChart, LineChart } from 'echarts/charts'
+  import { AxisPointerComponent, DataZoomComponent, GridComponent, TooltipComponent } from 'echarts/components'
+  import { CanvasRenderer } from 'echarts/renderers'
+  echarts.use([CandlestickChart, BarChart, LineChart, GridComponent, TooltipComponent, DataZoomComponent, AxisPointerComponent, CanvasRenderer])
+
+  interface Bar { t: string; o: number; h: number; l: number; c: number; v: number }
+  interface Payload {
+    code: string; name: string | null; tradeDate: string; publishedAt: string
+    periods: { d: Bar[]; w: Bar[]; m: Bar[]; y: Bar[] }
+    meta: Record<string, number | null>; stats: Record<string, number | null>
+  }
+  interface MinuteResp { code: string; period: string; prevClose: number | null; date: string | null; pts: { t: string; p: number; v: number }[]; error?: string }
+
+  const panel = document.getElementById('qk-panel')!
+  const MA_OPTS: Record<string, number[]> = { d: [5, 10, 20, 60], w: [5, 10, 20, 30], m: [5, 12, 24], y: [3, 5] }
+  const MA_DEF: Record<string, number[]> = { d: [20, 60], w: [20, 30], m: [12, 24], y: [3, 5] }
+  const MA_COLS = ['hsl(45 72% 55%)', 'hsl(212 80% 62%)', 'hsl(262 70% 68%)', 'hsl(188 80% 55%)']
+
+  const f2 = (n: number | null | undefined, d = 2) => (n == null || isNaN(n as number) ? '--' : (n as number).toLocaleString('zh-CN', { minimumFractionDigits: d, maximumFractionDigits: d }))
+  const pct = (n: number | null | undefined, d = 2) => (n == null || isNaN(n as number) ? '--' : `${((n as number) * 100).toFixed(d)}%`)
+  const volHand = (h?: number | null) => (h == null ? '--' : h >= 1e4 ? `${(h / 1e4).toFixed(2)} 亿手` : `${Math.round(h).toLocaleString('zh-CN')} 万手`)
+  const cssv = (n: string) => getComputedStyle(document.documentElement).getPropertyValue(n).trim()
+  const C = () => ({
+    up: cssv('--qk-up') || '#f16a6a', down: cssv('--qk-down') || '#3fba85', gold: cssv('--qk-gold') || 'hsl(45 68% 51%)',
+    text: cssv('--muted-foreground') ? `hsl(${cssv('--muted-foreground')})` : '#9aa3b2',
+    border: cssv('--border') ? `hsl(${cssv('--border')})` : '#2b2f38',
+    card: cssv('--card') ? `hsl(${cssv('--card')})` : '#171a20'
+  })
+
+  const state = { code: panel.dataset.init || '600519', period: 'd', ma: [...MA_DEF.d], range: 250 }
+  let payload: Payload | null = null
+  let chart: echarts.ECharts | null = null
+  let minuteCache: { key: string; at: number; data: MinuteResp } | null = null
+
+  const $ = (id: string) => document.getElementById(id)!
+  async function fetchJSON(url: string): Promise<any> {
+    const r = await fetch(url, { signal: AbortSignal.timeout(8000) })
+    if (!r.ok) throw new Error(String(r.status))
+    return r.json()
+  }
+
+  /* ---------- 头部与右侧 SidePanels（与 SidePanels.astro 的 id 契约一致） ---------- */
+  function renderHead() {
+    if (!payload) return
+    const m = payload.meta
+    $('h-name').textContent = payload.name ?? payload.code
+    $('h-code').textContent = `${payload.code}`
+    $('h-date').textContent = `交易日 ${payload.tradeDate}`
+    const k = m.price == null ? '--' : f2(m.price)
+    $('h-price').textContent = k
+    $('h-price').className = `bigpx num ${m.chg! > 0 ? 'up' : m.chg! < 0 ? 'down' : 'flat'}`
+    $('h-chg').innerHTML = m.chg == null ? '' : `${m.chg >= 0 ? '+' : ''}${f2(m.chg)}&nbsp;${m.chgPct! >= 0 ? '+' : ''}${f2(m.chgPct)}%`
+    $('h-chg').className = `bigchg num ${m.chg! > 0 ? 'up' : m.chg! < 0 ? 'down' : 'flat'}`
+  }
+  const kv = (rows: [string, string, string?][]) =>
+    rows.map(([k, v, c]) => `<span class="k">${k}</span><span class="v num ${c ?? ''}">${v}</span>`).join(' ')
+
+  function renderSide() {
+    if (!payload) return
+    const { meta: m, stats: s } = payload
+    $('ka-price').innerHTML = kv([['昨收', f2(m.prevClose)], ['今开', f2(m.open)], ['最高', f2(m.high), 'up'], ['最低', f2(m.low), 'down'],
+      ['成交量', volHand(m.volume)], ['成交额', m.amount == null ? '--' : m.amount >= 1e8 ? `${(m.amount / 1e8).toFixed(2)} 亿元` : `${(m.amount / 1e4).toFixed(0)} 万元`], ['换手率', m.turn == null ? '--' : `${m.turn.toFixed(2)}%`]])
+    const pos = s.hi52 != null && s.lo52 != null && m.price != null ? Math.min(100, Math.max(0, ((m.price - s.lo52) / ((s.hi52 as number) - (s.lo52 as number) || 1)) * 100)) : null
+    $('pos-dot').style.left = `${pos ?? 50}%`
+    $('pos-lo').textContent = `低 ${s.lo52 == null ? '--' : f2(s.lo52)}`
+    $('pos-hi').textContent = `高 ${s.hi52 == null ? '--' : f2(s.hi52)}`
+    $('pos-pct').textContent = pos == null ? '--' : `${pos.toFixed(0)}% 分位`
+    $('ka-vol').innerHTML = kv([['量比(对5日均量)', s.volRatio == null ? '--' : f2(s.volRatio), s.volRatio != null && s.volRatio > 1.2 ? 'up' : ''], ['5日均量', volHand(s.avgVol5)]])
+    $('ka-vola').innerHTML = kv([['20日年化波动', pct(s.vol20Ann, 1)], ['20日动量', pct(s.mom20, 1), (s.mom20 ?? 0) >= 0 ? 'up' : 'down'], ['距52周高点', pct(s.ddFromHi52, 1), 'down']])
+    $('ka-pe').innerHTML = kv([['PE-TTM', m.pe == null ? '--' : (m.pe as number).toFixed(2)], ['PB', m.pb == null ? '--' : (m.pb as number).toFixed(2)], ['PE十年分位', s.pePct == null ? '样本不足' : pct(s.pePct, 1)]])
+  }
+
+  /* ---------- 图表 ---------- */
+  function maLines(k: Bar[]) {
+    const days = MA_OPTS[state.period] || []
+    $('ma-chips').innerHTML = days.map((d) => {
+      const on = state.ma.includes(d)
+      const col = MA_COLS[days.indexOf(d)]
+      return `<button class="qchip ${on ? 'on' : ''}" data-ma="${d}" style="${on ? `color:${col}` : ''}"><i style="background:${col}"></i>MA${d}</button>`
+    }).join('')
+    return days.filter((d) => state.ma.includes(d)).map((d) => {
+      const arr = k.map((_, i) => (i < d - 1 ? null : +(k.slice(i - d + 1, i + 1).reduce((a, x) => a + x.c, 0) / d).toFixed(3)))
+      return { name: `MA${d}`, type: 'line' as const, data: arr, showSymbol: false, smooth: true, emphasis: { disabled: true } as any,
+        lineStyle: { width: 1.1, color: MA_COLS[days.indexOf(d)] }, z: 3 }
+    })
+  }
+
+  function candleOption(k: Bar[]) {
+    const c = C()
+    return {
+      animation: false, textStyle: { color: c.text, fontSize: 11 },
+      tooltip: { trigger: 'axis', axisPointer: { type: 'cross' }, confine: true, backgroundColor: c.card, borderColor: c.border, textStyle: { color: cssv('--foreground') ? `hsl(${cssv('--foreground')})` : '#e6e8ec', fontSize: 12 },
+        formatter(ps: any) {
+          const p = (Array.isArray(ps) ? ps : []).find((x) => x.seriesType === 'candlestick')
+          if (!p) return ''
+          const d = k[p.dataIndex]; const prev = p.dataIndex > 0 ? k[p.dataIndex - 1].c : d.o
+          const g = (d.c / prev - 1) * 100
+          return `<b>${d.t}</b><br/>开 ${f2(d.o)}　高 <b style="color:${c.up}">${f2(d.h)}</b><br/>收 <b style="color:${g >= 0 ? c.up : c.down}">${f2(d.c)}</b>（${g >= 0 ? '+' : ''}${f2(g)}%）<br/>低 <b style="color:${c.down}">${f2(d.l)}</b>　量 ${f2(d.v / 1e4)} 万手`
+        } },
+      axisPointer: { link: [{ xAxisIndex: 'all' }] },
+      grid: [{ left: 64, right: 14, top: 12, height: '60%' }, { left: 64, right: 14, top: '78%', height: '14%' }],
+      dataZoom: [{ type: 'inside', xAxisIndex: [0, 1] }],
+      xAxis: [
+        { type: 'category', data: k.map((d) => d.t), boundaryGap: true, axisLabel: { color: c.text }, axisLine: { lineStyle: { color: c.border } }, axisTick: { show: false }, splitLine: { show: false } },
+        { gridIndex: 1, type: 'category', data: k.map(() => ''), axisLabel: { show: false }, axisTick: { show: false }, axisLine: { lineStyle: { color: c.border } } }
+      ],
+      yAxis: [
+        { scale: true, axisLabel: { color: c.text, formatter: (v: number) => v.toFixed(2) }, splitLine: { lineStyle: { color: c.border } }, axisLine: { show: false }, axisTick: { show: false } },
+        { gridIndex: 1, axisLabel: { show: false }, splitLine: { show: false }, axisLine: { show: false }, axisTick: { show: false } }
+      ],
+      series: [
+        { type: 'candlestick', data: k.map((d) => [d.o, d.c, d.l, d.h]), emphasis: { disabled: true } as any, itemStyle: { color: c.up, color0: c.down, borderColor: c.up, borderColor0: c.down } },
+        ...maLines(k),
+        { type: 'bar', xAxisIndex: 1, yAxisIndex: 1, data: k.map((d) => ({ value: d.v, itemStyle: { color: d.c >= d.o ? 'rgba(241,106,106,.5)' : 'rgba(63,186,133,.5)' } })) }
+      ]
+    }
+  }
+
+  function minuteOption(pts: { t: string; p: number; v: number }[], base: number) {
+    const c = C()
+    return {
+      animation: false, textStyle: { color: c.text, fontSize: 11 },
+      tooltip: { trigger: 'axis', confine: true, backgroundColor: c.card, borderColor: c.border, textStyle: { color: '#e6e8ec', fontSize: 12 },
+        formatter(ps: any) { const p = Array.isArray(ps) ? ps.find((x) => x.seriesType === 'line' && x.seriesName === '价') : null; if (!p) return ''
+          const q = pts[p.dataIndex]
+          return `${state.period === 'min5' ? q.t : `09:30起 ${q.t}`}<br/>价格 <b>${f2(q.p)}</b>（${((q.p / base - 1) * 100).toFixed(2)}%）<br/>分钟量 ${f2(q.v / 100)} 手` } },
+      axisPointer: { link: [{ xAxisIndex: 'all' }] },
+      grid: [{ left: 64, right: 14, top: 12, height: '60%' }, { left: 64, right: 14, top: '78%', height: '14%' }],
+      xAxis: [
+        { type: 'category', data: pts.map((p) => p.t), boundaryGap: false, axisLabel: { color: c.text, interval: Math.max(1, Math.floor(pts.length / 7)) }, axisLine: { lineStyle: { color: c.border } }, axisTick: { show: false }, splitLine: { show: true, lineStyle: { color: c.border, type: 'dashed' } } },
+        { gridIndex: 1, type: 'category', data: pts.map(() => ''), axisLabel: { show: false }, axisTick: { show: false }, axisLine: { lineStyle: { color: c.border } } }
+      ],
+      yAxis: [
+        { min: (v: any) => Math.floor(Math.min(v.min, base) * 99.6) / 100, max: (v: any) => Math.ceil(Math.max(v.max, base) * 100.4) / 100,
+          axisLabel: { color: c.text, formatter: (v: number) => v.toFixed(2) }, splitLine: { lineStyle: { color: c.border } }, axisLine: { show: false }, axisTick: { show: false } },
+        { gridIndex: 1, axisLabel: { show: false }, splitLine: { show: false }, axisLine: { show: false }, axisTick: { show: false } }
+      ],
+      series: [
+        { name: '价', type: 'line', data: pts.map((p) => p.p), showSymbol: false, emphasis: { disabled: true } as any, lineStyle: { width: 1.2, color: c.gold }, areaStyle: { color: 'hsla(45,70%,55%,.06)' } },
+        { name: 'base', type: 'line', data: pts.map(() => base), showSymbol: false, emphasis: { disabled: true } as any, lineStyle: { width: 1, type: 'dashed', color: c.text } },
+        { type: 'bar', xAxisIndex: 1, yAxisIndex: 1, data: pts.map((p) => ({ value: p.v, itemStyle: { color: p.p >= base ? 'rgba(241,106,106,.45)' : 'rgba(63,186,133,.45)' } })) }
+      ]
+    }
+  }
+
+  async function render() {
+    const el = $('kchart')
+    if (!chart) { el.innerHTML = ''; chart = echarts.init(el); new ResizeObserver(() => chart!.resize()).observe(el) }
+    if (['min1', 'min5'].includes(state.period)) {
+      $('seg-range').style.visibility = 'hidden'
+      $('ma-chips').innerHTML = ''
+      const key = `${state.code}:${state.period}`
+      if (!minuteCache || minuteCache.key !== key || Date.now() - minuteCache.at > 60000) {
+        try { minuteCache = { key, at: Date.now(), data: await fetchJSON(`/api/stock-minute?code=${state.code}&period=${state.period === 'min5' ? '5' : '1'}`) } }
+        catch (e: any) { $('fn-r').innerHTML = `<span class="warn">⚠ 分钟数据获取失败：${e?.message}</span>`; $('h-badge').textContent = '实时·降级'; $('h-badge').className = 'qd-badge demo'; return }
+      }
+      const d = minuteCache.data
+      if (!d.pts.length) { $('fn-r').innerHTML = `<span class="warn">⚠ ${d.error || '暂无分钟数据'}</span>`; chart.clear(); return }
+      const base = d.prevClose ?? d.pts[0].p
+      chart.setOption(minuteOption(d.pts, base), true)
+      $('h-badge').textContent = '实时'; $('h-badge').className = 'qd-badge real'
+      $('fn-r').innerHTML = `腾讯分钟行情 · ${d.date ?? ''}${new Date().getHours() >= 9 && new Date().getHours() <= 15 && new Date().getDay() <= 5 ? ' 盘中' : ' 收盘快照'}`
+      return
+    }
+    $('seg-range').style.visibility = 'visible'
+    if (!payload) return
+    let k = (payload.periods as any)[state.period] || payload.periods.d
+    if (state.range) k = k.slice(-state.range)
+    chart.setOption(candleOption(k), true)
+    $('h-badge').textContent = '未复权'; $('h-badge').className = 'qd-badge'
+    $('h-badge').classList.add('real')
+    $('fn-r').textContent = `${k.length} 根 · 滚轮缩放/拖拽平移`
+  }
+
+  async function select(code: string) {
+    state.code = code
+    $('fn-r').textContent = ''; $('fn-l').textContent = ''
+    $('h-price').textContent = '--'; $('h-chg').textContent = ''
+    try {
+      payload = await fetchJSON(`/data/kline/${code}.json`)
+    } catch {
+      payload = null
+      chart?.dispose(); chart = null
+      $('kchart').innerHTML = `<div class='qd-loading'>${code} 未发布 —— platform/ 下运行 <code>.venv/bin/python -m cli.qplat ingest-daily --code ${code} && .venv/bin/python -m cli.qplat publish-kline --code ${code}</code></div>`
+      return
+    }
+    state.period = 'd'; state.range = 250; state.ma = [...MA_DEF.d]
+    document.querySelectorAll('#seg-period button').forEach((b) => b.classList.toggle('on', (b as HTMLElement).dataset.p === 'd'))
+    document.querySelectorAll('#seg-range button').forEach((b) => b.classList.toggle('on', (b as HTMLElement).dataset.r === '250'))
+    minuteCache = null
+    renderHead(); renderSide(); render()
+    $('fn-l').textContent = `日线未复权 · 发布 ${String(payload.publishedAt).slice(0, 16).replace('T', ' ')}`
+  }
+
+  /* ---------- 交互 ---------- */
+  $('seg-period').addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('button'); if (!b) return
+    state.period = (b as HTMLElement).dataset.p!
+    state.ma = [...(MA_DEF[state.period] || [])]
+    document.querySelectorAll('#seg-period button').forEach((x) => x.classList.toggle('on', x === b))
+    render()
+  })
+  $('seg-range').addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('button'); if (!b) return
+    state.range = +(b as HTMLElement).dataset.r!
+    document.querySelectorAll('#seg-range button').forEach((x) => x.classList.toggle('on', x === b))
+    render()
+  })
+  $('ma-chips').addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('.qchip'); if (!b) return
+    const d = +(b as HTMLElement).dataset.ma!
+    state.ma = state.ma.includes(d) ? state.ma.filter((x) => x !== d) : [...state.ma, d]
+    render()
+  })
+  document.addEventListener('dash:select', (e) => {
+    const code = (e as CustomEvent).detail?.code
+    if (code && code !== state.code) select(code)
+  })
+  new MutationObserver(() => render()).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+
+  select(state.code)
+</script>
+
+<script is:inline>
+  // 看门狗：若打包后的 ChartPanel 模块未能执行（如 Vite optimize-deps 504），
+  // 不把界面永久停在“加载 K线…”，12 秒后给出可操作的提示。
+  setTimeout(function () {
+    var el = document.getElementById('kchart')
+    if (el && el.querySelector('.qd-loading')) {
+      el.innerHTML = '<div class="qd-loading">K线脚本未能启动（图表模块加载失败）。<br/>本地开发时请重启 dev server；若仍失败，删除 <code>node_modules/.vite</code> 缓存后刷新。</div>'
+    }
+  }, 12000)
+</script>
+
+<style>
+  .qd-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 12px; }
+  .qd-panel { padding: 14px 16px 10px; min-width: 0; }
+  .qd-phead { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 0 2px 12px; }
+  .qd-phead .nm { font-size: 16px; font-weight: 700; color: hsl(var(--foreground)); }
+  .qd-phead .cd { font-size: 12px; color: hsl(var(--muted-foreground)); }
+  .qd-phead .bigpx { font-size: 30px; font-weight: 600; line-height: 1; }
+  .qd-phead .bigchg { font-size: 15px; font-weight: 600; }
+  .qd-pdate { margin-left: auto; font-size: 11px; color: hsl(var(--muted-foreground)); }
+  .qd-badge { font-size: 10px; line-height: 1; padding: 3px 6px; border-radius: 4px; font-weight: 500; }
+  .qd-badge.real { background: color-mix(in srgb, var(--qk-down) 14%, transparent); color: var(--qk-down); }
+  .qd-badge.demo { background: color-mix(in srgb, var(--qk-gold) 16%, transparent); color: var(--qk-gold); }
+  .qd-toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 2px 2px 10px; border-bottom: 1px solid hsl(var(--border)); }
+  .seg { display: inline-flex; background: hsl(var(--muted)); border-radius: 8px; padding: 3px; gap: 2px; }
+  .seg button { border: none; background: transparent; color: hsl(var(--muted-foreground)); font-size: 12px; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: color .15s; }
+  .seg button:hover { color: hsl(var(--foreground)); }
+  .seg button.on { background: hsl(var(--card)); color: hsl(var(--foreground)); font-weight: 600; box-shadow: 0 1px 2px rgba(0, 0, 0, .25); }
+  .qchip { display: inline-flex; align-items: center; gap: 5px; border: 1px solid hsl(var(--border)); border-radius: 6px; background: transparent; color: hsl(var(--muted-foreground)); font-size: 11px; padding: 4px 9px; cursor: pointer; margin-right: 5px; transition: background .15s; }
+  .qchip:hover { background: hsl(var(--muted)); }
+  .qchip.on { border-color: currentColor; }
+  .qchip i { width: 11px; height: 2.5px; border-radius: 2px; display: inline-block; }
+  .qd-range { margin-left: auto; }
+  #kchart { width: 100%; height: clamp(400px, 52vh, 560px); }
+  .qd-loading { display: flex; align-items: center; justify-content: center; height: 100%; min-height: 200px; font-size: 13px; color: hsl(var(--muted-foreground)); text-align: center; line-height: 2; padding: 0 20px; }
+  .qd-loading code { background: hsl(var(--muted)); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+  .qd-pfoot { display: flex; justify-content: space-between; font-size: 11px; color: hsl(var(--muted-foreground)); padding-top: 8px; gap: 12px; }
+  .qd-pfoot .warn { color: var(--qk-gold); }
+  .up { color: var(--qk-up); } .down { color: var(--qk-down); } .flat { color: hsl(var(--muted-foreground)); }
+  .num { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
+  @media (max-width: 900px) { #kchart { height: 360px; } }
+</style>

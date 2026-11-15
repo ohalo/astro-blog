@@ -1,8 +1,9 @@
 # /dash 量化工作台 —— 页面设计稿 v1
 
-> 状态：**待评审**。评审通过前不改生产代码。
-> 高保真原型：`public/dash-mockup.html`（本地起服务后打开 `http://127.0.0.1:4321/dash-mockup.html`，
-> 600519 为数据湖真实数据，其余标注 `示意` 的是待接数据源的占位内容）。
+> 状态：**已定稿并实施**（2026-11-15）。用户未逐项拍板，按推荐默认执行：
+> ① 三栏工作台；② 分时/五日走 Vercel Serverless 实时代理（`/api/stock-minute`）；③ 红涨绿跌（token 可切换）。
+> 高保真原型：`public/dash-mockup.html`（评审用，M0 收口时删除）；正式实现：`src/components/dash/` 五组件 + `src/pages/dash/index.astro`。
+> **v2 设计校准稿**：`public/dash-design-v2.html`（用 web-artifact-designer 出稿、commercial-ui-ux 规则自检，基于真实发布数据；仅作设计预览，决策已落回上述组件）。
 
 ---
 

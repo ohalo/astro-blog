@@ -1,0 +1,43 @@
+---
+/**
+ * PipelineBar —— ⑤底部里程碑条：已点亮模块给链接，未上线灰显，兼做平台导航与路线图宣传。
+ */
+const items = [
+  { t: '行情看板', m: 'M0 · 已上线', href: '/dash', on: true },
+  { t: '因子看板', m: 'M1 · 待点亮', href: '', on: false },
+  { t: '策略回测', m: 'M2 · 待点亮', href: '', on: false },
+  { t: '模拟实盘', m: 'M3 · 待点亮', href: '', on: false }
+]
+---
+
+<div class='qd-pipe'>
+  {
+    items.map((i) =>
+      i.on ? (
+        <a class='qd-card qd-pipe-card on' href={i.href}>
+          <span class='t'>{i.t}</span>
+          <span class='m'>{i.m}</span>
+        </a>
+      ) : (
+        <div class='qd-card qd-pipe-card' title='规划中，见 docs/quant-platform-plan.md'>
+          <span class='t'>{i.t}</span>
+          <span class='m'>{i.m}</span>
+        </div>
+      )
+    )
+  }
+  <a class='qd-pipe-doc' href='/docs/quant-platform-plan.md' rel='noopener'>平台规划书 →</a>
+</div>
+
+<style>
+  .qd-pipe { display: grid; grid-template-columns: repeat(4, 1fr) auto; gap: 16px; margin-top: 16px; align-items: center; }
+  .qd-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 12px; }
+  .qd-pipe-card { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; opacity: .5; cursor: default; text-decoration: none; transition: background .15s; }
+  .qd-pipe-card.on { opacity: 1; cursor: pointer; border-color: var(--qk-gold); }
+  .qd-pipe-card.on:hover { background: hsl(var(--muted)); }
+  .qd-pipe-card .t { font-size: 13px; font-weight: 600; color: hsl(var(--foreground)); }
+  .qd-pipe-card .m { font-size: 11px; color: hsl(var(--muted-foreground)); }
+  .qd-pipe-doc { font-size: 11px; color: hsl(var(--muted-foreground)); text-decoration: none; padding-left: 6px; }
+  .qd-pipe-doc:hover { color: var(--qk-gold); }
+  @media (max-width: 900px) { .qd-pipe { grid-template-columns: repeat(2, 1fr); gap: 12px; } .qd-pipe-doc { grid-column: 1 / -1; } }
+</style>

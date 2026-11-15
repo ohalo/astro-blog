@@ -1,0 +1,22 @@
+---
+/**
+ * DashLayout —— 工作台类页面（/dash 等）专用布局：
+ * 直接基于 BaseLayout，全宽容器（wide）、无文章 TOC 侧栏、无返回按钮与 prose 排版容器，
+ * 避免博客正文布局把仪表盘挤在中间。Header/Footer/主题与全站保持一致。
+ */
+import type { SiteMeta } from 'astro-pure/types'
+import PageLayout from '@/layouts/BaseLayout.astro'
+
+interface Props {
+  meta: SiteMeta
+  highlightColor?: string
+}
+
+const { meta, ...props } = Astro.props
+---
+
+<PageLayout {meta} {...props} wide>
+  <main class='w-full pt-3 pb-1'>
+    <slot />
+  </main>
+</PageLayout>

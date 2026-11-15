@@ -17,11 +17,14 @@ interface Props {
   meta: SiteMeta
   highlightColor?: string
   locale?: Locale
+  /** 工作台类页面：放开 70rem 正文宽度上限 */
+  wide?: boolean
 }
 
 const {
   meta: { articleDate, description = config.description, ogImage, title },
   highlightColor,
+  wide = false,
   locale = getLocale(Astro.url.pathname),
   ...props
 } = Astro.props
@@ -69,7 +72,7 @@ const {
     }
     <div
       id='main-container'
-      class='w-full max-w-[70rem] min-h-[100dvh] flex flex-col justify-between'
+      class={`w-full min-h-[100dvh] flex flex-col justify-between ${wide ? 'max-w-[110rem]' : 'max-w-[70rem]'}`}
     >
       <Header {locale} pathname={Astro.url.pathname} />
       <div class='flex-1 w-full'>
