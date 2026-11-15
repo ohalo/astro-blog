@@ -1,0 +1,89 @@
+{
+  "dp_validation": {
+    "dp_value_p0": 102.84125323466711,
+    "random_walk_dp": 100.00000036140382,
+    "random_walk_p0": 100.0,
+    "prophet_emax": 108.27960330907031,
+    "rel_error": 3.6140382064786534e-09
+  },
+  "strategies": {
+    "dp": {
+      "name": "DP 最优边界",
+      "mean_disc_payoff": 102.83528161394169,
+      "loss_vs_dp_pct": 0.21017558915750806,
+      "mean_exit_day": 29.304375,
+      "pct_early_exit": 90.35
+    },
+    "hold": {
+      "name": "持有到期",
+      "mean_disc_payoff": 98.84350750471981,
+      "loss_vs_dp_pct": 140.7036050560164,
+      "mean_exit_day": 60.0,
+      "pct_early_exit": 0.0
+    },
+    "tp": {
+      "name": "固定止盈",
+      "mean_disc_payoff": 102.70694777156862,
+      "loss_vs_dp_pct": 4.726979681352515,
+      "mean_exit_day": 30.147625,
+      "pct_early_exit": 77.55
+    },
+    "trailing": {
+      "name": "移动止损",
+      "mean_disc_payoff": 99.68643439723482,
+      "loss_vs_dp_pct": 111.03617231084012,
+      "mean_exit_day": 2.451125,
+      "pct_early_exit": 100.0
+    },
+    "profit": {
+      "name": "回本就卖",
+      "mean_disc_payoff": 100.94529073152258,
+      "loss_vs_dp_pct": 66.72979655636608,
+      "mean_exit_day": 5.146875,
+      "pct_early_exit": 99.625
+    }
+  },
+  "best_fixed_params": {
+    "tp_level_pct": 4.0,
+    "tp_score_train": 102.76798602239074,
+    "tp_score_test": 102.70694777156862,
+    "trail_dist": 0.5,
+    "trail_score_train": 99.70463129886286,
+    "trail_score_test": 99.68643439723482
+  },
+  "omniscient_ceiling": 105.42005499392253,
+  "misspecification": {
+    "theta_true": 0.08,
+    "sigma_true": 1.5,
+    "theta_grid": [
+      0.02,
+      0.04,
+      0.08,
+      0.16,
+      0.32
+    ],
+    "loss_theta": [
+      0.010795146681118695,
+      0.018024520213316464,
+      0.005971620725418347,
+      0.05020473936826875,
+      0.11660400145571259
+    ],
+    "sigma_grid": [
+      0.75,
+      1.1,
+      1.5,
+      2.2,
+      3.0
+    ],
+    "loss_sigma": [
+      0.6911157531959304,
+      0.19292195608910845,
+      0.005971620725418347,
+      0.429989015782013,
+      1.3296727671462492
+    ],
+    "boundary_undiscounted_loss": 0.04046324887826813,
+    "boundary_undiscounted_mean_day": 32.6225
+  }
+}
