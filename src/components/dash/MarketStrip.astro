@@ -30,6 +30,8 @@
       if (!items.length) throw new Error('空')
       // 重绘前清掉上一批指数卡，避免 30s 轮询无限叠加
       strip.querySelectorAll('.qd-idx-card').forEach((e) => e.remove())
+      // 数据到手后撤掉「加载中…」占位卡（此前从不删除，导致一直显示加载中）
+      strip.querySelector('.qd-loading-strip')?.remove()
       items.forEach((i) => {
         const card = document.createElement('div')
         card.className = 'qd-card qd-strip-card qd-idx-card'
@@ -44,6 +46,10 @@
       setTimeout(load, 30000)
     } catch {
       fresh.textContent = '指数获取失败（检查 /api/indices 出网）'
+      // 占位卡不要永远停在「加载中…」：标明失败并 10s 后重试
+      const ph = strip.querySelector('.qd-loading-strip .qd-sub') as HTMLElement | null
+      if (ph) ph.textContent = '加载失败 · 10s 后重试'
+      setTimeout(load, 10000)
     }
   }
   load()

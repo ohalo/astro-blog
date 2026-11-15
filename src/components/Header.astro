@@ -23,7 +23,7 @@ const menu = [
   { title: d.nav.blog, link: localePath(locale, '/blog') },
   { title: d.nav.quant, link: localePath(locale, '/quant-column') },
   { title: d.nav.links, link: localePath(locale, '/stock-links') },
-  { title: d.nav.stock, link: localePath(locale, '/stock') },
+  { title: d.nav.dash, link: localePath(locale, '/dash') },
   { title: d.nav.about, link: localePath(locale, '/about') }
 ]
 
@@ -65,8 +65,8 @@ const homeLink = localePath(locale, '/')
             class='px-1 py-2 transition-none sm:px-2'
             href={localePath(locale, '/search')}
             title={locale === 'en' ? 'Search' : '搜索'}
+            aria-label={locale === 'en' ? 'Search' : '搜索'}
           >
-            <span class='sr-only'>{locale === 'en' ? 'Search' : '搜索'}</span>
             <Icon name='search' class='size-5' />
           </a>
         </div>
@@ -91,8 +91,8 @@ const homeLink = localePath(locale, '/')
       <button
         id='toggleDarkMode'
         class='group/dark box-content size-5 rounded-md border p-1.5 transition-colors hover:bg-border sm:group-[.not-top]:rounded-xl'
+        aria-label={locale === 'en' ? 'Dark theme' : '深色主题'}
       >
-        <span class='sr-only'>{locale === 'en' ? 'Dark theme' : '深色主题'}</span>
         <Icon class='system size-5 group-hover/dark:text-primary' name='computer' />
         <Icon class='light hidden size-5 group-hover/dark:text-primary' name='sun' />
         <Icon class='dark hidden size-5 group-hover/dark:text-primary' name='moon' />
@@ -100,8 +100,8 @@ const homeLink = localePath(locale, '/')
       <button
         id='toggleMenu'
         class='rounded-md border p-1.5 transition-colors hover:bg-border sm:hidden sm:group-[.not-top]:rounded-xl'
+        aria-label={locale === 'en' ? 'Menu' : '菜单'}
       >
-        <span class='sr-only'>{locale === 'en' ? 'Menu' : '菜单'}</span>
         <Icon class='size-5' name='menu' />
       </button>
     </div>
