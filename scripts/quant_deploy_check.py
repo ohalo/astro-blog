@@ -57,9 +57,21 @@ def check_once(slugs):
 
 def main():
     args = sys.argv[1:]
-    slugs = [a for a in args if not a.startswith("--")]
     timeout = 600
     interval = 30
+    value_flags = {"--timeout", "--interval"}
+    slugs = []
+    skip_next = False
+    for a in args:
+        if skip_next:
+            skip_next = False
+            continue
+        if a in value_flags:
+            skip_next = True
+            continue
+        if a.startswith("--"):
+            continue
+        slugs.append(a)
     for i, a in enumerate(args):
         if a == "--timeout":
             timeout = int(args[i + 1])
