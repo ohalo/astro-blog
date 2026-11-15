@@ -1,100 +1,65 @@
 ---
 /**
- * MarketStrip —— ①顶部行情带：指数快照（来源 public/data/index/daily.json，盘后发布）。
+ * MarketStrip —— ①顶部行情带（实时版，零 Python / 零预生成 JSON）。
+ * 数据来自 /api/indices（腾讯 qt 聚合 5 大指数），前端拉取并渲染。
+ * 不再依赖 public/data/index/daily.json。
  */
-interface IndexItem {
-  code: string
-  market: string
-  name: string
-  price: number | null
-  chg: number | null
-  chgPct: number | null
-  asOf: string | null
-}
-interface Props {
-  items: IndexItem[]
-  updatedAt?: string
-}
-const { items, updatedAt } = Astro.props
-const f2 = (n: number | null) => (n == null || isNaN(n) ? '--' : n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
-const cls = (n: number | null) => (n == null ? 'flat' : n > 0 ? 'up' : n < 0 ? 'down' : 'flat')
 ---
 
 <div class='qd-strip' data-qk-strip>
-  {
-    items.length ? (
-      items.map((i) => (
-        <div class='qd-card qd-strip-card'>
-          <div>
-            <div class='qd-nm'>{i.name}</div>
-            <div class='qd-px num'>{f2(i.price)}</div>
-          </div>
-          <div class='qd-right'>
-            <div class={`num ${cls(i.chgPct)}`}>{i.chgPct == null ? '--' : `${i.chgPct >= 0 ? '+' : ''}${f2(i.chgPct)}%`}</div>
-            <div class='qd-sub num'>{i.asOf ?? ''}</div>
-          </div>
-        </div>
-      ))
-    ) : (
-      <div class='qd-card qd-strip-card qd-dim'>
-        指数未入库 —— 运行 <code>qplat ingest-index &amp;&amp; qplat publish-indices</code>
-      </div>
-    )
-  }
-  {updatedAt && <div class='qd-strip-fresh num'>快照 {updatedAt.slice(0, 16).replace('T', ' ')}</div>}
+  <div class='qd-card qd-strip-card qd-loading-strip'>
+    <div class='qd-nm'>指数</div><div class='qd-sub num'>加载中…</div>
+  </div>
+  <div class='qd-strip-fresh num' id='qk-strip-fresh'></div>
 </div>
 
-<style>
-  .qd-strip {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 16px;
-    margin-bottom: 16px;
+<script>
+  const q = (id: string) => document.getElementById(id)!
+  const strip = document.querySelector('.qd-strip') as HTMLElement
+  const fresh = q('qk-strip-fresh') as HTMLElement
+
+  const f2 = (n: number | null) => (n == null || isNaN(n) ? '--' : n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+  const cls = (n: number | null) => (n == null ? 'flat' : n > 0 ? 'up' : n < 0 ? 'down' : 'flat')
+
+  async function load() {
+    try {
+      const r = await fetch('/api/indices', { signal: AbortSignal.timeout(8000) })
+      if (!r.ok) throw new Error(String(r.status))
+      const j = await r.json()
+      const items: { code: string; name: string; price: number; chg: number; chgPct: number }[] = j.items || []
+      if (!items.length) throw new Error('空')
+      // 重绘前清掉上一批指数卡，避免 30s 轮询无限叠加
+      strip.querySelectorAll('.qd-idx-card').forEach((e) => e.remove())
+      items.forEach((i) => {
+        const card = document.createElement('div')
+        card.className = 'qd-card qd-strip-card qd-idx-card'
+        card.innerHTML = `<div><div class='qd-nm'>${i.name}</div><div class='qd-px num'>${f2(i.price)}</div></div>
+          <div class='qd-right'><div class='num ${cls(i.chgPct)}'>${i.chgPct == null ? '--' : `${i.chgPct >= 0 ? '+' : ''}${f2(i.chgPct)}%`}</div>
+          <div class='qd-sub num'>${i.chg == null ? '' : `${i.chg >= 0 ? '+' : ''}${f2(i.chg)}`}</div></div>`
+        strip.insertBefore(card, fresh)
+      })
+      const t = new Date()
+      fresh.textContent = `实时 ${t.toLocaleTimeString('zh-CN', { hour12: false })}`
+      // 30s 后自动刷新（与 /api/indices 的 max-age 配合）
+      setTimeout(load, 30000)
+    } catch {
+      fresh.textContent = '指数获取失败（检查 /api/indices 出网）'
+    }
   }
-  .qd-card {
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border));
-    border-radius: 12px;
-  }
-  .qd-strip-card {
-    padding: 12px 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-  }
-  .qd-nm {
-    font-size: 12px;
-    color: hsl(var(--muted-foreground));
-  }
-  .qd-px {
-    font-size: 17px;
-    font-weight: 600;
-    color: hsl(var(--foreground));
-  }
-  .qd-right {
-    text-align: right;
-    font-size: 12px;
-    font-weight: 600;
-  }
-  .qd-sub {
-    color: hsl(var(--muted-foreground));
-    font-weight: 400;
-    font-size: 11px;
-  }
-  .qd-strip-fresh {
-    grid-column: 1 / -1;
-    text-align: right;
-    font-size: 11px;
-    color: hsl(var(--muted-foreground));
-    margin-top: -4px;
-  }
-  .qd-dim {
-    opacity: 0.6;
-    font-size: 13px;
-  }
-  .up { color: var(--qk-up); }
-  .down { color: var(--qk-down); }
-  .flat { color: hsl(var(--muted-foreground)); }
+  load()
+</script>
+
+<style is:global>
+  .qd-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 16px; }
+  .qd-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 12px; }
+  .qd-strip-card { padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  /* 次要文字向 foreground 混合：深底提亮、浅底加深，对比度两主题都够 */
+  .qd-nm { font-size: 12px; color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground))); }
+  .qd-px { font-size: 17px; font-weight: 600; color: hsl(var(--foreground)); }
+  .qd-right { text-align: right; font-size: 12px; font-weight: 600; }
+  .qd-sub { color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground))); font-weight: 400; font-size: 12px; }
+  .qd-strip-fresh { grid-column: 1 / -1; text-align: right; font-size: 12px; color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground))); margin-top: -4px; }
+  .qd-loading-strip { opacity: .6; font-size: 13px; }
+  .up { color: var(--qk-up); } .down { color: var(--qk-down); } .flat { color: hsl(var(--muted-foreground)); }
   .num { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
 </style>

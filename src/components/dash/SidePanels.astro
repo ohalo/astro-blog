@@ -1,98 +1,60 @@
 ---
 /**
- * SidePanels —— ④右侧量化画像卡。服务端按初始股票 payload 预渲染（首屏即有内容），
- * ChartPanel 客户端在切换股票时按相同 id 重写内容。
- * 全部指标来自数据湖真实计算（发布器 stats/meta 字段）。
+ * SidePanels —— ④右侧量化画像卡（实时版，零 Python / 零预生成）。
+ * 首屏为占位，数据由 ChartPanel 客户端在切换/加载股票时按相同 id 实时写入
+ * （数据源 /api/stock：价格/量能/波动率/52周为前端真实计算，PE/PB 实时，PE分位降级为"实时无"）。
  */
-interface Payload {
-  code: string
-  name: string | null
-  meta: Record<string, number | null>
-  stats: Record<string, number | null>
-  tradeDate?: string
-}
-interface Props { payload: Payload | null }
-const { payload } = Astro.props
-
-const f2 = (n?: number | null) => (n == null || isNaN(n) ? '--' : n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
-const pct = (n?: number | null, d = 2) => (n == null || isNaN(n) ? '--' : `${(n * 100).toFixed(d)}%`)
-const sgn = (n?: number | null) => (n == null ? '' : n > 0 ? 'up' : n < 0 ? 'down' : 'flat')
-const volFmt = (手?: number | null) => (手 == null ? '--' : 手 >= 1e4 ? `${(手 / 1e4).toFixed(2)} 亿手` : `${手.toLocaleString('zh-CN')} 万手`)
-const amtFmt = (元?: number | null) => (元 == null ? '--' : 元 >= 1e8 ? `${(元 / 1e8).toFixed(2)} 亿元` : `${(元 / 1e4).toFixed(0)} 万元`)
-
-const m = payload?.meta ?? null
-const s = payload?.stats ?? null
-const pos = m && s && s.hi52 != null && s.lo52 != null && m.price != null
-  ? Math.min(100, Math.max(0, ((m.price - s.lo52) / (s.hi52 - s.lo52 || 1)) * 100))
-  : null
-const rows = (arr: [string, string, string?][]) =>
-  arr.map(([k, v, c]) => `<span class="k">${k}</span><span class="v num ${c ?? ''}">${v}</span>`).join(' ')
 ---
 
 <div class='qd-side'>
   <div class='qd-card qd-side-card'>
-    <h3>价格档案 <span class='qd-badge real'>真实</span></h3>
-    <div class='qd-kv' id='ka-price' set:html={rows(m ? [
-      ['昨收', f2(m.prevClose)],
-      ['今开', f2(m.open)],
-      ['最高', f2(m.high), 'up'],
-      ['最低', f2(m.low), 'down'],
-      ['成交量', volFmt(m.volume)],
-      ['成交额', amtFmt(m.amount)],
-      ['换手率', m.turn == null ? '--' : `${m.turn.toFixed(2)}%`]
-    ] : [['—', '首只加载后填充']])} />
+    <h3>价格档案 <span class='qd-badge real'>实时</span></h3>
+    <div class='qd-kv' id='ka-price'>
+      <span class="k">—</span><span class="v num">加载中</span>
+    </div>
+    <div class='qd-verdict' id='ka-verdict'><span class='qd-vtag'>—</span></div>
   </div>
 
   <div class='qd-card qd-side-card'>
-    <h3>52周位置 <span class='qd-badge real'>真实</span></h3>
-    <div class='qd-posbar'><div class='dot' id='pos-dot' style={`left:${pos ?? 50}%`} /></div>
+    <h3>52周位置 <span class='qd-badge real'>实时</span></h3>
+    <div class='qd-posbar'><div class='dot' id='pos-dot' style='left:50%' /></div>
     <div class='qd-poslbl'>
-      <span class='num' id='pos-lo'>低 {s?.lo52 != null ? f2(s.lo52) : '--'}</span>
-      <span class='num gold' id='pos-pct'>{pos == null ? '--' : `${pos.toFixed(0)}% 分位`}</span>
-      <span class='num' id='pos-hi'>高 {s?.hi52 != null ? f2(s.hi52) : '--'}</span>
+      <span class='num' id='pos-lo'>低 --</span>
+      <span class='num gold' id='pos-pct'>-- 分位</span>
+      <span class='num' id='pos-hi'>高 --</span>
     </div>
   </div>
 
   <div class='qd-card qd-side-card'>
-    <h3>量能 <span class='qd-badge real'>真实</span></h3>
-    <div class='qd-kv' id='ka-vol' set:html={rows(s ? [
-      ['量比(对5日均量)', s.volRatio == null ? '--' : `<b class="${s.volRatio > 1.2 ? 'up' : ''}">${s.volRatio.toFixed(2)}</b>`],
-      ['5日均量', volFmt(s.avgVol5)]
-    ] : [['—', '--']])} />
+    <h3>量能 <span class='qd-badge real'>实时</span></h3>
+    <div class='qd-kv' id='ka-vol'><span class="k">—</span><span class="v num">加载中</span></div>
   </div>
 
   <div class='qd-card qd-side-card'>
-    <h3>波动率画像 <span class='qd-badge real'>真实</span></h3>
-    <div class='qd-kv' id='ka-vola' set:html={rows(s ? [
-      ['20日年化波动', pct(s.vol20Ann, 1)],
-      ['20日动量', pct(s.mom20, 1), sgn(s.mom20)],
-      ['距52周高点', pct(s.ddFromHi52, 1), 'down']
-    ] : [['—', '--']])} />
+    <h3>波动率画像 <span class='qd-badge real'>实时</span></h3>
+    <div class='qd-kv' id='ka-vola'><span class="k">—</span><span class="v num">加载中</span></div>
   </div>
 
   <div class='qd-card qd-side-card'>
-    <h3>估值 <span class='qd-badge real'>真实</span></h3>
-    <div class='qd-kv' id='ka-pe' set:html={rows(m ? [
-      ['PE-TTM', m.pe == null ? '--' : m.pe.toFixed(2)],
-      ['PB', m.pb == null ? '--' : m.pb.toFixed(2)],
-      ['PE十年分位', s?.pePct == null ? '样本不足' : pct(s.pePct, 1)]
-    ] : [['—', '--']])} />
+    <h3>估值 <span class='qd-badge real'>实时</span></h3>
+    <div class='qd-kv' id='ka-pe'><span class="k">—</span><span class="v num">加载中</span></div>
   </div>
 </div>
 
-<style>
+<style is:global>
   .qd-side { display: flex; flex-direction: column; gap: 16px; }
   .qd-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 12px; }
   .qd-side-card { padding: 14px 14px; }
   .qd-side-card h3 {
-    font-size: 12px; font-weight: 600; color: hsl(var(--muted-foreground));
+    font-size: 12px; font-weight: 600; color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground)));
     letter-spacing: .03em; margin: 0 0 9px;
   }
-  .qd-badge { font-size: 10px; line-height: 1; padding: 3px 6px; border-radius: 4px; vertical-align: 1px; margin-left: 4px; font-weight: 500; }
-  .qd-badge.real { background: color-mix(in srgb, var(--qk-down) 14%, transparent); color: var(--qk-down); }
-  .qd-badge.demo { background: color-mix(in srgb, var(--qk-gold) 16%, transparent); color: var(--qk-gold); }
+  .qd-badge { font-size: 12px; line-height: 1; padding: 3px 7px; border-radius: 5px; vertical-align: 1px; margin-left: 4px; font-weight: 500; }
+  /* 徽章文字向 foreground 混合：深底提亮，保证 ≥4.5:1 */
+  .qd-badge.real { background: color-mix(in srgb, var(--qk-down) 14%, transparent); color: color-mix(in srgb, var(--qk-down) 62%, hsl(var(--foreground))); }
+  .qd-badge.demo { background: color-mix(in srgb, var(--qk-gold) 16%, transparent); color: color-mix(in srgb, var(--qk-gold) 62%, hsl(var(--foreground))); }
   .qd-kv { display: grid; grid-template-columns: 1fr auto; gap: 5px 10px; font-size: 12px; }
-  .qd-kv :global(.k) { color: hsl(var(--muted-foreground)); }
+  .qd-kv :global(.k) { color: color-mix(in srgb, hsl(var(--muted-foreground)) 48%, hsl(var(--foreground))); }
   .qd-kv :global(.v) { text-align: right; font-weight: 500; color: hsl(var(--foreground)); }
   .qd-kv :global(.v.up), .qd-kv :global(.v.down), .up { color: var(--qk-up); }
   .qd-kv :global(.v.down) { color: var(--qk-down); }
@@ -106,8 +68,13 @@ const rows = (arr: [string, string, string?][]) =>
     background: hsl(var(--card)); border: 2.5px solid var(--qk-gold); transform: translate(-50%, -50%);
     transition: left .25s ease;
   }
-  .qd-poslbl { display: flex; justify-content: space-between; font-size: 11px; color: hsl(var(--muted-foreground)); }
+  .qd-poslbl { display: flex; justify-content: space-between; font-size: 12px; color: color-mix(in srgb, hsl(var(--muted-foreground)) 48%, hsl(var(--foreground))); }
   .qd-poslbl :global(.gold), .gold { color: var(--qk-gold); font-weight: 600; }
+  .qd-verdict { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed hsl(var(--border)); }
+  .qd-vtag { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 5px; background: hsl(var(--muted)); color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground))); }
+  .qd-vtag.up { background: color-mix(in srgb, var(--qk-up) 16%, transparent); color: color-mix(in srgb, var(--qk-up) 62%, hsl(var(--foreground))); }
+  .qd-vtag.down { background: color-mix(in srgb, var(--qk-down) 16%, transparent); color: color-mix(in srgb, var(--qk-down) 62%, hsl(var(--foreground))); }
+  .qd-vsub { font-size: 12px; color: color-mix(in srgb, hsl(var(--muted-foreground)) 48%, hsl(var(--foreground))); }
   .num { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
   @media (max-width: 900px) {
     .qd-side { flex-direction: row; flex-wrap: wrap; }

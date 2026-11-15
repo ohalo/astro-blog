@@ -1,10 +1,8 @@
 ---
-// /dash —— 量化工作台（设计稿 docs/quant-dash-design.md 定稿版）
-// 构建期读取发布产物（public/data/…）预渲染首屏；交互期走 /api/stock-minute。
-// 加自选：platform/codes.txt -> qplat daily -> git push。
-import { existsSync, readFileSync } from 'node:fs'
-import path from 'node:path'
-
+// /dash —— 量化工作台（实时版）
+// 零 Python / 零预生成 JSON：全部行情走 serverless 代理（/api/stock、/api/indices、
+// /api/stock-minute、/api/stock-search），前端实时拉取并前端聚合周/月/年周期与量化指标。
+// 自选清单存浏览器 localStorage（默认种子见 WatchList 的 SEED）。
 import ChartPanel from '@/components/dash/ChartPanel.astro'
 import MarketStrip from '@/components/dash/MarketStrip.astro'
 import PipelineBar from '@/components/dash/PipelineBar.astro'
@@ -12,53 +10,40 @@ import SidePanels from '@/components/dash/SidePanels.astro'
 import WatchList from '@/components/dash/WatchList.astro'
 import DashLayout from '@/layouts/DashLayout.astro'
 
-const pub = (rel: string) => {
-  const p = path.join(process.cwd(), 'public', 'data', rel)
-  if (!existsSync(p)) return null
-  try {
-    return JSON.parse(readFileSync(p, 'utf8'))
-  } catch {
-    return null
-  }
-}
-
-const idx = pub('index/daily.json')
-const wl = pub('watchlist.json')
-const items: any[] = wl?.items ?? []
-const activeCode = items.length ? items[0].code : '600519'
-const initialPayload = pub(`kline/${activeCode}.json`)
-
 const title = '量化工作台'
-const desc = '每日复盘工作台：指数行情带、自选异动、六周期K线（分时/五日/日/周/月/年）与 52周位置、量比、波动率、估值分位画像。数据来自本地量化数据湖（baostock），零服务器运行。'
+const desc = '实时量化复盘工作台：指数行情带、自选异动、六周期K线（分时/五日/日/周/月/年）与 52周位置、量比、波动率、估值画像。数据实时来自腾讯行情（serverless 代理），零服务器、零预生成。'
 ---
 
 <DashLayout meta={{ title, description: desc }}>
   <div class='qd-head'>
     <h1 class='qd-title'>{title}</h1>
-    <span class='qd-tag'>每日复盘 · 本地量化数据湖（baostock）</span>
+    <span class='qd-tag'>实时复盘 · 腾讯行情（serverless 代理）</span>
   </div>
 
-  <MarketStrip items={idx?.items ?? []} updatedAt={idx?.updatedAt} />
+  <MarketStrip />
 
   <div class='qd-grid'>
-    <WatchList items={items} active={activeCode} />
-    <ChartPanel initialCode={activeCode} />
-    <SidePanels payload={initialPayload} />
+    <WatchList />
+    <ChartPanel initialCode='600519' />
+    <SidePanels />
   </div>
 
   <PipelineBar />
 
   <p class='qd-note'>
-    数据链路：<code>baostock</code> 日线（每日 17:10 本地入库）→ 发布 <code>public/data/*.json</code>
-    → 本页面静态渲染；分时/五日走 Vercel Serverless 代理腾讯分钟行情。K线为未复权价。
+    数据链路：浏览器 → <code>/api/stock</code>（腾讯行情 serverless 代理）→ 实时报价 + 250 日 K线；
+    周/月/年周期与 52 周位置、量能、波动率等量化指标均由前端基于日线真实计算。
+    分时/五日走 <code>/api/stock-minute</code>，指数走 <code>/api/indices</code>，搜索走 <code>/api/stock-search</code>。
+    自选清单存于本机浏览器（localStorage），可随时搜索加删。K线为未复权价。
     指标口径与研究文章见 <a href='/quant-column'>量化专栏</a>。
   </p>
 </DashLayout>
 
 <style is:global>
+  /* 本站浅色主题本身就是深色底（app.css :root 即暗色），红涨绿跌直接用提亮档保证 ≥4.5:1 */
   :root {
-    --qk-up: #e64545;
-    --qk-down: #1aa16a;
+    --qk-up: #ef5f5f;
+    --qk-down: #2fb87e;
     --qk-gold: hsl(var(--primary, 45 68% 51%));
   }
   html.dark {
@@ -97,15 +82,16 @@ const desc = '每日复盘工作台：指数行情带、自选异动、六周期
   }
   .qd-note {
     margin-top: 14px;
+    max-width: 46em; /* 中文一行 ≈40 字，避免超宽屏一行拉太长 */
     font-size: 12px;
-    color: hsl(var(--muted-foreground));
+    color: color-mix(in srgb, hsl(var(--muted-foreground)) 48%, hsl(var(--foreground)));
     line-height: 1.9;
   }
   .qd-note code {
     background: hsl(var(--muted));
     padding: 1px 5px;
     border-radius: 4px;
-    font-size: 11.5px;
+    font-size: 12px;
   }
   .qd-note a { color: var(--qk-gold); }
 </style>

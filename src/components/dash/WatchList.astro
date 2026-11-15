@@ -1,110 +1,218 @@
 ---
 /**
- * WatchList —— ②自选列表：codes.txt 驱动，public/data/watchlist.json 发布。
- * 行内 60 日 sparkline 为真实收盘价序列（SVG，构建期生成）。点击派发 dash:select 供 ChartPanel 联动。
+ * WatchList —— ②自选列表（实时版，零 Python / 零预生成 JSON）。
+ * 自选清单存浏览器 localStorage('qk-watchlist')，默认种子来自平台 codes.txt 的 5 只。
+ * 顶部搜索框调 /api/stock-search 实时检索任意股票，加入自选即写入 localStorage。
+ * 列表每行现价/涨跌幅/60日 spark 由前端并行调 /api/stock 实时拉取（30s 会话缓存）。
+ * 点击派发 dash:select 供 ChartPanel 联动。
  */
-interface WItem {
-  code: string
-  tsCode: string
-  name: string | null
-  price: number | null
-  prevClose: number | null
-  chg: number | null
-  chgPct: number | null
-  tradeDate: string | null
-  spark: (number | null)[]
-}
-interface Props {
-  items: WItem[]
-  active?: string
-}
-const { items, active } = Astro.props
-const f2 = (n: number | null) => (n == null || isNaN(n) ? '--' : n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
-const cls = (n: number | null) => (n == null ? 'flat' : n > 0 ? 'up' : n < 0 ? 'down' : 'flat')
-const sparkSvg = (spark: (number | null)[]) => {
-  const vals = spark.filter((x): x is number => x != null)
-  if (vals.length < 2) return ''
-  const lo = Math.min(...vals), hi = Math.max(...vals)
-  const pts = vals.map((p, i) => `${((i * 100) / (vals.length - 1)).toFixed(1)},${(23 - ((p - lo) / (hi - lo || 1)) * 21).toFixed(1)}`).join(' ')
-  const last = vals[vals.length - 1], first = vals[0]
-  return `<svg viewBox="0 0 100 26" preserveAspectRatio="none" style="width:100%;height:26px"><polyline fill="none" stroke="${last >= first ? 'var(--qk-up)' : 'var(--qk-down)'}" stroke-width="1.4" points="${pts}"/></svg>`
-}
-const tradeDate = items.length ? items[0].tradeDate : null
+const SEED = ['600519', '000858', '300750', '600036', '601318']
+const LS_KEY = 'qk-watchlist'
 ---
 
 <div class='qd-card qd-watch'>
   <div class='qd-watch-head'>
-    <span>自选列表</span>
-    <span class='qd-watch-date num'>{tradeDate ?? ''}</span>
+    <span class='qd-wh-title'><svg viewBox='0 0 24 24' width='14' height='14' aria-hidden='true'><path fill='currentColor' d='M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/></svg>自选列表</span>
+    <span class='qd-watch-date num' id='qk-wl-count'></span>
   </div>
-  {
-    items.length ? (
-      items.map((r) => (
-        <div class={`qd-wrow ${r.code === active ? 'active' : ''}`} data-code={r.code} role='button' tabindex='0'>
-          <div class='qd-w-l'>
-            <div class='qd-w-nm'>{r.name ?? r.code}</div>
-            <div class='qd-w-cd num'>{r.code}</div>
-          </div>
-          <div class='qd-w-r'>
-            <div class={`num ${cls(r.chgPct)}`}>{f2(r.price)}</div>
-            <div class={`num ${cls(r.chgPct)}`}>{r.chgPct == null ? '--' : `${r.chgPct >= 0 ? '+' : ''}${f2(r.chgPct)}%`}</div>
-          </div>
-          <div class='qd-w-spark' set:html={sparkSvg(r.spark)} />
-        </div>
-      ))
-    ) : (
-      <div class='qd-dim'>
-        自选为空 —— 往 <code>platform/codes.txt</code> 加代码后跑 <code>qplat daily</code>
-      </div>
-    )
-  }
-  <div class='qd-watch-tip'>数据湖日线快照 · 点击切换主图</div>
+
+  <div class='qk-search'>
+    <input id='qk-search-input' type='text' placeholder='搜索代码/名称/拼音，回车加自选' autocomplete='off' />
+    <div class='qk-search-res' id='qk-search-res' hidden></div>
+  </div>
+
+  <div id='qk-watch-rows' class='qk-watch-rows'></div>
+  <div class='qd-watch-tip'>自选存本地浏览器 · 悬停行尾 × 可移除 · 实时行情来自 /api/stock</div>
 </div>
 
 <script>
-  const rows = document.querySelectorAll<HTMLElement>('.qd-wrow')
-  rows.forEach((r) => {
-    const pick = () => {
-      rows.forEach((x) => x.classList.remove('active'))
-      r.classList.add('active')
-      document.dispatchEvent(new CustomEvent('dash:select', { detail: { code: r.dataset.code } }))
-    }
-    r.addEventListener('click', pick)
-    r.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick() }
+  const LS_KEY = 'qk-watchlist'
+  const SEED = ['600519', '000858', '300750', '600036', '601318']
+  const load = (): string[] => { try { const s = localStorage.getItem(LS_KEY); if (s) return JSON.parse(s) } catch {} return [...SEED] }
+  const save = (codes: string[]) => { try { localStorage.setItem(LS_KEY, JSON.stringify(codes)) } catch {} }
+
+  const q = (id: string) => document.getElementById(id)!
+  const rowsEl = q('qk-watch-rows') as HTMLElement
+  const countEl = q('qk-wl-count') as HTMLElement
+  const input = q('qk-search-input') as HTMLInputElement
+  const resEl = q('qk-search-res') as HTMLElement
+
+  const f2 = (n: number | null) => (n == null || isNaN(n) ? '--' : n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+  const cls = (n: number | null) => (n == null ? 'flat' : n > 0 ? 'up' : n < 0 ? 'down' : 'flat')
+  const sparkSvg = (vals: number[]) => {
+    if (vals.length < 2) return ''
+    const lo = Math.min(...vals), hi = Math.max(...vals)
+    const pts = vals.map((p, i) => `${((i * 100) / (vals.length - 1)).toFixed(1)},${(23 - ((p - lo) / (hi - lo || 1)) * 21).toFixed(1)}`).join(' ')
+    const last = vals[vals.length - 1], first = vals[0]
+    const col = last >= first ? 'var(--qk-up)' : 'var(--qk-down)'
+    return `<svg viewBox="0 0 100 26" preserveAspectRatio="none" style="width:100%;height:26px"><polyline fill="none" stroke="${col}" stroke-width="1.4" points="${pts}"/></svg>`
+  }
+
+  async function fetchJSON(url: string): Promise<any> {
+    const r = await fetch(url, { signal: AbortSignal.timeout(8000) })
+    if (!r.ok) throw new Error(String(r.status))
+    return r.json()
+  }
+  async function quoteOf(code: string): Promise<any> {
+    try { return await fetchJSON(`/api/stock?code=${code}`) } catch { return null }
+  }
+
+  type Row = { code: string; name: string | null; price: number | null; chgPct: number | null; spark: number[] }
+  let rows: Row[] = []
+  let activeCode = (window as any).__qkActive || '600519'
+
+  function renderRows() {
+    countEl.textContent = `${rows.length} 只`
+    if (!rows.length) { rowsEl.innerHTML = `<div class='qd-dim'>自选为空 —— 上方搜索框加一只</div>`; return }
+    rowsEl.innerHTML = rows.map((r) => {
+      const loading = r.price == null
+      return `
+      <div class='qd-wrow ${r.code === activeCode ? 'active' : ''}' data-code='${r.code}' role='button' tabindex='0'>
+        <div class='qd-w-l'><div class='qd-w-nm'>${r.name ?? r.code}</div><div class='qd-w-cd num'>${r.code}</div></div>
+        <button class='qd-w-del' data-del='${r.code}' title='移除自选' aria-label='移除'>×</button>
+        <div class='qd-w-r'>
+          <div class='num ${cls(r.chgPct)}'>${f2(r.price)}</div>
+          <div class='num ${cls(r.chgPct)}'>${r.chgPct == null ? '--' : `${r.chgPct >= 0 ? '+' : ''}${f2(r.chgPct)}%`}</div>
+        </div>
+        <div class='qd-w-spark'>${loading ? '<div class="qd-w-skel"></div>' : sparkSvg(r.spark)}</div>
+      </div>`
+    }).join('')
+    rowsEl.querySelectorAll<HTMLElement>('.qd-wrow').forEach((el) => {
+      const pick = () => {
+        rowsEl.querySelectorAll('.qd-wrow').forEach((x) => x.classList.remove('active'))
+        el.classList.add('active'); activeCode = el.dataset.code!
+        ;(window as any).__qkActive = activeCode
+        document.dispatchEvent(new CustomEvent('dash:select', { detail: { code: activeCode } }))
+      }
+      el.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).closest('.qd-w-del')) return
+        pick()
+      })
+      el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick() } })
     })
+    rowsEl.querySelectorAll<HTMLElement>('.qd-w-del').forEach((b) => {
+      b.addEventListener('click', (e) => {
+        e.stopPropagation()
+        const code = b.dataset.del!
+        const a = load().filter((x) => x !== code); save(a)
+        rows = a.map((x) => ({ code: x, name: null, price: null, chgPct: null, spark: [] }))
+        if (activeCode === code && rows[0]) { activeCode = rows[0].code; ;(window as any).__qkActive = activeCode; document.dispatchEvent(new CustomEvent('dash:select', { detail: { code: activeCode } })) }
+        refresh()
+      })
+    })
+  }
+
+  // 实时刷新每行：现价 + spark（取 kline 末 60 根收盘）
+  async function refresh() {
+    renderRows()
+    const codes = rows.map((r) => r.code)
+    await Promise.all(codes.map(async (code, i) => {
+      const q = await quoteOf(code)
+      if (!q) return
+      rows[i].name = q.name; rows[i].price = q.price; rows[i].chgPct = q.changePct
+      if (Array.isArray(q.kline)) rows[i].spark = q.kline.slice(-60).map((k: any) => k.c)
+      const el = rowsEl.querySelector<HTMLElement>(`.qd-wrow[data-code='${code}']`)
+      if (el) {
+        const r = rows[i]
+        ;(el.querySelector('.qd-w-nm') as HTMLElement).textContent = r.name ?? r.code
+        const rp = el.querySelector('.qd-w-r') as HTMLElement
+        rp.innerHTML = `<div class='num ${cls(r.chgPct)}'>${f2(r.price)}</div><div class='num ${cls(r.chgPct)}'>${r.chgPct == null ? '--' : `${r.chgPct >= 0 ? '+' : ''}${f2(r.chgPct)}%`}</div>`
+        ;(el.querySelector('.qd-w-spark') as HTMLElement).innerHTML = sparkSvg(r.spark)
+      }
+    }))
+  }
+
+  // 搜索框
+  let searchTimer: number | undefined
+  let srItems: { code: string; name: string }[] = []
+  let srIdx = -1
+  function paintSr() {
+    resEl.querySelectorAll('.qk-sr-item').forEach((el, i) => el.classList.toggle('on', i === srIdx))
+  }
+  input.addEventListener('input', () => {
+    const v = input.value.trim()
+    if (!v) { resEl.hidden = true; resEl.innerHTML = ''; srItems = []; srIdx = -1; return }
+    clearTimeout(searchTimer)
+    searchTimer = window.setTimeout(async () => {
+      try {
+        const j = await fetchJSON(`/api/stock-search?q=${encodeURIComponent(v)}`)
+        const items: { code: string; name: string; market: string }[] = j.items || []
+        srItems = items
+        srIdx = -1
+        if (!items.length) { resEl.innerHTML = `<div class='qk-sr-empty'>无匹配</div>`; resEl.hidden = false; return }
+        resEl.innerHTML = items.map((it) => `<button class='qk-sr-item' data-code='${it.code}' data-name='${it.name}'><span>${it.name}</span><span class='num'>${it.code}</span></button>`).join('')
+        resEl.hidden = false
+      } catch { resEl.hidden = true }
+    }, 250)
   })
+  input.addEventListener('keydown', (e) => {
+    if (resEl.hidden || !srItems.length) return
+    if (e.key === 'ArrowDown') { e.preventDefault(); srIdx = (srIdx + 1) % srItems.length; paintSr() }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); srIdx = (srIdx - 1 + srItems.length) % srItems.length; paintSr() }
+    else if (e.key === 'Enter') {
+      e.preventDefault()
+      const pick = srIdx >= 0 ? srItems[srIdx] : srItems[0]
+      if (pick) addFromSearch(pick.code, pick.name)
+    } else if (e.key === 'Escape') { resEl.hidden = true }
+  })
+  function addFromSearch(code: string, name: string) {
+    let codes = load()
+    if (!codes.includes(code)) { codes = [code, ...codes]; save(codes) }
+    rows = codes.map((c) => ({ code: c, name: null, price: null, chgPct: null, spark: [] }))
+    activeCode = code; ;(window as any).__qkActive = code
+    input.value = ''; resEl.hidden = true; srItems = []; srIdx = -1
+    document.dispatchEvent(new CustomEvent('dash:select', { detail: { code } }))
+    refresh()
+  }
+  resEl.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('.qk-sr-item') as HTMLElement | null
+    if (!b) return
+    addFromSearch(b.dataset.code!, b.dataset.name!)
+  })
+  document.addEventListener('click', (e) => { if (!resEl.contains(e.target as Node) && e.target !== input) resEl.hidden = true })
+
+  // 启动
+  const codes = load()
+  rows = codes.map((c) => ({ code: c, name: null, price: null, chgPct: null, spark: [] }))
+  refresh()
+  // 对外暴露：页面其它组件可读取当前自选
+  ;(window as any).__qkWatchlist = { get: load, add: (c: string) => { const a = load(); if (!a.includes(c)) { save([c, ...a]); rows = load().map((x) => ({ code: x, name: null, price: null, chgPct: null, spark: [] })); refresh() } }, remove: (c: string) => { const a = load().filter((x) => x !== c); save(a); rows = a.map((x) => ({ code: x, name: null, price: null, chgPct: null, spark: [] })); refresh() } }
 </script>
 
-<style>
-  .qd-card {
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border));
-    border-radius: 12px;
-  }
+<style is:global>
+  .qd-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 12px; }
   .qd-watch { padding: 12px 12px 8px; position: sticky; top: 12px; }
-  .qd-watch-head {
-    display: flex; justify-content: space-between; align-items: baseline;
-    font-size: 12px; font-weight: 600; color: hsl(var(--muted-foreground));
-    letter-spacing: .03em; padding: 0 6px 8px;
-  }
-  .qd-watch-date { font-weight: 400; font-size: 11px; }
-  .qd-wrow {
-    display: grid; grid-template-columns: 1fr auto; gap: 1px 8px;
-    padding: 9px 8px; border-radius: 8px; cursor: pointer;
-    border-bottom: 1px solid hsl(var(--border));
-  }
+  .qd-watch-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; font-weight: 600; color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground))); letter-spacing: .03em; padding: 0 6px 8px; }
+  .qd-wh-title { display: inline-flex; align-items: center; gap: 6px; }
+  .qd-wh-title svg { color: var(--qk-gold); flex: none; }
+  .qd-watch-date { font-weight: 400; font-size: 12px; }
+  .qk-search { position: relative; margin: 0 2px 8px; }
+  .qk-search input { width: 100%; box-sizing: border-box; padding: 7px 10px; font-size: 12px; border-radius: 8px; border: 1px solid hsl(var(--border)); background: hsl(var(--muted)); color: hsl(var(--foreground)); outline: none; }
+  .qk-search input:focus { border-color: var(--qk-gold); }
+  .qk-search-res { position: absolute; z-index: 20; top: 100%; left: 0; right: 0; margin-top: 4px; background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 8px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
+  .qk-sr-item { display: flex; justify-content: space-between; width: 100%; padding: 8px 10px; border: none; background: transparent; color: hsl(var(--foreground)); font-size: 13px; cursor: pointer; text-align: left; }
+  .qk-sr-item:hover, .qk-sr-item.on { background: hsl(var(--muted)); }
+  .qk-sr-item .num { color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground))); font-size: 12px; }
+  .qk-sr-empty { padding: 8px 10px; font-size: 12px; color: hsl(var(--muted-foreground)); }
+  .qk-watch-rows { max-height: calc(100vh - 220px); overflow-y: auto; }
+  /* 行内三段显式归位：名称(1,1) 价格(2,1..2列?) 删除(3,1) spark(2, 跨3列)，杜绝跨行溢出与下方提示叠字 */
+  .qd-wrow { display: grid; grid-template-columns: minmax(0, 1fr) auto 26px; grid-template-rows: auto auto; column-gap: 8px; padding: 9px 8px 7px; border-radius: 8px; cursor: pointer; border-bottom: 1px solid hsl(var(--border)); }
   .qd-wrow:last-of-type { border-bottom: none; }
   .qd-wrow:hover { background: hsl(var(--muted)); }
   .qd-wrow.active { background: hsl(var(--muted)); box-shadow: inset 2px 0 0 var(--qk-gold); }
+  .qd-w-del { grid-column: 3; grid-row: 1; align-self: center; justify-self: center; width: 26px; height: 26px; display: grid; place-items: center; border: none; background: transparent; color: hsl(var(--muted-foreground)); font-size: 15px; line-height: 1; cursor: pointer; opacity: 0; border-radius: 6px; transition: opacity .12s, background .12s, color .12s; }
+  .qd-wrow:hover .qd-w-del, .qd-w-del:focus-visible { opacity: .7; }
+  .qd-w-del:hover { background: color-mix(in srgb, var(--qk-down) 18%, transparent); color: var(--qk-down); opacity: 1; }
+  .qd-w-l { grid-column: 1; grid-row: 1; min-width: 0; }
   .qd-w-nm { font-size: 13px; font-weight: 600; color: hsl(var(--foreground)); }
-  .qd-w-cd { font-size: 11px; color: hsl(var(--muted-foreground)); }
-  .qd-w-r { text-align: right; font-size: 12px; font-weight: 600; grid-row: 1 / 3; align-self: center; display: grid; }
-  .qd-w-spark { grid-column: 1 / 3; height: 24px; margin-top: 3px; }
-  .qd-watch-tip { font-size: 11px; color: hsl(var(--muted-foreground)); padding: 6px 6px 2px; opacity: .8; }
+  .qd-w-cd { font-size: 12px; color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground))); }
+  .qd-w-r { grid-column: 2; grid-row: 1; align-self: center; text-align: right; font-size: 12px; font-weight: 600; display: grid; }
+  .qd-w-spark { grid-column: 1 / 4; grid-row: 2; height: 24px; margin-top: 4px; }
+  .qd-w-skel { width: 100%; height: 22px; border-radius: 4px; background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--border)) 37%, hsl(var(--muted)) 63%); background-size: 400% 100%; animation: qk-skel 1.3s ease infinite; }
+  @keyframes qk-skel { 0% { background-position: 100% 0 } 100% { background-position: -100% 0 } }
+  .qd-watch-tip { font-size: 12px; color: color-mix(in srgb, hsl(var(--muted-foreground)) 48%, hsl(var(--foreground))); padding: 6px 6px 2px; }
   .qd-dim { opacity: .6; font-size: 13px; padding: 8px 6px; }
   .up { color: var(--qk-up); } .down { color: var(--qk-down); } .flat { color: hsl(var(--muted-foreground)); }
   .num { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
-  code { font-size: 11px; background: hsl(var(--muted)); padding: 1px 4px; border-radius: 4px; }
-  @media (max-width: 900px) { .qd-watch { position: static; } }
+  @media (max-width: 900px) { .qd-watch { position: static; } .qk-watch-rows { max-height: none; } }
 </style>

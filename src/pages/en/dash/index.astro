@@ -1,0 +1,93 @@
+---
+// /en/dash —— Quant Workbench (English shell of /dash).
+// 仪表盘控件沿用中文行业术语（A股复盘场景），页面级文案为英文；数据全部走 serverless 实时代理。
+import ChartPanel from '@/components/dash/ChartPanel.astro'
+import MarketStrip from '@/components/dash/MarketStrip.astro'
+import PipelineBar from '@/components/dash/PipelineBar.astro'
+import SidePanels from '@/components/dash/SidePanels.astro'
+import WatchList from '@/components/dash/WatchList.astro'
+import DashLayout from '@/layouts/DashLayout.astro'
+
+const title = 'Quant Workbench'
+const desc = 'Real-time daily review: index strip, watchlist, six-period candlesticks (1/5-day minute, D/W/M/Y) with 52-week position, volume ratio, volatility and valuation. Live data via serverless proxy to Tencent quotes.'
+---
+
+<DashLayout meta={{ title, description: desc }}>
+  <div class='qd-head'>
+    <h1 class='qd-title'>{title}</h1>
+    <span class='qd-tag'>Live review · Tencent quotes via serverless proxy</span>
+  </div>
+
+  <MarketStrip />
+
+  <div class='qd-grid'>
+    <WatchList />
+    <ChartPanel initialCode='600519' />
+    <SidePanels />
+  </div>
+
+  <PipelineBar />
+
+  <p class='qd-note'>
+    Data flow: browser → <code>/api/stock</code> (serverless proxy to Tencent quotes) for live quotes and 250-day
+    bars; weekly / monthly / yearly periods and quantitative stats (52-week position, volume ratio, volatility)
+    are computed in the browser from daily bars. Minute charts use <code>/api/stock-minute</code>, indices use
+    <code>/api/indices</code>, search uses <code>/api/stock-search</code>. The watchlist is stored locally in your
+    browser (localStorage). Bars are unadjusted. Methodology notes: see the <a href='/en/quant-column'>quant column</a>.
+  </p>
+</DashLayout>
+
+<style is:global>
+  :root {
+    --qk-up: #e64545;
+    --qk-down: #1aa16a;
+    --qk-gold: hsl(var(--primary, 45 68% 51%));
+  }
+  html.dark {
+    --qk-up: #f16a6a;
+    --qk-down: #3fba85;
+  }
+  .qd-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 2px 2px 12px;
+  }
+  .qd-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: hsl(var(--foreground));
+  }
+  .qd-tag {
+    font-size: 12px;
+    color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground)));
+  }
+  .qd-grid {
+    display: grid;
+    grid-template-columns: clamp(216px, 16vw, 272px) minmax(0, 1fr) clamp(264px, 20vw, 344px);
+    gap: 16px;
+    align-items: start;
+  }
+  @media (max-width: 1024px) {
+    .qd-grid { grid-template-columns: 200px minmax(0, 1fr) 256px; gap: 12px; }
+  }
+  @media (max-width: 900px) {
+    .qd-grid { grid-template-columns: 1fr; gap: 12px; }
+  }
+  .qd-note {
+    margin-top: 14px;
+    max-width: 65ch;
+    font-size: 12px;
+    color: color-mix(in srgb, hsl(var(--muted-foreground)) 48%, hsl(var(--foreground)));
+    line-height: 1.9;
+  }
+  .qd-note code {
+    background: hsl(var(--muted));
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  .qd-note a { color: var(--qk-gold); }
+</style>

@@ -133,7 +133,8 @@ export default defineConfig({
       // 否则访问 /dash 时才“发现”新依赖触发重新优化，首屏 K线 会因 504 Outdated Optimize Dep 卡死。
       include: ['echarts/core', 'echarts/charts', 'echarts/components', 'echarts/renderers'],
       // astro-pure 的 utils 模块引用 Astro 虚拟模块 virtual:config，esbuild 预构建阶段无法解析，需标记为 external。
-      esbuildOptions: { external: ['virtual:config'] }
+      // dev toolbar 的 astro:toolbar:internal 同样是虚拟模块，外部化避免 optimizeDeps 整体报错（会导致页面脚本/HMR 异常）。
+      esbuildOptions: { external: ['virtual:config', 'astro:toolbar:internal'] }
     }
   },
 
