@@ -46,6 +46,9 @@ export default defineConfig({
     // prefetchAll: true,
     defaultStrategy: 'viewport'
   },
+  // 设计工作台 / 预览代理里 @id/astro/runtime/client/dev-toolbar/entrypoint.js 载不出来
+  // （虚拟模块经代理路径解析 404，页面本身并不需要它），关掉 dev toolbar 消除该报错。
+  devToolbar: { enabled: false },
 
   // [Adapter]
   // https://docs.astro.build/en/guides/deploy/

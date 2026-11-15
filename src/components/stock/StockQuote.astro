@@ -41,6 +41,11 @@ const { locale = 'zh' } = Astro.props
     --sq-up: #e24b4a; /* 涨 = 红 */
     --sq-down: #3fa66a; /* 跌 = 绿 */
     --sq-line: rgba(212, 172, 55, 0.22);
+    /* 字号阶梯：辅助 12 / 正文与控制件 14 / 名称 20（与站点头部品牌同档）/ 现价 40 */
+    --sq-fs-xs: 12px;
+    --sq-fs-sm: 14px;
+    --sq-fs-lg: 20px;
+    --sq-fs-price: 40px;
     /* 旧别名：sidebar 插槽里的组件不在 .stock-quote 内，需要直接可用的变量名 */
     --ink-1: var(--sq-ink-1);
     --ink-2: var(--sq-ink-2);
@@ -85,7 +90,7 @@ const { locale = 'zh' } = Astro.props
     border: 1px solid var(--line);
     border-radius: 9px;
     padding: 10px 12px;
-    font-size: 14px;
+    font-size: var(--sq-fs-sm);
     outline: none;
   }
   .sq-input {
@@ -101,7 +106,7 @@ const { locale = 'zh' } = Astro.props
     border: none;
     border-radius: 9px;
     padding: 10px 22px;
-    font-size: 14px;
+    font-size: var(--sq-fs-sm);
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
@@ -128,12 +133,12 @@ const { locale = 'zh' } = Astro.props
   }
   .sq-watch-title {
     color: var(--gold);
-    font-size: 14px;
+    font-size: var(--sq-fs-sm);
     font-weight: 600;
   }
   .sq-watch-hint {
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
   }
   .sq-watch-list {
     display: flex;
@@ -149,7 +154,7 @@ const { locale = 'zh' } = Astro.props
     border-radius: 999px;
     padding: 6px 10px 6px 14px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: var(--sq-fs-sm);
     transition: border-color 0.15s, background 0.15s;
   }
   .sq-chip:hover {
@@ -161,7 +166,7 @@ const { locale = 'zh' } = Astro.props
   }
   .sq-chip .cd {
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
   }
   .sq-chip.active {
     border-color: var(--gold-bright);
@@ -169,7 +174,7 @@ const { locale = 'zh' } = Astro.props
   }
   .sq-chip .x {
     color: var(--muted);
-    font-size: 14px;
+    font-size: var(--sq-fs-sm);
     line-height: 1;
     padding: 0 2px;
     border-radius: 50%;
@@ -179,7 +184,7 @@ const { locale = 'zh' } = Astro.props
   }
   .sq-watch-empty {
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
     padding: 4px 2px 10px;
   }
   .sq-watch-add {
@@ -201,7 +206,7 @@ const { locale = 'zh' } = Astro.props
     text-align: center;
     color: var(--muted);
     padding: 24px;
-    font-size: 14px;
+    font-size: var(--sq-fs-sm);
   }
   .sq-status.err {
     color: var(--down);
@@ -222,15 +227,15 @@ const { locale = 'zh' } = Astro.props
     flex-wrap: wrap;
   }
   .sq-name {
-    font-size: 22px;
+    font-size: var(--sq-fs-lg);
     font-weight: 600;
   }
   .sq-code {
     color: var(--muted);
-    font-size: 13px;
+    font-size: var(--sq-fs-sm);
   }
   .sq-tag {
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
     color: var(--gold);
     border: 1px solid var(--line);
     border-radius: 5px;
@@ -243,7 +248,7 @@ const { locale = 'zh' } = Astro.props
     border: 1px solid var(--line);
     border-radius: 8px;
     padding: 6px 12px;
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
     cursor: pointer;
   }
   .sq-addwatch:hover {
@@ -257,20 +262,20 @@ const { locale = 'zh' } = Astro.props
     flex-wrap: wrap;
   }
   .sq-price {
-    font-size: 40px;
+    font-size: var(--sq-fs-price);
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     line-height: 1.1;
   }
   .sq-chg {
-    font-size: 16px;
+    font-size: var(--sq-fs-sm);
     font-variant-numeric: tabular-nums;
   }
   .sq-time {
     margin-left: auto;
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
   }
   .up {
     color: var(--up);
@@ -284,7 +289,7 @@ const { locale = 'zh' } = Astro.props
     justify-content: space-between;
     align-items: center;
     margin-top: 14px;
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
     color: var(--muted);
     flex-wrap: wrap;
     gap: 8px;
@@ -387,11 +392,11 @@ const { locale = 'zh' } = Astro.props
     padding: 10px 12px;
   }
   .sq-cell .k {
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
     color: var(--muted);
   }
   .sq-cell .v {
-    font-size: 15px;
+    font-size: var(--sq-fs-sm);
     margin-top: 2px;
     font-variant-numeric: tabular-nums;
   }
@@ -412,7 +417,7 @@ const { locale = 'zh' } = Astro.props
     align-items: baseline;
     gap: 12px;
     color: var(--gold);
-    font-size: 14px;
+    font-size: var(--sq-fs-sm);
     font-weight: 600;
     letter-spacing: 0.04em;
     flex-wrap: wrap;
@@ -427,12 +432,12 @@ const { locale = 'zh' } = Astro.props
   }
   .sq-val-summary small {
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
     font-weight: 400;
     letter-spacing: 0;
     flex: 1 1 auto;
     min-width: 0;
-    max-width: 46em;
+    max-width: 28em;
     line-height: 1.6;
     text-align: right;
   }
@@ -457,6 +462,13 @@ const { locale = 'zh' } = Astro.props
     padding: 0;
     margin-bottom: 0;
   }
+  /* 收起时把内容真正移出布局：浏览器的默认隐藏只是跳过绘制，
+     展开过再收起的元素仍会报出展开时的遗留布局矩形，视觉上与下方卡片、页脚叠在一起；
+     显式 display:none 保证收起内容既不渲染也不参与任何测量。 */
+  .sq-val-details:not([open]) > .sq-val,
+  details.sq-dcf:not([open]) > :not(summary) {
+    display: none;
+  }
   /* 锚定与变化说明 */
   .sq-anchor {
     border: 1px solid var(--line);
@@ -470,7 +482,7 @@ const { locale = 'zh' } = Astro.props
     gap: 10px;
     justify-content: space-between;
     align-items: baseline;
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
     padding: 3px 0;
     flex-wrap: wrap;
   }
@@ -503,7 +515,7 @@ const { locale = 'zh' } = Astro.props
     margin-top: 8px;
     padding: 9px 11px;
     border-radius: 9px;
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
     line-height: 1.65;
     background: rgba(63, 166, 106, 0.1);
     border: 1px solid rgba(63, 166, 106, 0.3);
@@ -533,7 +545,7 @@ const { locale = 'zh' } = Astro.props
     padding: 9px 12px;
     border: 1px solid var(--line);
     border-radius: 10px;
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
     color: var(--muted);
     background: var(--ink-1);
     line-height: 1.7;
@@ -548,7 +560,7 @@ const { locale = 'zh' } = Astro.props
     color: var(--muted);
   }
   .sq-val h3 {
-    font-size: 14px;
+    font-size: var(--sq-fs-sm);
     color: var(--gold);
     font-weight: 600;
     margin: 0 0 4px;
@@ -556,7 +568,7 @@ const { locale = 'zh' } = Astro.props
   }
   .sq-val .sq-val-sub {
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
     margin-bottom: 14px;
   }
   .sq-method {
@@ -572,7 +584,7 @@ const { locale = 'zh' } = Astro.props
     color: var(--cream);
     border-radius: 8px;
     padding: 6px 14px;
-    font-size: 13px;
+    font-size: var(--sq-fs-sm);
     cursor: pointer;
     white-space: nowrap;
   }
@@ -594,7 +606,7 @@ const { locale = 'zh' } = Astro.props
     padding: 14px 16px;
   }
   .sq-val-block h4 {
-    font-size: 13px;
+    font-size: var(--sq-fs-sm);
     margin: 0 0 10px;
     color: var(--cream);
   }
@@ -606,7 +618,7 @@ const { locale = 'zh' } = Astro.props
     margin-bottom: 8px;
   }
   .sq-val-in label {
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
     color: var(--muted);
   }
   .sq-val-in input {
@@ -615,7 +627,7 @@ const { locale = 'zh' } = Astro.props
     border: 1px solid var(--line);
     border-radius: 7px;
     padding: 6px 8px;
-    font-size: 13px;
+    font-size: var(--sq-fs-sm);
     width: 100%;
     outline: none;
     font-variant-numeric: tabular-nums;
@@ -625,8 +637,8 @@ const { locale = 'zh' } = Astro.props
     grid-template-columns: 1fr auto;
   }
   .sq-val-chk input[type='checkbox'] {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     min-height: 24px;
     padding: 2px;
     cursor: pointer;
@@ -640,7 +652,7 @@ const { locale = 'zh' } = Astro.props
   .sq-val-out .row {
     display: flex;
     justify-content: space-between;
-    font-size: 13px;
+    font-size: var(--sq-fs-sm);
     padding: 3px 0;
   }
   .sq-val-out .row .k {
@@ -661,7 +673,7 @@ const { locale = 'zh' } = Astro.props
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 13px;
+    font-size: var(--sq-fs-sm);
     padding: 4px 0;
   }
   .sq-val-zone .zrow .lbl {
@@ -675,7 +687,7 @@ const { locale = 'zh' } = Astro.props
     margin-top: 10px;
     padding: 10px 12px;
     border-radius: 9px;
-    font-size: 13px;
+    font-size: var(--sq-fs-sm);
     line-height: 1.5;
   }
   .sq-v-under {
@@ -701,7 +713,7 @@ const { locale = 'zh' } = Astro.props
     color: var(--muted);
     border-radius: 8px;
     padding: 6px 14px;
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
     cursor: pointer;
   }
   .sq-val-actions button:hover {
@@ -715,7 +727,7 @@ const { locale = 'zh' } = Astro.props
   details.sq-dcf summary {
     cursor: pointer;
     color: var(--gold);
-    font-size: 13px;
+    font-size: var(--sq-fs-sm);
     padding: 6px 0;
   }
   .sq-dcf .sq-val-sub {
@@ -734,7 +746,7 @@ const { locale = 'zh' } = Astro.props
     padding: 18px 20px;
   }
   .sq-card h3 {
-    font-size: 14px;
+    font-size: var(--sq-fs-sm);
     color: var(--gold);
     font-weight: 600;
     margin: 0 0 14px;
@@ -743,7 +755,7 @@ const { locale = 'zh' } = Astro.props
   .sq-kv {
     display: flex;
     justify-content: space-between;
-    font-size: 13px;
+    font-size: var(--sq-fs-sm);
     padding: 6px 0;
     border-bottom: 1px dashed var(--line);
     gap: 12px;
@@ -769,7 +781,7 @@ const { locale = 'zh' } = Astro.props
     margin-top: 8px;
     padding: 18px 16px;
     color: var(--muted);
-    font-size: 13px;
+    font-size: var(--sq-fs-sm);
     text-align: center;
     background: #17150f;
     border: 1px dashed var(--line);
@@ -786,7 +798,7 @@ const { locale = 'zh' } = Astro.props
     align-items: center;
     gap: 10px;
     margin: 9px 0;
-    font-size: 13px;
+    font-size: var(--sq-fs-sm);
   }
   .sq-bar-row .lbl {
     width: 56px;
@@ -810,8 +822,10 @@ const { locale = 'zh' } = Astro.props
   }
   .sq-foot {
     margin-top: 22px;
+    margin-inline: auto;
+    max-width: 36em;
     color: var(--muted);
-    font-size: 12px;
+    font-size: var(--sq-fs-xs);
     text-align: center;
     line-height: 1.6;
   }
@@ -898,7 +912,7 @@ const { locale = 'zh' } = Astro.props
       addWatch: '＋ 加入自选',
       added: '已加入',
       valTitle: '内在价值估值（情景区间）',
-      valSub: '基于 stock-intrinsic-value-calc 方法：至少两法交叉验证，给出悲观/中性/乐观而非单一目标价。假设可编辑并按代码保存。',
+      valSub: '基于 stock-intrinsic-value-calc：两法交叉验证，给出悲观 / 中性 / 乐观区间，而非单一目标价；假设可编辑、按代码保存。',
       methodLabel: '估值方法',
       mPE: 'PE 法',
       mPB: 'PB 法',
@@ -1564,7 +1578,7 @@ const { locale = 'zh' } = Astro.props
         <div class='sq-change ${chgCls}'>${changeHTML(change, null, L)}</div>
       </div>
       <div class='sq-method'>
-        <span style='font-size:12px;color:var(--muted);align-self:center'>${L.methodLabel}</span>
+        <span style='font-size:var(--sq-fs-xs);color:var(--muted);align-self:center'>${L.methodLabel}</span>
         <button type='button' data-m='pe' class='${sel('pe')}'>${L.mPE}</button>
         <button type='button' data-m='pb' class='${sel('pb')}'>${L.mPB}</button>
         <button type='button' data-m='dcf' class='${sel('dcf')}'>${L.mDCF}</button>
@@ -1616,7 +1630,7 @@ const { locale = 'zh' } = Astro.props
           <div class='sq-val-out'>
             <div class='row'><span class='k'>${L.pe} (TTM)</span><span class='v'>${d.peTTM ? fmt(d.peTTM) : L.none}</span></div>
             <div class='row'><span class='k'>${L.pegLabel}</span><span class='v' id='sq_peg'>—</span></div>
-            <div class='row'><span class='k'></span><span class='v' id='sq_peg_v' style='font-weight:400;font-size:12px;color:var(--muted)'></span></div>
+            <div class='row'><span class='k'></span><span class='v' id='sq_peg_v' style='font-weight:400;font-size:var(--sq-fs-xs);color:var(--muted)'></span></div>
           </div>
         </div>
 
@@ -1654,7 +1668,7 @@ const { locale = 'zh' } = Astro.props
       </div>
       <div class='sq-val-actions'>
         <button type='button' id='sq_reset_val'>${L.resetVal}</button>
-        <span style='align-self:center;color:var(--muted);font-size:12px' id='sq_save_note'></span>
+        <span style='align-self:center;color:var(--muted);font-size:var(--sq-fs-xs)' id='sq_save_note'></span>
       </div>
       </div>
     </details>`
