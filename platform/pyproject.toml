@@ -1,0 +1,19 @@
+[project]
+name = "qplat"
+version = "0.1.0"
+description = "个人量化平台（阶段零）：Parquet 数据湖 + 因子/回测引擎 + 静态发布器"
+requires-python = ">=3.11"
+dependencies = [
+    "baostock>=0.8.8",
+    "numpy>=1.26",
+    "pandas>=2.0",
+    "pyarrow>=16",
+    "duckdb>=1.0",
+]
+
+# 安装方式（工作区内 venv，零系统污染）：
+#   export UV_CACHE_DIR=$PWD/.uv-cache
+#   uv venv .venv --python /Users/halo123456/.local/bin/python3.12
+#   uv pip install --python .venv/bin/python baostock pandas pyarrow duckdb numpy
+# 运行入口：
+#   .venv/bin/python -m cli.qplat <子命令>

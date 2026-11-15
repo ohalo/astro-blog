@@ -63,3 +63,11 @@ tmp/
 /scripts_gen/
 /scripts_tmp/
 /scan_issues.txt
+
+# ---- platform (量化平台阶段零) ----
+platform/.venv/
+platform/.uv-cache/
+platform/.pip-cache/
+platform/quant-data/
+platform/runs/
+platform/**/__pycache__/

@@ -103,3 +103,18 @@
 - 校验：`scripts/build_verify_articles_20261110.py` ALL CHECKS PASSED（2177/2148 中文字、desc 400/419、代码块与 core 逐字一致、exec 复跑 results.json 深度相等、5 图与站点资产逐字节相同、hash 全不同）。本地 build 58s（末尾仍是已知 safe-delete 拦截 `dist/server/.prerender`，静态产物在 `dist/client/`，专栏页两新标题命中且顺序正确）。
 - commit `b2ba10e9`（先 commit → `git pull --rebase` 无新提交 → push）。任务指定 `/quant-column` 返回 **200**。推送后约 4 分钟部署生效：第 5 轮强制回源 `MISS` + 新 last-modified 09:29:17 GMT，两新标题/两文章页/抽查 2 图/普通访问全命中，第 6 轮 `HIT` 但同样全命中 → 连续两轮通过。
 
+## 2026-11-12（第 13 次：下午批次）
+- 主题池仍耗尽（脚本 assert 0 个）。按关键词统计 1520 目录后自造两个 0 覆盖角度：`probability-calibration-brier-isotonic`、`rolling-window-bias-variance-drift`；`os.listdir` + `git ls-files` 双重查重通过。当天上午已有另一批次（09:10/09:12 UTC），本批用 09:30/09:31 UTC 置顶。
+- **校准**：三份严格单调等价预测 AUC 全 0.757426、方向命中 0.69375，Brier 0.198856/0.214131/0.206283，凯利日均对数增长 0.111097/0.028349/0.092052；AUC 更高却 Brier 更差的反转临界 a*=2.151542。n=50 时 Platt/保序均值都输原始分，但 Platt 中位数 0.206151 最优、82% 重复里赢保序（均值被少数发散拖高）。基准漂移后 Platt 与 oracle 差距 0.000012→0.014846；真概率分 200 箱仍 ECE 0.112944（√B 斜率 0.497565）；残差一阶自相关 0.117423，朴素 t 误报 0.21 → HAC40 0.060 / block40 0.0733。
+- **窗口**：三角波漂移 AR(1)，U 形 0.119999(10)→0.014175(100)→0.042544(400)，w*_emp 107.36 vs 闭式 98.45；P 400→3200 的 log-log 斜率 0.675792（理论 2/3，R²=0.9934）；σ 1→2 损失精确 ×4 而 w* 不变。突变区制下 rolling/RLS/Kalman 最优 0.015844/0.017676/0.015659，但 q 设错可恶化到 0.266800；预序选窗 K=50/250/1000 遗憾 1.74%/0.50%/0.40%。**坑**：w 超过一个漂移周期后 U 形二次下行，网格必须截在 P/2；三档 K 的评估区间不同，只能比遗憾百分比、不能横比平均损失。
+- 校验 `scripts/build_verify_articles_20261112pm.py` ALL CHECKS PASSED（2119/2096 中文字、desc 508/474、代码块与 core 逐字一致、exec 复跑 results.json 深度相等、10 图逐字节相同）。本地 `npm run build` 60s **BUILD_EXIT=0**（本次无 safe-delete 拦截）。
+- commit `ea52d1f8`（先 commit → `git pull --rebase` 无新提交 → push；顺带把用户当天未推送的 GA / footer 两个提交一起推了）。任务指定 `/quant-column` **200**。推送后第 5 轮强制回源 `MISS` + 新 last-modified 09:45:32 GMT，两标题/两文章页/2 图+1 JSON/普通访问全命中，第 6 轮 `HIT` 同样全命中 → 连续两轮通过。
+
+## 2026-11-13（第 14 次）
+- 主题池仍耗尽（脚本 assert 0 个）。按关键词统计 1525 目录后自造两个 0 覆盖角度：`beta-attenuation-errors-in-variables`（两阶段回归 EIV 衰减 / Shanken 修正）、`mincer-zarnowitz-vol-forecast-eval`（MZ 检验 / QLIKE）；`attenuation/shanken/errors-in-variables/mincer/qlike` 均 0 命中，双查重通过。本日无其他批次，publishDate 用 07:10/07:12 UTC。
+- **β 衰减**：单资产 β/(1+λ) 最大相对偏差 0.0008；两阶段截面斜率衰减模拟-理论差 0.0006；Shanken 覆盖 0.9488/0.9338/0.8913 → 0.9700/0.9513/0.9100（σ_e=1.2 偏倚≈1 sd，修正治不了中心偏倚）；实测 SE 膨胀 λ=1 时 1.3639 vs 1.4142（λ̂ 自身衰减）；伪 alpha 斜率 0.0846 vs 0.0805，|t|>1.96 占比 16.78%（3.4 倍）。
+- **MZ/QLIKE 重大叙事修正**：预设「b 随 proxy 噪声衰减」是错的（proxy 在等号左边，衰减出现在 **R²**：理论 Var(h)/Var(r²)=0.0927，实测 0.073/MC 0.104，oracle 不豁免）。真正的 b 偏倚来自 h_{t+1} 内生于 z²_t（E[u|X]≠0，Stambaugh 同宗）：MC b̄=0.9158（偏 8%），固定 h 重抽 z² 恢复 0.985。NW(10) size 16.33%；真值 proxy 下残差 acf1=0.8989 使 t=42 虚报精度。损失稀释 10-40 倍（118.7→1.10 / 46.7→1.08）；QLIKE 宽容高估（×1.014 < ×1.025）；噪声扫描 MSE 翻转 0→6.3%、QLIKE ≤0.7%。
+- **实现坑**：NW 三明治漏乘残差（u_t 而非 u_t²，se 全 0）；matplotlib CJK 必须显式 Heiti TC；oracle 对真值 proxy 恒等回归需 t=None 处理；**两篇 md 又都忘了 frontmatter 收尾 `---`**（第 2 次犯，写作时要当成正文一部分）。
+- 校验 `scripts/build_verify_articles_20261113.py` ALL CHECKS PASSED（2660/2517 中文字、desc 396/503、代码块与 core 逐字一致、exec 复跑与 results.json 深度相等、5 图 hash 各不同）。本地 build BUILD_EXIT=0。commit `89e3f403`（stash -u → pull --rebase 无新提交 → push → stash pop）。
+- 部署：任务指定 `/quant-column` 全程 200。推送后第 3 轮（约 4-5 分钟）新 last-modified 07:55:35 GMT + 两标题命中 + 文章页/results.json 200，连续两轮通过（幂等验证脚本 `scripts/verify_deploy_20261113.py`）。
+

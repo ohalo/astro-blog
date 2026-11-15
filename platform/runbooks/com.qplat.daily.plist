@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.qplat.daily</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>/Users/halo123456/workspace/astro-blog/platform/runbooks/daily.sh</string>
+  </array>
+
+  <!-- 周一~周五 17:10 各跑一次（baostock 日线数据约 17:00 后就绪） -->
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>10</integer></dict>
+    <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>10</integer></dict>
+    <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>10</integer></dict>
+    <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>10</integer></dict>
+    <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>17</integer><key>Minute</key><integer>10</integer></dict>
+  </array>
+
+  <key>StandardOutPath</key>
+  <string>/Users/halo123456/workspace/astro-blog/platform/runs/launchd.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/halo123456/workspace/astro-blog/platform/runs/launchd.err.log</string>
+
+  <!-- 睡眠错过的任务不补跑（错过一次无所谓，明晚照常），但跑满 30 分钟上限保护 -->
+  <key>Nice</key>
+  <integer>5</integer>
+</dict>
+</plist>

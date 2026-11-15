@@ -1,0 +1,353 @@
+---
+/**
+ * KLine —— 自数据湖发布的静态 K线 JSON 渲染的日K图（阶段零组件）。
+ * 数据契约：/data/kline/{code}.json（platform/quant publish_kline 产出，
+ * kline 字段形状对齐 src/pages/api/stock.ts 的 StockResult.kline）。
+ */
+interface Props {
+  code: string
+  name?: string
+  height?: number
+}
+const { code, name, height = 460 } = Astro.props
+---
+
+<div class='qk-card' data-qk-card>
+  <div class='qk-head'>
+    <div class='qk-title'>
+      <span class='qk-name' data-qk-name>{name ?? code}</span>
+      <span class='qk-code'>{code}</span>
+    </div>
+    <div class='qk-quote'>
+      <span class='qk-price' data-qk-price>--</span>
+      <span class='qk-chg' data-qk-chg></span>
+      <span class='qk-date' data-qk-date></span>
+    </div>
+  </div>
+  <div class='qk-chart' data-code={code} style={`height:${height}px`}>
+    <div class='qk-tip'>加载 {code} …</div>
+  </div>
+  <div class='qk-foot'>
+    数据湖: baostock · 未复权 · 由 <code>platform/cli/qplat</code> 发布 <span data-qk-pub></span>
+  </div>
+</div>
+
+<script>
+  import * as echarts from 'echarts/core'
+  import { BarChart, CandlestickChart, LineChart } from 'echarts/charts'
+  import {
+    AxisPointerComponent,
+    DataZoomComponent,
+    GridComponent,
+    TooltipComponent
+  } from 'echarts/components'
+  import { CanvasRenderer } from 'echarts/renderers'
+
+  echarts.use([
+    CandlestickChart,
+    BarChart,
+    LineChart,
+    GridComponent,
+    TooltipComponent,
+    DataZoomComponent,
+    AxisPointerComponent,
+    CanvasRenderer
+  ])
+
+  const UP = '#ef232a'
+  const DOWN = '#14b143'
+
+  interface Bar {
+    t: string
+    o: number
+    h: number
+    l: number
+    c: number
+    v: number
+  }
+  interface KPayload {
+    code: string
+    name: string | null
+    count: number
+    from: string
+    to: string
+    publishedAt: string
+    kline: Bar[]
+  }
+
+  const fmt = (n: number, d = 2) =>
+    n.toLocaleString('zh-CN', { minimumFractionDigits: d, maximumFractionDigits: d })
+
+  function ma(closes: number[], day: number): (number | null)[] {
+    const out: (number | null)[] = []
+    let sum = 0
+    for (let i = 0; i < closes.length; i++) {
+      sum += closes[i]
+      if (i >= day) sum -= closes[i - day]
+      out.push(i >= day - 1 ? +(sum / day).toFixed(2) : null)
+    }
+    return out
+  }
+
+  const isDark = () => document.documentElement.classList.contains('dark')
+  const axisColor = () => (isDark() ? '#9ca3af' : '#4b5563')
+  const splitColor = () => (isDark() ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.07)')
+
+  function buildOption(k: Bar[]) {
+    const dates = k.map((d) => d.t)
+    const closes = k.map((d) => d.c)
+    const n = k.length
+    const zoomStart = n > 120 ? (1 - 120 / n) * 100 : 0
+    return {
+      animation: false,
+      textStyle: { color: axisColor(), fontSize: 11 },
+      axisPointer: { link: [{ xAxisIndex: 'all' }], label: { backgroundColor: '#555' } },
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: { type: 'cross' },
+        confine: true,
+        formatter(params: any) {
+          if (!Array.isArray(params) || !params.length) return ''
+          const idx = params[0].dataIndex
+          const d = k[idx]
+          const prev = idx > 0 ? k[idx - 1].c : d.o
+          const pct = ((d.c - prev) / prev) * 100
+          const col = d.c >= prev ? UP : DOWN
+          const maLines = params
+            .filter((p: any) => p.seriesType === 'line' && p.value != null)
+            .map((p: any) => `${p.marker}${p.seriesName}: ${fmt(Number(p.value))}`)
+            .join('<br/>')
+          return [
+            `<b>${d.t}</b>`,
+            `开盘 ${fmt(d.o)}　最高 <b style='color:${UP}'>${fmt(d.h)}</b>`,
+            `收盘 <b style='color:${col}'>${fmt(d.c)}</b>（${pct >= 0 ? '+' : ''}${fmt(pct)}%）`,
+            `最低 <b style='color:${DOWN}'>${fmt(d.l)}</b>　成交量 ${fmt(d.v / 10000, 2)} 万手`,
+            maLines
+          ]
+            .filter(Boolean)
+            .join('<br/>')
+        }
+      },
+      grid: [
+        { left: 62, right: 14, top: 14, height: '58%' },
+        { left: 62, right: 14, top: '74%', height: '15%' }
+      ],
+      xAxis: [
+        {
+          type: 'category',
+          data: dates,
+          scale: true,
+          boundaryGap: false,
+          axisLine: { lineStyle: { color: axisColor() } },
+          axisLabel: { color: axisColor() },
+          splitLine: { show: false },
+          axisTick: { show: false }
+        },
+        {
+          gridIndex: 1,
+          type: 'category',
+          data: dates,
+          axisLabel: { show: false },
+          axisTick: { show: false },
+          axisLine: { lineStyle: { color: axisColor() } },
+          splitLine: { show: false }
+        }
+      ],
+      yAxis: [
+        {
+          scale: true,
+          position: 'left',
+          splitArea: { show: false },
+          axisLine: { show: false },
+          axisTick: { show: false },
+          axisLabel: { color: axisColor() },
+          splitLine: { lineStyle: { color: splitColor() } }
+        },
+        {
+          gridIndex: 1,
+          scale: true,
+          axisLabel: { show: false },
+          axisLine: { show: false },
+          axisTick: { show: false },
+          splitLine: { show: false }
+        }
+      ],
+      dataZoom: [
+        { type: 'inside', xAxisIndex: [0, 1], start: zoomStart, end: 100 },
+        {
+          type: 'slider',
+          xAxisIndex: [0, 1],
+          bottom: 2,
+          height: 14,
+          start: zoomStart,
+          end: 100,
+          borderColor: 'transparent',
+          fillerColor: isDark() ? 'rgba(140,160,190,.18)' : 'rgba(60,90,140,.12)'
+        }
+      ],
+      series: [
+        {
+          name: '日K',
+          type: 'candlestick',
+          data: k.map((d) => [d.o, d.c, d.l, d.h]),
+          itemStyle: {
+            color: UP,
+            color0: DOWN,
+            borderColor: UP,
+            borderColor0: DOWN
+          }
+        },
+        {
+          name: 'MA20',
+          type: 'line',
+          data: ma(closes, 20),
+          smooth: true,
+          showSymbol: false,
+          lineStyle: { width: 1, color: '#f0a02f' },
+          emphasis: { disabled: true }
+        },
+        {
+          name: 'MA60',
+          type: 'line',
+          data: ma(closes, 60),
+          smooth: true,
+          showSymbol: false,
+          lineStyle: { width: 1, color: '#3b82f6' },
+          emphasis: { disabled: true }
+        },
+        {
+          name: '成交量',
+          type: 'bar',
+          xAxisIndex: 1,
+          yAxisIndex: 1,
+          data: k.map((d) => ({
+            value: d.v,
+            itemStyle: { color: d.c >= d.o ? 'rgba(239,35,42,.6)' : 'rgba(20,177,67,.6)' }
+          }))
+        }
+      ]
+    }
+  }
+
+  async function mount(el: HTMLElement) {
+    const code = el.dataset.code!
+    const card = el.closest('[data-qk-card]')
+    let data: KPayload
+    try {
+      const res = await fetch(`/data/kline/${code}.json`)
+      if (!res.ok) throw new Error(String(res.status))
+      data = await res.json()
+    } catch {
+      el.innerHTML = `<div class='qk-tip'>暂无 <b>${code}</b> 数据。先在 platform/ 下运行：<br/><code>.venv/bin/python -m cli.qplat publish-kline --code ${code}</code> 并把 JSON 加入 git。</div>`
+      return
+    }
+    const k = data.kline
+    if (!k || !k.length) return
+
+    // 头部行情
+    if (card) {
+      const last = k[k.length - 1]
+      const prev = k.length > 1 ? k[k.length - 2].c : last.o
+      const pct = ((last.c - prev) / prev) * 100
+      const col = pct >= 0 ? UP : DOWN
+      const q = (sel: string) => card.querySelector<HTMLElement>(sel)
+      if (data.name) q('[data-qk-name]')!.textContent = data.name
+      q('[data-qk-price]')!.textContent = fmt(last.c)
+      q('[data-qk-price]')!.style.color = col
+      q('[data-qk-chg]')!.textContent = `${pct >= 0 ? '+' : ''}${fmt(pct)}%`
+      q('[data-qk-chg]')!.style.color = col
+      q('[data-qk-date]')!.textContent = last.t
+      const pub = card.querySelector<HTMLElement>('[data-qk-pub]')
+      if (pub && data.publishedAt) pub.textContent = `· 发布 ${data.publishedAt.slice(0, 16).replace('T', ' ')}`
+    }
+
+    el.innerHTML = ''
+    const chart = echarts.init(el, undefined, { renderer: 'canvas' })
+    chart.setOption(buildOption(k))
+
+    new ResizeObserver(() => chart.resize()).observe(el)
+
+    // 明暗主题切换时刷新配色
+    const mo = new MutationObserver(() => {
+      chart.setOption({
+        textStyle: { color: axisColor() },
+        xAxis: [{ axisLabel: { color: axisColor() }, axisLine: { lineStyle: { color: axisColor() } } }, {}],
+        yAxis: [{ axisLabel: { color: axisColor() }, splitLine: { lineStyle: { color: splitColor() } } }, {}]
+      })
+    })
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+  }
+
+  document.querySelectorAll<HTMLElement>('.qk-chart[data-code]').forEach(mount)
+</script>
+
+<style>
+  .qk-card {
+    border: 1px solid rgba(128, 128, 128, 0.25);
+    border-radius: 10px;
+    padding: 14px 16px 10px;
+    margin: 0 0 22px;
+    background: rgba(128, 128, 128, 0.04);
+  }
+  .qk-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .qk-title {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .qk-name {
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .qk-code {
+    font-size: 13px;
+    opacity: 0.55;
+    font-family: ui-monospace, monospace;
+  }
+  .qk-quote {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .qk-price {
+    font-size: 17px;
+    font-weight: 700;
+    font-family: ui-monospace, monospace;
+  }
+  .qk-chg {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .qk-date,
+  .qk-foot {
+    font-size: 12px;
+    opacity: 0.5;
+  }
+  .qk-chart {
+    width: 100%;
+  }
+  .qk-tip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 120px;
+    font-size: 13px;
+    opacity: 0.65;
+    text-align: center;
+    line-height: 1.9;
+  }
+  .qk-foot {
+    margin-top: 6px;
+  }
+  .qk-foot code {
+    font-size: 11px;
+  }
+</style>

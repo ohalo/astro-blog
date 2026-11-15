@@ -1,0 +1,55 @@
+{
+  "dgp": {
+    "T": 4000,
+    "k": 3,
+    "seed": 20261115,
+    "source_names": [
+      "Laplace(超高斯)",
+      "均匀(亚高斯)",
+      "t(4)厚尾"
+    ],
+    "mix_cond": 7.792635649444536
+  },
+  "main": {
+    "ica_matched_corr": [
+      0.9999367443950347,
+      0.9999081702752669,
+      0.9997844517337019
+    ],
+    "pca_matched_corr": [
+      0.8243526447770968,
+      0.7706436490204293,
+      0.6294025513241731
+    ],
+    "ica_mean_corr": 0.9998764554680012,
+    "pca_mean_corr": 0.741466281707233,
+    "amari_ica": 0.00921405408302293,
+    "amari_pca": 0.3828495591210032,
+    "higher_order_ica": 0.021107466747369203,
+    "higher_order_pca": 0.4051350838486069,
+    "n_iter": 7
+  },
+  "gaussian_control": {
+    "ica_mean_amari": 0.39643753905020107,
+    "pca_mean_amari": 0.40958608282265274,
+    "ica_mean_corr": 0.8281315791886424,
+    "pca_mean_corr": 0.8379015505162846,
+    "random_baseline": 0.5773502691896258,
+    "n_trials": 8,
+    "non_gauss_ica_amari": 0.00921405408302293
+  },
+  "nonlinearity_sweep": {
+    "tanh": {
+      "mean_matched_corr": 0.9997093459844951,
+      "amari": 0.015185174354283052
+    },
+    "gauss": {
+      "mean_matched_corr": 0.9998810918342502,
+      "amari": 0.01019761421175358
+    },
+    "cube": {
+      "mean_matched_corr": 0.9987144302358774,
+      "amari": 0.03220640853851342
+    }
+  }
+}

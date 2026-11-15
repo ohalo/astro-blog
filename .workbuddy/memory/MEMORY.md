@@ -54,4 +54,13 @@
 
 ## 本机沙箱坑
 - `.vercel/output` 有旧产物时 build 会触发 safe-delete 拦截（count>50）；先 `mv .vercel/output` 挪开再 build。
-- `npm run build` 末尾 `Rearranging server assets` 会拦 `dist/server/.prerender` 的批量删除（count>50），但静态产物已完整写在 **`dist/client/`**（不是 `dist/` 根），验证 dist 内容要用 `dist/client/quant-column/index.html`。与 Vercel 部署无关。
+
+## 定时任务迁移到 dsh（2026-11-14）
+- 原 WorkBuddy 自动化（ID 6a2858b0，每期发布 2 篇量化文，原调度 `FREQ=HOURLY;INTERVAL=6`）已整理成可自洽执行的 runbook：`quant-publish-runbook.md`。
+- 机械半（校验/构建/git/部署）抽成可复用脚本：`scripts/quant_verify.py`（通用校验，替代每批次手写 build_verify_*.py）、`scripts/quant_publish.sh`（编排参考）、`scripts/quant_deploy_check.py`（部署轮询）。
+- **dsh 落地包（已提交 `de8cb0bc`）**：`dsh-quant-publish-job.md`（任务定义 + cron + LLM 内容契约 + 踩坑速查）+ `scripts/dsh_entrypoint.sh`（dsh cron 调用的确定性发布入口，读 `.dsh_pending.json` → 校验→build→git push→部署轮询，无 pending 则 SKIP、校验失败不发布、slug 双查重防覆盖）。
+- 关键认知：任务分两半——**内容生产（选题+真实数值实验+中文撰写）不可脚本化，需 LLM/人工**；**机械发布可纯脚本**。dsh 要全自动须侧也有 LLM（在调用 entrypoint 前写好 `.dsh_pending.json`）；否则 dsh 只跑半自动发布。
+- `src/content/pages/quant-column.md` 确认是死内容（线上由 frontmatter 的 `量化` tag + `difficulty: advanced` 渲染），dsh 流水线不维护它。
+- `scripts/select_blog_topics.py` 主池+兜底池已全耗尽（assert 0 崩溃），dsh 内容半必须自行设计 2 个不重复主题（grep 现有 1520+ 目录查重）。
+- 迁移步骤：dsh 执行机装依赖(clone+npm+python 包+CJK 字体+github deploy key) → 跑通一次 entrypoint → 按建议每日（非每 6h）配 cron → 确认连续两次成功后再停用 WorkBuddy 自动化 6a2858b0。
+- `npm run build` 末尾 `Rearranging server assets` 会拦 `dist/server/.prerender` 的批量删除（count>50），但静态产物已完整写在 **`dist/client/`**（不是 `dist/` 根）。与 Vercel 部署无关。
