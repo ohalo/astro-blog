@@ -1,0 +1,171 @@
+---
+/**
+ * StockSearch —— 页头级全局股票搜索（代码 / 中文名 / 拼音）。
+ * 位置：页面标题栏右侧，最显眼处；按 / 唤起，输入即出下拉结果。
+ * 行为：回车或点击结果 → 加入自选（localStorage）并切换主图到该股。
+ * 数据源：/api/stock-search（腾讯 smartbox 代理）。
+ */
+---
+
+<div class='qd-gsearch' id='qk-gsearch'>
+  <div class='qd-gs-box'>
+    <svg class='qd-gs-icon' viewBox='0 0 24 24' width='15' height='15' aria-hidden='true'>
+      <path fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' d='M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zm9 16-4.35-4.35'/>
+    </svg>
+    <input
+      id='qk-gs-input'
+      type='search'
+      placeholder='搜索股票：代码 / 名称 / 拼音'
+      autocomplete='off'
+      aria-label='搜索股票'
+      role='combobox'
+      aria-expanded='false'
+      aria-controls='qk-gs-res'
+    />
+    <kbd class='qd-gs-kbd' id='qk-gs-kbd'>/</kbd>
+  </div>
+  <div class='qd-gs-res' id='qk-gs-res' hidden role='listbox' aria-label='搜索结果'></div>
+</div>
+
+<script>
+  const input = document.getElementById('qk-gs-input') as HTMLInputElement
+  const resEl = document.getElementById('qk-gs-res') as HTMLElement
+  const kbd = document.getElementById('qk-gs-kbd') as HTMLElement
+  const box = document.getElementById('qk-gsearch') as HTMLElement
+
+  type Hit = { code: string; market: string; name: string; kind: string }
+  let items: Hit[] = []
+  let idx = -1
+  let timer: number | undefined
+
+  const LS_KEY = 'qk-watchlist'
+  const SEED = ['600519', '000858', '300750', '600036', '601318']
+  const loadCodes = (): string[] => {
+    try { const s = localStorage.getItem(LS_KEY); if (s) return JSON.parse(s) } catch {}
+    return [...SEED]
+  }
+  const saveCodes = (codes: string[]) => { try { localStorage.setItem(LS_KEY, JSON.stringify(codes)) } catch {} }
+
+  const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!))
+
+  function paint() {
+    resEl.querySelectorAll('.qd-gs-item').forEach((el, i) => el.classList.toggle('on', i === idx))
+    const on = resEl.querySelector('.qd-gs-item.on') as HTMLElement | null
+    on?.scrollIntoView({ block: 'nearest' })
+  }
+
+  function close() {
+    resEl.hidden = true
+    resEl.innerHTML = ''
+    items = []
+    idx = -1
+    input.setAttribute('aria-expanded', 'false')
+  }
+
+  async function query(v: string) {
+    try {
+      const r = await fetch(`/api/stock-search?q=${encodeURIComponent(v)}`, { signal: AbortSignal.timeout(8000) })
+      const j = await r.json()
+      const list: Hit[] = j.items || []
+      items = list
+      idx = list.length ? 0 : -1
+      if (!list.length) {
+        resEl.innerHTML = `<div class='qd-gs-empty'>没有匹配「${esc(v)}」的股票</div>`
+        resEl.hidden = false
+        input.setAttribute('aria-expanded', 'true')
+        return
+      }
+      resEl.innerHTML = list
+        .map(
+          (it, i) => `<button class='qd-gs-item ${i === idx ? 'on' : ''}' data-code='${it.code}' data-name='${esc(it.name)}' role='option' aria-selected='${i === idx}'>
+            <span class='qd-gs-nm'>${esc(it.name)}</span>
+            <span class='qd-gs-cd num'>${it.code}</span>
+            <span class='qd-gs-mk'>${marketLabel(it.market)}</span>
+          </button>`
+        )
+        .join('')
+      resEl.hidden = false
+      input.setAttribute('aria-expanded', 'true')
+    } catch {
+      resEl.innerHTML = `<div class='qd-gs-empty'>搜索服务暂时不可用（/api/stock-search 需可出网）</div>`
+      resEl.hidden = false
+    }
+  }
+
+  const marketLabel = (m: string) => (m === 'sh' ? '沪' : m === 'sz' ? '深' : m === 'bj' ? '京' : m === 'hk' ? '港' : m === 'us' ? '美' : '')
+  const kindLabel = (k: string) => (k === 'ZS-A' ? '指数' : k?.startsWith('JJ') ? '基金' : k?.startsWith('LC') ? '理财' : '')
+
+  function choose(code: string) {
+    const codes = loadCodes()
+    if (!codes.includes(code)) saveCodes([code, ...codes])
+    ;(window as any).__qkActive = code
+    input.value = ''
+    close()
+    input.blur()
+    // 通知自选列表刷新 + 主图切换
+    document.dispatchEvent(new CustomEvent('dash:select', { detail: { code } }))
+    document.dispatchEvent(new CustomEvent('dash:watchlist-changed'))
+  }
+
+  input.addEventListener('input', () => {
+    const v = input.value.trim()
+    clearTimeout(timer)
+    if (!v) { close(); return }
+    timer = window.setTimeout(() => query(v), 220)
+  })
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); if (!items.length) return; idx = (idx + 1) % items.length; paint() }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); if (!items.length) return; idx = (idx - 1 + items.length) % items.length; paint() }
+    else if (e.key === 'Enter') {
+      e.preventDefault()
+      const pick = items[idx] || items[0]
+      if (pick) choose(pick.code)
+    } else if (e.key === 'Escape') { close() }
+  })
+  resEl.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('.qd-gs-item') as HTMLElement | null
+    if (!b) return
+    choose(b.dataset.code!)
+  })
+  resEl.addEventListener('mousemove', (e) => {
+    const b = (e.target as HTMLElement).closest('.qd-gs-item') as HTMLElement | null
+    if (!b) return
+    const i = [...resEl.querySelectorAll('.qd-gs-item')].indexOf(b)
+    if (i >= 0 && i !== idx) { idx = i; paint() }
+  })
+  document.addEventListener('click', (e) => { if (!box.contains(e.target as Node)) close() })
+
+  // 快捷键：/ 或 Ctrl/Cmd+K 唤起搜索
+  document.addEventListener('keydown', (e) => {
+    const t = e.target as HTMLElement | null
+    const typing = !!t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)
+    if (typing) return
+    if (e.key === '/' || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k')) {
+      e.preventDefault()
+      input.focus()
+      input.select()
+    }
+  })
+  input.addEventListener('focus', () => { if (input.value.trim()) query(input.value.trim()) })
+</script>
+
+<style is:global>
+  .qd-gsearch { position: relative; margin-left: auto; width: min(340px, 100%); }
+  .qd-gs-box { display: flex; align-items: center; gap: 8px; padding: 0 10px; height: 34px; border: 1px solid hsl(var(--border)); border-radius: 9px; background: hsl(var(--card)); transition: border-color .15s, box-shadow .15s; }
+  .qd-gs-box:focus-within { border-color: var(--qk-gold); box-shadow: 0 0 0 3px color-mix(in srgb, var(--qk-gold) 14%, transparent); }
+  .qd-gs-icon { color: hsl(var(--muted-foreground)); flex: none; }
+  .qd-gs-box input { flex: 1; min-width: 0; min-height: 24px; border: none; background: transparent; color: hsl(var(--foreground)); font-size: 13px; outline: none; }
+  .qd-gs-box input::placeholder { color: color-mix(in srgb, hsl(var(--muted-foreground)) 55%, hsl(var(--foreground))); }
+  .qd-gs-box input::-webkit-search-cancel-button { -webkit-appearance: none; }
+  .qd-gs-kbd { flex: none; display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px; border: 1px solid hsl(var(--border)); border-bottom-width: 2px; border-radius: 4px; background: hsl(var(--muted)); color: hsl(var(--muted-foreground)); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1; }
+  .qd-gs-box:focus-within .qd-gs-kbd { display: none; }
+  /* 结果下拉 */
+  .qd-gs-res { position: absolute; z-index: 40; top: calc(100% + 6px); left: 0; right: 0; max-height: 340px; overflow-y: auto; background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 10px; box-shadow: 0 14px 34px rgba(0, 0, 0, .45); }
+  .qd-gs-item { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 10px; width: 100%; padding: 9px 12px; border: none; background: transparent; color: hsl(var(--foreground)); font-size: 13px; text-align: left; cursor: pointer; }
+  .qd-gs-item:hover, .qd-gs-item.on { background: hsl(var(--muted)); }
+  .qd-gs-nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .qd-gs-cd { font-size: 12px; color: color-mix(in srgb, hsl(var(--muted-foreground)) 45%, hsl(var(--foreground))); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .qd-gs-mk { font-size: 11px; color: hsl(var(--muted-foreground)); padding: 1px 5px; border: 1px solid hsl(var(--border)); border-radius: 4px; }
+  .qd-gs-empty { padding: 12px; font-size: 13px; color: hsl(var(--muted-foreground)); text-align: center; }
+  @media (max-width: 900px) { .qd-gsearch { margin-left: 0; width: 100%; } }
+</style>

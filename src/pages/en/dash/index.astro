@@ -5,6 +5,7 @@ import ChartPanel from '@/components/dash/ChartPanel.astro'
 import MarketStrip from '@/components/dash/MarketStrip.astro'
 import PipelineBar from '@/components/dash/PipelineBar.astro'
 import SidePanels from '@/components/dash/SidePanels.astro'
+import StockSearch from '@/components/dash/StockSearch.astro'
 import WatchList from '@/components/dash/WatchList.astro'
 import DashLayout from '@/layouts/DashLayout.astro'
 
@@ -14,8 +15,11 @@ const desc = 'Real-time daily review: index strip, watchlist, six-period candles
 
 <DashLayout meta={{ title, description: desc }}>
   <div class='qd-head'>
-    <h1 class='qd-title'>{title}</h1>
-    <span class='qd-tag'>Live review · Tencent quotes via serverless proxy</span>
+    <div class='qd-head-l'>
+      <h1 class='qd-title'>{title}</h1>
+      <span class='qd-tag'>Live review · Tencent quotes via serverless proxy</span>
+    </div>
+    <StockSearch />
   </div>
 
   <MarketStrip />
@@ -49,11 +53,12 @@ const desc = 'Real-time daily review: index strip, watchlist, six-period candles
   }
   .qd-head {
     display: flex;
-    align-items: baseline;
-    gap: 10px;
+    align-items: center;
+    gap: 16px;
     flex-wrap: wrap;
     margin: 2px 2px 12px;
   }
+  .qd-head-l { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; min-width: 0; }
   .qd-title {
     margin: 0;
     font-size: 20px;

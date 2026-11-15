@@ -23,12 +23,12 @@ const LS_KEY = 'qk-watchlist'
   </div>
 
   <div class='qk-search'>
-    <input id='qk-search-input' type='text' placeholder='搜索代码/名称/拼音，回车加自选' autocomplete='off' />
+    <input id='qk-search-input' type='text' placeholder='或在此快速加自选…' autocomplete='off' />
     <div class='qk-search-res' id='qk-search-res' hidden></div>
   </div>
 
   <div id='qk-watch-rows' class='qk-watch-rows'></div>
-  <div class='qd-watch-tip'>自选存本地浏览器 · 悬停行尾 × 可移除 · 实时行情来自 /api/stock</div>
+  <div class='qd-watch-tip'>顶栏 <kbd>/</kbd> 搜索全市场 · 悬停行尾 × 可移除</div>
 </div>
 
 <script>
@@ -210,6 +210,12 @@ const LS_KEY = 'qk-watchlist'
   refresh()
   // 对外暴露：页面其它组件可读取当前自选
   ;(window as any).__qkWatchlist = { get: load, add: (c: string) => { const a = load(); if (!a.includes(c)) { save([c, ...a]); rows = load().map((x) => ({ code: x, name: null, price: null, chgPct: null, spark: [] })); refresh() } }, remove: (c: string) => { const a = load().filter((x) => x !== c); save(a); rows = a.map((x) => ({ code: x, name: null, price: null, chgPct: null, spark: [] })); refresh() } }
+
+  // 页头全局搜索加自选后，左侧列表同步刷新
+  document.addEventListener('dash:watchlist-changed', () => {
+    rows = load().map((x) => ({ code: x, name: null, price: null, chgPct: null, spark: [] }))
+    refresh()
+  })
 </script>
 
 <style is:global>
@@ -252,7 +258,8 @@ const LS_KEY = 'qk-watchlist'
     .qd-w-skel { animation: none; background: hsl(var(--muted)); }
     .qd-w-del, .qk-sr-item, .qd-sort { transition: none; }
   }
-  .qd-watch-tip { font-size: 12px; color: color-mix(in srgb, hsl(var(--muted-foreground)) 48%, hsl(var(--foreground))); padding: 6px 6px 2px; }
+  .qd-watch-tip { font-size: 12px; color: color-mix(in srgb, hsl(var(--muted-foreground)) 48%, hsl(var(--foreground))); padding: 6px 6px 2px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .qd-watch-tip kbd { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 4px; border: 1px solid hsl(var(--border)); border-bottom-width: 2px; border-radius: 4px; background: hsl(var(--muted)); color: hsl(var(--foreground)); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1; }
   .qd-dim { opacity: .6; font-size: 14px; padding: 8px 6px; }
   .up { color: var(--qk-up); } .down { color: var(--qk-down); } .flat { color: hsl(var(--muted-foreground)); }
   .num { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }

@@ -510,11 +510,7 @@ const { initialCode = '600519' } = Astro.props
       e.preventDefault()
       return
     }
-    // 斜杠聚焦搜索框
-    if (e.key === '/') {
-      const inp = document.getElementById('qk-search-input') as HTMLInputElement | null
-      if (inp) { inp.focus(); e.preventDefault() }
-    }
+    // 注：'/' 聚焦搜索由 StockSearch 组件统一处理，避免多处重复拦截
   })
 
   new MutationObserver(() => render()).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
