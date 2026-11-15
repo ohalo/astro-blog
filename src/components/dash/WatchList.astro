@@ -13,7 +13,13 @@ const LS_KEY = 'qk-watchlist'
 <div class='qd-card qd-watch'>
   <div class='qd-watch-head'>
     <span class='qd-wh-title'><svg viewBox='0 0 24 24' width='14' height='14' aria-hidden='true'><path fill='currentColor' d='M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/></svg>自选列表</span>
-    <span class='qd-watch-date num' id='qk-wl-count'></span>
+    <span class='qd-watch-tools'>
+      <span class='qd-watch-date num' id='qk-wl-count'></span>
+      <button class='qd-sort' id='qk-sort-btn' title='按今日涨幅排序' aria-label='按今日涨幅排序'>
+        <svg viewBox='0 0 24 24' width='13' height='13' aria-hidden='true'><path fill='currentColor' d='M3 18h6v-2H3zm0-5h6v-2H3zm0-7v2h18V6zm14 14h2v-2h-2zm0-5h2v-2h-2z'/></svg>
+        <span id='qk-sort-label'>涨幅</span>
+      </button>
+    </span>
   </div>
 
   <div class='qk-search'>
@@ -58,13 +64,37 @@ const LS_KEY = 'qk-watchlist'
   }
 
   type Row = { code: string; name: string | null; price: number | null; chgPct: number | null; spark: number[] }
+  type SortMode = 'custom' | 'chgDesc' | 'chgAsc'
   let rows: Row[] = []
   let activeCode = (window as any).__qkActive || '600519'
+  let sortMode: SortMode = 'custom'
+
+  // 排序：自定义序（加入顺序）→ 涨幅降序 → 涨幅升序
+  function sortedRows(): Row[] {
+    if (sortMode === 'custom') return rows
+    const arr = [...rows]
+    arr.sort((a, b) => {
+      const av = a.chgPct ?? -Infinity, bv = b.chgPct ?? -Infinity
+      return sortMode === 'chgDesc' ? bv - av : av - bv
+    })
+    return arr
+  }
+  const SORTS: { id: SortMode; label: string }[] = [{ id: 'chgDesc', label: '涨幅' }, { id: 'chgAsc', label: '跌幅' }, { id: 'custom', label: '自选序' }]
+  const sortBtn = q('qk-sort-btn') as HTMLButtonElement
+  const sortLabel = q('qk-sort-label') as HTMLElement
+  sortBtn.addEventListener('click', () => {
+    const i = SORTS.findIndex((s) => s.id === sortMode)
+    sortMode = SORTS[(i + 1) % SORTS.length].id
+    sortLabel.textContent = SORTS.find((s) => s.id === sortMode)!.label
+    sortBtn.title = `按${{ chgDesc: '今日涨幅降序', chgAsc: '今日涨幅升序', custom: '自定义顺序' }[sortMode]}排列`
+    renderRows()
+  })
 
   function renderRows() {
     countEl.textContent = `${rows.length} 只`
     if (!rows.length) { rowsEl.innerHTML = `<div class='qd-dim'>自选为空 —— 上方搜索框加一只</div>`; return }
-    rowsEl.innerHTML = rows.map((r) => {
+    const view = sortedRows()
+    rowsEl.innerHTML = view.map((r) => {
       const loading = r.price == null
       return `
       <div class='qd-wrow ${r.code === activeCode ? 'active' : ''}' data-code='${r.code}' role='button' tabindex='0'>
@@ -106,20 +136,23 @@ const LS_KEY = 'qk-watchlist'
   async function refresh() {
     renderRows()
     const codes = rows.map((r) => r.code)
-    await Promise.all(codes.map(async (code, i) => {
+    await Promise.all(codes.map(async (code) => {
       const q = await quoteOf(code)
       if (!q) return
-      rows[i].name = q.name; rows[i].price = q.price; rows[i].chgPct = q.changePct
-      if (Array.isArray(q.kline)) rows[i].spark = q.kline.slice(-60).map((k: any) => k.c)
+      const r = rows.find((x) => x.code === code)
+      if (!r) return
+      r.name = q.name; r.price = q.price; r.chgPct = q.changePct
+      if (Array.isArray(q.kline)) r.spark = q.kline.slice(-60).map((k: any) => k.c)
       const el = rowsEl.querySelector<HTMLElement>(`.qd-wrow[data-code='${code}']`)
       if (el) {
-        const r = rows[i]
         ;(el.querySelector('.qd-w-nm') as HTMLElement).textContent = r.name ?? r.code
         const rp = el.querySelector('.qd-w-r') as HTMLElement
         rp.innerHTML = `<div class='num ${cls(r.chgPct)}'>${f2(r.price)}</div><div class='num ${cls(r.chgPct)}'>${r.chgPct == null ? '--' : `${r.chgPct >= 0 ? '+' : ''}${f2(r.chgPct)}%`}</div>`
         ;(el.querySelector('.qd-w-spark') as HTMLElement).innerHTML = sparkSvg(r.spark)
       }
     }))
+    // 涨幅排序需在数据到齐后重排一次
+    if (sortMode !== 'custom') renderRows()
   }
 
   // 搜索框
@@ -182,15 +215,20 @@ const LS_KEY = 'qk-watchlist'
 <style is:global>
   .qd-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 12px; }
   .qd-watch { padding: 12px 12px 8px; position: sticky; top: 12px; }
-  .qd-watch-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; font-weight: 600; color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground))); letter-spacing: .03em; padding: 0 6px 8px; }
+  .qd-watch-head { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 600; color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground))); letter-spacing: .03em; padding: 0 6px 8px; gap: 8px; }
   .qd-wh-title { display: inline-flex; align-items: center; gap: 6px; }
   .qd-wh-title svg { color: var(--qk-gold); flex: none; }
+  .qd-watch-tools { display: inline-flex; align-items: center; gap: 8px; }
   .qd-watch-date { font-weight: 400; font-size: 12px; }
+  /* 排序切换：小尺寸按钮，点击区 ≥24px */
+  .qd-sort { display: inline-flex; align-items: center; gap: 4px; min-height: 24px; padding: 0 8px; border: 1px solid hsl(var(--border)); border-radius: 6px; background: transparent; color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground))); font-size: 12px; cursor: pointer; transition: background .15s, border-color .15s, color .15s; }
+  .qd-sort:hover { background: hsl(var(--muted)); border-color: var(--qk-gold); color: hsl(var(--foreground)); }
+  .qd-sort svg { flex: none; opacity: .8; }
   .qk-search { position: relative; margin: 0 2px 8px; }
   .qk-search input { width: 100%; box-sizing: border-box; padding: 7px 10px; font-size: 12px; border-radius: 8px; border: 1px solid hsl(var(--border)); background: hsl(var(--muted)); color: hsl(var(--foreground)); outline: none; }
   .qk-search input:focus { border-color: var(--qk-gold); }
   .qk-search-res { position: absolute; z-index: 20; top: 100%; left: 0; right: 0; margin-top: 4px; background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 8px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,.35); }
-  .qk-sr-item { display: flex; justify-content: space-between; width: 100%; padding: 8px 10px; border: none; background: transparent; color: hsl(var(--foreground)); font-size: 13px; cursor: pointer; text-align: left; }
+  .qk-sr-item { display: flex; justify-content: space-between; width: 100%; padding: 8px 10px; border: none; background: transparent; color: hsl(var(--foreground)); font-size: 14px; cursor: pointer; text-align: left; }
   .qk-sr-item:hover, .qk-sr-item.on { background: hsl(var(--muted)); }
   .qk-sr-item .num { color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground))); font-size: 12px; }
   .qk-sr-empty { padding: 8px 10px; font-size: 12px; color: hsl(var(--muted-foreground)); }
@@ -200,18 +238,22 @@ const LS_KEY = 'qk-watchlist'
   .qd-wrow:last-of-type { border-bottom: none; }
   .qd-wrow:hover { background: hsl(var(--muted)); }
   .qd-wrow.active { background: hsl(var(--muted)); box-shadow: inset 2px 0 0 var(--qk-gold); }
-  .qd-w-del { grid-column: 3; grid-row: 1; align-self: center; justify-self: center; width: 26px; height: 26px; display: grid; place-items: center; border: none; background: transparent; color: hsl(var(--muted-foreground)); font-size: 15px; line-height: 1; cursor: pointer; opacity: 0; border-radius: 6px; transition: opacity .12s, background .12s, color .12s; }
+  .qd-w-del { grid-column: 3; grid-row: 1; align-self: center; justify-self: center; width: 26px; height: 26px; display: grid; place-items: center; border: none; background: transparent; color: hsl(var(--muted-foreground)); font-size: 14px; line-height: 1; cursor: pointer; opacity: 0; border-radius: 6px; transition: opacity .12s, background .12s, color .12s; }
   .qd-wrow:hover .qd-w-del, .qd-w-del:focus-visible { opacity: .7; }
   .qd-w-del:hover { background: color-mix(in srgb, var(--qk-down) 18%, transparent); color: var(--qk-down); opacity: 1; }
   .qd-w-l { grid-column: 1; grid-row: 1; min-width: 0; }
-  .qd-w-nm { font-size: 13px; font-weight: 600; color: hsl(var(--foreground)); }
+  .qd-w-nm { font-size: 14px; font-weight: 600; color: hsl(var(--foreground)); }
   .qd-w-cd { font-size: 12px; color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground))); }
   .qd-w-r { grid-column: 2; grid-row: 1; align-self: center; text-align: right; font-size: 12px; font-weight: 600; display: grid; }
   .qd-w-spark { grid-column: 1 / 4; grid-row: 2; height: 24px; margin-top: 4px; }
   .qd-w-skel { width: 100%; height: 22px; border-radius: 4px; background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--border)) 37%, hsl(var(--muted)) 63%); background-size: 400% 100%; animation: qk-skel 1.3s ease infinite; }
   @keyframes qk-skel { 0% { background-position: 100% 0 } 100% { background-position: -100% 0 } }
+  @media (prefers-reduced-motion: reduce) {
+    .qd-w-skel { animation: none; background: hsl(var(--muted)); }
+    .qd-w-del, .qk-sr-item, .qd-sort { transition: none; }
+  }
   .qd-watch-tip { font-size: 12px; color: color-mix(in srgb, hsl(var(--muted-foreground)) 48%, hsl(var(--foreground))); padding: 6px 6px 2px; }
-  .qd-dim { opacity: .6; font-size: 13px; padding: 8px 6px; }
+  .qd-dim { opacity: .6; font-size: 14px; padding: 8px 6px; }
   .up { color: var(--qk-up); } .down { color: var(--qk-down); } .flat { color: hsl(var(--muted-foreground)); }
   .num { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
   @media (max-width: 900px) { .qd-watch { position: static; } .qk-watch-rows { max-height: none; } }

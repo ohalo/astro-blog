@@ -33,8 +33,14 @@ const { initialCode = '600519' } = Astro.props
       <button data-r='250' class='on'>1年</button><button data-r='750'>3年</button><button data-r='0'>全部</button>
     </span>
   </div>
-  <div id='kchart'><div class='qd-loading'>加载 K线…</div></div>
+  <div id='kchart' role='img' aria-label='K线图表：价格、均线与成交量'><div class='qd-loading'>加载 K线…</div></div>
   <div class='qd-pfoot'><span id='fn-l'></span><span id='fn-r'></span></div>
+  <div class='qd-keys'>
+    <span><kbd>1</kbd>–<kbd>6</kbd> 周期</span>
+    <span><kbd>←</kbd><kbd>→</kbd> 切股</span>
+    <span><kbd>/</kbd> 搜索</span>
+    <button class='qd-keys-toggle' id='qk-keys-toggle' title='隐藏快捷键提示' aria-label='隐藏快捷键提示'>×</button>
+  </div>
 </div>
 
 <script>
@@ -54,20 +60,22 @@ const { initialCode = '600519' } = Astro.props
   interface Payload {
     code: string; name: string; market: string
     meta: { price: number; prevClose: number; open: number; high: number; low: number; chg?: number | null; chgPct?: number | null; volume: number; amount: number; turn: number; pe: number | null; pb: number | null }
-    stats: { hi52: number | null; lo52: number | null; avgVol5: number | null; volRatio: number | null; vol20Ann: number | null; mom20: number | null; ddFromHi52: number | null; pePct: null }
+    stats: { hi52: number | null; lo52: number | null; avgVol5: number | null; volRatio: number | null; vol20Ann: number | null; mom20: number | null; ddFromHi52: number | null; pePct: null; rsi: number | null; atrPct: number | null; mdd: number | null; sharpe: number | null; ma5: number | null; ma10: number | null; ma20: number | null; maBull: boolean | null }
     kline: Bar[] // 日线（已含 ohlcv），周/月/年由前端聚合
   }
   interface MinuteResp { code: string; period: string; prevClose: number | null; date: string | null; pts: { t: string; p: number; v: number }[]; error?: string }
 
   /* ---------- 把 /api/stock 实时报价 + 日线 折算成 /dash 内部 Payload ---------- */
   function toPayload(q: Quote): Payload {
-    const closes = q.kline.map((k) => k.c).filter((x) => x > 0)
-    const n = q.kline.length
-    const w52 = q.kline.slice(-Math.min(242, n))
+    // 只保留收盘价有效的K线，且以它们为准计算 n（避免过滤后索引错位导致 NaN）
+    const bars = q.kline.filter((k) => Number.isFinite(k.c) && k.c > 0)
+    const closes = bars.map((k) => k.c)
+    const n = bars.length
+    const w52 = bars.slice(-Math.min(242, n))
     const hi52 = w52.length ? Math.max(...w52.map((k) => k.h)) : (q.week52High ?? null)
     const lo52 = w52.length ? Math.min(...w52.map((k) => k.l)) : (q.week52Low ?? null)
-    const avgVol5 = n >= 6 ? q.kline.slice(-6, -1).reduce((a, k) => a + k.v, 0) / 5 : null
-    const last = q.kline[n - 1], prev = q.kline[n - 2]
+    const avgVol5 = n >= 6 ? bars.slice(-6, -1).reduce((a, k) => a + k.v, 0) / 5 : null
+    const last = bars[n - 1], prev = bars[n - 2]
     const volRatio = last && avgVol5 ? last.v / avgVol5 : (q.volumeRatio || null)
     const rets: number[] = []
     for (let i = Math.max(1, n - 21); i < n; i++) {
@@ -78,7 +86,60 @@ const { initialCode = '600519' } = Astro.props
     const mom20 = n > 21 ? closes[n - 1] / closes[n - 21] - 1 : null
     const dd = hi52 ? closes[n - 1] / Math.max(hi52, 1e-9) - 1 : null
     // q.time 形如 'YYYYMMDDHHMMSS'，折算交易日；缺失时回退到末根 K线日期
-    const tradeDate = q.time && q.time.length >= 8 ? `${q.time.slice(0, 4)}-${q.time.slice(4, 6)}-${q.time.slice(6, 8)}` : (q.kline[n - 1]?.t ?? null)
+    const tradeDate = q.time && q.time.length >= 8 ? `${q.time.slice(0, 4)}-${q.time.slice(4, 6)}-${q.time.slice(6, 8)}` : (bars[n - 1]?.t ?? null)
+
+    /* ---------- 进阶指标：RSI(14) / ATR(14) / 最大回撤 / 夏普 / 均线多头排列 ---------- */
+    // RSI(14)：Wilder 平滑
+    let rsi: number | null = null
+    if (n >= 15) {
+      let gain = 0, loss = 0
+      for (let i = n - 14; i < n; i++) { const d = closes[i] - closes[i - 1]; if (d >= 0) gain += d; else loss -= d }
+      gain /= 14; loss /= 14
+      for (let i = n - 14; i < n; i++) {
+        const d = closes[i] - closes[i - 1]
+        gain = (gain * 13 + Math.max(d, 0)) / 14
+        loss = (loss * 13 + Math.max(-d, 0)) / 14
+      }
+      rsi = loss === 0 ? 100 : +(100 - 100 / (1 + gain / loss)).toFixed(1)
+    }
+    // ATR(14)：真实波幅均值（占价格百分比）
+    let atrPct: number | null = null
+    if (n >= 15) {
+      const trs: number[] = []
+      for (let i = 1; i < n; i++) {
+        const k = bars[i], pk = bars[i - 1].c
+        trs.push(Math.max(k.h - k.l, Math.abs(k.h - pk), Math.abs(k.l - pk)))
+      }
+      const tr = trs.slice(-14).reduce((a, b) => a + b, 0) / 14
+      atrPct = closes[n - 1] ? +((tr / closes[n - 1]) * 100).toFixed(2) : null
+    }
+    // 区间最大回撤（近 250 日）
+    let mdd: number | null = null
+    if (n >= 20) {
+      let peak = -Infinity, worst = 0
+      for (const c of closes) { if (c > peak) peak = c; const dd = c / peak - 1; if (dd < worst) worst = dd }
+      mdd = +(worst * 100).toFixed(1)
+    }
+    // 夏普比率（近 60 日，无风险利率按 0 计）
+    let sharpe: number | null = null
+    if (n >= 31) {
+      const from = Math.max(1, n - 60)
+      const win: number[] = []
+      for (let i = from; i < n; i++) {
+        const prevC = closes[i - 1]
+        if (Number.isFinite(prevC) && prevC > 0) win.push(closes[i] / prevC - 1)
+      }
+      if (win.length >= 20) {
+        const mm = win.reduce((a, b) => a + b, 0) / win.length
+        const sd = Math.sqrt(win.reduce((a, b) => a + (b - mm) ** 2, 0) / (win.length - 1))
+        if (sd > 0) sharpe = +((mm / sd) * Math.sqrt(242)).toFixed(2)
+      }
+    }
+    // 均线多头排列：MA5 > MA10 > MA20
+    const maOf = (d: number) => (n >= d ? +(closes.slice(-d).reduce((a, b) => a + b, 0) / d).toFixed(3) : null)
+    const ma5 = maOf(5), ma10 = maOf(10), ma20 = maOf(20)
+    const maBull = ma5 != null && ma10 != null && ma20 != null ? ma5 > ma10 && ma10 > ma20 : null
+
     return {
       code: q.code, name: q.name, market: q.market, tradeDate,
       meta: {
@@ -86,8 +147,15 @@ const { initialCode = '600519' } = Astro.props
         chg: q.change, chgPct: q.changePct,
         volume: q.volume, amount: q.amount, turn: q.turnover, pe: q.peTTM, pb: q.pb
       },
-      stats: { hi52, lo52, avgVol5: avgVol5 ? Math.round(avgVol5) : null, volRatio, vol20Ann: vol20Ann == null ? null : +vol20Ann.toFixed(4), mom20: mom20 == null ? null : +mom20.toFixed(4), ddFromHi52: dd == null ? null : +dd.toFixed(4), pePct: null },
-      kline: q.kline
+      stats: {
+        hi52, lo52, avgVol5: avgVol5 ? Math.round(avgVol5) : null, volRatio,
+        vol20Ann: vol20Ann == null ? null : +vol20Ann.toFixed(4),
+        mom20: mom20 == null ? null : +mom20.toFixed(4),
+        ddFromHi52: dd == null ? null : +dd.toFixed(4),
+        pePct: null,
+        rsi, atrPct, mdd, sharpe, ma5, ma10, ma20, maBull
+      },
+      kline: bars
     }
   }
 
@@ -181,6 +249,22 @@ const { initialCode = '600519' } = Astro.props
     $('pos-pct').textContent = pos == null ? '--' : `${pos.toFixed(0)}% 分位`
     $('ka-vol').innerHTML = kv([['量比(对5日均量)', s.volRatio == null ? '--' : f2(s.volRatio), s.volRatio != null && s.volRatio > 1.2 ? 'up' : ''], ['5日均量', volHand(s.avgVol5)]])
     $('ka-vola').innerHTML = kv([['20日年化波动', pct(s.vol20Ann, 1)], ['20日动量', pct(s.mom20, 1), (s.mom20 ?? 0) >= 0 ? 'up' : 'down'], ['距52周高点', pct(s.ddFromHi52, 1), 'down']])
+    // 技术指标：RSI / ATR / 最大回撤 / 夏普 / 均线排列
+    $('ka-tech').innerHTML = kv([
+      ['RSI(14)', s.rsi == null ? '--' : s.rsi.toFixed(1), s.rsi == null ? '' : s.rsi >= 70 ? 'up' : s.rsi <= 30 ? 'down' : ''],
+      ['ATR(14)/价格', s.atrPct == null ? '--' : `${s.atrPct.toFixed(2)}%`],
+      ['250日最大回撤', s.mdd == null ? '--' : `${s.mdd.toFixed(1)}%`, 'down'],
+      ['60日夏普', s.sharpe == null ? '--' : s.sharpe.toFixed(2), (s.sharpe ?? 0) >= 0 ? 'up' : 'down'],
+      ['均线排列', s.maBull == null ? '--' : s.maBull ? '多头排列' : '空头排列', s.maBull ? 'up' : 'down']
+    ])
+    // RSI 量表指针
+    const gauge = $('ka-rsi-gauge')
+    if (s.rsi == null) { gauge.hidden = true }
+    else {
+      gauge.hidden = false
+      ;($('ka-rsi-mark') as HTMLElement).style.left = `${Math.min(100, Math.max(0, s.rsi))}%`
+      ;($('ka-rsi-val') as HTMLElement).textContent = s.rsi.toFixed(1)
+    }
     $('ka-pe').innerHTML = kv([['PE-TTM', m.pe == null ? '--' : (m.pe as number).toFixed(2)], ['PB', m.pb == null ? '--' : (m.pb as number).toFixed(2)], ['PE历史分位', s.pePct == null ? '实时无' : pct(s.pePct, 1)]])
   }
 
@@ -232,12 +316,32 @@ const { initialCode = '600519' } = Astro.props
 
   function minuteOption(pts: { t: string; p: number; v: number }[], base: number) {
     const c = C()
+    // 累计均价（VWAP）：分时为当日累计；五日按日重置，避免跨日累加失真
+    const avg: (number | null)[] = []
+    if (state.period === 'min1') {
+      let pv = 0, vv = 0
+      for (const q of pts) { pv += q.p * q.v; vv += q.v; avg.push(vv > 0 ? +(pv / vv).toFixed(3) : null) }
+    } else {
+      let pv = 0, vv = 0, day = ''
+      for (const q of pts) {
+        const d = q.t.slice(0, 5)
+        if (d !== day) { day = d; pv = 0; vv = 0 }
+        pv += q.p * q.v; vv += q.v
+        avg.push(vv > 0 ? +(pv / vv).toFixed(3) : null)
+      }
+    }
     return {
       animation: false, textStyle: { color: c.text, fontSize: 11 },
       tooltip: { trigger: 'axis', confine: true, backgroundColor: c.card, borderColor: c.border, textStyle: { color: '#e6e8ec', fontSize: 12 },
-        formatter(ps: any) { const p = Array.isArray(ps) ? ps.find((x) => x.seriesType === 'line' && x.seriesName === '价') : null; if (!p) return ''
+        formatter(ps: any) {
+          const arr = Array.isArray(ps) ? ps : []
+          const p = arr.find((x) => x.seriesType === 'line' && x.seriesName === '价')
+          const a = arr.find((x) => x.seriesType === 'line' && x.seriesName === '均价')
+          if (!p) return ''
           const q = pts[p.dataIndex]
-          return `${state.period === 'min5' ? q.t : `09:30起 ${q.t}`}<br/>价格 <b>${f2(q.p)}</b>（${((q.p / base - 1) * 100).toFixed(2)}%）<br/>分钟量 ${f2(q.v / 100)} 手` } },
+          const av = a && a.data != null ? a.data : null
+          return `${state.period === 'min5' ? q.t : `09:30起 ${q.t}`}<br/>价格 <b>${f2(q.p)}</b>（${((q.p / base - 1) * 100).toFixed(2)}%）<br/>均价 ${av == null ? '--' : f2(av)}<br/>分钟量 ${f2(q.v / 100)} 手`
+        } },
       axisPointer: { link: [{ xAxisIndex: 'all' }] },
       grid: [{ left: 64, right: 14, top: 12, height: '60%' }, { left: 64, right: 14, top: '78%', height: '14%' }],
       xAxis: [
@@ -251,6 +355,7 @@ const { initialCode = '600519' } = Astro.props
       ],
       series: [
         { name: '价', type: 'line', data: pts.map((p) => p.p), showSymbol: false, emphasis: { disabled: true } as any, lineStyle: { width: 1.2, color: c.gold }, areaStyle: { color: 'hsla(45,70%,55%,.06)' } },
+        { name: '均价', type: 'line', data: avg, showSymbol: false, emphasis: { disabled: true } as any, connectNulls: true, lineStyle: { width: 1, color: 'hsl(212 80% 62%)' } },
         { name: 'base', type: 'line', data: pts.map(() => base), showSymbol: false, emphasis: { disabled: true } as any, lineStyle: { width: 1, type: 'dashed', color: c.text } },
         { type: 'bar', xAxisIndex: 1, yAxisIndex: 1, data: pts.map((p) => ({ value: p.v, itemStyle: { color: p.p >= base ? 'rgba(241,106,106,.45)' : 'rgba(63,186,133,.45)' } })) }
       ]
@@ -318,6 +423,32 @@ const { initialCode = '600519' } = Astro.props
     $('fn-l').textContent = `日线未复权 · 实时拉取 ${dt}`
   }
 
+  /* ---------- 按需加载更深历史（3年 / 全部区间） ---------- */
+  const DEEP_N = 1000
+  let deepLoaded = false
+  let deepLoading = false
+  let deepCode = ''
+  async function ensureDeepHistory() {
+    if (deepLoading || !payload) return
+    if (deepLoaded && deepCode === payload.code) return
+    deepLoading = true
+    const code = payload.code
+    $('fn-r').innerHTML = `<span class="warn">正在加载更长历史…</span>`
+    try {
+      const j = await fetchJSON(`/api/stock-kline?code=${code}&n=${DEEP_N}`)
+      const bars: Bar[] = (j.bars || []).filter((b: Bar) => Number.isFinite(b.c) && b.c > 0)
+      if (bars.length > payload.kline.length) {
+        payload = { ...payload, kline: bars }
+        deepLoaded = true
+        deepCode = code
+      }
+    } catch (e: any) {
+      $('fn-r').innerHTML = `<span class="warn">⚠ 更长历史加载失败：${e?.message || '请稍后重试'}</span>`
+    } finally {
+      deepLoading = false
+    }
+  }
+
   /* ---------- 交互 ---------- */
   $('seg-period').addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest('button'); if (!b) return
@@ -326,10 +457,13 @@ const { initialCode = '600519' } = Astro.props
     document.querySelectorAll('#seg-period button').forEach((x) => x.classList.toggle('on', x === b))
     render()
   })
-  $('seg-range').addEventListener('click', (e) => {
+  $('seg-range').addEventListener('click', async (e) => {
     const b = (e.target as HTMLElement).closest('button'); if (!b) return
-    state.range = +(b as HTMLElement).dataset.r!
+    const r = +(b as HTMLElement).dataset.r!
+    state.range = r
     document.querySelectorAll('#seg-range button').forEach((x) => x.classList.toggle('on', x === b))
+    // 需要更长历史时按需拉取（默认 250 根 → 3年/全部 拉 1000 根）
+    if (r === 0 || r > 250) await ensureDeepHistory()
     render()
   })
   $('ma-chips').addEventListener('click', (e) => {
@@ -342,7 +476,59 @@ const { initialCode = '600519' } = Astro.props
     const code = (e as CustomEvent).detail?.code
     if (code && code !== state.code) select(code)
   })
+
+  /* ---------- 键盘快捷键：1-6 切周期、←/→ 切股票、/ 聚焦搜索 ---------- */
+  const PERIOD_KEYS = ['min1', 'min5', 'd', 'w', 'm', 'y']
+  function isTyping(e: KeyboardEvent): boolean {
+    const t = e.target as HTMLElement | null
+    return !!t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)
+  }
+  document.addEventListener('keydown', (e) => {
+    if (isTyping(e) || e.metaKey || e.ctrlKey || e.altKey) return
+    // 数字键 1-6 切周期
+    const idx = Number(e.key) - 1
+    if (Number.isInteger(idx) && idx >= 0 && idx < PERIOD_KEYS.length) {
+      const p = PERIOD_KEYS[idx]
+      state.period = p
+      state.ma = [...(MA_DEF[p] || [])]
+      document.querySelectorAll('#seg-period button').forEach((x) => x.classList.toggle('on', (x as HTMLElement).dataset.p === p))
+      render()
+      e.preventDefault()
+      return
+    }
+    // 左右方向键在自选之间切换
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      const codes = (window as any).__qkWatchlist?.get?.() as string[] | undefined
+      if (!codes?.length) return
+      const i = codes.indexOf(state.code)
+      const n = e.key === 'ArrowRight' ? (i + 1) % codes.length : (i - 1 + codes.length) % codes.length
+      const next = codes[n]
+      if (next && next !== state.code) {
+        ;(window as any).__qkActive = next
+        document.dispatchEvent(new CustomEvent('dash:select', { detail: { code: next } }))
+      }
+      e.preventDefault()
+      return
+    }
+    // 斜杠聚焦搜索框
+    if (e.key === '/') {
+      const inp = document.getElementById('qk-search-input') as HTMLInputElement | null
+      if (inp) { inp.focus(); e.preventDefault() }
+    }
+  })
+
   new MutationObserver(() => render()).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+
+  // 快捷键提示条：可隐藏并记忆
+  const keysEl = document.querySelector('.qd-keys') as HTMLElement | null
+  const keysToggle = document.getElementById('qk-keys-toggle') as HTMLButtonElement | null
+  const KEYS_LS = 'qk-hide-keys'
+  try { if (localStorage.getItem(KEYS_LS) === '1' && keysEl) keysEl.hidden = true } catch {}
+  keysToggle?.addEventListener('click', () => {
+    if (!keysEl) return
+    keysEl.hidden = !keysEl.hidden
+    try { localStorage.setItem(KEYS_LS, keysEl.hidden ? '1' : '0') } catch {}
+  })
 
   select(state.code)
 </script>
@@ -382,12 +568,19 @@ const { initialCode = '600519' } = Astro.props
   .qchip i { width: 11px; height: 2.5px; border-radius: 2px; display: inline-block; }
   .qd-range { margin-left: auto; }
   #kchart { width: 100%; height: clamp(420px, 58vh, 640px); }
-  .qd-loading { display: flex; align-items: center; justify-content: center; height: 100%; min-height: 200px; font-size: 13px; color: hsl(var(--muted-foreground)); text-align: center; line-height: 2; padding: 0 20px; }
+  .qd-loading { display: flex; align-items: center; justify-content: center; height: 100%; min-height: 200px; font-size: 14px; color: hsl(var(--muted-foreground)); text-align: center; line-height: 2; padding: 0 20px; }
   .qd-loading code { background: hsl(var(--muted)); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
   .qd-pfoot { display: flex; justify-content: space-between; font-size: 12px; color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground))); padding-top: 8px; gap: 12px; }
   .qd-pfoot .warn { color: var(--qk-gold); }
   .qd-pfoot span { white-space: nowrap; }
   .qd-pfoot span:first-child { overflow: hidden; text-overflow: ellipsis; }
+  /* 快捷键提示条 */
+  .qd-keys { display: flex; align-items: center; gap: 14px; margin-top: 6px; padding-top: 7px; border-top: 1px dashed hsl(var(--border)); font-size: 12px; color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground))); }
+  .qd-keys[hidden] { display: none; }
+  .qd-keys span { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+  .qd-keys kbd { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 4px; border: 1px solid hsl(var(--border)); border-bottom-width: 2px; border-radius: 4px; background: hsl(var(--muted)); color: hsl(var(--foreground)); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; line-height: 1; }
+  .qd-keys-toggle { margin-left: auto; width: 24px; height: 24px; display: grid; place-items: center; border: none; background: transparent; color: color-mix(in srgb, hsl(var(--muted-foreground)) 42%, hsl(var(--foreground))); font-size: 14px; line-height: 1; border-radius: 6px; cursor: pointer; transition: background .15s, color .15s; }
+  .qd-keys-toggle:hover { background: hsl(var(--muted)); color: hsl(var(--foreground)); }
   .up { color: var(--qk-up); } .down { color: var(--qk-down); } .flat { color: hsl(var(--muted-foreground)); }
   .num { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
   @media (max-width: 900px) { #kchart { height: 360px; } }

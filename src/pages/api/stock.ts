@@ -196,10 +196,10 @@ async function getKlineTencent(
     .filter((d) => d.c > 0)
 }
 
-/** K线（备源）：新浪 */
+/** K线（备源）：新浪。注：datalen 不带 ma 参数时新浪只返回 60 根，必须带 ma=no/5 才给满。 */
 async function getKlineSina(code: string, prefix: string, n: number): Promise<KlineDaily[]> {
   const j = await fetchJSON(
-    `https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${prefix}${code}&scale=240&ma=5&datalen=${n}`,
+    `https://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=${prefix}${code}&scale=240&ma=no&datalen=${n}`,
     'https://finance.sina.com.cn/'
   )
   if (!Array.isArray(j) || j.length === 0) return []
@@ -313,7 +313,8 @@ export const GET: APIRoute = async ({ url }) => {
     // 报价是主数据，失败即整体失败
     const quote = await getQuote(code, prefix)
 
-    // K线取 250 日：最后 60 日用于画图，整段用于算 52 周高低
+    // K线取 250 日：全部返回给前端（周/月/年聚合、1年/3年区间、指标计算都需要）；
+    // 最后 60 日用于默认视图，52 周高低用不复权全段计算。
     const [kQfq, kNfq, fundFlowRes, industry] = await Promise.all([
       getKline(code, prefix, 250, 'qfq'),
       getKline(code, prefix, 250, 'nfq'),
@@ -321,7 +322,7 @@ export const GET: APIRoute = async ({ url }) => {
       getIndustry(secucode)
     ])
 
-    const chart = (kQfq.data.length >= 2 ? kQfq.data : kNfq.data).slice(-60)
+    const chart = (kQfq.data.length >= 2 ? kQfq.data : kNfq.data).slice(-250)
     // 52 周高低优先用不复权口径（与行情软件一致），取不到就退回前复权
     const base = kNfq.data.length >= 2 ? kNfq.data : kQfq.data
     const highs = base.map((d) => d.h).filter((x) => x > 0)

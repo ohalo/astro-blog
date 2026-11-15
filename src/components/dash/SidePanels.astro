@@ -36,6 +36,15 @@
   </div>
 
   <div class='qd-card qd-side-card'>
+    <h3>技术指标 <span class='qd-badge real'>实时</span></h3>
+    <div class='qd-kv' id='ka-tech'><span class="k">—</span><span class="v num">加载中</span></div>
+    <div class='qd-gauge' id='ka-rsi-gauge' hidden>
+      <div class='qd-gauge-bar'><div class='qd-gauge-fill' id='ka-rsi-fill'></div><div class='qd-gauge-mark' id='ka-rsi-mark'></div></div>
+      <div class='qd-gauge-lbl'><span>超卖 30</span><span class='qd-gauge-val num' id='ka-rsi-val'>--</span><span>超买 70</span></div>
+    </div>
+  </div>
+
+  <div class='qd-card qd-side-card'>
     <h3>估值 <span class='qd-badge real'>实时</span></h3>
     <div class='qd-kv' id='ka-pe'><span class="k">—</span><span class="v num">加载中</span></div>
   </div>
@@ -75,6 +84,14 @@
   .qd-vtag.up { background: color-mix(in srgb, var(--qk-up) 16%, transparent); color: color-mix(in srgb, var(--qk-up) 62%, hsl(var(--foreground))); }
   .qd-vtag.down { background: color-mix(in srgb, var(--qk-down) 16%, transparent); color: color-mix(in srgb, var(--qk-down) 62%, hsl(var(--foreground))); }
   .qd-vsub { font-size: 12px; color: color-mix(in srgb, hsl(var(--muted-foreground)) 48%, hsl(var(--foreground))); }
+  /* RSI(14) 量表：0–100 刻度带 + 指针 */
+  .qd-gauge { margin-top: 12px; }
+  .qd-gauge-bar { position: relative; height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--qk-down), hsl(var(--muted-foreground)) 45%, hsl(var(--muted-foreground)) 55%, var(--qk-up)); }
+  .qd-gauge-fill { position: absolute; inset: 0 auto 0 0; border-radius: 3px; background: transparent; }
+  .qd-gauge-mark { position: absolute; top: 50%; left: 0; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: hsl(var(--card)); border: 2.5px solid var(--qk-gold); transform: translateY(-50%); transition: left .25s ease; }
+  .qd-gauge-lbl { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: color-mix(in srgb, hsl(var(--muted-foreground)) 48%, hsl(var(--foreground))); margin-top: 7px; }
+  .qd-gauge-val { font-weight: 600; color: hsl(var(--foreground)); }
+  @media (prefers-reduced-motion: reduce) { .qd-gauge-mark { transition: none; } }
   .num { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
   @media (max-width: 900px) {
     .qd-side { flex-direction: row; flex-wrap: wrap; }

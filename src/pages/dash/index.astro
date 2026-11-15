@@ -94,4 +94,12 @@ const desc = '实时量化复盘工作台：指数行情带、自选异动、六
     font-size: 12px;
   }
   .qd-note a { color: var(--qk-gold); }
+  /* 键盘导航必须看得见焦点 */
+  .qd-grid :focus-visible,
+  .qd-pipe :focus-visible,
+  .qd-keys :focus-visible {
+    outline: 2px solid var(--qk-gold);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
 </style>
