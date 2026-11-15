@@ -29,16 +29,39 @@ const { locale = 'zh' } = Astro.props
   </div>
 
 <style is:global>
+  /* 主题变量挂到 :root —— 自选列表在 sidebar 插槽里（在 .stock-quote 之外），
+     若变量只挂在 .stock-quote 上，侧栏按钮会因拿不到 --gold 而背景失效、文字不可见。 */
+  :root {
+    --sq-ink-1: #131210;
+    --sq-ink-2: #0b0a09;
+    --sq-gold: #d4ac37;
+    --sq-gold-bright: #ebc657;
+    --sq-cream: #f0eade;
+    --sq-muted: #9a948a;
+    --sq-up: #e24b4a; /* 涨 = 红 */
+    --sq-down: #3fa66a; /* 跌 = 绿 */
+    --sq-line: rgba(212, 172, 55, 0.22);
+    /* 旧别名：sidebar 插槽里的组件不在 .stock-quote 内，需要直接可用的变量名 */
+    --ink-1: var(--sq-ink-1);
+    --ink-2: var(--sq-ink-2);
+    --gold: var(--sq-gold);
+    --gold-bright: var(--sq-gold-bright);
+    --cream: var(--sq-cream);
+    --muted: var(--sq-muted);
+    --up: var(--sq-up);
+    --down: var(--sq-down);
+    --line: var(--sq-line);
+  }
   .stock-quote {
-    --ink-1: #131210;
-    --ink-2: #0b0a09;
-    --gold: #d4ac37;
-    --gold-bright: #ebc657;
-    --cream: #f0eade;
-    --muted: #9a948a;
-    --up: #e24b4a; /* 涨 = 红 */
-    --down: #3fa66a; /* 跌 = 绿 */
-    --line: rgba(212, 172, 55, 0.22);
+    --ink-1: var(--sq-ink-1);
+    --ink-2: var(--sq-ink-2);
+    --gold: var(--sq-gold);
+    --gold-bright: var(--sq-gold-bright);
+    --cream: var(--sq-cream);
+    --muted: var(--sq-muted);
+    --up: var(--sq-up); /* 涨 = 红 */
+    --down: var(--sq-down); /* 跌 = 绿 */
+    --line: var(--sq-line);
     max-width: 920px;
     margin: 0 auto;
     color: var(--cream);
@@ -81,6 +104,8 @@ const { locale = 'zh' } = Astro.props
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
+    white-space: nowrap;
+    flex: none;
   }
   .sq-btn:disabled {
     opacity: 0.6;
@@ -108,7 +133,7 @@ const { locale = 'zh' } = Astro.props
   }
   .sq-watch-hint {
     color: var(--muted);
-    font-size: 11px;
+    font-size: 12px;
   }
   .sq-watch-list {
     display: flex;
@@ -136,7 +161,7 @@ const { locale = 'zh' } = Astro.props
   }
   .sq-chip .cd {
     color: var(--muted);
-    font-size: 11px;
+    font-size: 12px;
   }
   .sq-chip.active {
     border-color: var(--gold-bright);
@@ -168,6 +193,8 @@ const { locale = 'zh' } = Astro.props
   }
   .sq-watch-add .sq-btn {
     padding: 10px 16px;
+    white-space: nowrap;
+    flex: none;
   }
 
   .sq-status {
@@ -203,7 +230,7 @@ const { locale = 'zh' } = Astro.props
     font-size: 13px;
   }
   .sq-tag {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--gold);
     border: 1px solid var(--line);
     border-radius: 5px;
@@ -233,6 +260,8 @@ const { locale = 'zh' } = Astro.props
     font-size: 40px;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    line-height: 1.1;
   }
   .sq-chg {
     font-size: 16px;
@@ -386,15 +415,26 @@ const { locale = 'zh' } = Astro.props
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 0.04em;
+    flex-wrap: wrap;
   }
   .sq-val-summary::-webkit-details-marker {
     display: none;
   }
+  /* 标题不折行；副标题占满剩余宽度并限长，避免挤成两行 */
+  .sq-val-summary > span {
+    white-space: nowrap;
+    flex: none;
+  }
   .sq-val-summary small {
     color: var(--muted);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 400;
     letter-spacing: 0;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 46em;
+    line-height: 1.6;
+    text-align: right;
   }
   .sq-val-summary::after {
     content: '▸';
@@ -432,14 +472,19 @@ const { locale = 'zh' } = Astro.props
     align-items: baseline;
     font-size: 12px;
     padding: 3px 0;
+    flex-wrap: wrap;
   }
   .sq-anchor-row .k {
     color: var(--muted);
     flex: none;
+    white-space: nowrap;
   }
   .sq-anchor-row .v {
     text-align: right;
     color: var(--cream);
+    flex: 1 1 auto;
+    min-width: 0;
+    line-height: 1.7;
   }
   .sq-anchor-in {
     display: flex;
@@ -511,13 +556,14 @@ const { locale = 'zh' } = Astro.props
   }
   .sq-val .sq-val-sub {
     color: var(--muted);
-    font-size: 11px;
+    font-size: 12px;
     margin-bottom: 14px;
   }
   .sq-method {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
+    align-items: center;
     margin-bottom: 14px;
   }
   .sq-method button {
@@ -528,6 +574,7 @@ const { locale = 'zh' } = Astro.props
     padding: 6px 14px;
     font-size: 13px;
     cursor: pointer;
+    white-space: nowrap;
   }
   .sq-method button.active {
     background: var(--gold);
@@ -572,6 +619,18 @@ const { locale = 'zh' } = Astro.props
     width: 100%;
     outline: none;
     font-variant-numeric: tabular-nums;
+  }
+  /* 复选项：label + 复选框同格，复选框点击区补足到 24px */
+  .sq-val-chk {
+    grid-template-columns: 1fr auto;
+  }
+  .sq-val-chk input[type='checkbox'] {
+    width: 20px;
+    height: 20px;
+    min-height: 24px;
+    padding: 2px;
+    cursor: pointer;
+    justify-self: end;
   }
   .sq-val-out {
     margin-top: 6px;
@@ -687,15 +746,23 @@ const { locale = 'zh' } = Astro.props
     font-size: 13px;
     padding: 6px 0;
     border-bottom: 1px dashed var(--line);
+    gap: 12px;
+    align-items: baseline;
   }
   .sq-kv:last-child {
     border-bottom: none;
   }
   .sq-kv .k {
     color: var(--muted);
+    flex: none;
+    white-space: nowrap;
   }
   .sq-kv .v {
     font-variant-numeric: tabular-nums;
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: right;
+    line-height: 1.7;
   }
 
   .sq-empty {
@@ -744,7 +811,7 @@ const { locale = 'zh' } = Astro.props
   .sq-foot {
     margin-top: 22px;
     color: var(--muted);
-    font-size: 11px;
+    font-size: 12px;
     text-align: center;
     line-height: 1.6;
   }
@@ -1587,7 +1654,7 @@ const { locale = 'zh' } = Astro.props
       </div>
       <div class='sq-val-actions'>
         <button type='button' id='sq_reset_val'>${L.resetVal}</button>
-        <span style='align-self:center;color:var(--muted);font-size:11px' id='sq_save_note'></span>
+        <span style='align-self:center;color:var(--muted);font-size:12px' id='sq_save_note'></span>
       </div>
       </div>
     </details>`
