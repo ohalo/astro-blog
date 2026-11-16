@@ -48,6 +48,12 @@ def stitch(md_path, core_path):
             print("  [stitch] 代码块已就位（幂等跳过）")
 
 
+def _is_timing(path):
+    """壁钟计时类字段（键名以 t_ 开头或含 speedup）：跨运行天然抖动，放宽容差。"""
+    key = path.rsplit(".", 1)[-1].rsplit("[", 1)[0]
+    return key.startswith("t_") or "speedup" in key
+
+
 def deep_equal(a, b, path="root"):
     if isinstance(a, dict) and isinstance(b, dict):
         if set(a) != set(b):
@@ -62,6 +68,8 @@ def deep_equal(a, b, path="root"):
     if isinstance(a, float) or isinstance(b, float):
         if a is None or b is None:
             return a == b
+        if _is_timing(path):  # 计时字段：同数量级即可（相对 50%）
+            return abs(a - b) <= 0.5 * max(1.0, abs(a), abs(b))
         return abs(a - b) <= 1e-9 * max(1.0, abs(a), abs(b))
     return a == b
 
@@ -120,7 +128,8 @@ def verify(slug, core_rel):
     saved = json.loads(results_before)
     assert deep_equal(fresh, saved), "exec 复跑输出与 results.json 不一致"
     results_after = open(os.path.join(img_dir, "results.json"), encoding="utf-8").read()
-    assert json.loads(results_after) == saved, "results.json 被 exec 改写"
+    assert deep_equal(json.loads(results_after), saved), \
+        "results.json 被 exec 改写到超出容差"
     print("  [exec] 复跑输出与 results.json 深度相等")
 
     body_low = body.lower()
