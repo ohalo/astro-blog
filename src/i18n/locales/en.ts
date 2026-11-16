@@ -5,6 +5,7 @@ export const en: Dictionary = {
   nav: {
     blog: 'Blog',
     quant: 'Quant Column',
+    learn: 'Learning Path',
     links: 'Site Map',
     dash: 'Quant Dashboard',
     about: 'About',
@@ -136,6 +137,24 @@ export const en: Dictionary = {
       uncategorized: '📚 Uncategorized',
       uncategorizedDesc: 'Articles awaiting a difficulty tag (add `difficulty` in the frontmatter)'
     }
+  },
+  learn: {
+    title: 'Quant Learning Roadmap',
+    subtitle:
+      '{paths} tracks · {posts} curated articles · about {minutes} minutes in total (≈ {days} days at 45 min/day). Checkmarks are saved in your browser — no login needed.',
+    beginner: 'Beginner',
+    intermediate: 'Intermediate',
+    advanced: 'Advanced',
+    minutes: '{n} min',
+    reset: 'Reset',
+    resetTitle: 'Clear progress of “{title}”',
+    allDone: '✓ All done 🎉 ({done}/{total})',
+    next: '▶ Continue',
+    markDone: 'Mark as read: {title}',
+    hintLabel: '📚 Part of the learning path',
+    hintIndex: 'Article {i}/{n}',
+    hintPrev: '← Previous: {title}',
+    hintNext: 'Next: {title} →'
   },
   links: {
     title: 'Stock Site Directory',

@@ -1,0 +1,268 @@
+---
+/**
+ * /learn 量化学习路线图内容：路径卡片 + localStorage 学习进度
+ * 中英共用，界面文案走 i18n 字典（d.learn.*），文章标题保持原文。
+ */
+import { getCollection } from 'astro:content'
+
+import { learningPaths, readingMinutes } from '@/data/learning-paths'
+import { dict, fill } from '@/i18n'
+import type { Locale } from '@/i18n'
+
+interface Props {
+  locale?: Locale
+}
+
+const { locale = 'zh' } = Astro.props
+const d = dict(locale)
+const L = d.learn
+
+const DIFF_EMOJI: Record<string, string> = {
+  beginner: '🌱',
+  intermediate: '📈',
+  advanced: '🚀'
+}
+
+const byId = new Map((await getCollection('blog')).map((p) => [p.id, p]))
+
+const paths = learningPaths
+  .map((path) => {
+    const posts = path.posts
+      .map((slug) => {
+        const entry = byId.get(slug)
+        if (!entry) {
+          console.warn(`[learning-paths] 路径 ${path.id} 找不到文章：${slug}`)
+          return null
+        }
+        return {
+          slug,
+          title: entry.data.title,
+          difficulty: entry.data.difficulty,
+          minutes: readingMinutes(entry.body)
+        }
+      })
+      .filter((p): p is NonNullable<typeof p> => p !== null)
+    return {
+      ...path,
+      name: locale === 'en' ? path.titleEn : path.title,
+      desc: locale === 'en' ? path.blurbEn : path.blurb,
+      posts
+    }
+  })
+  .filter((p) => p.posts.length > 0)
+
+const totalPosts = paths.reduce((n, p) => n + p.posts.length, 0)
+const totalMinutes = paths.reduce((n, p) => n + p.posts.reduce((m, x) => m + x.minutes, 0), 0)
+const totalDays = Math.max(1, Math.round(totalMinutes / 45))
+---
+
+<p class='text-muted-foreground'>
+  {fill(L.subtitle, {
+    paths: paths.length,
+    posts: totalPosts,
+    minutes: totalMinutes.toLocaleString(),
+    days: totalDays
+  })}
+</p>
+
+<div class='mt-4 sm:mt-6 flex flex-col gap-4 sm:gap-6'>
+  {paths.map((path) => (
+    <section
+      id={path.id}
+      class='lp-card rounded-2xl border bg-background px-4 py-3 sm:px-6 sm:py-5'
+      data-path={path.id}
+      data-all-done={L.allDone}
+    >
+      <header class='flex flex-wrap items-center gap-x-3 gap-y-2'>
+        <h2 class='text-lg font-semibold sm:text-xl'>
+          {path.emoji} {path.name}
+        </h2>
+        <span class='lp-count text-sm text-muted-foreground' aria-live='polite'></span>
+        <div class='lp-bar-track order-last h-1.5 w-full overflow-hidden rounded-full sm:order-none sm:w-40'>
+          <div class='lp-bar h-full w-0 rounded-full transition-[width] duration-300'></div>
+        </div>
+        <button
+          type='button'
+          class='lp-reset ml-auto cursor-pointer rounded-md px-2 py-0.5 text-xs text-muted-foreground opacity-60 transition hover:opacity-100'
+          title={fill(L.resetTitle, { title: path.name })}
+        >
+          {L.reset}
+        </button>
+      </header>
+      <p class='mt-1 text-sm text-muted-foreground'>{path.desc}</p>
+
+      <ol class='mt-3 flex list-none flex-col gap-1.5 p-0'>
+        {path.posts.map((post, i) => {
+          const diff = post.difficulty ? DIFF_EMOJI[post.difficulty] : undefined
+          const diffText = post.difficulty ? L[post.difficulty] : undefined
+          return (
+            <li
+              class='lp-item group flex items-center gap-2.5 rounded-xl border border-transparent px-2.5 py-1.5 transition-colors hover:bg-muted sm:gap-3'
+              data-slug={post.slug}
+            >
+              <button
+                type='button'
+                class='lp-check shrink-0 cursor-pointer rounded-full border transition'
+                aria-label={fill(L.markDone, { title: post.title })}
+                aria-pressed='false'
+              >
+                ✓
+              </button>
+              <span class='lp-no w-5 shrink-0 text-right text-xs text-muted-foreground tabular-nums'>
+                {i + 1}
+              </span>
+              <a
+                href={`/blog/${post.slug}`}
+                class='lp-title min-w-0 flex-1 truncate text-sm leading-6 hover:text-primary sm:text-base'
+                data-astro-prefetch
+              >
+                {post.title}
+              </a>
+              {diff && (
+                <span class='lp-badge hidden shrink-0 rounded-full px-2 py-0.5 text-xs sm:inline'>
+                  {diff} {diffText}
+                </span>
+              )}
+              <span class='lp-min hidden shrink-0 text-xs text-muted-foreground sm:inline tabular-nums'>
+                {fill(L.minutes, { n: post.minutes })}
+              </span>
+              <span class='lp-next hidden shrink-0 text-xs font-medium' aria-hidden='true'>
+                {L.next}
+              </span>
+            </li>
+          )
+        })}
+      </ol>
+    </section>
+  ))}
+</div>
+
+<style>
+  .lp-bar-track {
+    background: color-mix(in srgb, hsl(var(--muted)) 80%, transparent);
+  }
+  .lp-bar {
+    background: hsl(var(--primary));
+  }
+  .lp-check {
+    width: 1.35rem;
+    height: 1.35rem;
+    font-size: 0.7rem;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    color: transparent;
+    border-color: color-mix(in srgb, hsl(var(--border)) 100%, transparent);
+    background: transparent;
+  }
+  .lp-check:hover {
+    border-color: hsl(var(--primary) / 0.6);
+  }
+  .lp-item[data-done='true'] .lp-check {
+    color: hsl(var(--background));
+    background: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+  }
+  .lp-item[data-done='true'] a {
+    color: hsl(var(--muted-foreground) / 0.8);
+  }
+  .lp-badge {
+    background: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+  }
+  .lp-next {
+    color: hsl(var(--primary));
+  }
+  .lp-item[data-current='true'] {
+    background: color-mix(in srgb, hsl(var(--primary)) 8%, transparent);
+  }
+  .lp-item[data-current='true'] .lp-next {
+    display: inline;
+  }
+  .lp-reset:hover {
+    background: hsl(var(--muted));
+  }
+</style>
+
+<script>
+  const KEY = '***'
+
+  function load(): Record<string, Record<string, true>> {
+    try {
+      return JSON.parse(localStorage.getItem(KEY) ?? '{}')
+    } catch {
+      return {}
+    }
+  }
+
+  function save(data: Record<string, Record<string, true>>) {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(data))
+    } catch {
+      /* 隐私模式等场景静默失败 */
+    }
+  }
+
+  const progress = load()
+
+  function renderSection(section: HTMLElement) {
+    const pathId = section.dataset.path as string
+    const done = progress[pathId] ?? {}
+    const items = Array.from(section.querySelectorAll<HTMLElement>('.lp-item'))
+    const total = items.length
+    let count = 0
+
+    for (const item of items) {
+      const isDone = done[item.dataset.slug as string] === true
+      item.dataset.done = String(isDone)
+      item.querySelector('.lp-check')?.setAttribute('aria-pressed', String(isDone))
+      if (isDone) count++
+    }
+
+    // 第一条未完成的标 ▶（全部完成则不标）
+    for (const item of items) delete item.dataset.current
+    const next = items.find((it) => it.dataset.done !== 'true')
+    if (next) next.setAttribute('data-current', 'true')
+
+    const countEl = section.querySelector('.lp-count')
+    if (countEl) {
+      countEl.textContent =
+        count === total && total > 0
+          ? (section.dataset.allDone ?? '').replace('{done}', String(count)).replace('{total}', String(total))
+          : `${count}/${total}`
+    }
+
+    const bar = section.querySelector<HTMLElement>('.lp-bar')
+    if (bar) bar.style.width = total ? `${Math.round((count / total) * 100)}%` : '0%'
+  }
+
+  for (const section of document.querySelectorAll<HTMLElement>('section.lp-card')) {
+    renderSection(section)
+
+    section.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement
+      const sec = target.closest('section.lp-card')
+      if (!sec) return
+      const pathId = sec.dataset.path as string
+
+      if (target.closest('.lp-reset')) {
+        delete progress[pathId]
+        save(progress)
+        renderSection(sec)
+        return
+      }
+
+      const check = target.closest('.lp-check')
+      if (check) {
+        const item = check.closest<HTMLElement>('.lp-item')
+        if (!item) return
+        const slug = item.dataset.slug as string
+        const bucket = (progress[pathId] ??= {})
+        if (bucket[slug]) delete bucket[slug]
+        else bucket[slug] = true
+        save(progress)
+        renderSection(sec)
+      }
+    })
+  }
+</script>

@@ -1,0 +1,29 @@
+---
+// /learn —— 量化学习路线图
+// 把散落的量化文章按主题串成几条由浅入深的主线，进度存浏览器 localStorage。
+// 路径与选文见 src/data/learning-paths.ts
+import LearningPathsContent from '@/components/pages/LearningPathsContent.astro'
+import { learningStats } from '@/data/learning-paths'
+import PageLayout from '@/layouts/CommonPage.astro'
+import { dict, fill } from '@/i18n'
+
+const d = dict('zh')
+const stats = await learningStats()
+const title = d.learn.title
+const desc = fill(d.learn.subtitle, {
+  paths: stats.paths,
+  posts: stats.posts,
+  minutes: stats.minutes.toLocaleString(),
+  days: stats.days
+})
+---
+
+<PageLayout
+  title={title}
+  meta={{
+    title,
+    description: desc
+  }}
+>
+  <LearningPathsContent locale='zh' />
+</PageLayout>

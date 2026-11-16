@@ -6,6 +6,7 @@ export const zh = {
   nav: {
     blog: '博客',
     quant: '量化专栏',
+    learn: '学习路线',
     links: '网址导航',
     dash: '量化工作台',
     about: '关于',
@@ -136,6 +137,24 @@ export const zh = {
       uncategorized: '未分类',
       uncategorizedDesc: '等待分类的量化文章（请在 frontmatter 中添加 difficulty 字段）'
     }
+  },
+  learn: {
+    title: '量化学习路线图',
+    subtitle:
+      '{paths} 条主线 · 共 {posts} 篇精选 · 全程约 {minutes} 分钟（每天 45 分钟的话约 {days} 天）。打勾进度存在你自己的浏览器里，不需要登录。',
+    beginner: '入门',
+    intermediate: '进阶',
+    advanced: '高阶',
+    minutes: '{n} 分钟',
+    reset: '重置进度',
+    resetTitle: '清空「{title}」的进度',
+    allDone: '✓ 全部学完 🎉（{done}/{total}）',
+    next: '▶ 继续',
+    markDone: '标记已学完：{title}',
+    hintLabel: '📚 属于学习路径',
+    hintIndex: '第 {i}/{n} 篇',
+    hintPrev: '← 上一篇：{title}',
+    hintNext: '下一篇：{title} →'
   },
   links: {
     title: '股票网址导航',

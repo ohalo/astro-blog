@@ -1,0 +1,95 @@
+---
+/**
+ * 文章页底部的「所属学习路径」提示：属于哪条线、第几篇、上一/下一篇。
+ * 文章不属于任何路径时不渲染任何东西。
+ */
+import { getCollection } from 'astro:content'
+
+import { pathsForPost } from '@/data/learning-paths'
+import { dict, fill, getLocale, localePath } from '@/i18n'
+
+interface Props {
+  slug: string
+  class?: string
+}
+
+const { slug, class: className } = Astro.props
+
+const locale = getLocale(Astro.url.pathname)
+const d = dict(locale)
+const L = d.learn
+
+const hits = pathsForPost(slug)
+
+// 取上一/下一篇的标题
+const needed = new Set<string>()
+for (const { path, index } of hits) {
+  for (const i of [index - 1, index + 1]) {
+    if (i >= 0 && i < path.posts.length) needed.add(path.posts[i])
+  }
+}
+
+const titles = new Map<string, string>()
+if (needed.size) {
+  for (const post of await getCollection('blog', ({ id }) => needed.has(id))) {
+    titles.set(post.id, post.data.title)
+  }
+}
+---
+
+{hits.length > 0 && (
+  <nav class:list={['lp-hint rounded-2xl border bg-background px-4 py-2.5 sm:px-5', className]}>
+    {hits.map(({ path, index }) => {
+      const prevSlug = index > 0 ? path.posts[index - 1] : undefined
+      const nextSlug = index < path.posts.length - 1 ? path.posts[index + 1] : undefined
+      const name = locale === 'en' ? path.titleEn : path.title
+      return (
+        <div class='flex flex-col gap-0.5'>
+          <div class='flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-sm'>
+            <span class='text-muted-foreground'>{L.hintLabel}</span>
+            <a href={`${localePath(locale, '/learn')}#${path.id}`} class='lp-link font-medium hover:text-primary' data-astro-prefetch>
+              {path.emoji} {name}
+            </a>
+            <span class='text-xs text-muted-foreground tabular-nums'>
+              {fill(L.hintIndex, { i: index + 1, n: path.posts.length })}
+            </span>
+          </div>
+          {(prevSlug || nextSlug) && (
+            <div class='flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-sm'>
+              {prevSlug && titles.has(prevSlug) && (
+                <a href={`/blog/${prevSlug}`} class='lp-link lp-nav' data-astro-prefetch>
+                  {fill(L.hintPrev, { title: titles.get(prevSlug) })}
+                </a>
+              )}
+              {nextSlug && titles.has(nextSlug) && (
+                <a href={`/blog/${nextSlug}`} class='lp-link lp-nav' data-astro-prefetch>
+                  {fill(L.hintNext, { title: titles.get(nextSlug) })}
+                </a>
+              )}
+            </div>
+          )}
+        </div>
+      )
+    })}
+  </nav>
+)}
+
+<style>
+  /* 把 20px 高的文字链接的点击区垫到 ≥28px，视觉上不变 */
+  .lp-link {
+    display: inline-block;
+    padding: 4px 2px;
+    margin: -4px -2px;
+  }
+  .lp-nav {
+    max-width: 100%;
+    overflow: hidden;
+    vertical-align: bottom;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: hsl(var(--muted-foreground));
+  }
+  .lp-nav:hover {
+    color: hsl(var(--primary));
+  }
+</style>

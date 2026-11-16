@@ -1,0 +1,28 @@
+---
+// /en/learn —— Quant Learning Roadmap（英文界面，文章标题保持原文）
+import LearningPathsContent from '@/components/pages/LearningPathsContent.astro'
+import { learningStats } from '@/data/learning-paths'
+import PageLayout from '@/layouts/CommonPage.astro'
+import { dict, fill, getLocale } from '@/i18n'
+
+const locale = getLocale(Astro.url.pathname)
+const d = dict(locale)
+const stats = await learningStats()
+const title = d.learn.title
+const desc = fill(d.learn.subtitle, {
+  paths: stats.paths,
+  posts: stats.posts,
+  minutes: stats.minutes.toLocaleString(),
+  days: stats.days
+})
+---
+
+<PageLayout
+  title={title}
+  meta={{
+    title,
+    description: desc
+  }}
+>
+  <LearningPathsContent {locale} />
+</PageLayout>
