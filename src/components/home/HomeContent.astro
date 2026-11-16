@@ -1,256 +1,483 @@
 ---
 /**
- * 首页内容（中文 / 英文共用）
- * 所有文案从 i18n 字典取，语言由 locale 属性决定
+ * 首页（黑金重构）
+ * 结构：不对称 Hero + 真实累计曲线终端 → Bento 栏目区 → 编辑式文章索引 → 站点矩阵。
+ * 所有统计与文章标题均来自 blog 集合实时计算，示意图形明确标注 SCHEMATIC。
  */
-import { Image } from 'astro:assets'
-
-import { PostPreview } from 'astro-pure/components/pages'
 import { getBlogCollection, sortMDByDate } from 'astro-pure/server'
-import { Button, Icon, Label } from 'astro-pure/user'
 
-import ProjectCard from '@/components/home/ProjectCard.astro'
-import Section from '@/components/home/Section.astro'
-import SkillLayout from '@/components/home/SkillLayout.astro'
-import VisitorInfo from '@/components/home/VisitorInfo.astro'
-import { dict, fill, localePath } from '@/i18n'
+import { dict, localePath } from '@/i18n'
 import type { Locale } from '@/i18n'
-import config from '@/site-config'
 
 interface Props {
   locale: Locale
 }
 
 const { locale } = Astro.props
+const en = locale === 'en'
 const d = dict(locale)
+const t = (zh: string, enText: string) => (en ? enText : zh)
 
-const languages = ['Java', 'Python', 'C++', 'Qt', 'PHP', 'Go', 'HTML', 'JavaScript', 'CSS', 'Shell']
-const frontend = ['Vue', 'React', 'TypeScript', 'Vite', 'Webpack', 'Astro', 'CSS3']
-const backend = ['MySQL', 'PostgreSQL', 'Redis', 'Docker', 'Nginx', 'Vercel', 'Waline', 'API', 'SQL']
-
-const MAX_POSTS = 10
 const allPosts = await getBlogCollection()
-const allPostsByDate = sortMDByDate(allPosts).slice(0, MAX_POSTS)
+const latestPosts = sortMDByDate(allPosts)
 
-// 量化专栏统计（与 /quant-column 页面同口径：标签含 量化/quant/交易/投资）
+// 量化文章统计（与 /quant-column 同口径）
 const quantPosts = allPosts.filter((post) =>
   post.data.tags?.some((tag: string) =>
     ['量化', 'quant', '交易', '投资'].some((k) => tag.toLowerCase().includes(k))
   )
 )
-const quantStats = {
-  total: quantPosts.length,
+const tierCounts = {
   beginner: quantPosts.filter((p) => p.data.difficulty === 'beginner').length,
   intermediate: quantPosts.filter((p) => p.data.difficulty === 'intermediate').length,
   advanced: quantPosts.filter((p) => p.data.difficulty === 'advanced').length
 }
+const maxTier = Math.max(tierCounts.beginner, tierCounts.intermediate, tierCounts.advanced, 1)
 
-const linkStats = {
-  total: 155,
-  categories: 11
+const linkStats = { total: 155, categories: 11 }
+
+// 近 18 个月「累计文章数」真实曲线（二分查找每个月初之前发布的篇数）
+const allDates = latestPosts
+  .map((p) => new Date(p.data.publishDate).getTime())
+  .filter((v) => Number.isFinite(v))
+  .sort((a, b) => a - b)
+const now = new Date()
+const months = Array.from({ length: 18 }, (_, i) => {
+  const dt = new Date(now.getFullYear(), now.getMonth() - (17 - i), 1)
+  return { label: `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, '0')}`, start: dt.getTime() }
+})
+const cumulative = months.map((m) => {
+  let lo = 0
+  let hi = allDates.length
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1
+    if (allDates[mid] < m.start) lo = mid + 1
+    else hi = mid
+  }
+  return lo
+})
+const cMax = Math.max(...cumulative, 1)
+const cMin = Math.min(...cumulative)
+const cSpan = Math.max(cMax - cMin, 1)
+const chartW = 500
+const chartH = 186
+const chartPad = 12
+const chartPoints = cumulative.map((v, i) => ({
+  x: (i / (cumulative.length - 1)) * chartW,
+  y: chartH - chartPad - ((v - cMin) / cSpan) * (chartH - 2 * chartPad)
+}))
+const chartLine = `M${chartPoints.map((p) => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L')}`
+const chartArea = `${chartLine} L${chartW} ${chartH} L0 ${chartH} Z`
+const chartLast = chartPoints[chartPoints.length - 1]
+const growth = cumulative[cumulative.length - 1] - cumulative[0]
+
+const fmtDate = (value: Date | string) => {
+  const dt = new Date(value)
+  return `${String(dt.getMonth() + 1).padStart(2, '0')}.${String(dt.getDate()).padStart(2, '0')}`
 }
+const fmtFull = (value: Date | string) => {
+  const dt = new Date(value)
+  return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, '0')}.${String(dt.getDate()).padStart(2, '0')}`
+}
+const levelName = (level?: string) => {
+  if (level === 'beginner') return t('入门', 'Beginner')
+  if (level === 'intermediate') return t('进阶', 'Intermediate')
+  if (level === 'advanced') return t('高阶', 'Advanced')
+  return '—'
+}
+const clip = (text: string, n: number) => (text.length > n ? `${text.slice(0, n)}…` : text)
 
-/** 首页导航区展示的分类标签（取前 6 个） */
-const linkChips =
-  locale === 'en'
-    ? [
-        { emoji: '📈', name: 'Quotes' },
-        { emoji: '🗂', name: 'Data' },
-        { emoji: '📚', name: 'Papers' },
-        { emoji: '⚙️', name: 'Frameworks' },
-        { emoji: '🧮', name: 'Factors' },
-        { emoji: '📰', name: 'Media' }
-      ]
-    : [
-        { emoji: '📈', name: '行情与交易' },
-        { emoji: '🗂', name: '数据与研究平台' },
-        { emoji: '📚', name: '学术与论文' },
-        { emoji: '⚙️', name: '量化框架与工具' },
-        { emoji: '🧮', name: '因子与策略库' },
-        { emoji: '📰', name: '财经媒体' }
-      ]
+const featured = latestPosts[0]
+const feedPosts = latestPosts.slice(0, 4)
+const indexPosts = latestPosts.slice(1, 7)
+const latestDate = latestPosts.length ? fmtFull(latestPosts[0].data.publishDate) : '—'
 
-const imagePath = config.logo.src
-const images = import.meta.glob<{ default: ImageMetadata }>(
-  '/src/assets/*.{jpeg,jpg,png,gif,avif,webp}'
-)
-if (!images[imagePath])
-  throw new Error(
-    `"${imagePath}" does not exist in glob: "src/assets/*.{jpeg,jpg,png,gif,avif,webp}"`
-  )
+const sites = [
+  {
+    name: d.home.techBlog,
+    desc: d.home.techBlogDesc,
+    href: 'https://blog.halo26812.eu.org/'
+  },
+  { name: d.home.hafw, desc: d.home.hafwDesc, href: 'https://hafw.halo26812.eu.org/' },
+  {
+    name: d.home.bookmarks,
+    desc: d.home.bookmarksDesc,
+    href: 'https://www.bookmarks-topic.cloud/'
+  },
+  { name: d.home.cybermap, desc: d.home.cybermapDesc, href: 'https://cybermap.halo26812.eu.org/' }
+]
+
+const skills = [
+  ...new Set([
+    'Python',
+    'Java',
+    'C++',
+    'Go',
+    'TypeScript',
+    'React',
+    'Astro',
+    'PostgreSQL',
+    'Docker',
+    'Nginx',
+    'Redis',
+    'Vue',
+    'Vite',
+    'SQL',
+    'Shell'
+  ])
+]
+const shownSkills = skills.slice(0, 10)
+
+const arrowSvg = `<svg class="hg-arrow" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7H11M7.5 3.5L11 7L7.5 10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`
 ---
 
-<main class='flex w-full flex-col items-center'>
-  <section class='animate mb-10 flex flex-col items-center gap-y-7' id='content-header'>
-    <Image
-      src={images[imagePath]()}
-      alt={config.logo.alt || 'Profile'}
-      class='h-28 w-auto rounded-full border p-1'
-      loading='eager'
-      fetchpriority='high'
-    />
-
-    <div class='flex flex-col items-center gap-y-4'>
-      <h1 class='text-3xl font-medium'>{config.author}</h1>
-      <div class='flex flex-wrap justify-center gap-x-7 gap-y-3'>
-        <Label title={d.common.location}>
-          <Icon name='location' class='size-5' slot='icon' />
-        </Label>
-        <Label
-          title={d.common.sourceCode}
-          as='a'
-          href='https://github.com/ohalo/astro-blog'
-          target='_blank'
-        >
-          <Icon name='github' class='size-5' slot='icon' />
-        </Label>
+<main>
+  <!-- ============================ HERO ============================ -->
+  <section class='hg-shell hg-hero'>
+    <div class='hg-hero__left'>
+      <div class='hg-hero__eyebrow'>
+        <i></i>
+        <span class='hg-eyebrow'>QUANT RESEARCH &nbsp;/&nbsp; EST. 2019</span>
       </div>
-      <VisitorInfo {locale} />
+
+      <h1 class='hg-hero__title'>
+        {t('把市场的噪声，', 'Turning market noise,')}
+        <em>{t('写成可复现的结论。', 'into reproducible conclusions.')}</em>
+      </h1>
+
+      <p class='hg-hero__sub'>
+        {t(
+          '一个关于因子、定价与统计套利的研究笔记库。每篇都给出可运行的数值实验、真实计算结果，以及结论失效的边界。',
+          'A research notebook on factors, pricing and statistical arbitrage. Every entry ships runnable numerical experiments, real computed results, and the boundaries where conclusions break.'
+        )}
+      </p>
+
+      <div class='hg-hero__ctas'>
+        <a class='hg-btn' href={localePath(locale, '/quant-column')}>
+          {t('进入量化专栏', 'Open Quant Column')}
+          <span aria-hidden='true'>→</span>
+        </a>
+        <a class='hg-btn hg-btn--ghost' href={localePath(locale, '/blog')}>
+          {t('浏览最新文章', 'Browse latest notes')}
+        </a>
+      </div>
+
+      <div class='hg-hero__stats'>
+        <div class='hg-stat'>
+          <span class='hg-stat__num'>{quantPosts.length.toLocaleString('en-US')}</span>
+          <span class='hg-stat__label'>{t('篇量化研究笔记', 'quant research notes')}</span>
+        </div>
+        <div class='hg-stat'>
+          <span class='hg-stat__num'>03</span>
+          <span class='hg-stat__label'>{t('级学习路径', 'learning tiers')}</span>
+        </div>
+        <div class='hg-stat'>
+          <span class='hg-stat__num'>{linkStats.total}</span>
+          <span class='hg-stat__label'>{t('个常用站点', 'curated links')}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class='hg-panel'>
+      <div class='hg-panel__head'>
+        <span class='hg-panel__title'>RESEARCH FEED</span>
+        <span class='hg-panel__live'><i class='hg-dot'></i> LIVE · {latestDate}</span>
+      </div>
+      <hr class='hg-rule' />
+
+      <svg
+        class='hg-panel__chart'
+        viewBox={`0 0 ${chartW} ${chartH}`}
+        preserveAspectRatio='none'
+        role='img'
+        aria-label={t('近 18 个月累计文章数曲线', 'Cumulative article count over the last 18 months')}
+      >
+        <path
+          d={`M0 40H${chartW}M0 88H${chartW}M0 136H${chartW}`}
+          stroke='#232220'
+          stroke-width='1'
+          fill='none'></path>
+        <path d={chartArea} fill='#c9a961' opacity='0.07'></path>
+        <path
+          d={chartLine}
+          stroke='#c9a961'
+          stroke-width='2'
+          stroke-linecap='round'
+          stroke-linejoin='round'
+          fill='none'></path>
+        <circle cx={chartW} cy={chartLast.y} r='3.5' fill='#e8c87e'></circle>
+      </svg>
+
+      <div class='hg-panel__meta'>
+        <span>{t('累计条目 / CUMULATIVE NOTES', 'CUMULATIVE NOTES')}</span>
+        <strong>{t(`近 18 个月 +${growth} 篇`, `+${growth} in 18 months`)}</strong>
+      </div>
+      <hr class='hg-rule' />
+
+      <div class='hg-panel__feed'>
+        {
+          feedPosts.map((p, i) => (
+            <a class='hg-feedrow' href={`/blog/${p.id}`}>
+              <span class='hg-feedrow__no'>{String(i + 1).padStart(2, '0')}</span>
+              <span class='hg-feedrow__title'>{p.data.title}</span>
+              <span class='hg-feedrow__date'>{fmtDate(p.data.publishDate)}</span>
+            </a>
+          ))
+        }
+      </div>
+
+      <div class='hg-panel__foot'>
+        <span>{allPosts.length.toLocaleString('en-US')} / {allPosts.length.toLocaleString('en-US')} NOTES INDEXED</span>
+        <a href={localePath(locale, '/blog')}>VIEW ALL →</a>
+      </div>
     </div>
   </section>
 
-  <div id='content' class='animate flex flex-col gap-y-10 md:w-4/5 lg:w-5/6'>
-    <Section title={d.home.aboutTitle}>
-      <p class='text-muted-foreground'>{d.home.aboutRole}</p>
-      <p class='text-muted-foreground'>{d.home.aboutDesc}</p>
-      <Button
-        title={d.home.aboutMore}
-        class='w-fit self-end'
-        href={localePath(locale, '/about')}
-        variant='ahead'
-      />
-    </Section>
-
-    <Section title={d.home.quantTitle}>
-      <p class='text-muted-foreground'>{fill(d.home.quantDesc, { count: quantStats.total })}</p>
-      <div class='flex flex-wrap items-center gap-2'>
-        <span
-          class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'
-        >
-          <span class='font-medium text-primary mr-1'>{quantStats.beginner}</span> {d.quant.stats.beginner}
-        </span>
-        <span
-          class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'
-        >
-          <span class='font-medium text-primary mr-1'>{quantStats.intermediate}</span>
-          {d.quant.stats.intermediate}
-        </span>
-        <span
-          class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'
-        >
-          <span class='font-medium text-primary mr-1'>{quantStats.advanced}</span> {d.quant.stats.advanced}
-        </span>
+  <!-- ============================ BENTO ============================ -->
+  <section class='hg-section hg-section--alt'>
+    <div class='hg-shell'>
+      <div class='hg-section__head'>
+        <div>
+          <span class='hg-eyebrow'>01 &nbsp;/&nbsp; LEARNING PATH</span>
+          <h2 class='hg-section__title'>
+            {t(`三级路径，把 ${quantPosts.length.toLocaleString('en-US')} 篇拆成可走的台阶`, `${quantPosts.length.toLocaleString('en-US')} notes, three walkable tiers`)}
+          </h2>
+          <p class='hg-section__desc'>
+            {t(
+              '从股票基础、回测框架，到因子研究、统计套利、高频微观结构与机器学习选股。',
+              'From market basics and backtesting to factor research, statistical arbitrage, microstructure and ML selection.'
+            )}
+          </p>
+        </div>
+        <a class='hg-section__link' href={localePath(locale, '/quant-column')}>
+          {t('查看全部', 'View all')}
+          <span set:html={arrowSvg}></span>
+        </a>
       </div>
-      <Button
-        title={d.home.quantMore}
-        class='w-fit self-end'
-        href={localePath(locale, '/quant-column')}
-        variant='ahead'
-      />
-    </Section>
 
-    <Section title={d.home.linksTitle}>
-      <p class='text-muted-foreground'>
-        {fill(d.home.linksDesc, { count: linkStats.total, cats: linkStats.categories })}
-      </p>
-      <div class='flex flex-wrap items-center gap-2'>
+      <div class='hg-bento'>
+        <div class='hg-bento__main hg-card' style='padding:30px 32px'>
+          <div class='hg-card__head'>
+            <div>
+              <span class='hg-card__tag'>QUANT COLUMN &nbsp;/&nbsp; {t('量化专栏', 'Quant Column')}</span>
+              <h3 class='hg-card__title'>{t('系统化的量化投资学习路径', 'A systematic quant learning path')}</h3>
+            </div>
+            <span class='hg-card__big'>{quantPosts.length.toLocaleString('en-US')}</span>
+          </div>
+          <hr class='hg-rule' />
+
+          <div class='hg-tiers'>
+            <div class='hg-tier'>
+              <div class='hg-tier__row'>
+                <span class='hg-tier__no'>01</span>
+                <span class='hg-tier__name'>{t('入门', 'Beginner')} · BEGINNER</span>
+                <span class='hg-tier__desc'>{t('股票基础 / 技术指标 / 工具链', 'Basics / indicators / toolchain')}</span>
+                <span class='hg-tier__num'>{tierCounts.beginner} {t('篇', '')}</span>
+              </div>
+              <div class='hg-tier__track'>
+                <div class='hg-tier__bar' style={`width:${(tierCounts.beginner / maxTier) * 100}%`}></div>
+              </div>
+            </div>
+            <div class='hg-tier'>
+              <div class='hg-tier__row'>
+                <span class='hg-tier__no'>02</span>
+                <span class='hg-tier__name'>{t('进阶', 'Intermediate')} · INTERMEDIATE</span>
+                <span class='hg-tier__desc'>{t('因子挖掘 / 策略设计 / 风险控制', 'Factors / strategy / risk')}</span>
+                <span class='hg-tier__num'>{tierCounts.intermediate} {t('篇', '')}</span>
+              </div>
+              <div class='hg-tier__track'>
+                <div class='hg-tier__bar' style={`width:${(tierCounts.intermediate / maxTier) * 100}%`}></div>
+              </div>
+            </div>
+            <div class='hg-tier'>
+              <div class='hg-tier__row'>
+                <span class='hg-tier__no'>03</span>
+                <span class='hg-tier__name'>{t('高阶', 'Advanced')} · ADVANCED</span>
+                <span class='hg-tier__desc'>{t('微观结构 / 期权定价 / 机器学习', 'Microstructure / options / ML')}</span>
+                <span class='hg-tier__num'>{tierCounts.advanced} {t('篇', '')}</span>
+              </div>
+              <div class='hg-tier__track'>
+                <div class='hg-tier__bar' style={`width:${(tierCounts.advanced / maxTier) * 100}%`}></div>
+              </div>
+            </div>
+          </div>
+
+          <div class='hg-card__foot'>
+            <span>{t('按发布日期倒序，标注难度与可复现代码', 'Sorted by date, tagged by difficulty')}</span>
+            <a href={localePath(locale, '/quant-column')}>
+              {t('进入专栏', 'Enter column')} <span aria-hidden='true'>→</span>
+            </a>
+          </div>
+        </div>
+
+        <div class='hg-bento__side'>
+          <div class='hg-navcard'>
+            <span class='hg-card__tag'>02 &nbsp;/&nbsp; DIRECTORY</span>
+            <h3 class='hg-card__title'>{t('网址导航', 'Link Directory')}</h3>
+            <p class='hg-navcard__desc'>
+              {t(
+                `${linkStats.total} 个股票与量化常用站点，按 ${linkStats.categories} 个主题分类，支持站内搜索。`,
+                `${linkStats.total} curated stock and quant sites in ${linkStats.categories} topics, with in-site search.`
+              )}
+            </p>
+            <div class='hg-chips'>
+              <span class='hg-chip'>{t('行情与交易', 'Quotes')}</span>
+              <span class='hg-chip'>{t('数据与研究', 'Data')}</span>
+              <span class='hg-chip'>{t('量化框架', 'Frameworks')}</span>
+              <span class='hg-chip'>+ {linkStats.categories - 3} {t('个分类', 'more')}</span>
+            </div>
+            <div class='hg-navcard__stat'>
+              <span class='hg-navcard__num'>{linkStats.total}</span>
+              <span class='hg-navcard__unit'>{t('个链接', 'links')} &nbsp;/&nbsp; {linkStats.categories} {t('个主题', 'topics')}</span>
+            </div>
+            <a class='hg-navcard__link' href={localePath(locale, '/stock-links')}>
+              {t('打开网址导航', 'Open directory')} <span aria-hidden='true'>→</span>
+            </a>
+          </div>
+
+          <div class='hg-about'>
+            <div class='hg-about__info'>
+              <span class='hg-card__tag'>03 &nbsp;/&nbsp; ABOUT</span>
+              <span class='hg-about__name'>halo</span>
+              <span class='hg-about__desc'>{
+                t('创业者 / 开发者 · 37 岁 · 中国上海\n正在探索 AI 时代的工作方式', 'Founder / developer · Shanghai, China\nExploring how we work in the AI era')
+              }</span>
+            </div>
+            <svg class='hg-about__mark' viewBox='0 0 72 72' fill='none' aria-hidden='true'>
+              <circle cx='36' cy='36' r='34' stroke='#6b562c' stroke-width='1'></circle>
+              <circle cx='36' cy='36' r='24' stroke='#6b562c' stroke-width='1'></circle>
+              <path d='M36 2V70M2 36H70' stroke='#6b562c' stroke-width='1'></path>
+              <circle cx='36' cy='36' r='4' fill='#d9b871'></circle>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ LATEST ============================ -->
+  <section class='hg-section'>
+    <div class='hg-shell'>
+      <div class='hg-section__head'>
+        <div>
+          <span class='hg-eyebrow'>02 &nbsp;/&nbsp; LATEST RESEARCH</span>
+          <h2 class='hg-section__title'>{t('最新研究', 'Latest research')}</h2>
+          <p class='hg-section__desc'>
+            {t('每篇都配真实数值实验、可运行代码与结果数据。', 'Every note ships real numerical experiments, runnable code and result data.')}
+          </p>
+        </div>
+        <a class='hg-section__link' href={localePath(locale, '/blog')}>
+          {t('更多文章', 'More notes')} <span set:html={arrowSvg}></span>
+        </a>
+      </div>
+
+      <div class='hg-latest'>
         {
-          linkChips.map((c) => (
-            <span class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'>
-              {c.emoji} {c.name}
-            </span>
+          featured && (
+            <article class='hg-feature'>
+              <div class='hg-feature__top'>
+                <span class='hg-badge'>FEATURED</span>
+                <span class='hg-feature__date'>{fmtFull(featured.data.publishDate)}</span>
+              </div>
+
+              <svg
+                class='hg-feature__chart'
+                viewBox='0 0 456 132'
+                preserveAspectRatio='none'
+                role='img'
+                aria-label={t('装饰性示意图', 'Decorative schematic')}
+              >
+                <rect width='456' height='132' rx='4' fill='#0f0f11'></rect>
+                <path d='M0 33H456M0 66H456M0 99H456' stroke='#22211f' stroke-width='1'></path>
+                <path
+                  d='M0 112 C40 108 60 92 90 96 C120 100 140 74 170 80 C200 86 220 58 250 64 C280 70 300 44 330 48 C360 52 380 30 410 34 C430 36 442 20 456 16'
+                  stroke='#c9a961'
+                  stroke-width='2'
+                  stroke-linecap='round'
+                  fill='none'></path>
+                <path
+                  d='M0 120 C60 118 90 114 140 116 C190 118 220 110 270 112 C320 114 360 104 410 106 L456 104'
+                  stroke='#6e6a62'
+                  stroke-width='1.2'
+                  stroke-dasharray='4 4'
+                  fill='none'></path>
+                <circle cx='456' cy='16' r='3.5' fill='#e8c87e'></circle>
+                <text x='14' y='20' fill='#5a564f' font-size='9' font-family='monospace'>SCHEMATIC</text>
+              </svg>
+
+              <h3 class='hg-feature__title'>
+                <a href={`/blog/${featured.id}`}>{featured.data.title}</a>
+              </h3>
+              <p class='hg-feature__desc'>{clip(featured.data.description, 110)}</p>
+
+              <div class='hg-feature__foot'>
+                <span class='hg-feature__tags'>
+                  <b>{levelName(featured.data.difficulty)}</b>
+                  &nbsp;·&nbsp; {featured.data.tags?.slice(0, 2).join(' / ') || t('研究笔记', 'Research note')}
+                </span>
+                <a class='hg-feature__more' href={`/blog/${featured.id}`}>
+                  {t('阅读全文', 'Read note')} <span aria-hidden='true'>→</span>
+                </a>
+              </div>
+            </article>
+          )
+        }
+
+        <div class='hg-index'>
+          <div class='hg-index__head'>
+            <span>NO.</span>
+            <span>{t('TITLE / 标题', 'TITLE')}</span>
+            <span>LEVEL</span>
+            <span>DATE</span>
+          </div>
+          {
+            indexPosts.map((p, i) => (
+              <a class='hg-index__row' href={`/blog/${p.id}`}>
+                <span class='hg-index__no'>{String(i + 1).padStart(2, '0')}</span>
+                <span class='hg-index__title'>{p.data.title}</span>
+                <span class='hg-index__lv'>{levelName(p.data.difficulty)}</span>
+                <span class='hg-index__date'>{fmtDate(p.data.publishDate)}</span>
+              </a>
+            ))
+          }
+          <div class='hg-index__foot'>
+            <span>SHOWING 06 / {allPosts.length.toLocaleString('en-US')}</span>
+            <a href={localePath(locale, '/blog')}>VIEW ARCHIVE →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ SITES ============================ -->
+  <section class='hg-section hg-section--alt' style='padding-block:76px 80px'>
+    <div class='hg-shell'>
+      <div class='hg-section__head' style='margin-bottom:32px'>
+        <div>
+          <span class='hg-eyebrow'>03 &nbsp;/&nbsp; ELSEWHERE</span>
+          <h2 class='hg-section__title' style='font-size:34px'>{t('站点矩阵与工具', 'Sites & tools')}</h2>
+        </div>
+      </div>
+
+      <div class='hg-sites'>
+        {
+          sites.map((s, i) => (
+            <a class='hg-site' href={s.href} target='_blank' rel='noopener'>
+              <span class='hg-site__no'>{String(i + 1).padStart(2, '0')} / SITE</span>
+              <span class='hg-site__name'>{s.name}</span>
+              <span class='hg-site__desc'>{s.desc}</span>
+            </a>
           ))
         }
-        <span
-          class='inline-flex items-center rounded-lg border bg-muted px-2 py-1 text-sm text-muted-foreground'
-        >
-          {fill(d.home.moreCategories, { count: linkStats.categories - linkChips.length })}
-        </span>
       </div>
-      <Button
-        title={d.home.linksMore}
-        class='w-fit self-end'
-        href={localePath(locale, '/stock-links')}
-        variant='ahead'
-      />
-    </Section>
 
-    {
-      allPostsByDate.length > 0 && (
-        <Section title={d.home.latestPosts}>
-          <ul class='flex flex-col gap-y-1.5 sm:gap-y-2'>
-            {allPostsByDate.map((p) => (
-              <li class='flex flex-col gap-x-2 sm:flex-row'>
-                <PostPreview post={p} />
-              </li>
-            ))}
-          </ul>
-          <Button
-            title={d.common.morePosts}
-            class='w-fit self-end'
-            href={localePath(locale, '/blog')}
-            variant='ahead'
-          />
-        </Section>
-      )
-    }
-
-    <Section title={d.home.siteList}>
-      <div class='grid grid-cols-1 gap-3 sm:grid-cols-2'>
-        <ProjectCard
-          href='https://blog.halo26812.eu.org/'
-          heading={d.home.techBlog}
-          subheading={d.home.techBlogDesc}
-          imagePath='/src/assets/projects/blog-banner.png'
-          altText={d.home.techBlog}
-        />
-        <ProjectCard
-          href='https://hafw.halo26812.eu.org/'
-          heading={d.home.hafw}
-          subheading={d.home.hafwDesc}
-          imagePath='/src/assets/projects/hafw.png'
-          altText={d.home.hafw}
-        />
-        <ProjectCard
-          href='https://www.bookmarks-topic.cloud/'
-          heading={d.home.bookmarks}
-          subheading={d.home.bookmarksDesc}
-          imagePath='/src/assets/projects/bookmarkstopic.png'
-          altText={d.home.bookmarks}
-        />
-        <ProjectCard
-          href='https://cybermap.halo26812.eu.org/'
-          heading={d.home.cybermap}
-          subheading={d.home.cybermapDesc}
-          imagePath='/src/assets/projects/cybermap.png'
-          altText={d.home.cybermap}
-        />
+      <div class='hg-skills'>
+        <span class='hg-skills__label'>SKILLS / {t('技术栈', 'Stack')}</span>
+        <div class='hg-skills__tags'>
+          {shownSkills.map((s) => <span>{s}</span>)}
+          <b>+ {skills.length - shownSkills.length}</b>
+        </div>
       </div>
-    </Section>
-
-    <Section title={d.home.browserExt}>
-      <div class='grid grid-cols-1 gap-3 sm:grid-cols-2'>
-        <ProjectCard
-          href='https://chromewebstore.google.com/detail/bookmarks-topic-%E4%B9%A6%E7%AD%BE%E7%AE%A1%E7%90%86%E5%99%A8/ciphcokjcbpcledglaghnljgijneoijk'
-          heading={`${d.home.bookmarks} - Chrome`}
-          subheading={d.home.bookmarksDesc}
-          imagePath='/src/assets/projects/bookmarkstopic.png'
-          altText={`${d.home.bookmarks} Chrome`}
-        />
-        <ProjectCard
-          href='https://microsoftedge.microsoft.com/addons/detail/bookmarks-topic-%E4%B9%A6%E7%AD%BE%E7%AE%A1%E7%90%86%E5%99%A8/ocgpfnmcgfoceiibfikieppgenciblim'
-          heading={`${d.home.bookmarks} - Edge`}
-          subheading={d.home.bookmarksDesc}
-          imagePath='/src/assets/projects/bookmarkstopic.png'
-          altText={`${d.home.bookmarks} Edge`}
-        />
-      </div>
-    </Section>
-
-    <Section title={d.home.skills}>
-      <SkillLayout title={d.home.skillLanguages} skills={languages} />
-      <SkillLayout title={d.home.skillFrontend} skills={frontend} />
-      <SkillLayout title={d.home.skillBackend} skills={backend} />
-    </Section>
-  </div>
+    </div>
+  </section>
 </main>

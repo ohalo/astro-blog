@@ -11,17 +11,24 @@ interface Props {
   meta: SiteMeta
   highlightColor?: string
   back?: string
+  /** 黑金重设计页面：隐藏旧版返回按钮，由页头面包屑承担导航 */
+  frame?: 'classic' | 'blackgold'
 }
 
-const { meta, highlightColor, back = '/', ...props } = Astro.props
+const { meta, highlightColor, back = '/', frame = 'classic', ...props } = Astro.props
 
 const locale = getLocale(Astro.url.pathname)
 const d = dict(locale)
 ---
 
-<PageLayout {meta} {highlightColor} {...props}>
-  <Button title={d.common.back} href={back} variant='back' />
-  <main class='mt-6 items-start gap-x-10 md:flex'>
+<PageLayout {meta} {highlightColor} {frame} {...props}>
+  {frame !== 'blackgold' && <Button title={d.common.back} href={back} variant='back' />}
+  <main
+    class:list={[
+      'mt-6 items-start gap-x-10 md:flex',
+      frame === 'blackgold' && 'hg-shell hg-article-main'
+    ]}
+  >
     {/* Sidebar */}
     <aside
       class='animate top-20 min-w-48 basis-60 overflow-y-scroll max-md:hidden z-40 fixed md:sticky md:order-2 lg:shrink-0 max-md:border max-md:px-4 max-md:py-3 max-md:bg-muted max-md:rounded-xl'

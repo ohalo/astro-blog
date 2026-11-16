@@ -1,6 +1,4 @@
 ---
-import { Quote } from 'astro-pure/advanced'
-
 import HomeContent from '@/components/home/HomeContent.astro'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import { getLocale } from '@/i18n'
@@ -8,9 +6,6 @@ import { getLocale } from '@/i18n'
 const locale = getLocale(Astro.url.pathname)
 ---
 
-<PageLayout meta={{ title: 'Home' }} highlightColor='#7A5C11' {locale}>
+<PageLayout meta={{ title: 'Home' }} {locale} frame='blackgold'>
   <HomeContent {locale} />
-  <div class='mt-12 flex w-full justify-center'>
-    <Quote />
-  </div>
 </PageLayout>

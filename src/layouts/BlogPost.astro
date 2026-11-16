@@ -6,11 +6,13 @@ import type { CollectionEntry } from 'astro:content'
 import 'katex/dist/katex.min.css'
 
 import { MediumZoom } from 'astro-pure/advanced'
-import { ArticleBottom, Copyright, Hero, TOC } from 'astro-pure/components/pages'
+import { ArticleBottom, Copyright, TOC } from 'astro-pure/components/pages'
 import config from 'virtual:config'
-import PageLayout from '@/layouts/ContentLayout.astro'
 import LearningPathHint from '@/components/pages/LearningPathHint.astro'
 import { Comment, PageInfo } from '@/components/waline'
+import { getLocale, localePath } from '@/i18n'
+import type { Locale } from '@/i18n'
+import PageLayout from '@/layouts/ContentLayout.astro'
 
 interface Props {
   post: CollectionEntry<'blog'>
@@ -33,7 +35,9 @@ const {
   title,
   updatedDate,
   draft: isDraft,
-  comment: enableComment
+  comment: enableComment,
+  tags,
+  difficulty
 } = data
 
 const socialImage = heroImage
@@ -42,21 +46,59 @@ const socialImage = heroImage
     : heroImage.src.src
   : config.socialCard
 const articleDate = updatedDate?.toISOString() ?? publishDate.toISOString()
-const primaryColor = data.heroImage?.color ?? 'hsl(var(--primary) / var(--un-text-opacity))'
+
+const dateLabel = (value: Date | string) => {
+  const dt = new Date(value)
+  return `${dt.getFullYear()}.${String(dt.getMonth() + 1).padStart(2, '0')}.${String(dt.getDate()).padStart(2, '0')}`
+}
+const locale: Locale = getLocale(Astro.url.pathname)
+const en = locale === 'en'
+const levelLabel: Record<string, string> = en
+  ? { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' }
+  : { beginner: '入门', intermediate: '进阶', advanced: '高阶' }
+const isQuant =
+  tags?.some((tag) => ['量化', 'quant', '交易', '投资'].some((k) => tag.toLowerCase().includes(k))) ??
+  false
+const columnName = isQuant ? (en ? 'Quant Column' : '量化专栏') : en ? 'Blog' : '博客'
+const columnHref = isQuant ? '/quant-column' : '/blog'
+const levelName = difficulty ? levelLabel[difficulty] : en ? 'Research note' : '研究笔记'
 ---
 
 <PageLayout
   meta={{ articleDate, description, ogImage: socialImage, title }}
-  highlightColor={primaryColor}
-  back='/blog'
+  back={columnHref}
+  frame='blackgold'
 >
   {!!headings.length && <TOC {headings} slot='sidebar' />}
 
-  <Hero {data} {remarkPluginFrontmatter} slot='header'>
-    <Fragment slot='description'>
-      {!isDraft && enableComment && <PageInfo comment class='mt-1' />}
-    </Fragment>
-  </Hero>
+  <div slot='header' class='hg-article__head'>
+    <div class='hg-crumb'>
+      <a href={localePath(locale, '/')}>{en ? 'Home' : '首页'}</a>
+      <i>/</i>
+      <a href={localePath(locale, columnHref)}>{columnName}</a>
+      <i>/</i>
+      <b>{levelName}</b>
+    </div>
+
+    <h1 class='hg-article__title'>
+      {isDraft && <span style='color:#e57373'>(Draft) </span>}
+      {title}
+    </h1>
+
+    <p class='hg-article__lead'>{description}</p>
+
+    <div class='hg-article__meta'>
+      <span class='hg-mono'>{dateLabel(publishDate)}</span>
+      {difficulty && <b>{levelLabel[difficulty]}</b>}
+      {remarkPluginFrontmatter.minutesRead && (
+        <span>{en ? 'Read' : '阅读'} {remarkPluginFrontmatter.minutesRead}</span>
+      )}
+      {!!tags?.length && <span>{tags.slice(0, 3).join(' / ')}</span>}
+      {!isDraft && enableComment && <PageInfo comment />}
+    </div>
+
+    <div class='hg-article__rule'></div>
+  </div>
 
   <slot />
 
@@ -67,8 +109,10 @@ const primaryColor = data.heroImage?.color ?? 'hsl(var(--primary) / var(--un-tex
     <LearningPathHint slug={id} class='mt-3 sm:mt-6' />
     {/* Article recommend */}
     <ArticleBottom collections={posts} {id} class='mt-3 sm:mt-6' />
-    { /* Comment */
-    !isDraft && enableComment && <Comment class='mt-3 sm:mt-6' />}
+    {
+      /* Comment */
+      !isDraft && enableComment && <Comment class='mt-3 sm:mt-6' />
+    }
   </Fragment>
 
   <slot name='bottom-sidebar' slot='bottom-sidebar' />

@@ -1,6 +1,7 @@
 ---
 /**
- * 自建 Footer：在 astro-pure 主题 Footer 基础上增加 i18n 支持
+ * 黑金重构 Footer
+ * 大字品牌收尾 + 三列导航 + 版权/免责声明。
  */
 import { Icon } from 'astro-pure/user'
 
@@ -14,65 +15,69 @@ interface Props {
 
 const { locale = getLocale(Astro.url.pathname) } = Astro.props
 const d = dict(locale)
-
 const social = config.footer.social || []
 ---
 
-<footer class='mx-auto mb-5 mt-16 w-full'>
-  <div class='border-t pt-5'>
-    <div class='flex items-start gap-y-4 max-sm:flex-col sm:justify-between sm:gap-y-0'>
-      <div class='flex flex-col gap-y-1.5 text-muted-foreground'>
-        {/* 版权与政策链接 */}
-        <div class='flex flex-wrap items-center gap-x-2 gap-y-1 text-sm'>
-          <span>{config.footer.year} {d.footer.siteName}</span>
-          <span aria-hidden='true'>·</span>
-          <span>{d.footer.rightsReserved}</span>
-          <span aria-hidden='true'>·</span>
+<footer class='hg-footer'>
+  <div class='hg-shell'>
+    <div class='hg-footer__top'>
+      <div class='hg-footer__brand'>
+        <div class='hg-footer__word'>halo.</div>
+        <div class='hg-footer__tagline'>
+          {locale === 'en'
+            ? 'Turning market noise into reproducible conclusions.'
+            : '把市场的噪声，写成可复现的结论。'}
+        </div>
+      </div>
+
+      <div class='hg-footer__cols'>
+        <div class='hg-fcol'>
+          <h3>{locale === 'en' ? 'NAVIGATION' : '导航'}</h3>
+          <a href={localePath(locale, '/')}>{d.nav.home}</a>
+          <a href={localePath(locale, '/quant-column')}>{d.nav.quant}</a>
+          <a href={localePath(locale, '/blog')}>{d.nav.blog}</a>
+          <a href={localePath(locale, '/about')}>{d.nav.about}</a>
+        </div>
+        <div class='hg-fcol'>
+          <h3>{locale === 'en' ? 'RESOURCES' : '资源'}</h3>
+          <a href={localePath(locale, '/archives')}>{locale === 'en' ? 'Archive' : '文章归档'}</a>
+          <a href={localePath(locale, '/stock-links')}>{d.nav.links}</a>
+          <a href={localePath(locale, '/learn')}>{d.nav.learn}</a>
           <a href={localePath(locale, '/terms')}>{d.footer.sitePolicy}</a>
         </div>
-
-        {/* 本站含股票与量化内容，需明确非投资建议 */}
-        <p class='text-sm'>{d.footer.disclaimer}</p>
-
-        {
-          config.footer.credits && (
-            <span class='text-sm'>
-              <a href='https://github.com/withastro/astro' target='_blank'>
-                Astro
+        <div class='hg-fcol'>
+          <h3>{locale === 'en' ? 'INFO' : '信息'}</h3>
+          <span>{d.common.location}</span>
+          <span>EST. 2019</span>
+          {
+            social.map(({ label, href, icon }) => (
+              <a {href} rel='me' aria-label={label}>
+                <Icon name={icon} class='size-4' />
+                &nbsp;{label}
               </a>
-              {d.footer.themeBy}
-              <a href='https://github.com/cworld1/astro-theme-pure' target='_blank'>
-                Pure
-              </a>
-              {d.footer.drivenBy}
-            </span>
-          )
-        }
+            ))
+          }
+        </div>
       </div>
+    </div>
 
-      {/* Social Brands */}
-      <div class='flex items-center gap-x-4'>
-        {
-          social.map(({ label, href, icon }) => (
-            <a {href} rel='me' class='sl-flex' aria-label={label}>
-              <Icon name={icon} />
-            </a>
-          ))
-        }
-      </div>
+    <div class='hg-footer__line'></div>
+
+    <div class='hg-footer__bottom'>
+      <span>{config.footer.year} {d.footer.siteName} · {d.footer.rightsReserved}</span>
+      <p class='hg-footer__disclaimer'>{d.footer.disclaimer}</p>
+      <span>BUILT WITH ASTRO &nbsp;/&nbsp; VERCEL</span>
     </div>
   </div>
 </footer>
 
 <style>
-  footer a {
-    color: hsl(var(--foreground) / var(--un-text-opacity, 1));
-    text-decoration: underline;
-    font-weight: 500;
-    /* 文字链点击区补足到 24 高 */
-    display: inline-block;
-    min-height: 24px;
-    line-height: 24px;
-    padding-block: 2px;
+  .hg-footer :global(a) {
+    text-decoration: none;
+  }
+  .hg-fcol a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 20px;
   }
 </style>
