@@ -1,0 +1,35 @@
+---
+/**
+ * 黑金内页统一页头：面包屑 → 金色眉标 → 衬线大标题 → 描述 → 栏目编号。
+ * 由 BaseLayout 在 frame='page' 时自动注入，覆盖所有次要页面（含英文版）。
+ */
+import { getHgPageMeta } from '@/data/hg-page-meta'
+
+const { pathname } = Astro.props
+const m = getHgPageMeta(pathname)
+const home = m.locale === 'en' ? '/en/' : '/'
+const homeLabel = m.locale === 'en' ? 'Home' : '首页'
+---
+
+<header class='hg-pagehead'>
+  <nav class='hg-crumb' aria-label='Breadcrumb'>
+    <a href={home}>{homeLabel}</a>
+    <i>/</i>
+    <b>{m.crumb}</b>
+  </nav>
+
+  <div class='hg-pagehead__row'>
+    <div class='hg-pagehead__main'>
+      <div class='hg-pagehead__eyebrow'>
+        <i></i>
+        <span>{m.eyebrow}</span>
+      </div>
+      <h1 class='hg-pagehead__title'>{m.title}</h1>
+      <p class='hg-pagehead__desc'>{m.desc}</p>
+    </div>
+    <div class='hg-pagehead__aside' aria-hidden='true'>
+      <span class='hg-pagehead__no'>{m.no}</span>
+      <span class='hg-pagehead__aside-label'>HALO / QUANT RESEARCH</span>
+    </div>
+  </div>
+</header>

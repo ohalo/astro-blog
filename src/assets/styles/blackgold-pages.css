@@ -1,0 +1,751 @@
+/* ==========================================================================
+ * BLACK & GOLD — 内页统一层 v1.1
+ * 首页 / 量化专栏 / 文章详情使用 full 模式；其余全部页面进入 page 模式：
+ * 同一个页头、同一条 1440 基准网格，旧主题组件统一换上黑金皮肤。
+ * ========================================================================== */
+
+/* ------------------------------------------------------------- Frame ---- */
+body[data-hg='page'] {
+  background-color: var(--hg-bg);
+}
+
+body[data-hg='page'] #main-container {
+  max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* 页头与内容都落在同一条 1440 / 96px 基准线上 */
+body[data-hg='page'] #main-container > div.flex-1 > * {
+  width: 100%;
+  max-width: var(--hg-max);
+  margin-inline: auto;
+  padding-inline: var(--hg-pad);
+  box-sizing: border-box;
+}
+
+/* Header / Footer 内的 .hg-shell 也对齐 1440，否则页头与导航基准线错开 */
+body[data-hg='page'] .hg-shell {
+  max-width: var(--hg-max);
+  padding-inline: var(--hg-pad);
+}
+
+/* 未传 headings 的页面侧栏是空占位，收掉以免把正文挤窄 */
+body[data-hg='page'] #sidebar:not(:has(*)) {
+  display: none;
+}
+
+/* 旧主题自带的返回按钮与重复 h1 交给统一页头 */
+/* 页头已注入，slot 里排在它后面的旧返回按钮一律隐藏 */
+body[data-hg='page'] #main-container > div.flex-1 > a,
+body[data-hg='page'] #content-header h1:not(.hg-doc-title) {
+  display: none !important;
+}
+
+body[data-hg='page'] #content-header {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--hg-border-hair);
+  font-family: var(--hg-font-mono);
+  font-size: 11px;
+  color: var(--hg-dim);
+}
+
+/* 文档 / 条款详情页：页头是栏目名，这里保留文档自身标题 */
+body[data-hg='page'] #content-header h1.hg-doc-title {
+  display: block;
+  margin: 0 0 6px;
+  font-family: var(--hg-font-display);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--hg-text);
+}
+
+body[data-hg='page'] main {
+  margin-top: 0 !important;
+  padding-top: 38px;
+  padding-bottom: 72px;
+  min-height: 46vh; /* 搜索/404 等短页面也要把页脚压到视口下方 */
+}
+
+body[data-hg='page'] #content {
+  max-width: 1120px;
+  margin-inline: 0; /* 与页头标题共用同一条左基准线 */
+  color: var(--hg-text-body);
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+/* ------------------------------------------------------------ Pagehead -- */
+.hg-pagehead {
+  padding-block: 46px 30px;
+  border-bottom: 1px solid var(--hg-border);
+  background:
+    radial-gradient(900px 240px at 88% 0%, rgba(201, 169, 97, 0.055), transparent 70%),
+    var(--hg-bg);
+}
+
+.hg-pagehead .hg-crumb {
+  margin-bottom: 30px;
+}
+
+.hg-pagehead__row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 48px;
+}
+
+.hg-pagehead__main {
+  min-width: 0;
+}
+
+.hg-pagehead__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--hg-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--hg-gold);
+}
+
+.hg-pagehead__eyebrow i {
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--hg-gold);
+}
+
+.hg-pagehead__title {
+  margin: 16px 0 0;
+  font-family: var(--hg-font-display);
+  font-size: clamp(38px, 5vw, 64px);
+  font-weight: 700;
+  line-height: 1.16;
+  letter-spacing: 0.01em;
+  color: var(--hg-text);
+}
+
+.hg-pagehead__desc {
+  margin: 16px 0 0;
+  max-width: 62ch;
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--hg-muted);
+}
+
+.hg-pagehead__aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  flex: 0 0 auto;
+  padding-bottom: 6px;
+}
+
+.hg-pagehead__no {
+  font-family: var(--hg-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 64px;
+  line-height: 0.9;
+  color: var(--hg-gold-deep);
+  opacity: 0.55;
+}
+
+.hg-pagehead__aside-label {
+  font-family: var(--hg-font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--hg-dim-2);
+  white-space: nowrap;
+}
+
+/* ------------------------------------------- 全局 UnoCSS 卡片皮肤 ------ */
+/* app.css 已把 HSL 变量对齐黑金；这里补 UnoCSS 生成类的精确色值，避免主题组件残留灰白 */
+body[data-hg] .bg-muted {
+  background-color: var(--hg-surface-2) !important;
+}
+body[data-hg] .bg-background {
+  background-color: var(--hg-bg) !important;
+}
+body[data-hg] .bg-card {
+  background-color: var(--hg-surface) !important;
+}
+body[data-hg] .border {
+  border-color: var(--hg-border) !important;
+}
+body[data-hg] .rounded-2xl,
+body[data-hg] .rounded-xl,
+body[data-hg] .rounded-lg {
+  border-radius: var(--hg-radius) !important;
+}
+
+/* ------------------------------------------------- 文章列表 → 编辑式索引 -- */
+body[data-hg='page'] #content ul:has(> .post-preview) {
+  counter-reset: hg-row;
+}
+
+body[data-hg='page'] .post-preview {
+  list-style: none;
+  counter-increment: hg-row;
+}
+
+body[data-hg='page'] .post-preview > a {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 20px;
+  padding: 20px 8px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--hg-border-hair) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  transition: background-color 0.2s ease, padding-left 0.2s ease;
+}
+
+body[data-hg='page'] .post-preview > a::before {
+  content: counter(hg-row, decimal-leading-zero);
+  flex: 0 0 36px;
+  padding-top: 3px;
+  font-family: var(--hg-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  color: var(--hg-gold-deep);
+}
+
+body[data-hg='page'] .post-preview > a > div {
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 8px !important;
+}
+
+body[data-hg='page'] .post-preview > a > div > span {
+  font-family: var(--hg-font-mono);
+  font-size: 11px;
+  color: var(--hg-dim) !important;
+}
+
+body[data-hg='page'] .post-preview > a > div > div > div:first-child {
+  font-family: var(--hg-font-display);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--hg-text);
+  transition: color 0.2s ease;
+}
+
+body[data-hg='page'] .post-preview > a:hover {
+  background: var(--hg-surface-2) !important;
+  padding-left: 16px !important;
+}
+
+body[data-hg='page'] .post-preview > a:hover > div > div > div:first-child {
+  color: var(--hg-gold-light);
+}
+
+body[data-hg='page'] .post-preview p {
+  color: var(--hg-muted);
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+body[data-hg='page'] .post-preview svg.preview-redirect {
+  stroke: var(--hg-gold-deep);
+}
+
+/* 归档页年份水印：原主题用 absolute 定位会与篇数叠字，改回文档流 */
+body[data-hg='page'] #content > div.relative {
+  margin-top: 56px !important;
+}
+
+body[data-hg='page'] #content > div.relative > h2 {
+  position: static !important;
+  margin: 0 0 4px !important;
+  font-family: var(--hg-font-mono);
+  font-size: 60px !important;
+  line-height: 1.1;
+  color: transparent !important;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: var(--hg-gold-deep) !important;
+  opacity: 0.6 !important;
+}
+
+body[data-hg='page'] #content > div.relative > p {
+  padding-left: 0 !important;
+  margin-bottom: 12px;
+  font-family: var(--hg-font-mono);
+  font-size: 12px;
+  color: var(--hg-muted);
+}
+
+/* --------------------------------------------------------- Prose 正文 ---- */
+body[data-hg='page'] #content h2,
+body[data-hg='page'] #content h3,
+body[data-hg='page'] #content h4 {
+  font-family: var(--hg-font-display);
+  color: var(--hg-text);
+  scroll-margin-top: 6rem;
+}
+
+body[data-hg='page'] #content h2 {
+  margin-top: 2.3em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid var(--hg-border);
+  font-size: 25px;
+  font-weight: 700;
+}
+
+body[data-hg='page'] #content h3 {
+  margin-top: 2em;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+body[data-hg='page'] #content a {
+  color: var(--hg-gold-light);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+body[data-hg='page'] #content strong {
+  color: var(--hg-text);
+}
+
+body[data-hg='page'] #content ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+body[data-hg='page'] #content ul > li {
+  position: relative;
+  padding-left: 20px;
+  margin: 8px 0;
+}
+
+body[data-hg='page'] #content ul > li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0.78em;
+  width: 5px;
+  height: 5px;
+  background: var(--hg-gold-deep);
+}
+
+body[data-hg='page'] #content ul > li.post-preview::before {
+  display: none;
+}
+
+body[data-hg='page'] #content ul > li.post-preview {
+  padding-left: 0;
+  margin: 0;
+}
+
+body[data-hg='page'] #content blockquote {
+  position: relative;
+  margin-block: 1.8em;
+  padding: 20px 22px;
+  border: 1px solid #59471f;
+  border-left: 3px solid var(--hg-gold);
+  border-radius: 4px;
+  background: var(--hg-surface-gold);
+  color: var(--hg-text-2);
+}
+
+body[data-hg='page'] #content :not(pre) > code {
+  padding: 2px 6px;
+  border: 1px solid var(--hg-border);
+  border-radius: 3px;
+  background: var(--hg-surface-2);
+  color: var(--hg-gold-light);
+  font-family: var(--hg-font-mono);
+  font-size: 0.88em;
+}
+
+body[data-hg='page'] #content pre,
+body[data-hg='page'] #content .astro-code {
+  border: 1px solid var(--hg-border);
+  border-radius: 4px;
+  background: var(--hg-bg-deep) !important;
+}
+
+body[data-hg='page'] #content img {
+  padding: 10px;
+  border: 1px solid var(--hg-border);
+  border-radius: 4px;
+  background: var(--hg-surface-2);
+}
+
+body[data-hg='page'] #content hr {
+  border: 0;
+  border-top: 1px solid var(--hg-border);
+}
+
+body[data-hg='page'] #content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+body[data-hg='page'] #content th,
+body[data-hg='page'] #content td {
+  padding: 10px 14px;
+  border: 1px solid var(--hg-border);
+  text-align: left;
+}
+
+body[data-hg='page'] #content th {
+  background: var(--hg-surface-2);
+  color: var(--hg-gold-light);
+  font-family: var(--hg-font-mono);
+  font-size: 12px;
+}
+
+/* --------------------------------------------- Button / Paginator ---- */
+body[data-hg='page'] #content a.group.inline-flex,
+body[data-hg='page'] #sidebar a.group.inline-flex {
+  padding: 8px 14px !important;
+  border: 1px solid var(--hg-border) !important;
+  border-radius: 3px !important;
+  background: var(--hg-surface-2) !important;
+  color: var(--hg-text-body) !important;
+  font-size: 13px;
+  text-decoration: none !important;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+body[data-hg='page'] #content a.group.inline-flex:hover,
+body[data-hg='page'] #sidebar a.group.inline-flex:hover {
+  border-color: var(--hg-gold) !important;
+  color: var(--hg-gold-light) !important;
+}
+
+body[data-hg='page'] #content a.group.inline-flex span {
+  font-family: var(--hg-font-mono);
+  color: var(--hg-gold-deep);
+}
+
+body[data-hg='page'] nav.mt-4 a,
+body[data-hg='page'] #content > nav a {
+  padding: 10px 18px;
+  border: 1px solid var(--hg-border);
+  border-radius: 3px;
+  font-family: var(--hg-font-mono);
+  font-size: 12px;
+  color: var(--hg-muted);
+  text-decoration: none;
+}
+
+body[data-hg='page'] nav.mt-4 a:hover,
+body[data-hg='page'] #content > nav a:hover {
+  border-color: var(--hg-gold);
+  color: var(--hg-gold-light);
+}
+
+/* --------------------------------------------------------- 表单 / 搜索 -- */
+body[data-hg='page'] input[type='search'],
+body[data-hg='page'] input[type='text'],
+body[data-hg='page'] site-search input,
+body[data-hg='page'] .sq-input,
+body[data-hg='page'] #link-search {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1px solid var(--hg-border);
+  border-radius: 3px;
+  background: var(--hg-surface-2);
+  color: var(--hg-text);
+  font-family: var(--hg-font-body);
+  font-size: 15px;
+}
+
+body[data-hg='page'] input:focus {
+  outline: none;
+  border-color: var(--hg-gold);
+}
+
+body[data-hg='page'] input::placeholder {
+  color: var(--hg-dim-2);
+}
+
+body[data-hg='page'] site-search .form {
+  max-width: 760px;
+}
+
+body[data-hg='page'] site-search,
+body[data-hg='page'] #site-search {
+  color: var(--hg-text-body);
+}
+
+/* ------------------------------------------------------------ 侧栏 TOC -- */
+body[data-hg='page'] #sidebar {
+  padding: 22px;
+  border: 1px solid var(--hg-border) !important;
+  border-radius: 4px !important;
+  background: var(--hg-surface-2) !important;
+}
+
+body[data-hg='page'] #sidebar h2 {
+  font-family: var(--hg-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--hg-gold);
+}
+
+body[data-hg='page'] #sidebar a {
+  color: var(--hg-dim);
+  text-decoration: none !important;
+}
+
+body[data-hg='page'] #sidebar a:hover,
+body[data-hg='page'] #sidebar .active {
+  color: var(--hg-gold-light);
+}
+
+/* 标签侧栏：chip 横向排列，避免窄屏被挤成竖排文字 */
+body[data-hg='page'] #sidebar ul {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  padding: 0 !important;
+  margin: 0;
+  list-style: none;
+}
+
+body[data-hg='page'] #sidebar ul > li {
+  flex: 0 0 auto;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+body[data-hg='page'] #sidebar ul > li::before {
+  display: none !important;
+}
+
+body[data-hg='page'] #sidebar a.group.inline-flex {
+  display: inline-flex !important;
+  white-space: nowrap !important;
+}
+
+/* ------------------------------------------------------ 学习路线卡片 ---- */
+body[data-hg='page'] .lp-card {
+  border: 1px solid var(--hg-border) !important;
+  border-radius: 4px !important;
+  background: var(--hg-surface-2) !important;
+}
+
+body[data-hg='page'] .lp-card h2 {
+  font-family: var(--hg-font-display);
+  color: var(--hg-text);
+}
+
+body[data-hg='page'] .lp-count {
+  font-family: var(--hg-font-mono);
+  color: var(--hg-gold) !important;
+}
+
+body[data-hg='page'] .lp-bar-track {
+  background: var(--hg-border) !important;
+}
+
+body[data-hg='page'] .lp-bar {
+  background: var(--hg-gold) !important;
+}
+
+/* --------------------------------------------------- 网址导航 / 统计 ---- */
+body[data-hg='page'] dl.not-prose > div {
+  padding: 18px 20px;
+  border: 1px solid var(--hg-border) !important;
+  border-radius: 4px !important;
+  background: var(--hg-surface-2) !important;
+}
+
+body[data-hg='page'] dl.not-prose dt {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--hg-muted);
+}
+
+body[data-hg='page'] dl.not-prose dd {
+  margin-top: 6px;
+  font-family: var(--hg-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 28px;
+  color: var(--hg-gold) !important;
+}
+
+/* ---------------------------------------------- 工作台 / 股票查询补充 ---- */
+/* 统一页头已给出标题，工作台自带的重复标题收掉（保留右侧搜索框） */
+body[data-hg='page'] .qd-head-l {
+  display: none;
+}
+
+body[data-hg='page'] .qd-title {
+  font-family: var(--hg-font-display);
+  font-size: 26px;
+  color: var(--hg-text) !important;
+}
+
+body[data-hg='page'] .qd-tag {
+  font-family: var(--hg-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--hg-gold) !important;
+}
+
+body[data-hg='page'] .qd-note {
+  max-width: 80ch;
+  color: var(--hg-dim) !important;
+}
+
+body[data-hg='page'] .qd-note a {
+  color: var(--hg-gold-light);
+}
+
+/* 股票查询：旧组件自带亮黄渐变按钮与窄侧栏，统一到黑金并防止按钮被挤出面板 */
+body[data-hg='page'] .sq-btn {
+  background: linear-gradient(180deg, var(--hg-gold-light), var(--hg-gold)) !important;
+  color: var(--hg-bg) !important;
+  border: 1px solid var(--hg-gold-deep) !important;
+  border-radius: 3px !important;
+  white-space: nowrap;
+}
+
+body[data-hg='page'] #sidebar {
+  min-width: 260px;
+}
+
+body[data-hg='page'] .sq-watch,
+body[data-hg='page'] .sq-watch-head,
+body[data-hg='page'] .sq-watch-add {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+body[data-hg='page'] .sq-watch-head {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 8px;
+  row-gap: 4px;
+}
+
+body[data-hg='page'] .sq-watch-title {
+  white-space: nowrap;
+}
+
+body[data-hg='page'] .sq-watch-hint {
+  flex-basis: 100%;
+  line-height: 1.5;
+}
+
+body[data-hg='page'] .sq-watch-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+body[data-hg='page'] .sq-watch-add .sq-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto !important;
+}
+
+body[data-hg='page'] .sq-watch-add .sq-btn {
+  flex: 0 0 auto;
+}
+
+body[data-hg='page'] [class^='qd-'],
+body[data-hg='page'] [class^='sq-'] {
+  border-color: var(--hg-border);
+}
+
+/* ------------------------------------------------------------- 404 ----- */
+body[data-hg='page'] .text-7xl,
+body[data-hg='page'] .sm\:text-9xl {
+  font-family: var(--hg-font-display);
+  color: var(--hg-gold) !important;
+}
+
+body[data-hg='page'] .text-muted-foreground {
+  color: var(--hg-muted) !important;
+}
+
+/* 主题组件自带的标签 ul/li 不该被正文列表装饰污染（否则窄屏会被挤成竖排文字） */
+body[data-hg='page'] #content ul.tag-list,
+body[data-hg='page'] #content ul.flex-wrap {
+  list-style: none;
+}
+
+body[data-hg='page'] #content ul > li:has(> a.group.inline-flex) {
+  padding-left: 0;
+}
+
+body[data-hg='page'] #content ul > li:has(> a.group.inline-flex)::before {
+  display: none !important;
+}
+
+body[data-hg='page'] #content .post-preview ul.tag-list {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  padding: 0 !important;
+  margin: 8px 0 0 !important;
+}
+
+body[data-hg='page'] #content .post-preview ul.tag-list > li {
+  padding: 0 !important;
+  margin: 0 !important;
+  white-space: nowrap;
+}
+
+/* ----------------------------------------------------------- 响应式 ---- */
+@media (max-width: 900px) {
+  .hg-pagehead__row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+  }
+  .hg-pagehead__aside {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 16px;
+  }
+  .hg-pagehead__no {
+    font-size: 34px;
+  }
+  body[data-hg='page'] .post-preview > a {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .hg-pagehead {
+    padding-block: 32px 24px;
+  }
+  .hg-pagehead .hg-crumb {
+    margin-bottom: 22px;
+  }
+  .hg-pagehead__title {
+    font-size: 34px;
+  }
+  .hg-pagehead__desc {
+    font-size: 13px;
+  }
+  .hg-pagehead__aside-label {
+    display: none;
+  }
+  body[data-hg='page'] main {
+    padding-top: 26px;
+  }
+  body[data-hg='page'] .post-preview > a::before {
+    display: none;
+  }
+  body[data-hg='page'] .post-preview > a > div > div > div:first-child {
+    font-size: 15px;
+  }
+  body[data-hg='page'] #content h2 {
+    font-size: 21px;
+  }
+}

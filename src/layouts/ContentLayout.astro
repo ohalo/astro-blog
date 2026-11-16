@@ -12,17 +12,17 @@ interface Props {
   highlightColor?: string
   back?: string
   /** 黑金重设计页面：隐藏旧版返回按钮，由页头面包屑承担导航 */
-  frame?: 'classic' | 'blackgold'
+  frame?: 'classic' | 'blackgold' | 'page'
 }
 
-const { meta, highlightColor, back = '/', frame = 'classic', ...props } = Astro.props
+const { meta, highlightColor, back = '/', frame = 'page', ...props } = Astro.props
 
 const locale = getLocale(Astro.url.pathname)
 const d = dict(locale)
 ---
 
 <PageLayout {meta} {highlightColor} {frame} {...props}>
-  {frame !== 'blackgold' && <Button title={d.common.back} href={back} variant='back' />}
+  {frame === 'classic' && <Button title={d.common.back} href={back} variant='back' />}
   <main
     class:list={[
       'mt-6 items-start gap-x-10 md:flex',

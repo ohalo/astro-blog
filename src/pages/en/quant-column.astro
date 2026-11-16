@@ -1,6 +1,6 @@
 ---
 import QuantColumnContent from '@/components/pages/QuantColumnContent.astro'
-import PageLayout from '@/layouts/CommonPage.astro'
+import PageLayout from '@/layouts/BaseLayout.astro'
 import { dict, getLocale } from '@/i18n'
 
 const locale = getLocale(Astro.url.pathname)
@@ -8,11 +8,12 @@ const d = dict(locale)
 ---
 
 <PageLayout
-  title={d.quant.title}
   meta={{
     title: d.quant.title,
     description: d.quant.subtitle
   }}
+  {locale}
+  frame='blackgold'
 >
   <QuantColumnContent {locale} />
 </PageLayout>

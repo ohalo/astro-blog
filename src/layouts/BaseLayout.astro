@@ -4,6 +4,7 @@ import type { SiteMeta } from 'astro-pure/types'
 import BaseHead from '@/components/BaseHead.astro'
 import Footer from '@/components/Footer.astro'
 import Header from '@/components/Header.astro'
+import HgInnerHead from '@/components/HgInnerHead.astro'
 import { getLocale } from '@/i18n'
 import type { Locale } from '@/i18n'
 import config from '@/site-config'
@@ -13,6 +14,7 @@ import config from '@/site-config'
 import '@/assets/styles/global.css'
 import '@/assets/styles/app.css'
 import '@/assets/styles/blackgold.css'
+import '@/assets/styles/blackgold-pages.css'
 
 interface Props {
   meta: SiteMeta
@@ -20,15 +22,15 @@ interface Props {
   locale?: Locale
   /** 工作台类页面：放开 70rem 正文宽度上限 */
   wide?: boolean
-  /** 黑金重设计页面：整幅宽度 + 1440 容器，由页面内的 .hg-shell 控制 */
-  frame?: 'classic' | 'blackgold'
+  /** blackgold：首页/专栏/文章详情；page：其余内页统一页壳；classic：保留旧布局 */
+  frame?: 'classic' | 'blackgold' | 'page'
 }
 
 const {
   meta: { articleDate, description = config.description, ogImage, title },
   highlightColor,
   wide = false,
-  frame = 'classic',
+  frame = 'page',
   locale = getLocale(Astro.url.pathname),
   ...props
 } = Astro.props
@@ -66,7 +68,7 @@ const {
 
   <body
     class='flex justify-center bg-background text-foreground'
-    data-hg={frame === 'blackgold' ? 'full' : 'classic'}
+    data-hg={frame === 'blackgold' ? 'full' : frame}
     {...props}
   >
     {
@@ -84,6 +86,7 @@ const {
     >
       <Header {locale} pathname={Astro.url.pathname} />
       <div class='flex-1 w-full'>
+        {frame === 'page' && <HgInnerHead pathname={Astro.url.pathname} />}
         <slot />
       </div>
       <Footer {locale} />
