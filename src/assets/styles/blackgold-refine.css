@@ -1,0 +1,849 @@
+/* ==========================================================================
+ * BLACK & GOLD — 内页排版精修层 v2
+ * --------------------------------------------------------------------------
+ * 只作用于 frame='page' 的次要页面。解决旧主题 UnoCSS 工具类（text-sm /
+ * text-xs / text-muted-foreground）压过统一层、卡片内链接被正文 a 样式加
+ * 下划线、emoji 造成字体跳变、工作台缺少模块层级四类问题。
+ * 加载顺序：global.css → app.css → blackgold.css → blackgold-pages.css → 本文件
+ * ========================================================================== */
+
+/* -------------------------------------------------------- 字体与基准网格 -- */
+body[data-hg='page'] {
+  font-family: var(--hg-font-body) !important;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* 统一页头已经接管标题与统计，旧 content-header 里的 h1 / views 行全部收掉 */
+body[data-hg='page'] #content-header > h1,
+body[data-hg='page'] #content-header > div {
+  display: none !important;
+}
+
+body[data-hg='page'] #content {
+  width: 100% !important;
+  max-width: none !important;
+  font-family: var(--hg-font-body) !important;
+  font-size: 16px !important;
+  line-height: 1.85;
+  color: var(--hg-text-body);
+}
+
+body[data-hg='page'] #content > p {
+  max-width: 78ch;
+  margin: 0 0 1.4em;
+  font-size: 16px;
+  line-height: 1.9;
+  color: var(--hg-text-body);
+}
+
+body[data-hg='page'] #content > p.text-muted-foreground,
+body[data-hg='page'] #content > p[class*='text-muted'] {
+  color: var(--hg-muted) !important;
+  font-size: 15px;
+}
+
+/* ------------------------------------------------------------ 标题层级 -- */
+body[data-hg='page'] #content h2 {
+  position: relative;
+  margin: 52px 0 18px;
+  padding: 0 0 12px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--hg-border);
+  font-family: var(--hg-font-display) !important;
+  font-size: 27px !important;
+  font-weight: 600 !important;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: var(--hg-text) !important;
+}
+
+body[data-hg='page'] #content h2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 3px;
+  height: 23px;
+  background: var(--hg-gold);
+}
+
+body[data-hg='page'] #content h3 {
+  font-family: var(--hg-font-display) !important;
+  font-size: 20px !important;
+  font-weight: 600;
+}
+
+/* -------------------------------------------------------------- 链接分层 -- */
+/* 基础：组件内链接一律继承文字色、无下划线，靠 hover 变金色表达可点击 */
+body[data-hg='page'] #content a {
+  color: inherit !important;
+  text-decoration: none !important;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+  transition: color 0.18s ease;
+}
+
+body[data-hg='page'] #content a:hover {
+  color: var(--hg-gold-light) !important;
+}
+
+/* 只有真正的正文段落链接保留金色下划线 */
+body[data-hg='page'] #content > p > a,
+body[data-hg='page'] #content > ul > li > a:not([class]),
+body[data-hg='page'] #content > blockquote a {
+  color: var(--hg-gold-light) !important;
+  text-decoration: underline !important;
+  text-decoration-color: var(--hg-gold-deep);
+  text-underline-offset: 4px;
+}
+
+/* -------------------------------------------------------------- 列表装饰 -- */
+body[data-hg='page'] #content ul:not(.tag-list):not(.flex-wrap) > li {
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--hg-text-body);
+}
+
+body[data-hg='page'] #content ul:not(.tag-list):not(.flex-wrap) > li::before {
+  top: 0.82em;
+  width: 5px;
+  height: 5px;
+  background: var(--hg-gold-deep);
+}
+
+/* ============================================================ 关于页 ===== */
+/* ---------------------------------------------------------- 工具栈卡片 -- */
+body[data-hg='page'] .hg-tools {
+  gap: 14px !important;
+  padding: 22px !important;
+  border: 1px solid var(--hg-border) !important;
+  border-radius: 4px !important;
+  background: var(--hg-surface-2) !important;
+}
+
+body[data-hg='page'] .hg-tools > .hg-tools-title {
+  padding: 0 0 12px;
+  margin: 0 !important;
+  border-bottom: 1px solid var(--hg-border);
+  font-family: var(--hg-font-mono) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--hg-gold) !important;
+}
+
+body[data-hg='page'] .hg-tools .hg-tool-grid {
+  gap: 10px !important;
+}
+
+body[data-hg='page'] .hg-tools .hg-tool {
+  text-decoration: none !important;
+}
+
+body[data-hg='page'] .hg-tools .hg-tool > div {
+  gap: 12px !important;
+  padding: 11px 12px !important;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+body[data-hg='page'] .hg-tools .hg-tool:hover > div {
+  border-color: var(--hg-gold-deep);
+  background: var(--hg-surface) !important;
+}
+
+body[data-hg='page'] .hg-tools .hg-tool .hg-tool-icon {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  padding: 8px;
+  border: 1px solid var(--hg-border);
+  border-radius: 3px;
+  background: var(--hg-bg) !important;
+  color: var(--hg-gold) !important;
+}
+
+body[data-hg='page'] .hg-tools .hg-tool .hg-tool-icon,
+body[data-hg='page'] .hg-tools .hg-tool .hg-tool-icon svg {
+  fill: var(--hg-gold) !important;
+}
+
+body[data-hg='page'] .hg-tools .hg-tool-name {
+  font-family: var(--hg-font-body) !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: var(--hg-text) !important;
+}
+
+body[data-hg='page'] .hg-tools .hg-tool-desc {
+  font-size: 13px !important;
+  line-height: 1.6;
+  color: var(--hg-muted) !important;
+}
+
+/* ------------------------------------------------------------ 社交数据 -- */
+body[data-hg='page'] .hg-social {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin: 20px 0 4px;
+  padding: 10px !important;
+  border: 1px solid var(--hg-border) !important;
+  border-radius: 4px !important;
+  background: var(--hg-surface-2) !important;
+}
+
+body[data-hg='page'] .hg-social > a > div {
+  padding: 13px 15px;
+  border: 1px solid var(--hg-border);
+  border-radius: 3px;
+  background: var(--hg-bg);
+  font-family: var(--hg-font-body) !important;
+  font-size: 14px !important;
+  color: var(--hg-text-body) !important;
+}
+
+body[data-hg='page'] .hg-social samp {
+  font-family: var(--hg-font-mono) !important;
+  font-size: 15px;
+  color: var(--hg-gold);
+}
+
+/* -------------------------------------------------------------- 时间线 -- */
+body[data-hg='page'] #content ol {
+  margin: 20px 0;
+  padding-left: 4px;
+  list-style: none;
+}
+
+body[data-hg='page'] #content ol > li {
+  position: relative;
+  padding: 0 0 18px 22px;
+  font-size: 15px;
+  color: var(--hg-text-body);
+}
+
+body[data-hg='page'] #content ol > li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0.72em;
+  width: 6px;
+  height: 6px;
+  border: 1px solid var(--hg-gold);
+  border-radius: 50%;
+  background: var(--hg-bg);
+}
+
+/* ======================================================== 网址导航页 ==== */
+body[data-hg='page'] dl.hg-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 26px 0 20px;
+}
+
+body[data-hg='page'] dl.hg-stats > div {
+  padding: 18px 20px;
+}
+
+body[data-hg='page'] dl.hg-stats dt {
+  font-family: var(--hg-font-body) !important;
+  font-size: 12px !important;
+  letter-spacing: 0.06em;
+  color: var(--hg-muted) !important;
+}
+
+body[data-hg='page'] dl.hg-stats dd {
+  font-size: 30px !important;
+  line-height: 1.1;
+}
+
+/* 分类锚点：编号 + 中文名，不用 emoji */
+body[data-hg='page'] .hg-linkchips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 18px !important;
+}
+
+body[data-hg='page'] .hg-linkchips a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 11px;
+  border: 1px solid var(--hg-border);
+  border-radius: 3px;
+  background: var(--hg-surface-2);
+  font-family: var(--hg-font-body) !important;
+  font-size: 13px !important;
+  color: var(--hg-muted) !important;
+  text-decoration: none !important;
+}
+
+body[data-hg='page'] .hg-linkchips a:hover {
+  border-color: var(--hg-gold-deep);
+  background: var(--hg-surface-gold);
+  color: var(--hg-gold-light) !important;
+}
+
+body[data-hg='page'] .hg-linkchips .hg-chip-no,
+body[data-hg='page'] .hg-linksec .hg-sec-no {
+  font-family: var(--hg-font-mono) !important;
+  font-variant-numeric: tabular-nums;
+  font-size: 11px !important;
+  color: var(--hg-gold-deep) !important;
+  letter-spacing: 0.04em;
+}
+
+body[data-hg='page'] .hg-linksearch {
+  margin: 0 0 34px !important;
+}
+
+body[data-hg='page'] .hg-linksearch p {
+  font-family: var(--hg-font-mono);
+  font-size: 11px !important;
+  color: var(--hg-dim) !important;
+}
+
+body[data-hg='page'] .hg-linksec {
+  margin: 36px 0 0 !important;
+  padding-top: 4px;
+}
+
+body[data-hg='page'] .hg-linksec:first-of-type {
+  margin-top: 24px !important;
+}
+
+body[data-hg='page'] .hg-linksec > h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 8px !important;
+  padding: 0 0 12px 16px !important;
+}
+
+body[data-hg='page'] .hg-linksec > h2 .hg-sec-name {
+  flex: 1 1 auto;
+}
+
+body[data-hg='page'] .hg-linksec > h2 .hg-sec-count {
+  flex: 0 0 auto;
+  font-family: var(--hg-font-mono) !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.08em;
+  color: var(--hg-dim) !important;
+}
+
+body[data-hg='page'] .hg-linksec > h2::before {
+  top: 4px;
+}
+
+body[data-hg='page'] .hg-linksec > p {
+  max-width: 72ch;
+  margin: 0 0 18px !important;
+  font-size: 14px !important;
+  color: var(--hg-muted) !important;
+}
+
+body[data-hg='page'] .hg-linksec .hg-linkgrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+body[data-hg='page'] .hg-linkcard {
+  display: flex !important;
+  flex-direction: column;
+  gap: 7px !important;
+  min-width: 0;
+  padding: 14px 16px !important;
+  border: 1px solid var(--hg-border) !important;
+  border-radius: 4px !important;
+  background: var(--hg-surface-2) !important;
+  text-decoration: none !important;
+  transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
+}
+
+body[data-hg='page'] .hg-linkcard:hover {
+  border-color: var(--hg-gold-deep) !important;
+  background: var(--hg-surface-gold) !important;
+  transform: translateY(-1px);
+}
+
+body[data-hg='page'] .hg-linkcard .hg-linktop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+body[data-hg='page'] .hg-linkcard .hg-linkname {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--hg-font-body) !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: var(--hg-text) !important;
+}
+
+body[data-hg='page'] .hg-linkcard:hover .hg-linkname {
+  color: var(--hg-gold-light) !important;
+}
+
+body[data-hg='page'] .hg-linkcard .hg-linkbadge {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  border: 1px solid var(--hg-border);
+  border-radius: 2px;
+  background: var(--hg-bg);
+  font-family: var(--hg-font-mono) !important;
+  font-size: 10px !important;
+  color: var(--hg-muted) !important;
+}
+
+body[data-hg='page'] .hg-linkcard .hg-linkhost {
+  font-family: var(--hg-font-mono) !important;
+  font-size: 11px !important;
+  letter-spacing: 0.02em;
+  color: var(--hg-gold-deep) !important;
+}
+
+body[data-hg='page'] .hg-linkcard .hg-linkdesc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 13px !important;
+  line-height: 1.65;
+  color: var(--hg-muted) !important;
+}
+
+/* ======================================================== 学习路线页 ==== */
+body[data-hg='page'] #content > p.hg-learn-intro {
+  max-width: 78ch;
+  font-size: 15px;
+  color: var(--hg-muted) !important;
+}
+
+body[data-hg='page'] .lp-card {
+  padding: 22px 24px !important;
+  border: 1px solid var(--hg-border) !important;
+  border-radius: 4px !important;
+  background: var(--hg-surface-2) !important;
+}
+
+body[data-hg='page'] .lp-card header {
+  gap: 14px !important;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--hg-border);
+}
+
+body[data-hg='page'] .lp-card h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  font-family: var(--hg-font-display) !important;
+  font-size: 22px !important;
+  font-weight: 600 !important;
+}
+
+body[data-hg='page'] .lp-card h2::before {
+  display: none !important;
+}
+
+body[data-hg='page'] .lp-card h2 .hg-path-no {
+  font-family: var(--hg-font-mono) !important;
+  font-size: 11px !important;
+  color: var(--hg-gold-deep) !important;
+  letter-spacing: 0.08em;
+}
+
+body[data-hg='page'] .lp-card h2 .hg-path-name {
+  color: var(--hg-text);
+}
+
+body[data-hg='page'] .lp-card .lp-count {
+  font-size: 12px !important;
+}
+
+body[data-hg='page'] .lp-card .lp-bar-track {
+  height: 6px !important;
+  border-radius: 0 !important;
+  background: var(--hg-border) !important;
+}
+
+body[data-hg='page'] .lp-card .lp-bar {
+  background: linear-gradient(90deg, var(--hg-gold-deep), var(--hg-gold-light)) !important;
+}
+
+body[data-hg='page'] .lp-card .lp-reset {
+  padding: 5px 9px !important;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  font-family: var(--hg-font-mono) !important;
+  font-size: 11px !important;
+  color: var(--hg-dim) !important;
+  opacity: 1 !important;
+}
+
+body[data-hg='page'] .lp-card .lp-reset:hover {
+  border-color: var(--hg-gold-deep);
+  color: var(--hg-gold-light) !important;
+  background: transparent !important;
+}
+
+body[data-hg='page'] .lp-card > p {
+  margin: 14px 0 4px !important;
+  font-size: 14px !important;
+  color: var(--hg-muted) !important;
+}
+
+body[data-hg='page'] .lp-item {
+  gap: 12px !important;
+  padding: 10px 12px !important;
+  border: 0 !important;
+  border-left: 2px solid transparent !important;
+  border-radius: 0 !important;
+}
+
+body[data-hg='page'] .lp-item:hover {
+  background: var(--hg-bg) !important;
+  border-left-color: var(--hg-gold-deep) !important;
+}
+
+body[data-hg='page'] .lp-item[data-current='true'] {
+  background: var(--hg-bg) !important;
+  border-left-color: var(--hg-gold) !important;
+}
+
+body[data-hg='page'] .lp-item .lp-check {
+  width: 19px !important;
+  height: 19px !important;
+  border-radius: 2px !important;
+  font-size: 11px !important;
+}
+
+body[data-hg='page'] .lp-item .lp-no {
+  font-size: 11px !important;
+  color: var(--hg-gold-deep) !important;
+}
+
+body[data-hg='page'] .lp-item .lp-title {
+  font-family: var(--hg-font-body) !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  color: var(--hg-text-body) !important;
+}
+
+body[data-hg='page'] .lp-item .lp-badge {
+  padding: 3px 8px !important;
+  border: 1px solid var(--hg-border);
+  border-radius: 2px;
+  background: var(--hg-bg) !important;
+  font-family: var(--hg-font-body) !important;
+  font-size: 11px !important;
+  color: var(--hg-muted) !important;
+}
+
+body[data-hg='page'] .lp-item .lp-min,
+body[data-hg='page'] .lp-item .lp-next {
+  font-family: var(--hg-font-mono) !important;
+  font-size: 11px !important;
+  color: var(--hg-dim) !important;
+}
+
+body[data-hg='page'] .lp-item[data-current='true'] .lp-next {
+  color: var(--hg-gold) !important;
+}
+
+/* ============================================================ 工作台 ==== */
+/* 终端头：左侧标识 + 右侧全局搜索，压在同一条基准线上 */
+body[data-hg='page'] .qd-term-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 46px;
+  margin: 0 0 14px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid var(--hg-border);
+}
+
+body[data-hg='page'] .qd-term-head .qd-term-id {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 14px;
+  min-width: 0;
+}
+
+body[data-hg='page'] .qd-term-head .qd-term-kicker {
+  font-family: var(--hg-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--hg-gold);
+}
+
+body[data-hg='page'] .qd-term-head .qd-term-sub {
+  font-family: var(--hg-font-body);
+  font-size: 12px;
+  color: var(--hg-dim);
+}
+
+body[data-hg='page'] .qd-term-head .qd-term-sub i {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: var(--hg-gold);
+  vertical-align: 1px;
+}
+
+body[data-hg='page'] .qd-term-head .qd-gsearch {
+  margin-left: 0 !important;
+  width: min(340px, 100%) !important;
+}
+
+/* 模块头：中文标题 + 英文小标 + 右侧说明 */
+body[data-hg='page'] .qd-block {
+  margin: 0 0 22px;
+}
+
+body[data-hg='page'] .qd-block-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 0 0 12px;
+}
+
+body[data-hg='page'] .qd-block-head h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-family: var(--hg-font-display) !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+}
+
+body[data-hg='page'] .qd-block-head h2::before {
+  display: none !important;
+}
+
+body[data-hg='page'] .qd-block-head h2 span {
+  font-family: var(--hg-font-mono) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.16em;
+  color: var(--hg-gold-deep) !important;
+}
+
+body[data-hg='page'] .qd-block-head .qd-block-meta {
+  font-family: var(--hg-font-mono);
+  font-size: 11px;
+  color: var(--hg-dim);
+}
+
+/* 指数带：细边框、统一卡片、时间戳不再独占一行飘着 */
+body[data-hg='page'] .qd-strip {
+  position: relative;
+  gap: 10px !important;
+  margin-bottom: 0 !important;
+}
+
+body[data-hg='page'] .qd-strip-card,
+body[data-hg='page'] .qd-panel,
+body[data-hg='page'] .qd-watch,
+body[data-hg='page'] .qd-side-card {
+  border: 1px solid var(--hg-border) !important;
+  border-radius: 4px !important;
+  background: var(--hg-surface-2) !important;
+}
+
+body[data-hg='page'] .qd-strip-card {
+  padding: 13px 15px !important;
+}
+
+body[data-hg='page'] .qd-nm,
+body[data-hg='page'] .qd-sub,
+body[data-hg='page'] .qd-strip-fresh {
+  font-family: var(--hg-font-body) !important;
+  color: var(--hg-muted) !important;
+}
+
+body[data-hg='page'] .qd-nm {
+  font-size: 12px !important;
+}
+
+body[data-hg='page'] .qd-px {
+  font-family: var(--hg-font-mono) !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  color: var(--hg-text) !important;
+}
+
+body[data-hg='page'] .qd-right {
+  font-family: var(--hg-font-mono) !important;
+  font-size: 12px !important;
+}
+
+body[data-hg='page'] .qd-strip-fresh {
+  grid-column: 1 / -1;
+  margin-top: 0 !important;
+  padding-top: 2px;
+  font-family: var(--hg-font-mono) !important;
+  font-size: 11px !important;
+  text-align: right;
+  color: var(--hg-dim) !important;
+}
+
+/* 三栏工作区：统一间距与面板标题 */
+body[data-hg='page'] .qd-grid {
+  gap: 12px !important;
+  grid-template-columns: clamp(220px, 17vw, 280px) minmax(0, 1fr) clamp(268px, 20vw, 340px) !important;
+}
+
+body[data-hg='page'] .qd-watch-head {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--hg-border);
+}
+
+body[data-hg='page'] .qd-wh-title,
+body[data-hg='page'] .qd-side-card h3 {
+  font-family: var(--hg-font-body) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em;
+  color: var(--hg-text) !important;
+}
+
+body[data-hg='page'] .qd-side-card h3 {
+  margin-bottom: 12px !important;
+}
+
+body[data-hg='page'] .qd-side-card {
+  padding: 15px 16px !important;
+}
+
+body[data-hg='page'] .qd-side {
+  gap: 12px !important;
+}
+
+body[data-hg='page'] .qd-side-card .qd-badge {
+  font-family: var(--hg-font-mono) !important;
+  font-size: 10px !important;
+}
+
+body[data-hg='page'] .qd-kv,
+body[data-hg='page'] .qd-poslbl,
+body[data-hg='page'] .qd-vsub,
+body[data-hg='page'] .qd-gauge-lbl {
+  font-family: var(--hg-font-body) !important;
+  font-size: 12px !important;
+}
+
+body[data-hg='page'] .qd-kv .k,
+body[data-hg='page'] .qd-poslbl,
+body[data-hg='page'] .qd-gauge-lbl {
+  color: var(--hg-muted) !important;
+}
+
+body[data-hg='page'] .qd-kv .v,
+body[data-hg='page'] .qd-poslbl .num,
+body[data-hg='page'] .qd-gauge-lbl .num {
+  font-family: var(--hg-font-mono) !important;
+  color: var(--hg-text) !important;
+}
+
+body[data-hg='page'] .qd-phead .nm {
+  font-family: var(--hg-font-display) !important;
+  font-size: 17px !important;
+  color: var(--hg-text) !important;
+}
+
+body[data-hg='page'] .qd-phead .cd,
+body[data-hg='page'] .qd-phead .bigpx,
+body[data-hg='page'] .qd-phead .bigchg,
+body[data-hg='page'] .qd-pdate {
+  font-family: var(--hg-font-mono) !important;
+}
+
+body[data-hg='page'] .qd-toolbar button,
+body[data-hg='page'] .qd-sort,
+body[data-hg='page'] .qd-gs-kbd {
+  font-family: var(--hg-font-body) !important;
+  font-size: 12px !important;
+}
+
+body[data-hg='page'] .qd-note {
+  margin: 18px 0 0;
+  padding: 14px 16px;
+  border-left: 2px solid var(--hg-gold-deep);
+  background: var(--hg-surface-2);
+  font-family: var(--hg-font-body) !important;
+  font-size: 12px !important;
+  line-height: 1.8;
+  color: var(--hg-muted) !important;
+}
+
+body[data-hg='page'] .qd-note code {
+  font-family: var(--hg-font-mono) !important;
+  font-size: 11px !important;
+}
+
+/* 无目录的内页不需要侧栏切换按钮：窄屏下它会悬浮遮挡内容 */
+body[data-hg='page']:has(#sidebar:not(:has(*))) #sidebar-btn {
+  display: none !important;
+}
+
+/* ------------------------------------------------------------- 响应式 -- */
+@media (max-width: 1180px) {
+  body[data-hg='page'] .hg-linksec .hg-linkgrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  body[data-hg='page'] dl.hg-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  body[data-hg='page'] .qd-term-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  body[data-hg='page'] .qd-term-head .qd-gsearch {
+    width: 100% !important;
+  }
+  body[data-hg='page'] .qd-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body[data-hg='page'] #content h2 {
+    font-size: 23px !important;
+    margin-top: 40px;
+  }
+  body[data-hg='page'] .hg-linksec .hg-linkgrid {
+    grid-template-columns: 1fr;
+  }
+  body[data-hg='page'] .lp-card {
+    padding: 18px 14px !important;
+  }
+  body[data-hg='page'] .lp-item .lp-title {
+    font-size: 14px !important;
+  }
+}

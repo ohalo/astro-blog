@@ -17,12 +17,6 @@ const { locale = 'zh' } = Astro.props
 const d = dict(locale)
 const L = d.learn
 
-const DIFF_EMOJI: Record<string, string> = {
-  beginner: '🌱',
-  intermediate: '📈',
-  advanced: '🚀'
-}
-
 const byId = new Map((await getCollection('blog')).map((p) => [p.id, p]))
 
 const paths = learningPaths
@@ -56,7 +50,7 @@ const totalMinutes = paths.reduce((n, p) => n + p.posts.reduce((m, x) => m + x.m
 const totalDays = Math.max(1, Math.round(totalMinutes / 45))
 ---
 
-<p class='text-muted-foreground'>
+<p class='hg-learn-intro text-muted-foreground'>
   {fill(L.subtitle, {
     paths: paths.length,
     posts: totalPosts,
@@ -66,7 +60,7 @@ const totalDays = Math.max(1, Math.round(totalMinutes / 45))
 </p>
 
 <div class='mt-4 sm:mt-6 flex flex-col gap-4 sm:gap-6'>
-  {paths.map((path) => (
+  {paths.map((path, pi) => (
     <section
       id={path.id}
       class='lp-card rounded-2xl border bg-background px-4 py-3 sm:px-6 sm:py-5'
@@ -74,8 +68,9 @@ const totalDays = Math.max(1, Math.round(totalMinutes / 45))
       data-all-done={L.allDone}
     >
       <header class='flex flex-wrap items-center gap-x-3 gap-y-2'>
-        <h2 class='text-lg font-semibold sm:text-xl'>
-          {path.emoji} {path.name}
+        <h2>
+          <span class='hg-path-no'>{String(pi + 1).padStart(2, '0')}</span>
+          <span class='hg-path-name'>{path.name}</span>
         </h2>
         <span class='lp-count text-sm text-muted-foreground' aria-live='polite'></span>
         <div class='lp-bar-track order-last h-1.5 w-full overflow-hidden rounded-full sm:order-none sm:w-40'>
@@ -93,7 +88,6 @@ const totalDays = Math.max(1, Math.round(totalMinutes / 45))
 
       <ol class='mt-3 flex list-none flex-col gap-1.5 p-0'>
         {path.posts.map((post, i) => {
-          const diff = post.difficulty ? DIFF_EMOJI[post.difficulty] : undefined
           const diffText = post.difficulty ? L[post.difficulty] : undefined
           return (
             <li
@@ -118,9 +112,9 @@ const totalDays = Math.max(1, Math.round(totalMinutes / 45))
               >
                 {post.title}
               </a>
-              {diff && (
-                <span class='lp-badge hidden shrink-0 rounded-full px-2 py-0.5 text-xs sm:inline'>
-                  {diff} {diffText}
+              {diffText && (
+                <span class='lp-badge hidden shrink-0 sm:inline'>
+                  {diffText}
                 </span>
               )}
               <span class='lp-min hidden shrink-0 text-xs text-muted-foreground sm:inline tabular-nums'>

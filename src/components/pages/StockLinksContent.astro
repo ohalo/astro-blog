@@ -21,10 +21,10 @@ const d = dict(locale)
 const categories = locale === 'en' ? stockLinkCategoriesEn : stockLinkCategories
 const statsData = locale === 'en' ? stockLinkStatsEn : stockLinkStats
 
-const headings = categories.map((c) => ({
+const headings = categories.map((c, i) => ({
   depth: 2,
   slug: c.id,
-  text: `${c.emoji} ${c.name}`
+  text: `${String(i + 1).padStart(2, '0')} ${c.name}`
 }))
 
 const allLinks = categories.flatMap((c) => c.links)
@@ -56,25 +56,22 @@ const hostOf = (url: string) => {
   })}
 </p>
 
-<dl class='not-prose my-6 grid grid-cols-2 gap-3 sm:grid-cols-4'>
+<dl class='hg-stats not-prose my-6 grid grid-cols-2 gap-3 sm:grid-cols-4'>
   {
     stats.map((s) => (
-      <div class='rounded-2xl border bg-muted px-4 py-3'>
-        <dt class='text-sm text-muted-foreground'>{s.label}</dt>
-        <dd class='mt-0.5 text-2xl font-medium text-primary'>{s.value}</dd>
+      <div>
+        <dt>{s.label}</dt>
+        <dd>{s.value}</dd>
       </div>
     ))
   }
 </dl>
 
-<div class='not-prose mb-5 flex flex-wrap gap-2'>
+<div class='hg-linkchips not-prose mb-5 flex flex-wrap gap-2'>
   {
-    categories.map((c) => (
-      <a
-        href={`#${c.id}`}
-        class='inline-flex items-center gap-1.5 rounded-xl border bg-muted px-2.5 py-1 text-sm text-muted-foreground no-underline transition-colors hover:bg-card hover:text-primary'
-      >
-        <span>{c.emoji}</span>
+    categories.map((c, i) => (
+      <a href={`#${c.id}`}>
+        <span class='hg-chip-no'>{String(i + 1).padStart(2, '0')}</span>
         <span>{c.name}</span>
         <span class='text-xs opacity-70'>{c.links.length}</span>
       </a>
@@ -82,28 +79,26 @@ const hostOf = (url: string) => {
   }
 </div>
 
-<div class='not-prose mb-8'>
+<div class='hg-linksearch not-prose mb-8'>
   <input
     id='link-search'
     type='search'
     placeholder={d.links.searchPlaceholder}
     autocomplete='off'
-    class='w-full rounded-xl border bg-muted px-4 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary'
   />
-  <p id='link-match-count' class='mt-1.5 text-xs text-muted-foreground'></p>
+  <p id='link-match-count' class='mt-1.5 text-xs'></p>
 </div>
 
 {
-  categories.map((cat) => (
-    <section class='mt-10 first:mt-8' id={`section-${cat.id}`} data-link-section>
-      <h2 id={cat.id} class='flex items-center gap-2'>
-        {cat.emoji} {cat.name}
-        <span class='rounded-lg bg-muted px-2 py-0.5 text-sm font-normal text-muted-foreground'>
-          {cat.links.length}
-        </span>
+  categories.map((cat, ci) => (
+    <section class='hg-linksec mt-10 first:mt-8' id={`section-${cat.id}`} data-link-section>
+      <h2 id={cat.id}>
+        <span class='hg-sec-no'>{String(ci + 1).padStart(2, '0')}</span>
+        <span class='hg-sec-name'>{cat.name}</span>
+        <span class='hg-sec-count'>{String(cat.links.length).padStart(2, '0')} ITEMS</span>
       </h2>
-      <p class='text-muted-foreground'>{cat.desc}</p>
-      <div class='not-prose mt-4 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3'>
+      <p>{cat.desc}</p>
+      <div class='hg-linkgrid not-prose mt-4 grid gap-2.5'>
         {cat.links.map((l) => (
           <a
             href={l.url}
@@ -111,20 +106,14 @@ const hostOf = (url: string) => {
             rel='noopener noreferrer'
             data-link-card
             data-name={`${l.name} ${l.desc} ${hostOf(l.url)}`}
-            class='group flex flex-col gap-0.5 rounded-2xl border bg-background px-4 py-3 no-underline transition-colors hover:bg-muted'
+            class='hg-linkcard'
           >
-            <div class='flex items-center justify-between gap-2'>
-              <span class='font-medium text-foreground transition-colors group-hover:text-primary'>
-                {l.name}
-              </span>
-              {l.badge && (
-                <span class='shrink-0 rounded-md border bg-muted px-1.5 py-0.5 text-xs text-muted-foreground'>
-                  {l.badge}
-                </span>
-              )}
+            <div class='hg-linktop'>
+              <span class='hg-linkname'>{l.name}</span>
+              {l.badge && <span class='hg-linkbadge'>{l.badge}</span>}
             </div>
-            <span class='truncate text-xs text-muted-foreground/70'>{hostOf(l.url)}</span>
-            <span class='text-sm text-muted-foreground'>{l.desc}</span>
+            <span class='hg-linkhost'>{hostOf(l.url)}</span>
+            <span class='hg-linkdesc'>{l.desc}</span>
           </a>
         ))}
       </div>

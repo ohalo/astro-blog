@@ -16,21 +16,33 @@ const desc = '实时量化复盘工作台：指数行情带、自选异动、六
 ---
 
 <DashLayout meta={{ title, description: desc }}>
-  <div class='qd-head'>
-    <div class='qd-head-l'>
-      <h1 class='qd-title'>{title}</h1>
-      <span class='qd-tag'>实时复盘 · 腾讯行情（serverless 代理）</span>
+  <div class='qd-term-head'>
+    <div class='qd-term-id'>
+      <span class='qd-term-kicker'>Quant Research Terminal</span>
+      <span class='qd-term-sub'><i></i>实时行情 · 腾讯行情 serverless 代理</span>
     </div>
     <StockSearch />
   </div>
 
-  <MarketStrip />
+  <section class='qd-block'>
+    <div class='qd-block-head'>
+      <h2>指数行情带 <span>INDEX STRIP</span></h2>
+      <span class='qd-block-meta'>5 大核心指数 · 30s 轮询</span>
+    </div>
+    <MarketStrip />
+  </section>
 
-  <div class='qd-grid'>
-    <WatchList />
-    <ChartPanel initialCode='600519' />
-    <SidePanels />
-  </div>
+  <section class='qd-block'>
+    <div class='qd-block-head'>
+      <h2>个股复盘 <span>WORKSPACE</span></h2>
+      <span class='qd-block-meta'>自选 · K线 · 量化画像 三栏联动</span>
+    </div>
+    <div class='qd-grid'>
+      <WatchList />
+      <ChartPanel initialCode='600519' />
+      <SidePanels />
+    </div>
+  </section>
 
   <PipelineBar />
 
