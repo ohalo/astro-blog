@@ -24,12 +24,12 @@ const headings = [
 ]
 ---
 
-<p>{d.about.intro}</p>
-<p>{d.about.motto}</p>
+<p class='hg-about-lead'>{d.about.intro}</p>
+<blockquote class='hg-about-motto'>{d.about.motto.replace(/^Motto:\s*/, '')}</blockquote>
 
 {/* hobbies */}
 <h2 id='hobbies'>{d.about.hobbies}</h2>
-<ul>
+<ul class='hg-about-chips'>
   {d.about.hobbiesItems.map((item) => (
     <li>{item}</li>
   ))}

@@ -1,0 +1,297 @@
+/* ==========================================================================
+ * BLACK & GOLD — 内页重设计 v3
+ * --------------------------------------------------------------------------
+ * 归档页（年份锚点 + 统计条）、政策页（四卡网格）、关于页（lead/座右铭/兴趣
+ * 标签）、学习路线（路径卡顶部金线）。只作用于 frame='page' 的内页。
+ * 加载顺序：... → blackgold-refine.css → 本文件（最后，优先级最高）
+ * ========================================================================== */
+
+/* ======================================================== 归档页 ======== */
+body[data-hg='page'] .hg-arc-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  align-items: center;
+  gap: 16px;
+  min-height: 86px;
+  margin: 30px 0 0;
+  padding: 16px 28px;
+  border: 1px solid var(--hg-border);
+  border-radius: var(--hg-radius);
+  background: var(--hg-surface-2);
+}
+
+body[data-hg='page'] .hg-arc-stat-n {
+  font-family: var(--hg-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 28px;
+  line-height: 1.15;
+  color: var(--hg-gold);
+}
+
+body[data-hg='page'] .hg-arc-stat-l {
+  margin-top: 6px;
+  font-family: var(--hg-font-body);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--hg-muted);
+}
+
+body[data-hg='page'] .hg-arc-stats-note {
+  max-width: 260px;
+  font-family: var(--hg-font-body);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--hg-dim);
+  text-align: right;
+}
+
+body[data-hg='page'] nav.hg-arc-years {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 26px;
+  margin: 34px 0 8px;
+  padding: 0 0 12px;
+}
+
+body[data-hg='page'] .hg-arc-year {
+  position: relative;
+  font-family: var(--hg-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 16px;
+  letter-spacing: 0.08em;
+  color: var(--hg-gold-deep);
+  text-decoration: none !important;
+  transition: color 0.18s ease;
+}
+
+body[data-hg='page'] .hg-arc-year:hover,
+body[data-hg='page'] .hg-arc-year.is-active {
+  color: var(--hg-gold-light) !important;
+}
+
+body[data-hg='page'] .hg-arc-year.is-active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -12px;
+  height: 2px;
+  background: var(--hg-gold);
+}
+
+body[data-hg='page'] section.hg-arc-group {
+  scroll-margin-top: 110px;
+  margin-top: 38px;
+}
+
+body[data-hg='page'] .hg-arc-group-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 0 0 6px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid var(--hg-border);
+}
+
+body[data-hg='page'] .hg-arc-group-head h2 {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  font-family: var(--hg-font-mono) !important;
+  font-size: 26px !important;
+  font-weight: 600 !important;
+  line-height: 1.1;
+  color: var(--hg-gold-light) !important;
+}
+
+body[data-hg='page'] .hg-arc-group-head h2::before {
+  display: none !important;
+}
+
+body[data-hg='page'] .hg-arc-group-head .hg-arc-count {
+  font-family: var(--hg-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--hg-dim);
+}
+
+/* ======================================================== 政策页 ======== */
+body[data-hg='page'] p.hg-policy-lead {
+  max-width: 82ch;
+}
+
+body[data-hg='page'] .hg-policy-tag {
+  display: inline-block;
+  margin: 4px 0 8px;
+  font-family: var(--hg-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--hg-gold);
+}
+
+body[data-hg='page'] .hg-policy-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 22px;
+}
+
+body[data-hg='page'] a.hg-policy-card {
+  display: block;
+  min-height: 212px;
+  padding: 24px 26px;
+  border: 1px solid var(--hg-border) !important;
+  border-radius: var(--hg-radius) !important;
+  background: var(--hg-surface-2) !important;
+  text-decoration: none !important;
+  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+body[data-hg='page'] a.hg-policy-card:hover {
+  border-color: var(--hg-gold) !important;
+  background: var(--hg-surface-gold) !important;
+  transform: translateY(-2px);
+}
+
+body[data-hg='page'] .hg-policy-card .hg-policy-no {
+  font-family: var(--hg-font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 34px;
+  line-height: 1;
+  color: var(--hg-gold-deep);
+}
+
+body[data-hg='page'] .hg-policy-card .hg-policy-title {
+  display: block;
+  margin: 18px 0 10px;
+  font-family: var(--hg-font-display);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--hg-text) !important;
+}
+
+body[data-hg='page'] .hg-policy-card .hg-policy-desc {
+  display: block;
+  font-family: var(--hg-font-body);
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--hg-muted) !important;
+}
+
+body[data-hg='page'] .hg-policy-card .hg-policy-cta {
+  display: block;
+  margin-top: 18px;
+  font-family: var(--hg-font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--hg-gold) !important;
+}
+
+/* 政策详情页：title 用 display 字体，正文限宽 */
+body[data-hg='page'] #content > p {
+  max-width: 82ch;
+}
+
+body[data-hg='page'] #content h2.hg-doc-h2 {
+  margin-top: 30px;
+}
+
+/* ======================================================== 关于页 ======== */
+body[data-hg='page'] #content > p.hg-about-lead {
+  max-width: 100%;
+  margin: 30px 0 18px !important;
+  font-family: var(--hg-font-display) !important;
+  font-size: 23px !important;
+  font-weight: 500 !important;
+  line-height: 1.55 !important;
+  color: var(--hg-text) !important;
+}
+
+body[data-hg='page'] blockquote.hg-about-motto {
+  display: flex;
+  align-items: center;
+  min-height: 60px;
+  margin: 0 0 40px !important;
+  padding: 0 0 0 22px !important;
+  border: 0 !important;
+  border-left: 3px solid var(--hg-gold) !important;
+  border-radius: 0 !important;
+  background: var(--hg-surface-2) !important;
+  font-family: var(--hg-font-mono) !important;
+  font-size: 16px !important;
+  letter-spacing: 0.02em;
+  color: var(--hg-gold) !important;
+}
+
+body[data-hg='page'] blockquote.hg-about-motto::before {
+  display: none !important;
+}
+
+body[data-hg='page'] ul.hg-about-chips {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0 36px !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+body[data-hg='page'] ul.hg-about-chips > li {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 15px;
+  border: 1px solid var(--hg-border);
+  border-radius: 2px;
+  background: var(--hg-surface-2);
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--hg-text-body) !important;
+}
+
+body[data-hg='page'] ul.hg-about-chips > li::before {
+  display: none !important;
+}
+
+/* ==================================================== 学习路线页 ======== */
+body[data-hg='page'] .lp-card {
+  border-top: 2px solid var(--hg-gold-deep) !important;
+}
+
+body[data-hg='page'] .lp-card header {
+  padding-top: 2px;
+}
+
+/* ------------------------------------------------------------- 响应式 -- */
+@media (max-width: 900px) {
+  body[data-hg='page'] .hg-arc-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 20px 22px;
+  }
+  body[data-hg='page'] .hg-arc-stats-note {
+    display: none;
+  }
+  body[data-hg='page'] .hg-policy-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  body[data-hg='page'] .hg-arc-stat-n {
+    font-size: 23px;
+  }
+  body[data-hg='page'] nav.hg-arc-years {
+    gap: 18px;
+  }
+  body[data-hg='page'] .hg-arc-year {
+    font-size: 14px;
+  }
+  body[data-hg='page'] #content > p.hg-about-lead {
+    font-size: 20px !important;
+  }
+  body[data-hg='page'] a.hg-policy-card {
+    padding: 20px;
+    min-height: 190px;
+  }
+}

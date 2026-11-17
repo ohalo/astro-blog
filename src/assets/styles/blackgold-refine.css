@@ -15,9 +15,17 @@ body[data-hg='page'] {
 }
 
 /* 统一页头已经接管标题与统计，旧 content-header 里的 h1 / views 行全部收掉 */
-body[data-hg='page'] #content-header > h1,
-body[data-hg='page'] #content-header > div {
+body[data-hg='page'] #content-header > h1:not(.hg-doc-title),
+body[data-hg='page'] #content-header > div:not(:has(.hg-doc-title)) {
   display: none !important;
+}
+/* 文档详情页（条款等）：保留自身标题，去掉 description 的斜体引用块 */
+body[data-hg='page'] #content-header:has(.hg-doc-title) {
+  padding-top: 34px;
+  border-bottom: 1px solid var(--hg-border-hair);
+}
+body[data-hg='page'] #content-header h1.hg-doc-title {
+  display: block !important;
 }
 
 body[data-hg='page'] #content {

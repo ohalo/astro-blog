@@ -1,10 +1,34 @@
 ---
 layout: '@/layouts/IndividualPage.astro'
 
-title: 'Privacy Policy'
-description: 'Effective date: 2024-11-26'
-language: 'En'
-back: '/terms/list'
+title: '隐私政策'
+description: '本站收集哪些数据以及如何使用'
+language: 'Zh'
+back: '/terms'
 ---
 
-It may be recommended to generate policies from [PolicyMaker.io](https://policymaker.io).
+本站重视读者隐私。本政策说明站点运行过程中涉及的数据收集与使用方式。
+
+## 我们收集的数据
+
+- **访问统计**：站点使用 Supabase 等统计服务记录匿名访问数据（如页面浏览量、来源、大致地区），不关联你的真实身份。
+- **评论数据**：若你使用 Waline 评论功能，你提交的昵称、邮箱与评论内容会存储在评论服务中，用于展示与回复。
+- **本地进度**：学习路线的勾选进度仅保存在你浏览器的 localStorage 中，不上传服务器，不跨设备同步。
+
+## 我们不做的事
+
+- 不使用 Cookie 追踪个人身份，不构建用户画像。
+- 不向第三方出售或出租个人信息。
+- 不收集与站点功能无关的敏感信息。
+
+## 第三方服务
+
+评论、统计与分析由第三方服务提供，它们可能按各自政策处理数据。请参考对应服务的隐私说明。
+
+## 数据删除
+
+如需删除你的评论或相关数据，请通过站点留言联系我们，我们会尽快处理。
+
+## 生效日期
+
+本政策自 2024-11-26 起生效，如有更新以本页最新内容为准。

@@ -1,10 +1,33 @@
 ---
 layout: '@/layouts/IndividualPage.astro'
 
-title: 'Terms and Conditions'
-description: 'Last updated: 2024-11-26'
-language: 'En'
-back: '/terms/list'
+title: '使用条款'
+description: '访问与使用本站的基本规则'
+language: 'Zh'
+back: '/terms'
 ---
 
-It may be recommended to generate policies from [PolicyMaker.io](https://policymaker.io).
+访问与使用本站，即表示你同意以下条款。
+
+## 基本规则
+
+- 遵守所在地区的法律法规，不得利用本站从事违法活动。
+- 尊重原创内容，转载与引用请注明出处，详见版权声明。
+- 不得对站点进行攻击、抓取滥用或干扰正常运行的行为。
+
+## 评论与互动
+
+- 评论请围绕主题，保持友善，禁止人身攻击、广告灌水与违法内容。
+- 我们会删除违规评论，并保留限制重复违规者互动的权利。
+
+## 友链申请
+
+申请友情链接请通过站点留言或提交 PR，并提供站点名称、地址与简介。本站保留审核与拒绝的权利，通常要求站点内容原创、可正常访问且不涉及违法内容。
+
+## 内容变更
+
+本站可随时修改、暂停或下线部分内容，恕不另行通知。文章如有更新，以页面最新内容为准。
+
+## 生效日期
+
+本条款自 2024-11-26 起生效，如有更新以本页最新内容为准。

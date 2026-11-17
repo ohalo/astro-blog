@@ -1,7 +1,6 @@
 ---
 import { PostPreview } from 'astro-pure/components/pages'
 import { getBlogCollection, groupCollectionsByYear, sortMDByDate } from 'astro-pure/server'
-import { Button } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
 
 export const prerender = true
@@ -14,39 +13,60 @@ const meta = {
   description: '按日期浏览所有文章',
   title: '归档'
 }
+
+const total = allPosts.length
+const yearCount = allPostsByYear.length
+const latest = allPostsByDate[0]?.data?.publishDate
+const latestStr = latest
+  ? new Date(latest).toISOString().slice(0, 10).replaceAll('-', '.')
+  : '—'
+const years = allPostsByYear.map(([year]) => String(year))
 ---
 
 <PageLayout {meta}>
-  <Button title='返回' href='/blog' variant='back' />
+  <main>
+    <div id='content' class='animate' aria-label='Blog post list'>
+      <div class='hg-arc-stats'>
+        <div class='hg-arc-stat'>
+          <div class='hg-arc-stat-n'>{total.toLocaleString('en-US')}</div>
+          <div class='hg-arc-stat-l'>篇研究文章</div>
+        </div>
+        <div class='hg-arc-stat'>
+          <div class='hg-arc-stat-n'>{yearCount}</div>
+          <div class='hg-arc-stat-l'>个年份跨度</div>
+        </div>
+        <div class='hg-arc-stat'>
+          <div class='hg-arc-stat-n'>{latestStr}</div>
+          <div class='hg-arc-stat-l'>最近更新</div>
+        </div>
+        <div class='hg-arc-stats-note'>全部文章按发布时间倒序排列</div>
+      </div>
 
-  <main class='mt-6 lg:mt-10'>
-    <div id='content-header' class='animate'>
-      <h1 class='mb-6 text-3xl font-medium'>归档</h1>
-    </div>
+      <nav class='hg-arc-years' aria-label='按年份跳转'>
+        {years.map((year, i) => (
+          <a href={`#year-${year}`} class:list={['hg-arc-year', i === 0 && 'is-active']}>
+            {year}
+          </a>
+        ))}
+      </nav>
 
-    {allPosts.length === 0 && <p>暂无文章。</p>}
+      {allPosts.length === 0 && <p>暂无文章。</p>}
 
-    <section id='content' class='animate' aria-label='Blog post list'>
       {
         allPostsByYear.map(([year, posts]) => (
-          <div class='relative mt-20'>
-            <h2
-              class='absolute -start-6 -top-16 z-0 text-9xl font-bold text-transparent opacity-12 dark:opacity-25'
-              style='-webkit-text-stroke-width:2px;-webkit-text-stroke-color:hsl(var(--foreground)/var(--un-text-opacity))'
-            >
-              <samp>{year}</samp>
-            </h2>
-            <p class='px-5 text-muted-foreground'>
-              {posts.length} 篇文章
-            </p>
+          <section class='hg-arc-group' id={`year-${year}`}>
+            <div class='hg-arc-group-head'>
+              <h2>{year}</h2>
+              <span class='hg-arc-count'>{posts.length} 篇文章</span>
+            </div>
             <ul class='flex flex-col text-start'>
               {posts.map((p) => (
                 <PostPreview post={p} class='border-0 bg-transparent py-2' />
               ))}
             </ul>
-          </div>
+          </section>
         ))
       }
-    </section>
+    </div>
   </main>
 </PageLayout>

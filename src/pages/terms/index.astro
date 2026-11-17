@@ -1,9 +1,6 @@
 ---
-import { Button, CardList } from 'astro-pure/user'
-import { cn } from 'astro-pure/utils'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import { dict, getLocale } from '@/i18n'
-import { integ, terms } from '@/site-config'
 
 const locale = getLocale(Astro.url.pathname)
 const d = dict(locale)
@@ -12,18 +9,85 @@ const meta = {
   title: d.terms.title,
   description: d.terms.intro
 }
+
+const policies = [
+  {
+    no: '01',
+    href: '/terms/copyright',
+    zh: {
+      title: '版权声明',
+      desc: '本站原创文章的版权归属与转载、引用规范。默认允许注明出处的非商业转载。'
+    },
+    en: {
+      title: 'Copyright',
+      desc: 'Ownership and reuse rules for original articles. Non-commercial reuse with attribution is permitted by default.'
+    }
+  },
+  {
+    no: '02',
+    href: '/terms/disclaimer',
+    zh: {
+      title: '免责声明',
+      desc: '内容仅供学习交流，不构成任何投资建议。量化研究结论不保证收益，据此操作风险自担。'
+    },
+    en: {
+      title: 'Disclaimer',
+      desc: 'Content is for learning and discussion only, not investment advice. Research results guarantee no returns.'
+    }
+  },
+  {
+    no: '03',
+    href: '/terms/privacy-policy',
+    zh: {
+      title: '隐私政策',
+      desc: '站点统计与评论服务收集哪些数据、如何使用。不追踪个人身份，不向第三方出售信息。'
+    },
+    en: {
+      title: 'Privacy Policy',
+      desc: 'What data analytics and comment services collect and how it is used. No personal tracking, no data sales.'
+    }
+  },
+  {
+    no: '04',
+    href: '/terms/terms-and-conditions',
+    zh: {
+      title: '使用条款',
+      desc: '访问与使用本站的基本规则、外链说明。评论与友链申请需遵守社区约定。'
+    },
+    en: {
+      title: 'Terms and Conditions',
+      desc: 'Basic rules for accessing and using this site, external links, and community norms for comments and link requests.'
+    }
+  }
+]
+
+const t = locale === 'en' ? 'en' : 'zh'
+const readMore = locale === 'en' ? 'Read document  →' : '阅读文档  →'
+const tagline = locale === 'en'
+  ? 'NEW — 1 isolated link → 4 complete policy cards'
+  : 'NEW — 从 1 个孤立链接到 4 张完整政策卡'
 ---
 
 <PageLayout {meta}>
-  <Button title={d.common.back} href='/' variant='back' />
-  <main class='mt-6 lg:mt-10'>
-    <div id='content-header' class='animate'>
-      <h1 class='mb-6 text-3xl font-medium'>{d.terms.title}</h1>
-    </div>
+  <main>
+    <div id='content'>
+      <p class='hg-policy-lead'>
+        {d.terms.intro}以下文档说明内容的版权归属、使用边界与数据处理方式。
+      </p>
+      <span class='hg-policy-tag'>{tagline}</span>
 
-    <div id='content' class={cn('animate mt-8 max-w-none md:min-w-[45ch]', integ.typography.class)}>
-      <h2 class='text-xl font-medium'>{d.terms.intro}</h2>
-      <CardList {...terms[locale]} />
+      <div class='hg-policy-grid'>
+        {
+          policies.map((p) => (
+            <a class='hg-policy-card' href={p.href}>
+              <span class='hg-policy-no'>{p.no}</span>
+              <span class='hg-policy-title'>{p[t].title}</span>
+              <span class='hg-policy-desc'>{p[t].desc}</span>
+              <span class='hg-policy-cta'>{readMore}</span>
+            </a>
+          ))
+        }
+      </div>
     </div>
   </main>
 </PageLayout>
