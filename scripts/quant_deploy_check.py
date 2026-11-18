@@ -3,7 +3,7 @@
 
 处理 Vercel 部署的几个已知坑：
   - 部署延迟 3–6 分钟才全量生效；
-  - 专栏页是 ~1.5MB 单行 HTML，不能用 grep 中文标题（会误判）；
+  - 专栏页是 ~640KB 单行 HTML，不能用 grep 中文标题（会误判）；
   - 文章页 URL 返回 308 尾斜杠重定向，必须跟随；
   - CDN 缓存顽固，?cb= 时间戳可能被忽略，必须用 no-cache 强制回源；
   - 强制回源首轮拿到 MISS 后，后续轮次 HIT 属正常，判定条件是
@@ -37,7 +37,9 @@ def check_once(slugs):
     status, headers, data = fetch(f"{BASE}/quant-column")
     qc_ok = status == 200
     qc_text = data.decode("utf-8", "ignore")
-    links_ok = all(f"/blog/{s}/" in qc_text for s in slugs)
+    # 站点 trailingSlash: 'never'，专栏页内嵌 JSON 的链接形如 "/blog/{slug}"（无尾斜杠）。
+    # 旧版查 "/blog/{slug}/" 永远命中 0 次，导致校验假失败空耗 600s。
+    links_ok = all(f'"/blog/{s}"' in qc_text for s in slugs)
     lm = headers.get("Last-Modified", "")
 
     # 文章页（跟随 308 重定向）

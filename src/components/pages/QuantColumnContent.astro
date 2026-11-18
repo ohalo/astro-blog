@@ -123,6 +123,16 @@ const items = quantPosts.map((p) => ({
 }))
 const jsonSafe = JSON.stringify(items).replace(/</g, '\\u003c')
 
+// 客户端脚本文案：随 locale 注入，避免 /en/ 页面一交互就变回中文
+const uiText = {
+  labels: levelLabel,
+  noteWord: t('篇', 'notes'),
+  empty: t('没有匹配的文章，换个关键词试试。', 'No matching articles. Try another keyword.'),
+  next: t('下一页 →', 'Next →'),
+  resultFmt: t('共 {n} 篇 · 按发布日期倒序', '{n} notes · newest first')
+}
+const uiTextSafe = JSON.stringify(uiText).replace(/</g, '\\u003c')
+
 const counts = {
   all: quantPosts.length,
   beginner: quantPosts.filter((p) => p.data.difficulty === 'beginner').length,
@@ -343,6 +353,12 @@ const firstPage = items.slice(0, PER_PAGE)
     is:inline
     set:html={jsonSafe}
   ></script>
+  <script
+    type='application/json'
+    id='hg-quant-i18n'
+    is:inline
+    set:html={uiTextSafe}
+  ></script>
 
   <noscript>
     <p style='padding:0 6rem 3rem;color:#8e8a80;font-size:13px'>
@@ -360,13 +376,32 @@ const firstPage = items.slice(0, PER_PAGE)
   const countEl = document.getElementById('hg-toolbar-count')
   const searchEl = document.getElementById('hg-search-input') as HTMLInputElement | null
 
-  const labels: Record<string, string> = {
-    beginner: '入门',
-    intermediate: '进阶',
-    advanced: '高阶',
-    none: '未分级'
+  // 文案由服务端按 locale 注入（见 #hg-quant-i18n），确保 /en/ 页交互后仍是英文
+  type UIText = {
+    labels: Record<string, string>
+    noteWord: string
+    empty: string
+    next: string
+    resultFmt: string
   }
-  const noteWord = '篇'
+  // 兜底用中性英文：#hg-quant-i18n 由服务端无条件注入，正常路径必然覆盖它；
+  // 这里只防 JSON 解析失败，且不能让 /en/ 产物残留中文。
+  const defaults: UIText = {
+    labels: { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced', none: 'Unleveled' },
+    noteWord: 'notes',
+    empty: 'No matching articles. Try another keyword.',
+    next: 'Next →',
+    resultFmt: '{n} notes · newest first'
+  }
+  let ui: UIText = defaults
+  try {
+    const raw = JSON.parse(document.getElementById('hg-quant-i18n')?.textContent || 'null')
+    if (raw && typeof raw === 'object') ui = { ...defaults, ...raw }
+  } catch {
+    ui = defaults
+  }
+  const labels = ui.labels
+  const noteWord = ui.noteWord
 
   type Item = { t: string; d: string; u: string; date: string; level: string; topic: string; tags: string }
   let items: Item[] = []
@@ -414,7 +449,7 @@ const firstPage = items.slice(0, PER_PAGE)
             </article>`
           )
           .join('')
-      : '<p class="hg-empty">没有匹配的文章，换个关键词试试。</p>'
+      : `<p class="hg-empty">${esc(ui.empty)}</p>`
 
     const nums: (number | string)[] = []
     for (let p = 1; p <= pages; p++) {
@@ -431,10 +466,10 @@ const firstPage = items.slice(0, PER_PAGE)
     pagerEl.innerHTML =
       `<button type="button" data-step="prev" ${state.page === 1 ? 'disabled' : ''}>←</button>` +
       numsHtml +
-      `<button type="button" data-step="next" class="hg-pager__label" ${state.page === pages ? 'disabled' : ''}>下一页 →</button>`
+      `<button type="button" data-step="next" class="hg-pager__label" ${state.page === pages ? 'disabled' : ''}>${esc(ui.next)}</button>`
 
     if (resultEl) {
-      resultEl.textContent = `共 ${list.length.toLocaleString('en-US')} ${noteWord} · 按发布日期倒序`
+      resultEl.textContent = ui.resultFmt.replace('{n}', list.length.toLocaleString('en-US'))
     }
     if (countEl) countEl.textContent = `${list.length.toLocaleString('en-US')} ${noteWord}`
   }

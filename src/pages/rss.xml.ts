@@ -53,6 +53,10 @@ const renderContent = async (post: CollectionEntry<'blog'>, site: URL) => {
   return String(file)
 }
 
+// RSS 只输出最近 N 篇：全站 1500+ 篇正文全量内嵌会让 rss.xml 膨胀到 20MB，
+// 订阅客户端拉一次就几十 MB。30 篇足够覆盖订阅者的实际阅读窗口。
+const RSS_ITEM_LIMIT = 30
+
 const GET = async (context: AstroGlobal) => {
   const allPostsByDate = sortMDByDate(await getBlogCollection()) as CollectionEntry<'blog'>[]
   const siteUrl = context.site ?? new URL(import.meta.env.SITE)
@@ -60,7 +64,6 @@ const GET = async (context: AstroGlobal) => {
   return rss({
     // Basic configs
     trailingSlash: false,
-    xmlns: { h: 'http://www.w3.org/TR/html4/' },
     stylesheet: '/scripts/pretty-feed-v3.xsl',
 
     // Contents
@@ -68,11 +71,9 @@ const GET = async (context: AstroGlobal) => {
     description: config.description,
     site: import.meta.env.SITE,
     items: await Promise.all(
-      allPostsByDate.map(async (post) => ({
+      allPostsByDate.slice(0, RSS_ITEM_LIMIT).map(async (post) => ({
         pubDate: post.data.publishDate,
         link: `/blog/${post.id}`,
-        customData: `<h:img src="${typeof post.data.heroImage?.src === 'string' ? post.data.heroImage?.src : post.data.heroImage?.src.src}" />
-          <enclosure url="${typeof post.data.heroImage?.src === 'string' ? post.data.heroImage?.src : post.data.heroImage?.src.src}" />`,
         content: await renderContent(post, siteUrl),
         ...post.data
       }))
