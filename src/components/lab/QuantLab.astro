@@ -1,0 +1,461 @@
+---
+/**
+ * QuantLab：文章内「参数实验」卡片（Web Component，纯浏览器计算）
+ *
+ * 用法（markdown 里直接写自定义元素）：
+ *   <quant-lab lab="kelly"></quant-lab>
+ *
+ * 设计：
+ * - Shadow DOM 自包含样式，继承主题的 CSS 变量（--foreground/--muted/--primary…）
+ * - echarts 与 dash 同款按需引入（echarts/core + use），IntersectionObserver 可见时才加载
+ * - 蒙特卡洛用固定种子的 mulberry32，拖滑块结果稳定可复现
+ * - 页面没有 <quant-lab> 时脚本直接返回，不给普通文章页加负担
+ */
+---
+
+<script>
+  // ---------- 通用工具 ----------
+  const mulberry32 = (seed: number) => {
+    let a = seed >>> 0
+    return () => {
+      a = (a + 0x6d2b79f5) | 0
+      let t = Math.imul(a ^ (a >>> 15), 1 | a)
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+    }
+  }
+
+  const pct = (x: number, d = 1) => `${(x * 100).toFixed(d)}%`
+  const signedPct = (x: number, d = 2) => `${x >= 0 ? '+' : ''}${(x * 100).toFixed(d)}%`
+  const clamp = (x: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, x))
+
+  // 主题色：从 :root 的 CSS 变量取（纯 HSL 三元组），取不到用中灰兜底
+  const cssv = (name: string, fb: string) => {
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+    return v ? `hsl(${v})` : fb
+  }
+
+  // ---------- 实验注册表 ----------
+  interface ParamDef {
+    key: string
+    label: string
+    min: number
+    max: number
+    step: number
+    def: number
+    /** 显示为百分比时的精度（乘 100 后的小数位） */
+    dp: number
+  }
+
+  interface LabDef {
+    title: string
+    params: ParamDef[]
+    fstar: (P: Record<string, number>) => number
+    /** 左轴解析曲线（不依赖模拟） */
+    growthCurve: (P: Record<string, number>) => { xs: number[]; ys: number[] }
+    /** 当前 f 的破产概率（解析或高频小模拟） */
+    ruinAt: (P: Record<string, number>) => number
+    /** 全 f 网格的破产概率（蒙特卡洛，昂贵，去抖后算） */
+    ruinGrid: (P: Record<string, number>) => { xs: number[]; ys: number[] }
+    readout: (P: Record<string, number>) => string[]
+    verdict: (P: Record<string, number>) => { text: string; kind: 'safe' | 'ok' | 'warn' | 'danger' }
+  }
+
+  const KELLY_F_MAX = 0.95
+  const KELLY_HANDS = 100
+  const KELLY_GRID_POINTS = 40
+  const KELLY_GRID_SIMS = 220
+  const KELLY_NOW_SIMS = 1200
+
+  const kelly: LabDef = {
+    title: '凯利下注：最优点与破产深渊',
+    params: [
+      { key: 'p', label: '胜率 p', min: 0.4, max: 0.75, step: 0.005, def: 0.55, dp: 1 },
+      { key: 'b', label: '盈亏比 b', min: 0.5, max: 3, step: 0.05, def: 2, dp: 2 },
+      { key: 'f', label: '下注比例 f', min: 0, max: KELLY_F_MAX, step: 0.005, def: 0.325, dp: 1 }
+    ],
+    fstar: (P) => {
+      const { p, b } = P
+      const fs = (p * b - (1 - p)) / b
+      return fs > 0 ? clamp(fs, 0, KELLY_F_MAX) : 0
+    },
+    growthCurve: (P) => {
+      const { p, b } = P
+      const xs: number[] = []
+      const ys: number[] = []
+      const n = 160
+      for (let i = 0; i <= n; i++) {
+        const f = (i / n) * KELLY_F_MAX
+        xs.push(f)
+        ys.push(f <= 0 ? 0 : p * Math.log(1 + f * b) + (1 - p) * Math.log(1 - f))
+      }
+      return { xs, ys }
+    },
+    ruinAt: (P) => {
+      const { p, b, f } = P
+      if (f <= 0) return 0
+      if (f >= 1) return 1
+      // 固定种子下，对每个 f 直接跑 sims 条路径
+      return ruinSim(p, b, f, KELLY_NOW_SIMS, 0x4b45_4c4c)
+    },
+    ruinGrid: (P) => {
+      const { p, b } = P
+      const xs: number[] = []
+      const ys: number[] = []
+      for (let i = 1; i <= KELLY_GRID_POINTS; i++) {
+        const f = (i / KELLY_GRID_POINTS) * KELLY_F_MAX
+        xs.push(f)
+        ys.push(ruinSim(p, b, f, KELLY_GRID_SIMS, 0x4b45_4c4c + i))
+      }
+      return { xs, ys }
+    },
+    readout: (P) => {
+      const { p, b, f } = P
+      const fs = kelly.fstar(P)
+      const g = f <= 0 ? 0 : p * Math.log(1 + f * b) + (1 - p) * Math.log(1 - f)
+      const ru = kelly.ruinAt(P)
+      const fstarLine =
+        fs > 0.001
+          ? `f* = (p·b − q)/b = ${pct(fs)}`
+          : `f* ≤ 0：当前 p=${pct(p, 1)}、b=${b.toFixed(2)} 没有优势，任何下注长期都是负增长`
+      return [
+        fstarLine,
+        `当前 f = ${pct(f)} · 每局期望对数增长 ${signedPct(g)} · ${KELLY_HANDS} 局内破产概率 ≈ ${pct(ru, 1)}（${KELLY_NOW_SIMS} 条路径）`
+      ]
+    },
+    verdict: (P) => {
+      const { f } = P
+      const fs = kelly.fstar(P)
+      if (fs <= 0.001) return { text: '⚠️ 没有优势就别下注——先回去修胜率/赔率，而不是调仓位。', kind: 'danger' }
+      const r = f / fs
+      if (r < 0.5)
+        return { text: '🐢 明显低于最优：增长没吃满，但破产概率几乎为零——半凯利正是稳健派的默认选择。', kind: 'safe' }
+      if (r <= 1.2)
+        return { text: '✅ 半凯利 ~ 全凯利之间：增长率损失很小，还留着安全边际，这是实战常用区间。', kind: 'ok' }
+      if (r <= 1.6)
+        return { text: '⚠️ 已超过最优下注：每局增长率开始下降，破产概率加速上升。', kind: 'warn' }
+      return { text: '🔥 深度超注：增长率明显变差、破产概率飙升——这就是“全凯利是实战自杀”的右半边。', kind: 'danger' }
+    }
+  }
+
+  /** 蒙特卡洛：f 比例重复下注 hands 局，净值跌破 1% 记为破产 */
+  function ruinSim(p: number, b: number, f: number, sims: number, seed: number): number {
+    if (f <= 0) return 0
+    if (f >= 1) return 1
+    const lgW = Math.log(1 + f * b)
+    const lgL = Math.log(1 - f)
+    const ln0 = Math.log(0.01)
+    const run = mulberry32(seed)
+    let cnt = 0
+    for (let s = 0; s < sims; s++) {
+      let w = 0
+      for (let h = 0; h < KELLY_HANDS; h++) {
+        w += run() < p ? lgW : lgL
+        if (w <= ln0) {
+          cnt++
+          break
+        }
+      }
+    }
+    return cnt / sims
+  }
+
+  const LABS: Record<string, LabDef> = { kelly }
+
+  // ---------- Web Component ----------
+  const STYLE = `
+    :host { display: block; margin: 1.5rem 0; }
+    .card {
+      border: 1px solid hsl(var(--border, 240 5% 84%));
+      background: hsl(var(--card, 0 0% 100%));
+      border-radius: 16px;
+      padding: 14px 16px 12px;
+      color: hsl(var(--foreground, 220 15% 16%));
+    }
+    .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+    .badge {
+      font-size: 12px; font-weight: 600;
+      background: hsl(var(--muted, 240 5% 94%));
+      color: hsl(var(--muted-foreground, 240 4% 46%));
+      border-radius: 999px; padding: 2px 10px;
+    }
+    .name { font-size: 15px; font-weight: 600; }
+    .tag { margin-left: auto; font-size: 11px; color: hsl(var(--muted-foreground, 240 4% 46%)); }
+    .body { display: grid; gap: 10px 18px; grid-template-columns: 1fr; margin-top: 10px; }
+    @media (min-width: 720px) { .body { grid-template-columns: 250px minmax(0, 1fr); } }
+    .ctrl { display: grid; grid-template-columns: 76px minmax(0, 1fr) 56px; align-items: center; gap: 8px; }
+    .ctrl label { font-size: 13px; color: hsl(var(--muted-foreground, 240 4% 46%)); }
+    .ctrl output { font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+    input[type="range"] { width: 100%; accent-color: hsl(var(--primary, 217 91% 60%)); }
+    .chart { width: 100%; height: 250px; }
+    .chart-ph {
+      height: 100%; display: grid; place-items: center; font-size: 12px;
+      color: hsl(var(--muted-foreground, 240 4% 46%));
+    }
+    .readout { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; font-variant-numeric: tabular-nums; }
+    .readout b { font-weight: 600; }
+    .verdict { font-size: 13px; margin-top: 6px; }
+    .verdict.safe { color: hsl(var(--primary, 217 91% 60%)); }
+    .verdict.ok { color: hsl(var(--foreground, 220 15% 16%)); }
+    .verdict.warn { color: #d97706; }
+    .verdict.danger { color: #e5484d; }
+    .axisnote { font-size: 11px; color: hsl(var(--muted-foreground, 240 4% 46%)); margin-top: 4px; }
+    .foot { font-size: 11px; color: hsl(var(--muted-foreground, 240 4% 46%)); border-top: 1px dashed hsl(var(--border, 240 5% 84%)); margin-top: 10px; padding-top: 6px; }
+  `
+
+  class QuantLabEl extends HTMLElement {
+    private lab: LabDef | null = null
+    private P: Record<string, number> = {}
+    private els: {
+      chart?: HTMLDivElement
+      outputs: Record<string, HTMLOutputElement>
+      readout?: HTMLDivElement
+      verdict?: HTMLDivElement
+    } = { outputs: {} }
+    private chart: any = null
+    private echartsMod: any = null
+    private heavyTimer: number | undefined
+
+    connectedCallback() {
+      const def = LABS[this.getAttribute('lab') ?? '']
+      if (!def || this.shadowRoot) return
+      this.lab = def
+      const root = this.attachShadow({ mode: 'open' })
+      const style = document.createElement('style')
+      style.textContent = STYLE
+      root.appendChild(style)
+
+      const card = document.createElement('div')
+      card.className = 'card'
+      card.innerHTML = `
+        <div class="head">
+          <span class="badge">🧪 参数实验</span>
+          <span class="name"></span>
+          <span class="tag">浏览器实时计算 · 固定种子可复现</span>
+        </div>
+        <div class="body">
+          <div class="controls"></div>
+          <div>
+            <div class="chart"><div class="chart-ph">📊 图表加载中…</div></div>
+            <div class="axisnote"></div>
+          </div>
+        </div>
+        <div class="readout"></div>
+        <div class="verdict"></div>
+        <div class="foot">模型推导见正文 ↑ · 破产 = ${KELLY_HANDS} 局内净值跌破 1%，蒙特卡洛模拟</div>
+      `
+      root.appendChild(card)
+      card.querySelector('.name')!.textContent = def.title
+
+      const controls = card.querySelector('.controls')!
+      for (const pd of def.params) {
+        this.P[pd.key] = pd.def
+        const row = document.createElement('div')
+        row.className = 'ctrl'
+        const label = document.createElement('label')
+        label.textContent = pd.label
+        const input = document.createElement('input')
+        input.type = 'range'
+        input.min = String(pd.min)
+        input.max = String(pd.max)
+        input.step = String(pd.step)
+        input.value = String(pd.def)
+        const out = document.createElement('output')
+        out.textContent = (pd.def * 100).toFixed(pd.dp) + '%'
+        input.setAttribute('aria-label', pd.label)
+        input.addEventListener('input', () => {
+          this.P[pd.key] = Number(input.value)
+          out.textContent = (Number(input.value) * 100).toFixed(pd.dp) + '%'
+          this.renderLight()
+          if (pd.key !== 'f') this.scheduleHeavy()
+          else this.renderChart()
+        })
+        row.append(label, input, out)
+        controls.appendChild(row)
+        this.els.outputs[pd.key] = out
+      }
+
+      this.els.chart = card.querySelector('.chart')!
+      this.els.readout = card.querySelector('.readout')!
+      this.els.verdict = card.querySelector('.verdict')!
+      card.querySelector('.axisnote')!.textContent =
+        '左轴：每局期望对数增长 g(f) · 右轴：100 局内破产概率（蒙特卡洛）'
+
+      this.renderLight()
+
+      const io = new IntersectionObserver(
+        (es) => {
+          if (es.some((e) => e.isIntersecting)) {
+            io.disconnect()
+            void this.initChart()
+          }
+        },
+        { rootMargin: '200px' }
+      )
+      io.observe(this)
+    }
+
+    /** 便宜的更新：读数 + 判词（滑 f 时即时） */
+    private renderLight() {
+      const def = this.lab!
+      const lines = def.readout(this.P)
+      this.els.readout!.innerHTML = lines.map((l) => `<span>${l}</span>`).join('')
+      const v = def.verdict(this.P)
+      this.els.verdict!.textContent = v.text
+      this.els.verdict!.className = `verdict ${v.kind}`
+    }
+
+    /** 昂贵的更新（重算 p/b 时）：去抖后重算解析曲线与破产网格 */
+    private scheduleHeavy() {
+      window.clearTimeout(this.heavyTimer)
+      this.heavyTimer = window.setTimeout(() => {
+        this.renderChart(true)
+      }, 160)
+    }
+
+    private async initChart() {
+      if (this.echartsMod) return
+      try {
+        const [core, charts, comps, canvas] = await Promise.all([
+          import('echarts/core'),
+          import('echarts/charts'),
+          import('echarts/components'),
+          import('echarts/renderers')
+        ])
+        ;(core as any).use([
+          (charts as any).LineChart,
+          (comps as any).GridComponent,
+          (comps as any).TooltipComponent,
+          (comps as any).MarkPointComponent,
+          (comps as any).MarkLineComponent,
+          (canvas as any).CanvasRenderer
+        ])
+        this.echartsMod = core
+        const ph = this.els.chart!.querySelector('.chart-ph')
+        if (ph) ph.remove()
+        this.chart = (core as any).init(this.els.chart!)
+        new ResizeObserver(() => this.chart?.resize()).observe(this.els.chart!)
+        this.renderChart(true)
+      } catch {
+        const ph = this.els.chart?.querySelector('.chart-ph')
+        if (ph) ph.textContent = '📊 图表加载失败（不影响下方数值结论）'
+      }
+    }
+
+    private renderChart(recompute = false) {
+      if (!this.chart) return
+      const def = this.lab!
+      const { p, b, f } = this.P
+      const growth = def.growthCurve(this.P)
+      const ruin = recompute ? def.ruinGrid(this.P) : (this as any)._ruinCache ?? def.ruinGrid(this.P)
+      ;(this as any)._ruinCache = ruin
+      const fs = def.fstar(this.P)
+      const gNow = f <= 0 ? 0 : p * Math.log(1 + f * b) + (1 - p) * Math.log(1 - f)
+
+      const axis = cssv('--muted-foreground', '#6b7280')
+      const split = `hsl(0 0% 50% / 0.18)`
+      const primary = cssv('--primary', '#3b82f6')
+
+      this.chart.setOption({
+        animation: false,
+        grid: { left: 46, right: 44, top: 28, bottom: 24 },
+        tooltip: {
+          trigger: 'axis',
+          formatter: (ps: any[]) => {
+            const fx = (Number(ps[0]?.axisValue) * 100).toFixed(1)
+            const rows = ps
+              .map((x) => {
+                const v = Array.isArray(x.value) ? Number(x.value[1]) : Number(x.value)
+                return `${x.marker}${x.seriesName}：${(v * 100).toFixed(2)}%`
+              })
+              .join('<br/>')
+            return `下注比例 f = ${fx}%<br/>${rows}`
+          }
+        },
+        xAxis: {
+          type: 'value',
+          min: 0,
+          max: KELLY_F_MAX,
+          axisLabel: { color: axis, fontSize: 10, formatter: (v: number) => `${Math.round(v * 100)}%` },
+          axisLine: { lineStyle: { color: split } },
+          splitLine: { show: false }
+        },
+        yAxis: [
+          {
+            type: 'value',
+            name: 'g(f)/局',
+            nameTextStyle: { color: axis, fontSize: 10 },
+            axisLabel: { color: axis, fontSize: 10, formatter: (v: number) => `${(v * 100).toFixed(1)}%` },
+            splitLine: { lineStyle: { color: split } }
+          },
+          {
+            type: 'value',
+            name: '破产率',
+            min: 0,
+            max: 1,
+            nameTextStyle: { color: axis, fontSize: 10 },
+            axisLabel: { color: axis, fontSize: 10, formatter: (v: number) => `${Math.round(v * 100)}%` },
+            splitLine: { show: false }
+          }
+        ],
+        series: [
+          {
+            name: '每局期望对数增长',
+            type: 'line',
+            smooth: true,
+            showSymbol: false,
+            data: growth.xs.map((x, i) => [x, growth.ys[i]]),
+            lineStyle: { color: primary, width: 2 },
+            itemStyle: { color: primary },
+            z: 3,
+            markLine: {
+              symbol: 'none',
+              silent: true,
+              lineStyle: { color: axis, type: 'dashed', width: 1 },
+              label: {
+                color: axis,
+                fontSize: 10,
+                formatter: () => `f=${(f * 100).toFixed(0)}%`,
+                position: 'insideEndTop'
+              },
+              data: [{ xAxis: f }]
+            },
+            markPoint:
+              fs > 0.001
+                ? {
+                    symbolSize: 42,
+                    itemStyle: { color: primary },
+                    label: { fontSize: 9, color: '#fff', formatter: () => `f* ${(fs * 100).toFixed(0)}%` },
+                    data: [{ coord: [fs, p * Math.log(1 + fs * b) + (1 - p) * Math.log(1 - fs)] }]
+                  }
+                : { data: [] }
+          },
+          {
+            name: '100 局内破产概率',
+            type: 'line',
+            yAxisIndex: 1,
+            showSymbol: false,
+            step: 'middle',
+            data: ruin.xs.map((x, i) => [x, ruin.ys[i]]),
+            lineStyle: { color: '#e5484d', width: 1.5, type: 'dashed' },
+            itemStyle: { color: '#e5484d' },
+            areaStyle: { color: 'rgba(229,72,77,0.08)' },
+            z: 2
+          },
+          {
+            name: '当前下注',
+            type: 'scatter',
+            symbolSize: 9,
+            data: [[f, gNow]],
+            itemStyle: { color: primary, borderColor: '#fff', borderWidth: 1.5 },
+            z: 5
+          }
+        ]
+      })
+    }
+  }
+
+  if (document.querySelector('quant-lab') && !customElements.get('quant-lab')) {
+    customElements.define('quant-lab', QuantLabEl)
+  }
+</script>

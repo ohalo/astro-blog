@@ -8,6 +8,7 @@ import 'katex/dist/katex.min.css'
 import { MediumZoom } from 'astro-pure/advanced'
 import { ArticleBottom, Copyright, TOC } from 'astro-pure/components/pages'
 import config from 'virtual:config'
+import QuantLab from '@/components/lab/QuantLab.astro'
 import LearningPathHint from '@/components/pages/LearningPathHint.astro'
 import { Comment, PageInfo } from '@/components/waline'
 import { getLocale, localePath } from '@/i18n'
@@ -19,13 +20,15 @@ interface Props {
   posts: CollectionEntry<'blog'>[]
   headings: MarkdownHeading[]
   remarkPluginFrontmatter: Record<string, unknown>
+  hasLab?: boolean
 }
 
 const {
   post: { id, data },
   posts,
   headings,
-  remarkPluginFrontmatter
+  remarkPluginFrontmatter,
+  hasLab
 } = Astro.props
 
 const {
@@ -119,3 +122,5 @@ const levelName = difficulty ? levelLabel[difficulty] : en ? 'Research note' : '
 </PageLayout>
 
 {config.integ.mediumZoom.enable && <MediumZoom />}
+{/* 文章内参数实验：仅正文含 <quant-lab> 的文章打包实验脚本，其他文章零开销 */}
+{hasLab && <QuantLab />}
