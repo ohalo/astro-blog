@@ -1,0 +1,157 @@
+{
+ "seed": 20261118,
+ "alpha": 0.05,
+ "scipy_check_max_abs_diff": 1.1368683772161603e-13,
+ "ad_empirical_criticals_n252": {
+  "p90": 0.6163529983517646,
+  "p95": 0.7257921341323983,
+  "p97": 0.8459226121662169,
+  "p99": 1.0106114252254363
+ },
+ "scipy_stephens_constants": {
+  "levels_percent": [
+   15.0,
+   10.0,
+   5.0,
+   2.5,
+   1.0
+  ],
+  "critical_values": [
+   0.559,
+   0.629,
+   0.75,
+   0.87,
+   1.032
+  ]
+ },
+ "size": {
+  "ad_with_mc_critical": 0.05,
+  "ad_with_scipy_stephens_5pct": 0.043,
+  "jb_chi2": 0.0434,
+  "ks_with_mc_critical": 0.047,
+  "ks_with_naive_chi2_asym": 0.0
+ },
+ "null_moments": {
+  "ad_mean": 0.3812532514151272,
+  "jb_mean": 1.9013743875973022,
+  "ks_mean": 0.039285182681964244
+ },
+ "ks_mc_criticals_n252": {
+  "p90": 0.052032311647372397,
+  "p95": 0.05630927508770325,
+  "p97": 0.06181151885062131,
+  "p99": 0.0668595867313467
+ },
+ "power_vs_df_n252": {
+  "t3": {
+   "ad": 0.9955,
+   "jb": 0.998,
+   "ks": 0.976
+  },
+  "t4": {
+   "ad": 0.942,
+   "jb": 0.981,
+   "ks": 0.8485
+  },
+  "t5": {
+   "ad": 0.8495,
+   "jb": 0.9275,
+   "ks": 0.653
+  },
+  "t6": {
+   "ad": 0.707,
+   "jb": 0.834,
+   "ks": 0.483
+  },
+  "t8": {
+   "ad": 0.437,
+   "jb": 0.652,
+   "ks": 0.2605
+  },
+  "t10": {
+   "ad": 0.303,
+   "jb": 0.506,
+   "ks": 0.172
+  }
+ },
+ "power_vs_n_t5": {
+  "n60": {
+   "ad": 0.3365,
+   "jb": 0.449,
+   "ks": 0.2435,
+   "ad_mc_crit95": 0.7534798629241146,
+   "ks_mc_crit95": 0.11405942200052134
+  },
+  "n120": {
+   "ad": 0.562,
+   "jb": 0.691,
+   "ks": 0.3605,
+   "ad_mc_crit95": 0.7192570352269909,
+   "ks_mc_crit95": 0.08221661368562388
+  },
+  "n252": {
+   "ad": 0.823,
+   "jb": 0.9165,
+   "ks": 0.637,
+   "ad_mc_crit95": 0.750781545361622,
+   "ks_mc_crit95": 0.05647207005057486
+  },
+  "n504": {
+   "ad": 0.9765,
+   "jb": 0.9905,
+   "ks": 0.9045,
+   "ad_mc_crit95": 0.7700909033651457,
+   "ks_mc_crit95": 0.03978110861640882
+  },
+  "n1008": {
+   "ad": 0.9995,
+   "jb": 1.0,
+   "ks": 0.997,
+   "ad_mc_crit95": 0.7653582380401457,
+   "ks_mc_crit95": 0.028280641736875823
+  }
+ },
+ "demo_sample": {
+  "n": 252,
+  "n_crash_days": 8,
+  "skew": -1.1407329741480625,
+  "kurt": 7.116655322918634,
+  "ad_star": 1.791120246902479,
+  "jb": 232.59534816996512,
+  "ks": 0.06263373575774105,
+  "ad_reject": true,
+  "jb_reject": true,
+  "ks_reject": true,
+  "mean_daily": -0.0001822420542432602,
+  "sd_daily": 0.010403274188344643
+ },
+ "detection_power_sellput": {
+  "n120": {
+   "ad": 0.5886666666666667,
+   "jb": 0.7593333333333333,
+   "ks": 0.412
+  },
+  "n252": {
+   "ad": 0.814,
+   "jb": 0.9473333333333334,
+   "ks": 0.6466666666666666
+  },
+  "n504": {
+   "ad": 0.964,
+   "jb": 0.9966666666666667,
+   "ks": 0.8693333333333333
+  },
+  "n756": {
+   "ad": 0.996,
+   "jb": 1.0,
+   "ks": 0.968
+  }
+ },
+ "figs": [
+  "/Users/halo123456/workspace/astro-blog/public/images/anderson-darling-normality-test/fig1_weighting.png",
+  "/Users/halo123456/workspace/astro-blog/public/images/anderson-darling-normality-test/fig2_null_calibration.png",
+  "/Users/halo123456/workspace/astro-blog/public/images/anderson-darling-normality-test/fig3_power_vs_df.png",
+  "/Users/halo123456/workspace/astro-blog/public/images/anderson-darling-normality-test/fig4_power_vs_n.png",
+  "/Users/halo123456/workspace/astro-blog/public/images/anderson-darling-normality-test/fig5_option_selling.png"
+ ]
+}
