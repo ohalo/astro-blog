@@ -9,7 +9,10 @@
   4. 代码块与 core 脚本逐字一致；
   5. 正文引用 5 张图、文件均存在、5 张 hash 各不相同；
   6. exec 复跑 core，输出 JSON 与 results.json 深度相等；
-  7. 禁用词零残留（占位/placeholder/TODO/fake/mock数据 等）。
+  7. 禁用词零残留（占位/placeholder/TODO/fake/mock数据 等）；
+  8. 数学围栏：`$$` 必须独立成行——跨行块会被 remark-math 吞成整篇 KaTeX 报错（拦）；
+     单行 `$$…$$` 只渲染成行内公式（历史遗留 929 处，只警示不拦，免得卡死 cron）。
+     要改就跑 `python3 scripts/check_math_fences.py --fix <slug>`。
 
 用法：
   python3 scripts/quant_verify.py <slug1> <core1.py> [<slug2> <core2.py> ...]
@@ -23,6 +26,8 @@ import re
 import sys
 import io
 import contextlib
+
+from check_math_fences import scan_math
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BANNED = ["占位", "placeholder", "todo", "fixme", "fake", "mock数据", "伪造"]
@@ -106,6 +111,23 @@ def verify(slug, core_rel):
     core_src = open(core_path, encoding="utf-8").read().rstrip("\n")
     assert blocks[0].rstrip("\n") == core_src, "代码块与 core 逐字不一致"
     print("  [code] 与 core 逐字一致")
+
+    probs = scan_math(body)
+    hard = [p for p in probs if p[0] != "inline_math"]
+    soft = [p for p in probs if p[0] == "inline_math"]
+    assert not hard, (
+        "数学围栏会把后半篇整篇吞进 KaTeX 报错块："
+        + "；".join(f"L{ln} {k}" for _, ln, k in hard)
+        + f"（先跑 python3 scripts/check_math_fences.py --fix {slug}）"
+    )
+    if soft:
+        # 历史遗留写法（全站 929 处），只警示不拦：拦了会把 cron 发布卡死。
+        # 批量批改完可以把它也升成 assert。
+        print(f"  [math] ⚠ {len(soft)} 处单行 $$…$$ 只渲染成行内公式（不居中）："
+              + " ".join(f"L{ln}" for _, ln, _ in soft)
+              + f"（要改：python3 scripts/check_math_fences.py --fix {slug}）")
+    else:
+        print("  [math] $$ 围栏均独立成行，无跨行吞并 / 行内降级")
 
     refs = re.findall(r"!\[.*?\]\(/images/" + re.escape(slug) + r"/([^)]+)\)", txt)
     assert len(refs) == 5, f"图片引用 {len(refs)} 张（应为 5）"
