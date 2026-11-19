@@ -4,7 +4,7 @@
 > 每天 14:00 的任务会：读这里 → 扫描全站找新机会 → 追加 3–5 个新点子并评分 → 挑 1 个做出来 → 构建验证 → 提交推送 → 回写日志。
 > 评分维度：Impact（影响 1–5）/ Cost（成本 1–5，越低越省）/ Risk（风险 1–5，越低越稳）。Priority = Impact×2 − Cost − Risk。
 >
-> **工作约定：新功能 / 新页面必须先出设计稿**——`docs/designs/YYYY-MM-DD-{slug}.md`（设计规格）+ 同名 `.html`（可在浏览器直接打开的黑金主题高保真原型），先 commit 设计稿再动手实现，实现以设计稿为准。
+> **工作约定：新功能 / 新页面必须先出设计稿**——用「设计工作台」（ui-design 技能）在 `docs/designs/YYYY-MM-DD-{slug}/` 做高保真原型：一屏一个 HTML + 黑金 `tokens.css`（复用 `docs/designs/_shared/tokens.css`），preview_page 开画布、check_design + look_design 体检通过后再 commit 设计稿，然后动手实现，实现以设计稿为准。
 
 ## 📋 Backlog（待做点子）
 
