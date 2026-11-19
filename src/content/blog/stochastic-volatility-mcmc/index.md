@@ -24,8 +24,13 @@ GARCH 几乎是所有波动率模型的"第一课"，但它藏着一个不常被
 
 GARCH 的波动率 $\sigma_t$ 是**观测值的确定性函数**——你看到历史，就锁定了未来的条件方差。但大量实证表明，波动率里有一块是**独立的随机漂移**：同样大小的昨日冲击，今天可能演化出完全不同的波动环境。SV 把这一块显式建模出来：
 
-$$y_t = e^{h_t/2}\,\varepsilon_t,\qquad \varepsilon_t \sim \mathcal{N}(0,1)$$
-$$h_t = \mu + \phi\,(h_{t-1}-\mu) + \sigma_\eta\,\eta_t,\qquad \eta_t \sim \mathcal{N}(0,1)$$
+$$
+y_t = e^{h_t/2}\,\varepsilon_t,\qquad \varepsilon_t \sim \mathcal{N}(0,1)
+$$
+
+$$
+h_t = \mu + \phi\,(h_{t-1}-\mu) + \sigma_\eta\,\eta_t,\qquad \eta_t \sim \mathcal{N}(0,1)
+$$
 
 - $y_t$ 是收益，$h_t$ 是**对数方差**，是一个我们观测不到的隐状态；
 - $h_t$ 自己走一个 AR(1)：被均值 $\mu$ 拉回、被持续性 $\phi$ 记住过去、被 $\sigma_\eta$（波动的波动，vol-of-vol）注入随机冲击；
@@ -37,7 +42,9 @@ $$h_t = \mu + \phi\,(h_{t-1}-\mu) + \sigma_\eta\,\eta_t,\qquad \eta_t \sim \math
 
 GARCH 能写清似然 $\prod_t \mathcal{N}(y_t;0,\sigma_t^2)$，直接数值优化即可。SV 不行，因为 $h_t$ 不可观测：边际似然要对整条隐路径积分
 
-$$p(y_{1:T}\mid \mu,\phi,\sigma_\eta) = \int p(y_{1:T}\mid h_{1:T})\,p(h_{1:T}\mid \mu,\phi,\sigma_\eta)\,dh_{1:T}$$
+$$
+p(y_{1:T}\mid \mu,\phi,\sigma_\eta) = \int p(y_{1:T}\mid h_{1:T})\,p(h_{1:T}\mid \mu,\phi,\sigma_\eta)\,dh_{1:T}
+$$
 
 这个 $T$ 维积分**没有解析形式**，数值积分在 $T=500$ 时维度爆炸，MC 积分又因路径强相关而方差极大。矩估计（利用 $\log y_t^2$ 的自相关）只能估 $\phi$，拿不到 $\mu,\sigma_\eta$ 的联合后验。
 
@@ -74,9 +81,11 @@ r = np.exp(h_true / 2) * rng.normal(size=T)           # 观测收益
 
 对第 $t$ 个隐状态，条件后验（差一个常数）是观测项加前后两个转移项，整体为对数凹：
 
-$$\log p(h_t\mid \cdot) \propto -\tfrac12 h_t - \tfrac12 y_t^2 e^{-h_t}
+$$
+\log p(h_t\mid \cdot) \propto -\tfrac12 h_t - \tfrac12 y_t^2 e^{-h_t}
 - \tfrac12\Big(\frac{h_t-m_{t-1}}{\sigma_\eta}\Big)^2
-- \tfrac12\Big(\frac{h_{t+1}-\mu-\phi(h_t-\mu)}{\sigma_\eta}\Big)^2$$
+- \tfrac12\Big(\frac{h_{t+1}-\mu-\phi(h_t-\mu)}{\sigma_\eta}\Big)^2
+$$
 
 ```python
 def slice_sample(logf, x0, w=1.0, m=60, rng=rng):

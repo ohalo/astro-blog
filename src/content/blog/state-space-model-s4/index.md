@@ -33,17 +33,21 @@ difficulty: advanced
 
 经典 SSM 描述一个连续系统：输入 $u(t)$ 通过状态 $x(t)$ 产生输出 $y(t)$：
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 x'(t) &= A\,x(t) + B\,u(t) \\
 y(t)  &= C\,x(t)
-\end{aligned}$$
+\end{aligned}
+$$
 
 - $A\in\mathbb C^{N\times N}$：状态转移，对角线实部为负 → 指数遗忘（**这就是长程记忆的来源**）；
 - $B\in\mathbb C^N$：输入如何注入状态；$C\in\mathbb C^N$：状态如何读出。
 
 离散化（零阶保持 / 双线性）把它变成可在序列上递推的形式。本文用**双线性（Tustin）**离散化，数值更稳：
 
-$$\bar A=(I-\tfrac{\Delta}{2}A)^{-1}(I+\tfrac{\Delta}{2}A),\qquad \bar B=(I-\tfrac{\Delta}{2}A)^{-1}\Delta B$$
+$$
+\bar A=(I-\tfrac{\Delta}{2}A)^{-1}(I+\tfrac{\Delta}{2}A),\qquad \bar B=(I-\tfrac{\Delta}{2}A)^{-1}\Delta B
+$$
 
 ```python
 import numpy as np
@@ -66,11 +70,15 @@ def discretize_bilinear(A, B, dt):
 
 关键洞察：离散 SSM 的脉冲响应是
 
-$$K_n = C\bar A^n\bar B,\qquad n=0,1,2,\dots$$
+$$
+K_n = C\bar A^n\bar B,\qquad n=0,1,2,\dots
+$$
 
 而输出是输入与这条核的**因果卷积** $y = K * u$。一旦 $K$ 已知，整段序列用 FFT 卷积一次算完：
 
-$$y_t = \sum_{k=0}^{t} K_k\,u_{t-k}$$
+$$
+y_t = \sum_{k=0}^{t} K_k\,u_{t-k}
+$$
 
 ```python
 from scipy.signal import fftconvolve

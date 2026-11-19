@@ -33,7 +33,9 @@ difficulty: advanced
 
 设剩余库存 x(t)，交易速率 u(t) = −dx/dt，x(0)=X，x(T)=0（硬约束：到期必须清仓）。到达价格 S_t = S_0 + μt + σW_t。实现短缺（execution shortfall）的均值-方差目标，简化成
 
-$$ \min_{u(\cdot)} \mathbb{E}\left[ \int_0^T \big( \eta\,u^2 + \lambda\,\sigma^2 x^2 - \mu\,t\,u \big)\,dt \right] $$
+$$
+\min_{u(\cdot)} \mathbb{E}\left[ \int_0^T \big( \eta\,u^2 + \lambda\,\sigma^2 x^2 - \mu\,t\,u \big)\,dt \right]
+$$
 
 - η u²：瞬时市场冲击成本（临时冲击，二次近似）
 - λσ²x²：持有库存 x 的价格风险（方差惩罚）
@@ -41,11 +43,15 @@ $$ \min_{u(\cdot)} \mathbb{E}\left[ \int_0^T \big( \eta\,u^2 + \lambda\,\sigma^2
 
 值函数 V(t,x) 满足 HJB（对 u 取最小）：
 
-$$ -V_t = \min_u \big\{\, \eta u^2 + \lambda\sigma^2 x^2 - \mu t u - u\,V_x \,\big\}, \qquad V(T,0)=0 $$
+$$
+-V_t = \min_u \big\{\, \eta u^2 + \lambda\sigma^2 x^2 - \mu t u - u\,V_x \,\big\}, \qquad V(T,0)=0
+$$
 
 对 u 求导得最优控制 **u* = V_x / (2η)**，代回得
 
-$$ V_t = \frac{V_x^2}{4\eta} - \lambda\sigma^2 x^2 \tag{★} $$
+$$
+V_t = \frac{V_x^2}{4\eta} - \lambda\sigma^2 x^2 \tag{★}
+$$
 
 图1 左是有限差分解出的 V(t,x) 面，右是闭式对照——同一张曲面，只是来源不同（数值 vs 公式）。
 
@@ -55,12 +61,16 @@ $$ V_t = \frac{V_x^2}{4\eta} - \lambda\sigma^2 x^2 \tag{★} $$
 
 μ=0 时试 V(t,x)=x²A(t) 代入 (★)，得 A' = A²/η − λσ²，终端 A(T)=∞（硬约束），解为
 
-$$ A(t) = \eta\,\omega\,\coth\!\big(\omega(T-t)\big), \qquad \omega = \sigma\sqrt{\frac{\lambda}{\eta}} $$
+$$
+A(t) = \eta\,\omega\,\coth\!\big(\omega(T-t)\big), \qquad \omega = \sigma\sqrt{\frac{\lambda}{\eta}}
+$$
 
 于是闭式值函数与清算进度：
 
-$$ V(t,x) = x^2\,\sigma\sqrt{\lambda\eta}\,\coth\!\big(\omega(T-t)\big), \qquad
-x^*(t) = X\,\frac{\sinh\!\big(\omega(T-t)\big)}{\sinh(\omega T)} $$
+$$
+ V(t,x) = x^2\,\sigma\sqrt{\lambda\eta}\,\coth\!\big(\omega(T-t)\big), \qquad
+x^*(t) = X\,\frac{\sinh\!\big(\omega(T-t)\big)}{\sinh(\omega T)}
+$$
 
 本例参数 T=1, X=1, η=1e-3, σ=0.02, λ=1 → ω = 0.02·√(1/1e-3) = **0.63246**。图2 把 x*(t)/X（红，前载 sinh）和 TWAP 匀速（蓝）放一起：风险项让你"抢早卖"，库存曲线比直线更陡地往下掉。
 
@@ -151,7 +161,9 @@ print("mu=-0.003: u*(0)=%.4f 末=%.4f"
 
 λ 是你在"期望成本"和"执行风险"之间权衡的旋钮。扫描 λ，对每条解算 E[短缺] 和 std(短缺)：
 
-$$ \text{std}^2 = \sigma^2 \int_0^T x(t)^2\,dt $$
+$$
+\text{std}^2 = \sigma^2 \int_0^T x(t)^2\,dt
+$$
 
 ```python
 def shortfall_stats(sol, mu):

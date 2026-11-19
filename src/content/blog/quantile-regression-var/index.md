@@ -33,11 +33,13 @@ difficulty: intermediate
 
 分位数回归拟合的是**条件分位数** $Q_\tau(y\mid x)$，目标是最小化**检查损失（Pinball / Check loss）**：
 
-$$\rho_\tau(u) = u\cdot(\tau - \mathbb{1}\{u<0\}) =
+$$
+\rho_\tau(u) = u\cdot(\tau - \mathbb{1}\{u<0\}) =
 \begin{cases}
 \tau\cdot u, & u\ge 0\\[4pt]
 (\tau-1)\cdot u, & u<0
-\end{cases},\qquad u = y - \hat q_\tau(x)$$
+\end{cases},\qquad u = y - \hat q_\tau(x)
+$$
 
 其中 $\tau\in(0,1)$ 是目标分位（VaR 取 $\tau=0.05$ 看左尾）。
 
@@ -100,7 +102,9 @@ b_hi  = fit_qr(Xdes, r, 0.95)   # 右尾线
 
 传统 5% VaR 用全局正态假设：
 
-$$\text{VaR}_{0.05} = \hat\mu + \hat\sigma\cdot\Phi^{-1}(0.05)$$
+$$
+\text{VaR}_{0.05} = \hat\mu + \hat\sigma\cdot\Phi^{-1}(0.05)
+$$
 
 它给出一个**固定数字**，不随压力变化。QR-VaR 则是 $\hat q_{0.05}(x)=\hat\beta_0+\hat\beta_1 x$，**随压力 x 移动**。
 

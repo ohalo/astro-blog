@@ -33,7 +33,9 @@ difficulty: intermediate
 
 设$w_t$为t期的投资组合权重向量，$w_{t+1}$为t+1期目标权重，则交易成本函数为：
 
-$$C(w_t, w_{t+1}) = \sum_{i=1}^{N} \left[ c_i^{fixed} \cdot \mathbb{I}(\Delta w_i \neq 0) + c_i^{prop} \cdot |\Delta w_i| + c_i^{market} \cdot (\Delta w_i)^2 \right]$$
+$$
+C(w_t, w_{t+1}) = \sum_{i=1}^{N} \left[ c_i^{fixed} \cdot \mathbb{I}(\Delta w_i \neq 0) + c_i^{prop} \cdot |\Delta w_i| + c_i^{market} \cdot (\Delta w_i)^2 \right]
+$$
 
 其中：
 - $\Delta w_i = w_{i,t+1} - w_{i,t}$：权重变化
@@ -45,22 +47,28 @@ $$C(w_t, w_{t+1}) = \sum_{i=1}^{N} \left[ c_i^{fixed} \cdot \mathbb{I}(\Delta w_
 
 #### 1. 线性成本模型（最常用）
 
-$$C(\Delta w) = \sum_{i=1}^{N} c_i \cdot |\Delta w_i|$$
+$$
+C(\Delta w) = \sum_{i=1}^{N} c_i \cdot |\Delta w_i|
+$$
 
 **特点**：简单、可凸优化、适合大多数零售投资者
 
 #### 2. 二次成本模型
 
-$$C(\Delta w) = \sum_{i=1}^{N} (c_i^{prop} \cdot |\Delta w_i| + c_i^{market} \cdot (\Delta w_i)^2)$$
+$$
+C(\Delta w) = \sum_{i=1}^{N} (c_i^{prop} \cdot |\Delta w_i| + c_i^{market} \cdot (\Delta w_i)^2)
+$$
 
 **特点**：引入市场冲击成本，适合大资金量
 
 #### 3. 分段线性成本模型
 
-$$C(\Delta w) = \sum_{i=1}^{N} \begin{cases}
+$$
+C(\Delta w) = \sum_{i=1}^{N} \begin{cases}
 c_1 \cdot |\Delta w_i| & \text{if } |\Delta w_i| \leq \theta \\
 c_2 \cdot |\Delta w_i| & \text{if } |\Delta w_i| > \theta
-\end{cases}$$
+\end{cases}
+$$
 
 **特点**：模拟不同交易量下的差异化佣金率
 
@@ -68,15 +76,23 @@ c_2 \cdot |\Delta w_i| & \text{if } |\Delta w_i| > \theta
 
 ### 传统均值-方差优化
 
-$$\max_{w} \quad w^T \mu - \frac{\gamma}{2} w^T \Sigma w$$
+$$
+\max_{w} \quad w^T \mu - \frac{\gamma}{2} w^T \Sigma w
+$$
 
-$$\text{s.t.} \quad \sum_{i=1}^{N} w_i = 1, \quad w_i \geq 0$$
+$$
+\text{s.t.} \quad \sum_{i=1}^{N} w_i = 1, \quad w_i \geq 0
+$$
 
 ### 带交易成本的优化
 
-$$\max_{w_{t+1}} \quad w_{t+1}^T \mu - \frac{\gamma}{2} w_{t+1}^T \Sigma w_{t+1} - \lambda \cdot C(w_t, w_{t+1})$$
+$$
+\max_{w_{t+1}} \quad w_{t+1}^T \mu - \frac{\gamma}{2} w_{t+1}^T \Sigma w_{t+1} - \lambda \cdot C(w_t, w_{t+1})
+$$
 
-$$\text{s.t.} \quad \sum_{i=1}^{N} w_{i,t+1} = 1, \quad w_{i,t+1} \geq 0$$
+$$
+\text{s.t.} \quad \sum_{i=1}^{N} w_{i,t+1} = 1, \quad w_{i,t+1} \geq 0
+$$
 
 其中$\lambda$是成本惩罚系数，控制对交易成本的敏感度。
 
@@ -244,7 +260,9 @@ print(results.head(10))
 
 设$V_t(w_t)$为t期持有权重$w_t$时，未来所有期的折现效用之和的最大值：
 
-$$V_t(w_t) = \max_{w_{t+1}} \left\{ u_t(w_{t+1}) - \lambda C(w_t, w_{t+1}) + \beta \mathbb{E}_t[V_{t+1}(w_{t+1})] \right\}$$
+$$
+V_t(w_t) = \max_{w_{t+1}} \left\{ u_t(w_{t+1}) - \lambda C(w_t, w_{t+1}) + \beta \mathbb{E}_t[V_{t+1}(w_{t+1})] \right\}
+$$
 
 其中：
 - $u_t(w)$：单期效用（收益 - 风险）

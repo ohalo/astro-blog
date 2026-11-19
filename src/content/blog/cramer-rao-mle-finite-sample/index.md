@@ -27,10 +27,16 @@ difficulty: advanced
 
 标准 Student-t（位置 0、尺度 1）的对数密度与关于 $\nu$ 的 score 为：
 
-$$\log f(x;\nu)=\log\Gamma\!\left(\tfrac{\nu+1}{2}\right)-\log\Gamma\!\left(\tfrac{\nu}{2}\right)-\tfrac12\log(\nu\pi)-\tfrac{\nu+1}{2}\log\!\left(1+\tfrac{x^2}{\nu}\right)$$
+$$
+\log f(x;\nu)=\log\Gamma\!\left(\tfrac{\nu+1}{2}\right)-\log\Gamma\!\left(\tfrac{\nu}{2}\right)-\tfrac12\log(\nu\pi)-\tfrac{\nu+1}{2}\log\!\left(1+\tfrac{x^2}{\nu}\right)
+$$
 
-$$s(x;\nu)=\tfrac12\psi\!\left(\tfrac{\nu+1}{2}\right)-\tfrac12\psi\!\left(\tfrac{\nu}{2}\right)-\tfrac1{2\nu}
--\tfrac12\log\!\left(1+\tfrac{x^2}{\nu}\right)+\tfrac{\nu+1}{2}\cdot\frac{x^2/\nu^2}{1+x^2/\nu}$$
+$$
+\begin{aligned}
+s(x;\nu)={}&\tfrac12\psi\!\left(\tfrac{\nu+1}{2}\right)-\tfrac12\psi\!\left(\tfrac{\nu}{2}\right)-\tfrac1{2\nu}\\
+&-\tfrac12\log\!\left(1+\tfrac{x^2}{\nu}\right)+\tfrac{\nu+1}{2}\cdot\frac{x^2/\nu^2}{1+x^2/\nu}
+\end{aligned}
+$$
 
 其中 $\psi$ 是 digamma 函数。$I(\nu)=E[s^2]$ 是 Cramér–Rao 下界 $\mathrm{CRLB}=1/(nI(\nu))$ 的分母。为了不靠记忆里的闭式公式，本文用三条独立路径算它：对 $s^2f$ 做无穷区间数值积分、40 万次蒙特卡洛取 $s^2$ 均值、以及 40 万样本上对 $\log f$ 做中心二阶差分取 $-E[\ell'']$。
 

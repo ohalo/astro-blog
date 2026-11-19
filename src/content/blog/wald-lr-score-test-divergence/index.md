@@ -35,13 +35,17 @@ difficulty: advanced
 
 设 $x_t=\phi x_{t-1}+\varepsilon_t$、$\varepsilon_t\sim N(0,\sigma^2)$，检验 $H_0:\phi=\phi_0$。给定初值后，条件对数似然里的 $\sigma^2$ 可以 profile 掉，剩下全部信息压在三个充分统计量里：$S_0=\sum x_{t-1}^2$、$S_1=\sum x_{t-1}x_t$、$S_2=\sum x_t^2$。于是 $\hat\phi=S_1/S_0$，无约束残差平方和 $\mathrm{RSS}(\hat\phi)=S_2-S_1^2/S_0$，而约束残差平方和满足平方和分解：
 
-$$\mathrm{RSS}(\phi_0)=\mathrm{RSS}(\hat\phi)+(\hat\phi-\phi_0)^2S_0$$
+$$
+\mathrm{RSS}(\phi_0)=\mathrm{RSS}(\hat\phi)+(\hat\phi-\phi_0)^2S_0
+$$
 
 定义 $u=(\hat\phi-\phi_0)^2S_0/\mathrm{RSS}(\hat\phi)$，则 $\mathrm{RSS}(\phi_0)/\mathrm{RSS}(\hat\phi)=1+u$。把 $\hat\sigma^2=\mathrm{RSS}(\hat\phi)/n$、$\tilde\sigma^2=\mathrm{RSS}(\phi_0)/n$ 分别代进三个统计量的标准定义，得到三条闭式：
 
-$$W=\frac{(\hat\phi-\phi_0)^2S_0}{\hat\sigma^2}=n\,u,\qquad
+$$
+W=\frac{(\hat\phi-\phi_0)^2S_0}{\hat\sigma^2}=n\,u,\qquad
 \Lambda=n\log\frac{\tilde\sigma^2}{\hat\sigma^2}=n\log(1+u),\qquad
-LM=\frac{(\hat\phi-\phi_0)^2S_0}{\tilde\sigma^2}=\frac{n\,u}{1+u}$$
+LM=\frac{(\hat\phi-\phi_0)^2S_0}{\tilde\sigma^2}=\frac{n\,u}{1+u}
+$$
 
 因为对 $u\ge0$ 恒有 $\frac{u}{1+u}\le\log(1+u)\le u$，三者的大小顺序是**代数恒等式**，不是抽样噪声。这也解释了为什么 Wald 永远最激进、LM 永远最保守：它们把同一个证据强度 $u$ 放大或压缩了。
 
@@ -74,11 +78,15 @@ LM=\frac{(\hat\phi-\phi_0)^2S_0}{\tilde\sigma^2}=\frac{n\,u}{1+u}$$
 
 这是全文最该记住的一节。取一族光滑、在原假设处导数非零（$g'(0)=1$，满足正则条件）的重参数化：
 
-$$\phi=g_a(\psi)=\frac{\psi}{1-a\psi},\qquad \psi=\frac{\phi}{1+a\phi},\qquad a\ge0$$
+$$
+\phi=g_a(\psi)=\frac{\psi}{1-a\psi},\qquad \psi=\frac{\phi}{1+a\phi},\qquad a\ge0
+$$
 
 $a=0$ 就是原始 $\phi$ 坐标系。$H_0:\phi=0$ 与 $H_0:\psi=0$ 是**同一个假设**，profile 似然的最大值也一模一样，所以 LR 不变；链式法则下 $U(\psi_0)=g'(\psi_0)U(\phi_0)$ 与 $I(\psi_0)=g'(\psi_0)^2I(\phi_0)$ 中 $g'$ 抵消，所以 Fisher 信息版 LM 也不变。Wald 却要用 $\hat\psi$ 处的信息，多出一个 $(1+a\hat\phi)^2$ 因子：
 
-$$W_\psi=W_\phi\,(1+a\hat\phi)^2$$
+$$
+W_\psi=W_\phi\,(1+a\hat\phi)^2
+$$
 
 ![图4：重参数化下只有 Wald 变化，翻转率随 a 上升](/images/wald-lr-score-test-divergence/fig4_reparameterization.png)
 

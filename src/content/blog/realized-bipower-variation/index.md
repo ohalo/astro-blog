@@ -29,7 +29,9 @@ difficulty: intermediate
 
 高频对数收益离散化:
 
-$$dr_t = \sigma_t\,dW_t + J_t\,dN_t$$
+$$
+dr_t = \sigma_t\,dW_t + J_t\,dN_t
+$$
 
 其中 $\sigma_t dW_t$ 是连续扩散,$J_t dN_t$ 是泊松跳跃(瞬时位移)。
 
@@ -44,7 +46,9 @@ $$dr_t = \sigma_t\,dW_t + J_t\,dN_t$$
 
 BV 的定义是:
 
-$$BV = \mu_1^{-2} \sum_{t=2}^{n} |r_t|\,|r_{t-1}|, \qquad \mu_1 = \sqrt{2/\pi} \approx 0.7979$$
+$$
+BV = \mu_1^{-2} \sum_{t=2}^{n} |r_t|\,|r_{t-1}|, \qquad \mu_1 = \sqrt{2/\pi} \approx 0.7979
+$$
 
 为什么它能只估连续部分?关键点:
 
@@ -144,8 +148,13 @@ for i in range(M):
 
 更准确的做法是直接分解:
 
-$$JV = \max(RV - BV,\; 0) \qquad\text{(跳跃变差)}$$
-$$RV = BV + JV$$
+$$
+JV = \max(RV - BV,\; 0) \qquad\text{(跳跃变差)}
+$$
+
+$$
+RV = BV + JV
+$$
 
 ![RV/BV 比值时序(跳跃检测)+ 连续/跳跃方差分解](/images/realized-bipower-variation/ratio_ts_decomposition.png)
 
@@ -155,9 +164,11 @@ $$RV = BV + JV$$
 
 朴素比值阈值依赖经验,且有限样本下方差大。BNS 给出带渐近零分布的正式检验:
 
-$$Z = \frac{RV - BV}{\sqrt{\widehat{V}}}, \qquad 
+$$
+Z = \frac{RV - BV}{\sqrt{\widehat{V}}}, \qquad
 \widehat{V} = \bigl(\mu_1^{-4} + 2\mu_1^{-2} - 5\bigr)\,\frac{1}{n}\sum_{t=1}^{n} |r_t|^4
-\;\xrightarrow{d}\; N(0,1) \quad (\text{无跳时})$$
+\;\xrightarrow{d}\; N(0,1) \quad (\text{无跳时})
+$$
 
 其中 $\mu_1^{-4}\approx 2.466$, $\mu_1^{-2}\approx 1.571$,故系数 $\mu_1^{-4}+2\mu_1^{-2}-5 \approx 0.608$。跳跃存在时 $RV-BV>0$,$Z$ 显著为正——在 99% 置信下判跳。
 

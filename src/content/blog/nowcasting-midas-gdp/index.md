@@ -40,19 +40,25 @@ Nowcasting 不是「给定全部数据预测一个点」，而是「数据陆续
 
 我们造一个自洽的面板，让 nowcasting 有真实的领先/解释力来源。核心设定：
 
-$$f_q = \phi f_{q-1} + \eta_q,\qquad \eta_q\sim\mathcal N(0,Q_\eta)$$
+$$
+f_q = \phi f_{q-1} + \eta_q,\qquad \eta_q\sim\mathcal N(0,Q_\eta)
+$$
 
 季度 GDP 增速：
 
-$$g_q = f_q + \varepsilon_q^{g}$$
+$$
+g_q = f_q + \varepsilon_q^{g}
+$$
 
 三条混频指示变量，都加载到**所在季度**的因子 $f_q$（这是它们对 GDP 有预测力的根本原因）：
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 \text{月产}_{q,k} &= \lambda_m f_q + \varepsilon^{m}_{q,k} \\
 \text{周失业金}_{q,j} &= \lambda_w f_q + \varepsilon^{w}_{q,j} \quad (\lambda_w<0) \\
 \text{日压力}_{q,i} &= \lambda_d f_q + \varepsilon^{d}_{q,i}
-\end{aligned}$$
+\end{aligned}
+$$
 
 注意周度初请失业金取**负**载荷 $\lambda_w<0$：经济好时失业金申领少，所以因子高 ↔ 失业金低。三条指标频率不同（月 3 次、周 13 次、日 65 次），季内到位节奏天然错开——正是 ragged-edge。
 
@@ -92,7 +98,9 @@ Dd = gen_hf(lam_d, var_d, n_d)   # 日度金融压力指数
 
 单条观测的更新（标量）：
 
-$$S = H^2 P + R,\qquad K = \frac{PH}{S},\qquad m \mathrel{+}= K(y-Hm),\qquad P \mathrel{-}= KHP$$
+$$
+S = H^2 P + R,\qquad K = \frac{PH}{S},\qquad m \mathrel{+}= K(y-Hm),\qquad P \mathrel{-}= KHP
+$$
 
 ```python
 def run_nowcast():

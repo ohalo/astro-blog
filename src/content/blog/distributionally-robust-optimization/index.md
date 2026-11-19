@@ -33,11 +33,15 @@ difficulty: advanced
 
 样本只有 400 个点，你敢说这就是真分布吗？不敢。DRO 的做法：以经验分布 P̂_n 为球心，画一个半径 ε 的 Wasserstein-2 球
 
-$$ \mathcal{B}_\varepsilon(P_n) = \big\{\, Q : W_2(P_n, Q) \le \varepsilon \,\big\} $$
+$$
+\mathcal{B}_\varepsilon(P_n) = \big\{\, Q : W_2(P_n, Q) \le \varepsilon \,\big\}
+$$
 
 球里每一个 Q 都是"可能被你误当成真分布"的候选。优化目标变成
 
-$$ \min_{w} \max_{Q \in \mathcal{B}_\varepsilon(P_n)} \mathbb{E}_Q\big[\,\text{损失}(w)\,\big] $$
+$$
+\min_{w} \max_{Q \in \mathcal{B}_\varepsilon(P_n)} \mathbb{E}_Q\big[\,\text{损失}(w)\,\big]
+$$
 
 图1 把球画了出来：经验分布（蓝）周围 ±ε 的最坏情况成员（红 = 均值上移、绿 = 均值下移）。注意黑虚线是真值 μ₀ = 0.000160，它落在球的覆盖范围内——这正是有限样本保证的含义。
 
@@ -45,7 +49,9 @@ $$ \min_{w} \max_{Q \in \mathcal{B}_\varepsilon(P_n)} \mathbb{E}_Q\big[\,\text{�
 
 本例真分布是一个带肥左尾的混合：
 
-$$ R \sim 0.8 \cdot \mathcal{N}(0.0012,\,0.012^2) + 0.2 \cdot \mathcal{N}(-0.0040,\,0.035^2) $$
+$$
+R \sim 0.8 \cdot \mathcal{N}(0.0012,\,0.012^2) + 0.2 \cdot \mathcal{N}(-0.0040,\,0.035^2)
+$$
 
 μ₂ < 0 的那 20% 就是"偶发回撤"。代码先固定一次主样本（n = 400），算 μ̂、σ̂²：
 
@@ -79,8 +85,10 @@ print(MU0, MU_HAT, STD_MU)
 
 为什么球内最坏情况期望收益恰好是 μ̂ − ε？直觉：对手想让你的期望收益尽可能低，它就把整族分布向下平移，直到平移量触到球的边界 W₂ = ε。而平移引理给出
 
-$$ W_2^2(P, Q_{shift}) = \frac{1}{n}\sum_{i=1}^{n} (\text{shift})^2 = \text{shift}^2
-\quad\Longrightarrow\quad W_2 = |\text{shift}| $$
+$$
+ W_2^2(P, Q_{shift}) = \frac{1}{n}\sum_{i=1}^{n} (\text{shift})^2 = \text{shift}^2
+\quad\Longrightarrow\quad W_2 = |\text{shift}|
+$$
 
 所以"最坏情况"就是把均值压低 ε。图2 画出期望收益的 ε 带：黑点是真值 μ₀，红虚线是覆盖它所需的 ε = |μ̂ − μ₀| = 0.00114574。
 
@@ -102,7 +110,9 @@ print("W2(经验分布, 经验分布+eps) =", w2_shift(SAMPLE, EPS_VIZ),
 
 均值-方差下 w*(μ, σ²) = μ / (γσ²)。把 μ 换成最坏情况期望收益 μ̂ − ε，得到 DRO 仓位
 
-$$ w^*_{\text{DRO}}(\varepsilon) = \frac{\hat\mu - \varepsilon}{\gamma\,\hat\sigma^2} $$
+$$
+w^*_{\text{DRO}}(\varepsilon) = \frac{\hat\mu - \varepsilon}{\gamma\,\hat\sigma^2}
+$$
 
 图3 一目了然：SAA 是一条不随 ε 变的水平线 w* = 2.117；DRO 曲线随 ε 增大单调向 0 收缩；在 ε* = std(μ̂) = 0.000955 处落到 0.569；黑虚线是真最优 0.219。鲁棒性 = 谨慎，数学上就是这条向下的斜线。
 

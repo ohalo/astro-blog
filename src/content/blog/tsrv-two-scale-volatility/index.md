@@ -29,26 +29,36 @@ difficulty: advanced
 
 设真实对数价格过程是扩散 $dX_t = \sigma_t dW_t$，其**积分方差(积分波动率)**定义为：
 
-$$IV = \int_0^T \sigma_t^2 dt$$
+$$
+IV = \int_0^T \sigma_t^2 dt
+$$
 
 这是「真实波动率」的无噪声目标。观测价格则是
 
-$$Y_t = X_t + \varepsilon_t,\qquad \varepsilon_t \sim iid(0,\eta^2)$$
+$$
+Y_t = X_t + \varepsilon_t,\qquad \varepsilon_t \sim iid(0,\eta^2)
+$$
 
 其中 $\varepsilon_t$ 是微观结构噪声(买卖价差等)，且与 $X_t$ 独立。高频已实现方差定义为全样本二阶差分平方和：
 
-$$RV_{all} = \sum_{i=1}^{n} (Y_{i} - Y_{i-1})^2$$
+$$
+RV_{all} = \sum_{i=1}^{n} (Y_{i} - Y_{i-1})^2
+$$
 
 把 $Y=X+\varepsilon$ 代进去展开：
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 RV_{all} &= \sum (\Delta X_i + \Delta\varepsilon_i)^2 \\
 &= \sum (\Delta X_i)^2 + 2\sum \Delta X_i \Delta\varepsilon_i + \sum (\Delta\varepsilon_i)^2
-\end{aligned}$$
+\end{aligned}
+$$
 
 第一项 $\sum(\Delta X_i)^2 \xrightarrow{p} IV$（真实积分方差）；第二项因 $\varepsilon$ 与 $X$ 独立、期望为 0；**第三项才是关键**：$\sum(\Delta\varepsilon_i)^2$ 共有 $n$ 项，每项期望约为 $2\eta^2$（独立噪声一阶差分方差），所以
 
-$$\mathbb{E}[RV_{all}] \approx IV + 2n\eta^2$$
+$$
+\mathbb{E}[RV_{all}] \approx IV + 2n\eta^2
+$$
 
 采样越密($\,n$ 越大)、噪声越大($\eta$ 越大)，这个 $2n\eta^2$ 的偏差项膨胀得越快——这正是「越高频越失真」的根源。在我们的合成里 $n=4000$、$\eta=0.002$，偏差项把 IV 从 0.092 顶到 0.122。
 
@@ -56,7 +66,9 @@ $$\mathbb{E}[RV_{all}] \approx IV + 2n\eta^2$$
 
 TSRV 的思路非常漂亮：**与其全样本算，不如先用「每隔 K 步取一个」的粗采样算 RV_K**。粗采样时，相邻两个被保留的观测之间隔了 K 步，它们之间的噪声差分 $\Delta\varepsilon$ 跨了 K 步，两两噪声相关性弱、平方和的期望变成约 $2\eta^2 \cdot (n/K)$ 量级——但代价是被估的量也放大了 K 倍（粗采样漏掉了中间 K−1 段真实波动）。把两者写成关于 $1/K$ 的线性关系：
 
-$$\mathbb{E}[RV_K] \approx IV + \frac{2n\eta^2}{K} = IV + C\cdot\frac{1}{K}$$
+$$
+\mathbb{E}[RV_K] \approx IV + \frac{2n\eta^2}{K} = IV + C\cdot\frac{1}{K}
+$$
 
 即 **$RV_K$ 是 $1/K$ 的线性函数，斜率带着噪声、截距就是我们要的 IV**。于是：
 
@@ -65,7 +77,9 @@ $$\mathbb{E}[RV_K] \approx IV + \frac{2n\eta^2}{K} = IV + C\cdot\frac{1}{K}$$
 
 Zhang 等人进一步给出闭式的「两尺度校正」，避免逐点回归：
 
-$$TSRV(K) = \frac{K\cdot RV_K - RV_{all}}{K-1}$$
+$$
+TSRV(K) = \frac{K\cdot RV_K - RV_{all}}{K-1}
+$$
 
 它等价于用 $RV_K$ 估 IV、用 $RV_{all}$ 估噪声项后做无偏抵消。下面用 Python 直接实现这两种等价路径。
 
