@@ -1,0 +1,52 @@
+{
+  "p": 0.55,
+  "b": 1.0,
+  "f_star_binary": 0.10000000000000009,
+  "g_full": 0.005008366846356839,
+  "g_half": 0.003752607818789871,
+  "g_double": -0.00013774185471934763,
+  "g_over50": -0.08891042179248496,
+  "monte_carlo": {
+    "half Kelly 0.05": {
+      "median_log_wealth": 1.8763039093949345,
+      "median_wealth_mult": 6.529327223336059,
+      "mean_wealth_mult": 12.081718417508048,
+      "p_below_half": 0.011275
+    },
+    "full Kelly 0.10": {
+      "median_log_wealth": 2.504183423178443,
+      "median_wealth_mult": 12.233565240213839,
+      "mean_wealth_mult": 145.52624044391763,
+      "p_below_half": 0.081885
+    },
+    "double Kelly 0.20": {
+      "median_log_wealth": -0.0688709273596686,
+      "median_wealth_mult": 0.9334471547919189,
+      "mean_wealth_mult": 14548.659445843155,
+      "p_below_half": 0.446335
+    },
+    "overbet 0.50": {
+      "median_log_wealth": -44.45521089624248,
+      "median_wealth_mult": 4.935682512057481e-20,
+      "mean_wealth_mult": 0.3621582932809355,
+      "p_below_half": 0.99982
+    }
+  },
+  "T": 500,
+  "N": 200000,
+  "mu": 0.06,
+  "sigma": 0.16,
+  "rf": 0.02,
+  "f_star_cont": 2.34375,
+  "g_cont_full": 0.0703125,
+  "g_cont_half": 0.052734375,
+  "half_fraction": 0.75,
+  "mu_hat": 0.12,
+  "f_hat": 4.6875,
+  "g_at_overestimate": 0.0,
+  "ratio_scan": {
+    "at_2x_full_growth": 0.00035288526489224425,
+    "at_2x_half_growth": 0.0703123890297909
+  },
+  "full_kelly_zero_at_ratio": 2.007537688442211
+}
