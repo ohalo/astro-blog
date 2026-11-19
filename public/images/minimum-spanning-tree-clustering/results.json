@@ -1,0 +1,63 @@
+{
+  "N": 32,
+  "K": 4,
+  "T": 800,
+  "rho_in": 0.7,
+  "rho_out": 0.1,
+  "n_edges": 31,
+  "edge_w_mean": 0.7948,
+  "edge_w_min": 0.7154,
+  "edge_w_max": 1.2985,
+  "cut_w": [
+    1.2776,
+    1.2861,
+    1.2985
+  ],
+  "intra_w_mean": 0.742,
+  "inter_w_mean": 1.2874,
+  "intra_edge_ratio": 0.9032,
+  "pur_mst": 1.0,
+  "ari_mst": 1.0,
+  "pur_avg": 1.0,
+  "ari_avg": 1.0,
+  "pur_ward": 1.0,
+  "ari_ward": 1.0,
+  "reps": [
+    1,
+    10,
+    18,
+    27
+  ],
+  "rep_sectors": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "vol_mst": 0.1024,
+  "sh_mst": 0.9812,
+  "dd_mst": -0.1178,
+  "vol_rand": 0.1201,
+  "sh_rand": 0.6599,
+  "vol_conc": 0.1685,
+  "sh_conc": 0.2521,
+  "vol_reduction": 14.73,
+  "hubs": [
+    [
+      "A2",
+      4
+    ],
+    [
+      "A11",
+      4
+    ],
+    [
+      "A19",
+      3
+    ],
+    [
+      "A28",
+      3
+    ]
+  ]
+}
