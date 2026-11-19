@@ -36,47 +36,61 @@ const levelLabel: Record<string, string> = {
   none: t('未分级', 'Unleveled')
 }
 
-// 主题：按真实 tag / 标题关键词归类，计数为实际命中篇数
+// 主题：按真实 tag / 标题关键词归类，计数为实际命中篇数。
+// tid 是稳定标识（进 URL 参数用），不随展示语言 / 顺序变化。
 const topics = [
-  { zh: '因子研究', en: 'Factor research', keys: ['因子', 'factor', 'alpha'] },
+  { tid: 'factor', zh: '因子研究', en: 'Factor research', keys: ['因子', 'factor', 'alpha'] },
   {
+    tid: 'stat-arb',
     zh: '统计套利',
     en: 'Statistical arbitrage',
     keys: ['套利', 'arbitrage', '协整', 'cointegration', 'pairs']
   },
   {
+    tid: 'micro',
     zh: '市场微观结构',
     en: 'Market microstructure',
     keys: ['微观', 'microstructure', '订单', 'orderbook', '限价', '高频', 'hawkes']
   },
   {
+    tid: 'option',
     zh: '期权定价',
     en: 'Option pricing',
     keys: ['期权', 'option', '定价', 'pricing', 'bsm', 'heston']
   },
   {
+    tid: 'ml',
     zh: '机器学习选股',
     en: 'ML stock selection',
     keys: ['机器学习', 'machine', 'neural', '神经网络', '深度学习', '选股', 'xgboost']
   },
-  { zh: '回测框架', en: 'Backtesting', keys: ['回测', 'backtest', '框架'] },
-  { zh: '风险管理', en: 'Risk management', keys: ['风险', 'risk', '回撤', 'drawdown', 'var'] },
+  { tid: 'backtest', zh: '回测框架', en: 'Backtesting', keys: ['回测', 'backtest', '框架'] },
   {
+    tid: 'risk',
+    zh: '风险管理',
+    en: 'Risk management',
+    keys: ['风险', 'risk', '回撤', 'drawdown', 'var']
+  },
+  {
+    tid: 'timeseries',
     zh: '时间序列',
     en: 'Time series',
     keys: ['时间序列', 'time series', 'arima', 'garch', '波动率', 'volatility']
   },
   {
+    tid: 'portfolio',
     zh: '组合优化',
     en: 'Portfolio optimization',
     keys: ['组合', 'portfolio', '优化', 'optimization', 'kelly', '凯利']
   },
   {
+    tid: 'stochastic',
     zh: '随机过程',
     en: 'Stochastic processes',
     keys: ['随机', 'stochastic', '泊松', 'poisson', '布朗', 'brownian', '鞅']
   },
   {
+    tid: 'numeric',
     zh: '数值方法',
     en: 'Numerical methods',
     keys: ['数值', 'numerical', '蒙特卡洛', 'monte', '傅里叶', 'fourier', 'fft']
@@ -118,6 +132,7 @@ const items = quantPosts.map((p) => ({
   u: `/blog/${p.id}`,
   date: fmtDate(p.data.publishDate),
   level: p.data.difficulty || 'none',
+  k: matchTopic(p)?.tid || 'other',
   topic: matchTopic(p)?.name || t('其他主题', 'Other'),
   tags: p.data.tags.join(' ')
 }))
@@ -260,12 +275,12 @@ const firstPage = items.slice(0, PER_PAGE)
 
       <div class='hg-filter__group' id='hg-filter-topics'>
         <span class='hg-filter__grouptitle'>{t('主题', 'TOPIC')}</span>
-        <button class='hg-filter__item hg-filter__item--active' data-topic='all' type='button'>
+        <button class='hg-filter__item hg-filter__item--active' data-tid='all' type='button'>
           <span>{t('全部主题', 'All topics')}</span><em>{counts.all.toLocaleString('en-US')}</em>
         </button>
         {
           shownTopics.map((topic) => (
-            <button class='hg-filter__item' data-topic={topic.name} type='button'>
+            <button class='hg-filter__item' data-tid={topic.tid} type='button'>
               <span>{topic.name}</span>
               <em>{topic.count}</em>
             </button>
@@ -274,7 +289,7 @@ const firstPage = items.slice(0, PER_PAGE)
         <span id='hg-topic-rest' hidden>
           {
             restTopics.map((topic) => (
-              <button class='hg-filter__item' data-topic={topic.name} type='button'>
+              <button class='hg-filter__item' data-tid={topic.tid} type='button'>
                 <span>{topic.name}</span>
                 <em>{topic.count}</em>
               </button>
@@ -403,7 +418,16 @@ const firstPage = items.slice(0, PER_PAGE)
   const labels = ui.labels
   const noteWord = ui.noteWord
 
-  type Item = { t: string; d: string; u: string; date: string; level: string; topic: string; tags: string }
+  type Item = {
+    t: string
+    d: string
+    u: string
+    date: string
+    level: string
+    k: string
+    topic: string
+    tags: string
+  }
   let items: Item[] = []
   try {
     items = JSON.parse(dataEl?.textContent || '[]') as Item[]
@@ -411,7 +435,51 @@ const firstPage = items.slice(0, PER_PAGE)
     items = []
   }
 
-  const state = { q: '', level: 'all', topic: 'all', page: 1 }
+  const state = { q: '', level: 'all', tid: 'all', page: 1 }
+  const LEVELS = ['all', 'beginner', 'intermediate', 'advanced']
+
+  // ── 可分享筛选：level / topic / q / page 全进 query，支持回退按钮 ──
+  function readUrl() {
+    const p = new URLSearchParams(location.search)
+    const lv = p.get('level') || 'all'
+    state.level = LEVELS.includes(lv) ? lv : 'all'
+    state.tid = p.get('topic') || 'all'
+    state.q = p.get('q') || ''
+    const pg = Number.parseInt(p.get('page') || '1', 10)
+    state.page = Number.isFinite(pg) && pg > 0 ? pg : 1
+  }
+
+  function writeUrl(replace: boolean) {
+    const p = new URLSearchParams()
+    if (state.level !== 'all') p.set('level', state.level)
+    if (state.tid !== 'all') p.set('topic', state.tid)
+    if (state.q.trim()) p.set('q', state.q)
+    if (state.page > 1) p.set('page', String(state.page))
+    const qs = p.toString()
+    const url = location.pathname + (qs ? `?${qs}` : '') + location.hash
+    try {
+      if (replace) history.replaceState(history.state, '', url)
+      else history.pushState(history.state, '', url)
+    } catch {
+      /* 少见环境禁 history 时忽略，不影响筛选本身 */
+    }
+  }
+
+  function syncControls() {
+    if (searchEl) searchEl.value = state.q
+    syncActive('#hg-tabs .hg-tab', 'level', state.level)
+    syncActive('#hg-filter-levels .hg-filter__item', 'level', state.level)
+    syncActive('#hg-filter-topics .hg-filter__item[data-tid]', 'tid', state.tid)
+    // 分享链接选中的主题若藏在「展开全部」里，自动展开
+    if (state.tid !== 'all') {
+      const active = document.querySelector(`#hg-topic-rest [data-tid="${CSS.escape(state.tid)}"]`)
+      if (active) {
+        const rest = document.getElementById('hg-topic-rest')
+        if (rest) rest.hidden = false
+        document.getElementById('hg-topic-more')?.remove()
+      }
+    }
+  }
   const esc = (s: string) =>
     String(s).replace(/[&<>"']/g, (c) =>
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] || c
@@ -421,7 +489,7 @@ const firstPage = items.slice(0, PER_PAGE)
     const q = state.q.trim().toLowerCase()
     return items.filter((it) => {
       if (state.level !== 'all' && it.level !== state.level) return false
-      if (state.topic !== 'all' && it.topic !== state.topic) return false
+      if (state.tid !== 'all' && it.k !== state.tid) return false
       if (q && !`${it.t} ${it.d} ${it.tags} ${it.topic}`.toLowerCase().includes(q)) return false
       return true
     })
@@ -490,6 +558,7 @@ const firstPage = items.slice(0, PER_PAGE)
       syncActive('#hg-tabs .hg-tab', 'level', state.level)
       syncActive('#hg-filter-levels .hg-filter__item', 'level', state.level)
       render()
+      writeUrl(false)
     })
   })
 
@@ -500,17 +569,21 @@ const firstPage = items.slice(0, PER_PAGE)
       syncActive('#hg-tabs .hg-tab', 'level', state.level)
       syncActive('#hg-filter-levels .hg-filter__item', 'level', state.level)
       render()
+      writeUrl(false)
     })
   })
 
-  document.querySelectorAll<HTMLElement>('#hg-filter-topics .hg-filter__item[data-topic]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      state.topic = btn.dataset.topic || 'all'
-      state.page = 1
-      syncActive('#hg-filter-topics .hg-filter__item[data-topic]', 'topic', state.topic)
-      render()
-    })
-  })
+  document.querySelectorAll<HTMLElement>('#hg-filter-topics .hg-filter__item[data-tid]').forEach(
+    (btn) => {
+      btn.addEventListener('click', () => {
+        state.tid = btn.dataset.tid || 'all'
+        state.page = 1
+        syncActive('#hg-filter-topics .hg-filter__item[data-tid]', 'tid', state.tid)
+        render()
+        writeUrl(false)
+      })
+    }
+  )
 
   const moreBtn = document.getElementById('hg-topic-more')
   const restEl = document.getElementById('hg-topic-rest')
@@ -523,6 +596,7 @@ const firstPage = items.slice(0, PER_PAGE)
     state.q = searchEl.value
     state.page = 1
     render()
+    writeUrl(true)
   })
 
   pagerEl?.addEventListener('click', (event) => {
@@ -533,8 +607,17 @@ const firstPage = items.slice(0, PER_PAGE)
     else if (btn.dataset.page) state.page = Number(btn.dataset.page)
     else return
     render()
+    writeUrl(true)
     document.querySelector('.hg-toolbar')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   })
 
+  // 初始：从分享链接恢复筛选；回退/前进时重新同步
+  readUrl()
+  syncControls()
   render()
+  window.addEventListener('popstate', () => {
+    readUrl()
+    syncControls()
+    render()
+  })
 </script>

@@ -154,7 +154,12 @@ export const zh = {
     hintLabel: '📚 属于学习路径',
     hintIndex: '第 {i}/{n} 篇',
     hintPrev: '← 上一篇：{title}',
-    hintNext: '下一篇：{title} →'
+    hintNext: '下一篇：{title} →',
+    reviewTitle: '今日复习',
+    reviewSub: '按遗忘曲线（1 / 2 / 4 / 7 / 15 / 30 / 60 天）到期的 {n} 篇',
+    reviewMeta: '{d} 天前学完 · 第 {s}/{S} 轮复习',
+    reviewBtn: '标已复习',
+    reviewMore: '还有 {n} 篇稍后再复习',
   },
   links: {
     title: '股票网址导航',

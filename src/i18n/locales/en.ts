@@ -154,7 +154,12 @@ export const en: Dictionary = {
     hintLabel: '📚 Part of the learning path',
     hintIndex: 'Article {i}/{n}',
     hintPrev: '← Previous: {title}',
-    hintNext: 'Next: {title} →'
+    hintNext: 'Next: {title} →',
+    reviewTitle: 'Review today',
+    reviewSub: '{n} checked lesson(s) due on the forgetting curve (1 / 2 / 4 / 7 / 15 / 30 / 60 days)',
+    reviewMeta: 'finished {d} d ago · round {s}/{S}',
+    reviewBtn: 'Mark reviewed',
+    reviewMore: '+{n} more waiting',
   },
   links: {
     title: 'Stock Site Directory',

@@ -48,6 +48,14 @@ const paths = learningPaths
 const totalPosts = paths.reduce((n, p) => n + p.posts.length, 0)
 const totalMinutes = paths.reduce((n, p) => n + p.posts.reduce((m, x) => m + x.minutes, 0), 0)
 const totalDays = Math.max(1, Math.round(totalMinutes / 45))
+
+// 今日复习卡的客户端文案（艾宾浩斯间隔见脚本 LADDER）
+const reviewSafe = JSON.stringify({
+  sub: L.reviewSub,
+  meta: L.reviewMeta,
+  btn: L.reviewBtn,
+  more: L.reviewMore
+}).replace(/</g, '\\u003c')
 ---
 
 <p class='hg-learn-intro text-muted-foreground'>
@@ -58,6 +66,24 @@ const totalDays = Math.max(1, Math.round(totalMinutes / 45))
     days: totalDays
   })}
 </p>
+
+{
+  /* 今日复习：从已打勾的课里按遗忘曲线挑到期的（进度存本机，见脚本） */
+  <section
+    id='lp-review'
+    class='lp-card lp-review mb-4 rounded-2xl border bg-background px-4 py-3 sm:mb-6 sm:px-6 sm:py-5'
+    hidden
+  >
+    <header class='flex flex-wrap items-center gap-x-3 gap-y-2'>
+      <h2>
+        <span class='hg-path-no'>🔁</span>
+        <span class='hg-path-name'>{L.reviewTitle}</span>
+      </h2>
+      <span class='lp-review-sub text-sm text-muted-foreground'></span>
+    </header>
+    <ul class='lp-review-list mt-3 flex list-none flex-col gap-1.5 p-0'></ul>
+  </section>
+}
 
 <div class='mt-4 sm:mt-6 flex flex-col gap-4 sm:gap-6'>
   {paths.map((path, pi) => (
@@ -131,6 +157,8 @@ const totalDays = Math.max(1, Math.round(totalMinutes / 45))
   ))}
 </div>
 
+<script type='application/json' id='lp-review-i18n' is:inline set:html={reviewSafe}></script>
+
 <style>
   .lp-bar-track {
     background: color-mix(in srgb, hsl(var(--muted)) 80%, transparent);
@@ -178,10 +206,70 @@ const totalDays = Math.max(1, Math.round(totalMinutes / 45))
   }
 </style>
 
-<script>
-  const KEY = '***'
+<style is:global>
+  /* 复习卡片段是脚本动态生成的，够不着 scoped 样式，这里走全局 */
+  .lp-review {
+    border-color: color-mix(in srgb, hsl(var(--primary)) 35%, hsl(var(--border)));
+  }
+  .lp-review .lp-review-item a {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+  }
+  .lp-review .lp-review-item a:hover {
+    color: hsl(var(--primary));
+  }
+  .lp-review-meta {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+    font-variant-numeric: tabular-nums;
+  }
+  .lp-review-btn {
+    flex-shrink: 0;
+    cursor: pointer;
+    border: 1px solid color-mix(in srgb, hsl(var(--primary)) 55%, transparent);
+    background: transparent;
+    color: hsl(var(--primary));
+    border-radius: 0.5rem;
+    padding: 0.15rem 0.65rem;
+    font-size: 0.75rem;
+    transition: background 0.18s ease;
+  }
+  .lp-review-btn:hover {
+    background: color-mix(in srgb, hsl(var(--primary)) 12%, transparent);
+  }
+  .lp-review-more {
+    font-size: 0.75rem;
+    color: hsl(var(--muted-foreground));
+    padding-left: 0.25rem;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lp-review-btn {
+      transition: none;
+    }
+  }
+</style>
 
-  function load(): Record<string, Record<string, true>> {
+<script>
+  /**
+   * 学习进度 v2：
+   * - 打勾值从 true 升级为 { doneAt, stage, lastAt }（旧 true 自动迁移，不丢进度）
+   * - 「今日复习」按艾宾浩斯阶梯 LADDER 天，从已打勾的课里挑到期的，最多展示 3 篇
+   */
+  type Mark = { doneAt: number; stage: number; lastAt: number }
+  type Bucket = Record<string, true | Mark>
+  type Store = Record<string, Bucket>
+
+  const KEY = 'hg-lear…s-v1'
+  const LADDER = [1, 2, 4, 7, 15, 30, 60]
+  const DAY = 86_400_000
+
+  function load(): Store {
     try {
       return JSON.parse(localStorage.getItem(KEY) ?? '{}')
     } catch {
@@ -189,7 +277,7 @@ const totalDays = Math.max(1, Math.round(totalMinutes / 45))
     }
   }
 
-  function save(data: Record<string, Record<string, true>>) {
+  function save(data: Store) {
     try {
       localStorage.setItem(KEY, JSON.stringify(data))
     } catch {
@@ -199,6 +287,23 @@ const totalDays = Math.max(1, Math.round(totalMinutes / 45))
 
   const progress = load()
 
+  // 旧格式 true → Mark（按“现在刚学完”起算，明天到期第一轮复习）
+  {
+    const now = Date.now()
+    let touched = false
+    for (const bucket of Object.values(progress)) {
+      for (const [slug, v] of Object.entries(bucket)) {
+        if (v === true) {
+          bucket[slug] = { doneAt: now, stage: 0, lastAt: now }
+          touched = true
+        }
+      }
+    }
+    if (touched) save(progress)
+  }
+
+  const isDone = (v: true | Mark | undefined): v is true | Mark => !!v
+
   function renderSection(section: HTMLElement) {
     const pathId = section.dataset.path as string
     const done = progress[pathId] ?? {}
@@ -207,10 +312,10 @@ const totalDays = Math.max(1, Math.round(totalMinutes / 45))
     let count = 0
 
     for (const item of items) {
-      const isDone = done[item.dataset.slug as string] === true
-      item.dataset.done = String(isDone)
-      item.querySelector('.lp-check')?.setAttribute('aria-pressed', String(isDone))
-      if (isDone) count++
+      const isItemDone = isDone(done[item.dataset.slug as string])
+      item.dataset.done = String(isItemDone)
+      item.querySelector('.lp-check')?.setAttribute('aria-pressed', String(isItemDone))
+      if (isItemDone) count++
     }
 
     // 第一条未完成的标 ▶（全部完成则不标）
@@ -222,13 +327,109 @@ const totalDays = Math.max(1, Math.round(totalMinutes / 45))
     if (countEl) {
       countEl.textContent =
         count === total && total > 0
-          ? (section.dataset.allDone ?? '').replace('{done}', String(count)).replace('{total}', String(total))
+          ? (section.dataset.allDone ?? '')
+              .replace('{done}', String(count))
+              .replace('{total}', String(total))
           : `${count}/${total}`
     }
 
     const bar = section.querySelector<HTMLElement>('.lp-bar')
     if (bar) bar.style.width = total ? `${Math.round((count / total) * 100)}%` : '0%'
   }
+
+  // ───────────────── 今日复习 ─────────────────
+  const reviewSec = document.getElementById('lp-review')
+  const reviewUl = reviewSec?.querySelector<HTMLElement>('.lp-review-list')
+  const reviewSub = reviewSec?.querySelector<HTMLElement>('.lp-review-sub')
+  let rt = { sub: '', meta: '', btn: '', more: '' }
+  try {
+    const raw = JSON.parse(document.getElementById('lp-review-i18n')?.textContent || 'null')
+    if (raw) rt = { ...rt, ...raw }
+  } catch {
+    /* 文案缺失时复习卡不渲染文本 */
+  }
+  const esc = (s: string) =>
+    String(s).replace(/[&<>"']/g, (c) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] || c
+    )
+
+  function slugTitles(): Map<string, string> {
+    const m = new Map<string, string>()
+    for (const item of document.querySelectorAll<HTMLElement>('section.lp-card .lp-item')) {
+      const slug = item.dataset.slug
+      if (!slug || m.has(slug)) continue
+      m.set(slug, item.querySelector('.lp-title')?.textContent?.trim() || slug)
+    }
+    return m
+  }
+
+  function dueItems(now: number) {
+    // 同一篇可能出现在多条路径：取最紧迫（lastAt 最早）的一份标记
+    const bySlug = new Map<string, { slug: string; mark: Mark }>()
+    for (const bucket of Object.values(progress)) {
+      for (const [slug, v] of Object.entries(bucket)) {
+        if (typeof v !== 'object' || v === null) continue
+        const mark = v as Mark
+        if (mark.stage >= LADDER.length) continue // 已出师
+        const dueAt = mark.lastAt + LADDER[mark.stage] * DAY
+        if (now < dueAt) continue
+        const prev = bySlug.get(slug)
+        if (!prev || mark.lastAt < prev.mark.lastAt) bySlug.set(slug, { slug, mark })
+      }
+    }
+    return Array.from(bySlug.values()).sort((a, b) => a.mark.lastAt - b.mark.lastAt)
+  }
+
+  function renderReview() {
+    if (!reviewSec || !reviewUl) return
+    const now = Date.now()
+    const due = dueItems(now)
+    if (!due.length || !rt.sub) {
+      reviewSec.hidden = true
+      reviewUl.innerHTML = ''
+      return
+    }
+    const titles = slugTitles()
+    if (reviewSub) reviewSub.textContent = rt.sub.replace('{n}', String(due.length))
+    reviewUl.innerHTML = due
+      .slice(0, 3)
+      .map(({ slug, mark }) => {
+        const days = Math.max(0, Math.round((now - mark.lastAt) / DAY))
+        const meta = rt.meta
+          .replace('{d}', String(days))
+          .replace('{s}', String(mark.stage + 1))
+          .replace('{S}', String(LADDER.length))
+        return `<li class="lp-review-item lp-item flex items-center gap-2.5 rounded-xl border border-transparent px-2.5 py-1.5">
+            <a href="/blog/${esc(slug)}" data-astro-prefetch>${esc(titles.get(slug) || slug)}</a>
+            <span class="lp-review-meta">${esc(meta)}</span>
+            <button type="button" class="lp-review-btn" data-slug="${esc(slug)}">${esc(rt.btn)}</button>
+          </li>`
+      })
+      .join('')
+    if (due.length > 3) {
+      const li = document.createElement('li')
+      li.className = 'lp-review-more'
+      li.textContent = rt.more.replace('{n}', String(due.length - 3))
+      reviewUl.appendChild(li)
+    }
+    reviewSec.hidden = false
+  }
+
+  reviewUl?.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.lp-review-btn')
+    if (!btn) return
+    const slug = btn.dataset.slug as string
+    const now = Date.now()
+    for (const bucket of Object.values(progress)) {
+      const v = bucket[slug]
+      if (typeof v === 'object' && v !== null) {
+        v.stage += 1
+        v.lastAt = now
+      }
+    }
+    save(progress)
+    renderReview()
+  })
 
   for (const section of document.querySelectorAll<HTMLElement>('section.lp-card')) {
     renderSection(section)
@@ -243,6 +444,7 @@ const totalDays = Math.max(1, Math.round(totalMinutes / 45))
         delete progress[pathId]
         save(progress)
         renderSection(sec)
+        renderReview()
         return
       }
 
@@ -253,10 +455,16 @@ const totalDays = Math.max(1, Math.round(totalMinutes / 45))
         const slug = item.dataset.slug as string
         const bucket = (progress[pathId] ??= {})
         if (bucket[slug]) delete bucket[slug]
-        else bucket[slug] = true
+        else {
+          const now = Date.now()
+          bucket[slug] = { doneAt: now, stage: 0, lastAt: now }
+        }
         save(progress)
         renderSection(sec)
+        renderReview()
       }
     })
   }
+
+  renderReview()
 </script>

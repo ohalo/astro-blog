@@ -1,0 +1,55 @@
+---
+/**
+ * 阅读进度条：文章页顶部 3px 金色进度线。
+ * scaleX 变换 + rAF 节流，只动 transform，尊重减动偏好时去掉过渡。
+ */
+---
+
+<div class='hg-progress' aria-hidden='true'><i id='hg-progress-bar'></i></div>
+
+<style is:global>
+  .hg-progress {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 3px;
+    z-index: 1400;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0));
+  }
+  .hg-progress i {
+    display: block;
+    height: 100%;
+    width: 100%;
+    transform-origin: 0 50%;
+    transform: scaleX(var(--hg-progress, 0));
+    background: linear-gradient(90deg, #8a6d3b, #d9b871 60%, #f0d9a0);
+    box-shadow: 0 0 12px rgba(217, 184, 113, 0.55);
+  }
+</style>
+
+<script>
+  function init() {
+    const bar = document.getElementById('hg-progress-bar')
+    if (!bar) return
+    let queued = 0
+    const update = () => {
+      queued = 0
+      const doc = document.documentElement
+      const total = doc.scrollHeight - window.innerHeight
+      const p = total > 64 ? Math.min(1, Math.max(0, window.scrollY / total)) : 0
+      bar.style.setProperty('--hg-progress', p.toFixed(4))
+    }
+    const schedule = () => {
+      if (!queued) queued = requestAnimationFrame(update)
+    }
+    window.addEventListener('scroll', schedule, { passive: true })
+    window.addEventListener('resize', schedule)
+    update()
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init)
+  } else {
+    init()
+  }
+</script>

@@ -10,6 +10,8 @@ import { ArticleBottom, Copyright, TOC } from 'astro-pure/components/pages'
 import config from 'virtual:config'
 import QuantLab from '@/components/lab/QuantLab.astro'
 import LearningPathHint from '@/components/pages/LearningPathHint.astro'
+import GlossaryTooltip from '@/components/pages/GlossaryTooltip.astro'
+import ReadingProgress from '@/components/pages/ReadingProgress.astro'
 import { Comment, PageInfo } from '@/components/waline'
 import { getLocale, localePath } from '@/i18n'
 import type { Locale } from '@/i18n'
@@ -124,3 +126,6 @@ const levelName = difficulty ? levelLabel[difficulty] : en ? 'Research note' : '
 {config.integ.mediumZoom.enable && <MediumZoom />}
 {/* 文章内参数实验：仅正文含 <quant-lab> 的文章打包实验脚本，其他文章零开销 */}
 {hasLab && <QuantLab />}
+{/* 阅读进度条 + 术语悬浮卡（术语表见 src/data/glossary.ts，加词条零改动） */}
+<ReadingProgress />
+<GlossaryTooltip />
