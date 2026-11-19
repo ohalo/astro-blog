@@ -1,0 +1,192 @@
+---
+/**
+ * 文章系列导航：从本篇的 tags 里挑「最specific 且规模 3–120」的标签当作系列
+ * （泛标签黑名单排除），渲染 进度点条 + 上一篇/下一篇。
+ * 学习路径（LearningPathHint）是人工维护的，这里是按 tag 自动聚合的泛化版；
+ * 找不到合格系列标签时整卡不渲染。设计稿：docs/designs/2026-11-19-series-nav/
+ */
+import type { CollectionEntry } from 'astro:content'
+
+import { getLocale } from '@/i18n'
+
+interface Props {
+  post: CollectionEntry<'blog'>
+  posts: CollectionEntry<'blog'>[]
+  class?: string
+}
+
+const { post, posts, class: className } = Astro.props
+
+// 顶层大杂烩标签：大到不构成「系列」
+const GENERIC = new Set(['量化交易', 'python', 'ai观察', 'ai工具', '硬件数码', '量化', '量化专栏', '其他', '机器学习', '交易'])
+const MIN_SERIES = 3
+const MAX_SERIES = 120
+const WINDOW_HALF = 10 // 超长系列的点条开窗半径
+
+const locale = getLocale(Astro.url.pathname)
+const en = locale === 'en'
+const lang = post.data.language ?? 'Chinese'
+
+// 只在同语言文章里组系列
+const sameLang = posts.filter((p) => (p.data.language ?? 'Chinese') === lang)
+
+let series: CollectionEntry<'blog'>[] | null = null
+let seriesTag = ''
+for (const tag of post.data.tags) {
+  if (GENERIC.has(tag)) continue
+  const members = sameLang.filter((p) => p.data.tags.includes(tag))
+  if (members.length < MIN_SERIES || members.length > MAX_SERIES) continue
+  // 取最specific（成员最少）的合格标签——系列=窄专题，大标签会退化成分类；
+  // 并列时取本篇 tags 里靠前的
+  if (!series || members.length < series.length) {
+    series = members
+    seriesTag = tag
+  }
+}
+
+let idx = -1
+if (series) {
+  series.sort((a, b) => a.data.publishDate - b.data.publishDate || (a.id < b.id ? -1 : 1))
+  idx = series.findIndex((p) => p.id === post.id)
+  if (idx < 0) series = null
+}
+
+// 点条开窗：>21 篇时只渲染当前 ±WINDOW_HALF，两端用淡点代表「还有更多」
+const n = series?.length ?? 0
+let dots: { post: CollectionEntry<'blog'>; i: number }[] = []
+let fadeHead = false
+let fadeTail = false
+if (series) {
+  if (n <= WINDOW_HALF * 2 + 1) {
+    dots = series.map((p, i) => ({ post: p, i }))
+  } else {
+    const start = Math.max(0, idx - WINDOW_HALF)
+    const end = Math.min(n - 1, idx + WINDOW_HALF)
+    fadeHead = start > 0
+    fadeTail = end < n - 1
+    dots = series.slice(start, end + 1).map((p, k) => ({ post: p, i: start + k }))
+  }
+}
+
+// 系列名展示：tag 被 schema 统一小写过，纯 ASCII 标签还原首字母大写
+const tagName = /^[a-z]/.test(seriesTag) ? seriesTag[0].toUpperCase() + seriesTag.slice(1) : seriesTag
+const pad = (v: number) => String(v).padStart(2, '0')
+const urlOf = (p: CollectionEntry<'blog'>) => `/blog/${p.id}`
+const prev = series && idx > 0 ? series[idx - 1] : undefined
+const next = series && idx < n - 1 ? series[idx + 1] : undefined
+---
+
+{series && (
+  <nav class:list={['sp', className]} aria-label={en ? 'Article series' : '文章系列导航'}>
+    <div class="sp-head">
+      <span class="sp-badge">{en ? 'SERIES' : '系列'}</span>
+      <span class="sp-name">{tagName}</span>
+      <span class="sp-count"><b>{pad(idx + 1)}</b> / {pad(n)}</span>
+    </div>
+    <div class="sp-dots">
+      {fadeHead && series[0] && (
+        <a class="sp-fade" href={urlOf(series[0])} title={en ? `back to the 1st of ${n}` : `系列首篇（向前还有 ${idx - WINDOW_HALF} 篇）`} data-astro-prefetch>
+          <i></i>
+        </a>
+      )}
+      {dots.map(({ post: p, i }) =>
+        i === idx
+          ? <span class="sp-dot sp-cur" aria-current="page" title={p.data.title}><i></i></span>
+          : <a class:list={['sp-dot', i < idx && 'sp-done']} href={urlOf(p)} title={p.data.title} aria-label={p.data.title} data-astro-prefetch><i></i></a>
+      )}
+      {fadeTail && series[n - 1] && (
+        <a class="sp-fade" href={urlOf(series[n - 1])} title={en ? `on to the last of ${n}` : `系列末篇（向后还有 ${n - 1 - idx - WINDOW_HALF} 篇）`} data-astro-prefetch>
+          <i></i>
+        </a>
+      )}
+    </div>
+    {(prev || next) && (
+      <div class:list={['sp-nav', !(prev && next) && 'sp-one']}>
+        {prev && (
+          <a class="sp-prev" href={urlOf(prev)} data-astro-prefetch>
+            <span class="sp-lab">← {en ? 'PREVIOUS' : '上一篇'}</span>
+            <span class="sp-ttl">{prev.data.title}</span>
+          </a>
+        )}
+        {next && (
+          <a class="sp-next" href={urlOf(next)} data-astro-prefetch>
+            <span class="sp-lab">{en ? 'NEXT' : '下一篇'} →</span>
+            <span class="sp-ttl">{next.data.title}</span>
+          </a>
+        )}
+      </div>
+    )}
+  </nav>
+)}
+
+<style>
+  .sp {
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card));
+    border-radius: 16px;
+    padding: 16px 20px 10px;
+  }
+  .sp-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
+  .sp-badge {
+    font-family: var(--mono, ui-monospace, monospace);
+    font-size: 12px; font-weight: 600; letter-spacing: 0.18em;
+    color: hsl(var(--primary));
+    background: hsl(var(--primary) / 0.1);
+    border: 1px solid hsl(var(--primary) / 0.25);
+    border-radius: 999px;
+    padding: 1px 10px;
+  }
+  .sp-name { font-size: 15px; font-weight: 600; }
+  .sp-count {
+    margin-left: auto;
+    font-family: var(--mono, ui-monospace, monospace);
+    font-size: 13px; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums;
+  }
+  .sp-count b { color: hsl(var(--primary)); font-weight: 600; }
+  .sp-dots { display: flex; flex-wrap: wrap; gap: 2px; align-items: center; margin-top: 12px; }
+  .sp-dots a, .sp-dots .sp-dot {
+    min-width: 24px; height: 28px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 5px;
+  }
+  .sp-dots i {
+    width: 14px; height: 4px; border-radius: 2px;
+    background: hsl(var(--muted-foreground) / 0.32);
+    transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.18s;
+  }
+  .sp-dots a:hover i { background: hsl(var(--primary) / 0.7); transform: scaleY(1.5); }
+  .sp-dots a:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 1px; }
+  .sp-done i { background: hsl(var(--primary) / 0.45); }
+  .sp-fade i { opacity: 0.35; }
+  .sp-cur i { height: 8px; width: 22px; background: hsl(var(--primary)); box-shadow: 0 0 12px hsl(var(--primary) / 0.45); }
+  .sp-nav {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    border-top: 1px solid hsl(var(--border));
+    margin-top: 12px; padding-top: 12px;
+  }
+  .sp-one { grid-template-columns: 1fr; }
+  .sp-nav a { display: block; min-height: 44px; border-radius: 5px; }
+  .sp-nav a:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+  .sp-lab {
+    display: block;
+    font-family: var(--mono, ui-monospace, monospace);
+    font-size: 12px; letter-spacing: 0.14em;
+    color: hsl(var(--muted-foreground));
+  }
+  .sp-ttl {
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    font-size: 14px; line-height: 1.45; margin-top: 2px;
+    color: hsl(var(--foreground));
+    transition: color 0.18s;
+  }
+  .sp-nav a:hover .sp-ttl, .sp-nav a:focus-visible .sp-ttl { color: hsl(var(--primary)); }
+  .sp-next { text-align: right; }
+  @media (max-width: 560px) {
+    .sp { padding: 14px 16px 10px; }
+    .sp-nav { grid-template-columns: 1fr; gap: 0; }
+    .sp-next { text-align: left; }
+    .sp-nav a + a { border-top: 1px dashed hsl(var(--border)); }
+    .sp-dots i { width: 12px; }
+    .sp-cur i { height: 7px; width: 18px; }
+  }
+</style>

@@ -13,6 +13,7 @@ import QuantLabMC from '@/components/lab/QuantLabMC.astro'
 import LearningPathHint from '@/components/pages/LearningPathHint.astro'
 import GlossaryTooltip from '@/components/pages/GlossaryTooltip.astro'
 import ReadingProgress from '@/components/pages/ReadingProgress.astro'
+import SeriesNav from '@/components/pages/SeriesNav.astro'
 import { Comment, PageInfo } from '@/components/waline'
 import { getLocale, localePath } from '@/i18n'
 import type { Locale } from '@/i18n'
@@ -115,6 +116,8 @@ const levelName = difficulty ? levelLabel[difficulty] : en ? 'Research note' : '
     <Copyright {data} />
     {/* 所属学习路径 */}
     <LearningPathHint slug={id} class='mt-3 sm:mt-6' />
+    {/* 文章系列导航（tag 自动聚合，设计稿 docs/designs/2026-11-19-series-nav） */}
+    <SeriesNav post={Astro.props.post} {posts} class='mt-3 sm:mt-6' />
     {/* Article recommend */}
     <ArticleBottom collections={posts} {id} class='mt-3 sm:mt-6' />
     {

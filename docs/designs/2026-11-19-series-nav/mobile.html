@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dsh-design" content="web 390x844">
+<title>移动端 · 文章系列导航 · Pure Quant</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .stage { padding: 24px 16px 48px; display: grid; gap: var(--space-6); }
+  .frame { display: grid; gap: var(--space-2); }
+  .frame-label { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: .14em; color: hsl(var(--muted-foreground)); text-transform: uppercase; }
+
+  .series {
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card));
+    border-radius: var(--radius-lg);
+    padding: 14px 16px 10px;
+  }
+  .s-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+  .s-badge {
+    font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 600;
+    letter-spacing: .18em;
+    color: hsl(var(--primary));
+    background: hsl(var(--primary) / .1);
+    border: 1px solid hsl(var(--primary) / .25);
+    border-radius: var(--radius-full);
+    padding: 1px 9px;
+  }
+  .s-name { font-size: 14px; font-weight: 600; }
+  .s-count { margin-left: auto; font-family: var(--font-mono); font-size: var(--text-xs); color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
+  .s-count b { color: hsl(var(--primary)); font-weight: 600; }
+
+  .s-dots { display: flex; flex-wrap: wrap; gap: 2px; align-items: center; margin-top: 10px; }
+  .s-dots a, .s-dots span.dot {
+    min-width: 24px; height: 24px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .s-dots a i, .s-dots span.dot i {
+    width: 12px; height: 4px; border-radius: 2px;
+    background: hsl(var(--muted-foreground) / .32);
+  }
+  .s-dots a.done i { background: hsl(var(--primary) / .45); }
+  .s-dots span.dot.cur i { height: 7px; width: 18px; background: hsl(var(--primary)); box-shadow: 0 0 10px hsl(var(--primary) / .45); }
+  .s-dots .fade i { opacity: .35; }
+
+  .s-nav { border-top: 1px solid hsl(var(--border)); margin-top: 10px; padding-top: 4px; display: grid; }
+  .s-nav a { display: block; min-height: 44px; padding: 6px 0; }
+  .s-nav a + a { border-top: 1px dashed hsl(var(--border)); }
+  .s-nav .lab { font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: .14em; color: hsl(var(--muted-foreground)); }
+  .s-nav .ttl { font-size: 13.5px; line-height: 1.45; margin-top: 1px; color: hsl(var(--foreground)); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+  .s-nav .arrow { color: hsl(var(--primary)); font-family: var(--font-mono); }
+</style>
+</head>
+<body>
+<main class="stage">
+
+  <div class="frame">
+    <div class="frame-label">中段（15 篇系列第 7 篇）</div>
+    <nav class="series" aria-label="文章系列导航">
+      <div class="s-head">
+        <span class="s-badge">系列</span>
+        <span class="s-name">风险平价与组合构建</span>
+        <span class="s-count"><b>07</b> / 15</span>
+      </div>
+      <div class="s-dots" role="list" aria-label="系列进度">
+        <a href="#" class="done" role="listitem" title="动态资产配置策略：在不同市场环境下自动调仓"><i></i></a>
+        <a href="#" class="done" role="listitem" title="风险平价与波动率目标的实战融合"><i></i></a>
+        <a href="#" class="done" role="listitem" title="最大分散化组合：用相关性加权超越风险平价"><i></i></a>
+        <a href="#" class="done" role="listitem" title="风险平价在债券组合中的应用：用久期与信用分层重构风险预算"><i></i></a>
+        <a href="#" class="done" role="listitem" title="层次风险平价(HRP)：用聚类与递归二分超越传统风险平价"><i></i></a>
+        <a href="#" class="done" role="listitem" title="层级风险平价(HRP)：用相关性树把马科维茨的协方差病治好"><i></i></a>
+        <span class="dot cur" role="listitem" aria-current="page" title="等风险贡献组合(ERC)：让每个资产对总风险的贡献完全相等"><i></i></span>
+        <a href="#" role="listitem" title="因子择时：用宏观状态动态调整因子暴露"><i></i></a>
+        <a href="#" role="listitem" title="熵风险平价：用最小交叉熵把相关性树变成权重"><i></i></a>
+        <a href="#" role="listitem" title="桥水全天候风险平价：把「四种经济天气」都装进一个组合里"><i></i></a>
+        <a href="#" role="listitem" title="尾部风险平价：用 CVaR 替代波动率，把每个资产的『崩盘贡献』拉平"><i></i></a>
+        <a href="#" role="listitem" title="宏观因子映射：把资产收益拆解到增长与通胀两轴"><i></i></a>
+        <a href="#" role="listitem" title="波动率目标风险平价：把组合波动锁在固定区间"><i></i></a>
+        <a href="#" role="listitem" title="风险平价在中国 A 股：换手与约束下的实战再检验"><i></i></a>
+        <a href="#" role="listitem" title="风险平价与波动率目标化：让每个风险源贡献相等、再给组合装个减震器"><i></i></a>
+      </div>
+      <div class="s-nav">
+        <a class="prev" href="#"><span class="lab">← 上一篇</span><span class="ttl">层级风险平价(HRP)：用相关性树把马科维茨的协方差病治好</span></a>
+        <a class="next" href="#"><span class="lab">下一篇 →</span><span class="ttl">因子择时：用宏观状态动态调整因子暴露</span></a>
+      </div>
+    </nav>
+  </div>
+
+  <div class="frame">
+    <div class="frame-label">超长系列（30 篇，开窗 + 两端淡出）</div>
+    <nav class="series" aria-label="文章系列导航">
+      <div class="s-head">
+        <span class="s-badge">系列</span>
+        <span class="s-name">蒙特卡洛方法</span>
+        <span class="s-count"><b>14</b> / 30</span>
+      </div>
+      <div class="s-dots" role="list" aria-label="系列进度">
+        <a href="#" class="done fade" role="listitem" title="向前还有 6 篇"><i></i></a>
+        <a href="#" class="done" role="listitem" title="Longstaff-Schwartz 最小二乘蒙特卡洛：让蒙特卡洛学会给美式期权定价"><i></i></a>
+        <a href="#" class="done" role="listitem" title="分数凯利准则：在全凯利的暴涨暴跌与半凯利的稳健之间选择"><i></i></a>
+        <a href="#" class="done" role="listitem" title="Yang-Zhang 波动率估计量：同时免疫跳空与漂移的波动测量"><i></i></a>
+        <span class="dot cur" role="listitem" aria-current="page" title="Parkinson 波动率估计量：用日内高低价榨出更高效的波动估计"><i></i></span>
+        <a href="#" role="listitem" title="Ornstein-Uhlenbeck 配对交易：给价差一个可交易的回归速度"><i></i></a>
+        <a href="#" role="listitem" title="有限差分法期权定价：用网格把 Black-Scholes 偏微分方程敲成数值解"><i></i></a>
+        <a href="#" role="listitem" title="LSTM 与 HAR：预测已实现波动率的模型对决"><i></i></a>
+        <a href="#" class="fade" role="listitem" title="向后还有 16 篇"><i></i></a>
+      </div>
+      <div class="s-nav">
+        <a class="prev" href="#"><span class="lab">← 上一篇</span><span class="ttl">Yang-Zhang 波动率估计量：同时免疫跳空与漂移的波动测量</span></a>
+        <a class="next" href="#"><span class="lab">下一篇 →</span><span class="ttl">Ornstein-Uhlenbeck 配对交易：给价差一个可交易的回归速度</span></a>
+      </div>
+    </nav>
+  </div>
+
+</main>
+</body>
+</html>
