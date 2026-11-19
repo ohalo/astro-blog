@@ -1,0 +1,23 @@
+{
+  "N": 1500,
+  "TRAIN": 1000,
+  "beta_true": 1.6,
+  "beta_hat": 1.5433,
+  "rho_true": 0.97,
+  "gamma_hat": -0.02557,
+  "half_life_true": 22.76,
+  "half_life_hat": 27.11,
+  "adf_y": -0.749,
+  "adf_x": -0.746,
+  "adf_resid": -3.442,
+  "cv_1pct": -3.43,
+  "cv_5pct": -2.86,
+  "cv_10pct": -2.57,
+  "sharpe_pairs": 0.976,
+  "sharpe_A": -0.212,
+  "sharpe_B": -0.244,
+  "cum_pnl_final": 0.0589,
+  "n_trades": 2,
+  "sharpe_break": -9.018,
+  "cum_break_final": -2.3499
+}
