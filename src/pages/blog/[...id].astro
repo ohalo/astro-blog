@@ -21,10 +21,11 @@ type Props = {
 
 const { post, posts } = Astro.props
 const { Content, headings, remarkPluginFrontmatter } = await render(post)
-// 正文含参数实验时才给该文章打包实验脚本
-const hasLab = post.body?.includes('<quant-lab') ?? false
+// 正文含参数实验时才给该文章打包实验脚本（<quant-lab 凯利 / <quant-lab-mc 蒙特卡洛，互不牵连）
+const hasLab = /<quant-lab(?![\w-])/.test(post.body ?? '')
+const hasLabMc = /<quant-lab-mc(?![\w-])/.test(post.body ?? '')
 ---
 
-<PostLayout {post} {posts} {headings} {remarkPluginFrontmatter} {hasLab}>
+<PostLayout {post} {posts} {headings} {remarkPluginFrontmatter} {hasLab} {hasLabMc}>
   <Content />
 </PostLayout>

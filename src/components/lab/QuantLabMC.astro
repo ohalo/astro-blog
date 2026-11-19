@@ -1,0 +1,448 @@
+---
+/**
+ * QuantLabMC：文章内「蒙特卡洛欧式期权定价」参数实验（Web Component，纯浏览器计算）
+ *
+ * 用法（markdown 里直接写自定义元素）：
+ *   <quant-lab-mc></quant-lab-mc>
+ *
+ * 设计：
+ * - 与凯利 QuantLab 同款卡片语言：Shadow DOM 自包含、继承主题 CSS 变量
+ * - 纯数学内核在 src/lib/mcbs.ts（node 侧 19 项数值核对：bun scripts/test-mcbs.ts）
+ * - 同一批随机数喂两个估计量：crude（独立路径）vs antithetic（对偶变量），
+ *   收敛曲线直接对比 → 直观展示方差缩减
+ * - BSM 解析值做金色锚线：MC 的抖动全在 ±SE 带里绕它——“无偏”的可视化
+ * - 图表同款 echarts 按需引入 + IntersectionObserver 懒加载；无标签页零开销
+ */
+---
+
+<script>
+  // 客户端内联脚本里 tsconfig paths 不生效，只能相对路径引内核
+  import { bsmPrice, convergeTrace, meanSe, simulateEuropean } from '../../lib/mcbs'
+
+  // 主题色：从 :root 的 CSS 变量取（纯 HSL 三元组），取不到用兜底
+  const cssv = (name: string, fb: string) => {
+    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+    return v ? `hsl(${v})` : fb
+  }
+
+  const CRUDE_COLOR = '#38bdf8' // sky：crude MC
+  const ANTI_COLOR = '#fb923c' // orange：antithetic
+  const TIME_STEPS = 1 // 欧式 + GBM 终点精确对数正态 → 无离散化偏差，SE 纯统计
+
+  // N 滑块：0..100 映射 1k..100k 对数刻度
+  const uToN = (u: number) => Math.round(1000 * Math.pow(100, u / 100))
+  const fmtN = (n: number) => (n >= 10000 ? `${(n / 1000).toFixed(n % 10000 === 0 ? 0 : 1)}k` : n.toLocaleString('en-US'))
+
+  interface ParamDef {
+    key: string
+    label: string
+    min: number
+    max: number
+    step: number
+    def: number
+    fmt: (v: number) => string
+  }
+
+  const PARAMS: ParamDef[] = [
+    { key: 's', label: '现价 S', min: 60, max: 160, step: 1, def: 100, fmt: (v) => v.toFixed(0) },
+    { key: 'k', label: '行权 K', min: 60, max: 160, step: 1, def: 100, fmt: (v) => v.toFixed(0) },
+    { key: 'vol', label: '波动 σ', min: 0.05, max: 0.8, step: 0.01, def: 0.2, fmt: (v) => `${(v * 100).toFixed(0)}%` },
+    { key: 't', label: '期限 T', min: 0.25, max: 3, step: 0.05, def: 1, fmt: (v) => `${v.toFixed(2)}y` },
+    { key: 'r', label: '利率 r', min: 0, max: 0.08, step: 0.0025, def: 0.05, fmt: (v) => `${(v * 100).toFixed(2)}%` },
+    { key: 'n', label: '路径 N', min: 0, max: 100, step: 1, def: 70, fmt: (v) => fmtN(uToN(v)) }
+  ]
+
+  class QuantLabMCEl extends HTMLElement {
+    private P: Record<string, number> = {}
+    private cp: 1 | -1 = 1
+    private seed = 0x4d43_4253 // "MCBS"，固定种子可复现；「重新抽样」换种子
+    private els: {
+      chart?: HTMLDivElement
+      outputs: Record<string, HTMLOutputElement>
+      readout?: HTMLDivElement
+      verdict?: HTMLDivElement
+      foot?: HTMLDivElement
+      segC?: HTMLButtonElement
+      segP?: HTMLButtonElement
+      nOut?: HTMLOutputElement
+    } = { outputs: {} }
+    private chart: any = null
+    private echartsMod: any = null
+    private heavyTimer: number | undefined
+    private lastSim: any = null
+
+    connectedCallback() {
+      if (this.shadowRoot) return
+      const root = this.attachShadow({ mode: 'open' })
+      const style = document.createElement('style')
+      style.textContent = STYLE
+      root.appendChild(style)
+
+      const card = document.createElement('div')
+      card.className = 'card'
+      card.innerHTML = `
+        <div class="head">
+          <span class="badge">🧪 参数实验</span>
+          <span class="name">蒙特卡洛欧式期权：收敛、噪声与对偶方差缩减</span>
+          <span class="tag">浏览器实时计算 · 固定种子可复现</span>
+        </div>
+        <div class="body">
+          <div>
+            <div class="controls"></div>
+            <div class="segrow">
+              <div class="seg">
+                <button type="button" class="cp" data-cp="1">看涨 Call</button>
+                <button type="button" class="cp" data-cp="-1">看跌 Put</button>
+              </div>
+              <button type="button" class="reroll" title="换一批随机数，看估计量在解析值附近重抽">🎲 重新抽样</button>
+            </div>
+          </div>
+          <div>
+            <div class="chart"><div class="chart-ph">📊 图表加载中…</div></div>
+            <div class="axisnote">横轴：路径数 N（对数刻度）· 纵轴：期权价估计 · 金线：BSM 解析真值</div>
+          </div>
+        </div>
+        <div class="readout"></div>
+        <div class="verdict"></div>
+        <div class="foot"></div>
+      `
+      root.appendChild(card)
+
+      const controls = card.querySelector('.controls')!
+      for (const pd of PARAMS) {
+        this.P[pd.key] = pd.def
+        const row = document.createElement('div')
+        row.className = 'ctrl'
+        const label = document.createElement('label')
+        label.textContent = pd.label
+        const input = document.createElement('input')
+        input.type = 'range'
+        input.min = String(pd.min)
+        input.max = String(pd.max)
+        input.step = String(pd.step)
+        input.value = String(pd.def)
+        const out = document.createElement('output')
+        out.textContent = pd.fmt(pd.def)
+        input.setAttribute('aria-label', pd.label)
+        input.addEventListener('input', () => {
+          this.P[pd.key] = Number(input.value)
+          out.textContent = pd.fmt(Number(input.value))
+          this.scheduleHeavy()
+        })
+        row.append(label, input, out)
+        controls.appendChild(row)
+        this.els.outputs[pd.key] = out
+      }
+
+      this.els.nOut = this.els.outputs['n']
+      const segs = card.querySelectorAll<HTMLButtonElement>('button.cp')
+      this.els.segC = segs[0]
+      this.els.segP = segs[1]
+      segs.forEach((b) =>
+        b.addEventListener('click', () => {
+          this.cp = b.dataset.cp === '1' ? 1 : -1
+          this.markSeg()
+          this.scheduleHeavy()
+        })
+      )
+      this.markSeg()
+      card.querySelector('.reroll')!.addEventListener('click', () => {
+        this.seed = (Math.imul(this.seed, 1664525) + 1013904223) >>> 0
+        this.scheduleHeavy()
+      })
+
+      this.els.chart = card.querySelector('.chart')!
+      this.els.readout = card.querySelector('.readout')!
+      this.els.verdict = card.querySelector('.verdict')!
+      this.els.foot = card.querySelector('.foot')!
+
+      const io = new IntersectionObserver(
+        (es) => {
+          if (es.some((e) => e.isIntersecting)) {
+            io.disconnect()
+            void this.initChart()
+          }
+        },
+        { rootMargin: '200px' }
+      )
+      io.observe(this)
+      // 先出数字（不依赖图表）：模拟一次，只刷读数与判词
+      this.compute()
+      this.renderText()
+    }
+
+    private markSeg() {
+      this.els.segC!.classList.toggle('on', this.cp === 1)
+      this.els.segP!.classList.toggle('on', this.cp === -1)
+    }
+
+    /** 模拟 + 收敛轨迹（浏览器里毫秒级，仍去抖防连拖） */
+    private compute() {
+      const { s, k, vol, t, r, n: u } = this.P
+      const N = uToN(u)
+      const pairs = Math.max(1, Math.floor(N / 2))
+      const prm = { s, k, r, vol, t, cp: this.cp }
+      const bsm = bsmPrice(prm)
+      const paths = simulateEuropean(prm, pairs, TIME_STEPS, this.seed)
+      const crude = meanSe(paths.crude)
+      const anti = meanSe(paths.anti)
+      this.lastSim = {
+        bsm,
+        N: pairs * 2,
+        crude,
+        anti,
+        crudeTrace: convergeTrace(paths.crude, 22),
+        antiTrace: convergeTrace(paths.anti, 22)
+      }
+    }
+
+    private scheduleHeavy() {
+      window.clearTimeout(this.heavyTimer)
+      this.heavyTimer = window.setTimeout(() => {
+        this.compute()
+        this.renderText()
+        this.renderChart()
+      }, 170)
+    }
+
+    /** 读数 + 判词 + 脚注（不依赖图表库） */
+    private renderText() {
+      const S = this.lastSim
+      const cpTxt = this.cp === 1 ? 'Call' : 'Put'
+      const money = (x: number) => x.toFixed(4)
+      const ciLo = S.crude.mean - 1.96 * S.crude.se
+      const ciHi = S.crude.mean + 1.96 * S.crude.se
+      const z = S.crude.se > 0 ? Math.abs(S.crude.mean - S.bsm) / S.crude.se : 0
+      const ratio = S.crude.se > 0 ? S.anti.se / S.crude.se : 1
+      const effN = ratio > 0 ? 1 / (ratio * ratio) : 1
+
+      this.els.readout!.innerHTML = [
+        `<span>解析（BSM ${cpTxt}） <b>${money(S.bsm)}</b>（零误差，真值锚）</span>`,
+        `<span style="color:${CRUDE_COLOR}">Crude MC <b>${money(S.crude.mean)} ± ${S.crude.se.toFixed(4)}</b>（95% CI [${ciLo.toFixed(2)}, ${ciHi.toFixed(2)}]，偏离真值 ${z.toFixed(1)} SE）</span>`,
+        `<span style="color:${ANTI_COLOR}">对偶（antithetic） <b>${money(S.anti.mean)} ± ${S.anti.se.toFixed(4)}</b>（SE ×${ratio.toFixed(2)}，等精度下路径省 ×${effN.toFixed(1)}）</span>`
+      ]
+        .map((h) => `<span>${h}</span>`)
+        .join('')
+
+      let v: { text: string; kind: string }
+      if (S.N <= 3000) {
+        v = {
+          text: '🌀 N 很小：曲线在金色真值线附近大幅乱跳——这就是 O(N⁻¹ᐟ²) 收敛的肉身。把「路径 N」往右拖几档，看它慢慢收窄。',
+          kind: 'warn'
+        }
+      } else if (z > 2) {
+        v = {
+          text: '⚠️ 这次抽样偏离真值超过 2 个标准误——不是 MC 错了，是抽样运气。点「🎲 重新抽样」，看估计量绕金线跳回带内（19 次里约 1 次会出带，这就是 95% CI 的含义）。',
+          kind: 'warn'
+        }
+      } else if (S.crude.se > 0.02) {
+        v = {
+          text: '✅ 估计落在 2 个 SE 之内：抖动全是统计噪声。记住每个 MC 价格后面都挂着一个标准误——没带误差棒的定量结果，从第一个数字就开始骗人。',
+          kind: 'ok'
+        }
+      } else {
+        v = {
+          text: '💎 精度已进 2 分钱。回头看一眼代价：解析公式一行给到零误差，MC 用 N 条路径才买回第三位小数——它在欧式上是「笨办法」，价值在闭式失效之地（美式提前行权、障碍敲出、路径依赖）。',
+          kind: 'safe'
+        }
+      }
+      this.els.verdict!.textContent = v.text
+      this.els.verdict!.className = `verdict ${v.kind}`
+      this.els.foot!.innerHTML =
+        `路径数 ${S.N.toLocaleString('en-US')} · seed=0x${this.seed.toString(16).padStart(8, '0')}（可复现）· ` +
+        '欧式 + GBM 终点精确对数正态，MC 误差纯属统计、无离散化偏差 · ' +
+        '内核 <code>src/lib/mcbs.ts</code> 过 19 项数值核对（Haug 基准 C=10.4506 / P=5.5735）'
+    }
+
+    private async initChart() {
+      if (this.echartsMod) return
+      try {
+        const [core, charts, comps, canvas] = await Promise.all([
+          import('echarts/core'),
+          import('echarts/charts'),
+          import('echarts/components'),
+          import('echarts/renderers')
+        ])
+        ;(core as any).use([
+          (charts as any).LineChart,
+          (comps as any).GridComponent,
+          (comps as any).TooltipComponent,
+          (comps as any).MarkLineComponent,
+          (canvas as any).CanvasRenderer
+        ])
+        this.echartsMod = core
+        const ph = this.els.chart!.querySelector('.chart-ph')
+        if (ph) ph.remove()
+        this.chart = (core as any).init(this.els.chart!)
+        new ResizeObserver(() => this.chart?.resize()).observe(this.els.chart!)
+        this.renderChart()
+      } catch {
+        const ph = this.els.chart?.querySelector('.chart-ph')
+        if (ph) ph.textContent = '📊 图表加载失败（不影响下方数值结论）'
+      }
+    }
+
+    private renderChart() {
+      if (!this.chart || !this.lastSim) return
+      const S = this.lastSim
+      const axis = cssv('--muted-foreground', '#6b7280')
+      const split = 'hsl(0 0% 50% / 0.18)'
+      const gold = cssv('--primary', '#d6b96a')
+
+      // 对数 x 上两条轨迹的检查点不同，tooltip 查各自的 se
+      const seByN: Record<string, number> = {}
+      for (const p of S.crudeTrace) seByN[`c${p.n}`] = p.se
+      for (const p of S.antiTrace) seByN[`a${p.n * 2}`] = p.se
+
+      this.chart.setOption(
+        {
+          animation: false,
+          grid: { left: 48, right: 16, top: 30, bottom: 26 },
+          tooltip: {
+            trigger: 'axis',
+            formatter: (ps: any[]) => {
+              const n = Number(ps[0]?.axisValue)
+              const rows = ps
+                .filter((x) => x.seriesName !== '当前 N')
+                .map((x) => {
+                  const se = seByN[`${x.seriesName === 'Crude MC' ? 'c' : 'a'}${n}`]
+                  const v = Array.isArray(x.value) ? Number(x.value[1]) : Number(x.value)
+                  return `${x.marker}${x.seriesName}：${v.toFixed(4)}${se ? ` ± ${se.toFixed(4)}` : ''}`
+                })
+                .join('<br/>')
+              return `路径 N = ${n.toLocaleString('en-US')}<br/>${rows}`
+            }
+          },
+          xAxis: {
+            type: 'log',
+            min: 2,
+            max: S.N,
+            logBase: 10,
+            axisLabel: {
+              color: axis,
+              fontSize: 10,
+              formatter: (v: number) => (v >= 1000 ? `${v / 1000}k` : String(v))
+            },
+            axisLine: { lineStyle: { color: split } },
+            splitLine: { show: false }
+          },
+          yAxis: {
+            type: 'value',
+            scale: true,
+            axisLabel: { color: axis, fontSize: 10 },
+            splitLine: { lineStyle: { color: split } }
+          },
+          series: [
+            {
+              name: 'Crude MC',
+              type: 'line',
+              showSymbol: false,
+              data: S.crudeTrace.map((p: any) => [p.n, p.mean]),
+              lineStyle: { color: CRUDE_COLOR, width: 2 },
+              itemStyle: { color: CRUDE_COLOR },
+              z: 3,
+              markLine: {
+                symbol: 'none',
+                silent: true,
+                lineStyle: { color: gold, type: 'dashed', width: 1.5 },
+                label: {
+                  color: gold,
+                  fontSize: 10,
+                  formatter: () => `解析 ${S.bsm.toFixed(3)}`,
+                  position: 'insideStartTop'
+                },
+                data: [{ yAxis: S.bsm }]
+              }
+            },
+            {
+              name: 'Antithetic',
+              type: 'line',
+              showSymbol: false,
+              data: S.antiTrace.map((p: any) => [p.n * 2, p.mean]),
+              lineStyle: { color: ANTI_COLOR, width: 2 },
+              itemStyle: { color: ANTI_COLOR },
+              z: 4
+            },
+            {
+              name: '当前 N',
+              type: 'scatter',
+              symbolSize: 8,
+              data: [
+                [S.N, S.crude.mean],
+                [S.N, S.anti.mean]
+              ],
+              itemStyle: {
+                color: (p: any) => (p.dataIndex === 0 ? CRUDE_COLOR : ANTI_COLOR),
+                borderColor: '#fff',
+                borderWidth: 1.2
+              },
+              z: 5,
+              tooltip: { show: false }
+            }
+          ]
+        },
+        { notMerge: true }
+      )
+    }
+  }
+
+  const STYLE = `
+    :host { display: block; margin: 1.5rem 0; }
+    .card {
+      border: 1px solid hsl(var(--border, 240 5% 84%));
+      background: hsl(var(--card, 0 0% 100%));
+      border-radius: 16px;
+      padding: 14px 16px 12px;
+      color: hsl(var(--foreground, 220 15% 16%));
+    }
+    .head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+    .badge {
+      font-size: 12px; font-weight: 600;
+      background: hsl(var(--muted, 240 5% 94%));
+      color: hsl(var(--muted-foreground, 240 4% 46%));
+      border-radius: 999px; padding: 2px 10px;
+    }
+    .name { font-size: 15px; font-weight: 600; }
+    .tag { margin-left: auto; font-size: 11px; color: hsl(var(--muted-foreground, 240 4% 46%)); }
+    .body { display: grid; gap: 10px 18px; grid-template-columns: 1fr; margin-top: 10px; }
+    @media (min-width: 720px) { .body { grid-template-columns: 260px minmax(0, 1fr); } }
+    .ctrl { display: grid; grid-template-columns: 64px minmax(0, 1fr) 60px; align-items: center; gap: 8px; }
+    .ctrl label { font-size: 13px; color: hsl(var(--muted-foreground, 240 4% 46%)); }
+    .ctrl output { font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+    input[type="range"] { width: 100%; accent-color: hsl(var(--primary, 217 91% 60%)); }
+    .segrow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 8px; }
+    .seg { display: inline-flex; border: 1px solid hsl(var(--border, 240 5% 84%)); border-radius: 10px; overflow: hidden; }
+    .seg button {
+      font-size: 12px; padding: 4px 12px; border: 0; cursor: pointer;
+      background: hsl(var(--background, 0 0% 98%));
+      color: hsl(var(--muted-foreground, 240 4% 46%));
+    }
+    .seg button.on { background: hsl(var(--primary, 217 91% 60%)); color: hsl(var(--primary-foreground, 0 0% 100%)); font-weight: 600; }
+    .reroll {
+      font-size: 12px; padding: 4px 12px; cursor: pointer; border-radius: 10px;
+      border: 1px solid hsl(var(--border, 240 5% 84%));
+      background: hsl(var(--background, 0 0% 98%));
+      color: hsl(var(--foreground, 220 15% 16%));
+    }
+    .reroll:hover { background: hsl(var(--muted, 240 5% 94%)); }
+    .chart { width: 100%; height: 252px; }
+    .chart-ph {
+      height: 100%; display: grid; place-items: center; font-size: 12px;
+      color: hsl(var(--muted-foreground, 240 4% 46%));
+    }
+    .readout { display: grid; gap: 3px; font-size: 13px; font-variant-numeric: tabular-nums; margin-top: 4px; }
+    .readout b { font-weight: 600; }
+    .verdict { font-size: 13px; margin-top: 6px; }
+    .verdict.safe { color: hsl(var(--primary, 217 91% 60%)); }
+    .verdict.ok { color: hsl(var(--foreground, 220 15% 16%)); }
+    .verdict.warn { color: #d97706; }
+    .verdict.danger { color: #e5484d; }
+    .axisnote { font-size: 11px; color: hsl(var(--muted-foreground, 240 4% 46%)); margin-top: 4px; }
+    .foot { font-size: 11px; color: hsl(var(--muted-foreground, 240 4% 46%)); border-top: 1px dashed hsl(var(--border, 240 5% 84%)); margin-top: 10px; padding-top: 6px; }
+    .foot code { font-size: 11px; }
+  `
+
+  if (document.querySelector('quant-lab-mc') && !customElements.get('quant-lab-mc')) {
+    customElements.define('quant-lab-mc', QuantLabMCEl)
+  }
+</script>
