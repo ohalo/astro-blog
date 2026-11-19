@@ -1,4 +1,5 @@
 import { rehypeHeadingIds } from '@astrojs/markdown-remark'
+import sitemap from '@astrojs/sitemap'
 import vercel from '@astrojs/vercel'
 import AstroPureIntegration from 'astro-pure'
 import { defineConfig, fontProviders } from 'astro/config'
@@ -145,8 +146,12 @@ export default defineConfig({
 
   // [Integrations]
   integrations: [
-    // astro-pure will automatically add sitemap, mdx & unocss
-    // sitemap(),
+    // 显式注册 sitemap 并排除 404 页：astro-pure 仅在缺少 @astrojs/sitemap 时才注入默认实例，
+    // 这里先注册带 filter 的实例，避免 404（含 /en/404）被写进 sitemap-0.xml 提交给搜索引擎。
+    sitemap({
+      filter: (page) => !/^\/en\/404$|^\/404$/.test(new URL(page).pathname)
+    }),
+    // astro-pure will automatically add mdx & unocss
     // mdx(),
     AstroPureIntegration(config)
   ],
