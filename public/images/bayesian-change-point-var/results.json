@@ -1,0 +1,164 @@
+{
+  "seed": 20261119,
+  "T": 1600,
+  "segments": [
+    [
+      400,
+      0.008
+    ],
+    [
+      300,
+      0.022
+    ],
+    [
+      350,
+      0.007
+    ],
+    [
+      250,
+      0.04
+    ],
+    [
+      300,
+      0.009
+    ]
+  ],
+  "true_changepoints": [
+    400,
+    700,
+    1050,
+    1300
+  ],
+  "cp_prob_max": 0.2994,
+  "detected_peaks": [
+    177,
+    340,
+    402,
+    897,
+    1050,
+    1338
+  ],
+  "detected_matched": [
+    402,
+    1050,
+    1338
+  ],
+  "match_abs_error_days": [
+    2,
+    0,
+    38
+  ],
+  "mean_match_error_days": 13.33,
+  "var_full_percentile1": -6.1628,
+  "eval": {
+    "bocd": {
+      "violations": 12,
+      "n": 1350,
+      "coverage": 0.0089,
+      "expected": 13.5,
+      "LRuc": 0.1749,
+      "p": 0.6758,
+      "reject_at_5pct": false
+    },
+    "rolling250": {
+      "violations": 33,
+      "n": 1350,
+      "coverage": 0.0244,
+      "expected": 13.5,
+      "LRuc": 20.2779,
+      "p": 0.0,
+      "reject_at_5pct": true
+    },
+    "fullsample": {
+      "violations": 16,
+      "n": 1350,
+      "coverage": 0.0119,
+      "expected": 13.5,
+      "LRuc": 0.4414,
+      "p": 0.5064,
+      "reject_at_5pct": false
+    }
+  },
+  "segment_eval": [
+    {
+      "segment": 0,
+      "days": [
+        0,
+        400
+      ],
+      "sigma": 0.008,
+      "bocd_viol": 2,
+      "rolling_viol": 2,
+      "full_viol": 0,
+      "n": 150,
+      "mean_bocd_var": -1.852,
+      "mean_roll_var": -1.8
+    },
+    {
+      "segment": 1,
+      "days": [
+        400,
+        700
+      ],
+      "sigma": 0.022,
+      "bocd_viol": 0,
+      "rolling_viol": 16,
+      "full_viol": 0,
+      "n": 300,
+      "mean_bocd_var": -5.445,
+      "mean_roll_var": -4.1
+    },
+    {
+      "segment": 2,
+      "days": [
+        700,
+        1050
+      ],
+      "sigma": 0.007,
+      "bocd_viol": 4,
+      "rolling_viol": 1,
+      "full_viol": 0,
+      "n": 350,
+      "mean_bocd_var": -1.81,
+      "mean_roll_var": -3.271
+    },
+    {
+      "segment": 3,
+      "days": [
+        1050,
+        1300
+      ],
+      "sigma": 0.04,
+      "bocd_viol": 2,
+      "rolling_viol": 14,
+      "full_viol": 16,
+      "n": 250,
+      "mean_bocd_var": -10.421,
+      "mean_roll_var": -8.162
+    },
+    {
+      "segment": 4,
+      "days": [
+        1300,
+        1600
+      ],
+      "sigma": 0.009,
+      "bocd_viol": 4,
+      "rolling_viol": 0,
+      "full_viol": 0,
+      "n": 300,
+      "mean_bocd_var": -2.316,
+      "mean_roll_var": -6.527
+    }
+  ],
+  "var_post_pre_ratio_after_cp": [
+    2.714,
+    0.582,
+    4.976,
+    0.212
+  ],
+  "mean_var_bocd": -4.3293,
+  "mean_var_roll": -4.9214,
+  "max_var_bocd": -1.4864,
+  "min_var_bocd": -14.7583
+}
