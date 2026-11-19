@@ -1,0 +1,66 @@
+{
+  "params": {
+    "J": 20,
+    "T0": 60,
+    "T1": 36,
+    "seed": 20261120,
+    "tau_true": -3.0,
+    "noise": 0.45
+  },
+  "fit": {
+    "rmspe_pre": 0.4248,
+    "rmspe_post": 2.8219,
+    "rmspe_ratio": 6.643,
+    "est_effect": -2.6839,
+    "true_effect_post_mean": -2.4585,
+    "effect_error": -0.2254,
+    "w_hat_nonzero": 9
+  },
+  "weights": {
+    "2": 0.0676,
+    "4": 0.124,
+    "8": 0.0343,
+    "9": 0.2097,
+    "10": 0.1002,
+    "12": 0.2163,
+    "13": 0.0464,
+    "17": 0.0817,
+    "19": 0.1126
+  },
+  "placebo": {
+    "treated_ratio": 6.643,
+    "placebo_median": 1.432,
+    "placebo_p90": 1.627,
+    "placebo_max": 2.017,
+    "p_value": 0.0,
+    "n_placebo_exceed": 0,
+    "ratios": [
+      0.895,
+      1.813,
+      1.495,
+      1.516,
+      1.542,
+      1.154,
+      1.299,
+      1.169,
+      1.46,
+      1.08,
+      1.42,
+      0.932,
+      0.882,
+      1.607,
+      1.43,
+      2.017,
+      1.387,
+      1.435,
+      1.466,
+      1.604
+    ]
+  },
+  "time_placebo": {
+    "fake_treatment_day": 36,
+    "pre_fake_rmspe": 0.4178,
+    "fake_post_effect": 0.4945,
+    "true_effect": -2.6839
+  }
+}
