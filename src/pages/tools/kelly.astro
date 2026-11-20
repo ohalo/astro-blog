@@ -1,0 +1,411 @@
+---
+import CommonPage from '@/layouts/CommonPage.astro'
+
+const title = '凯利公式计算器：胜率、盈亏比与最优仓位（含半凯利与爆仓模拟）'
+const description =
+  '免费在线凯利公式计算器：输入胜率与盈亏比，输出全凯利 f*、半凯利与四分之一凯利仓位、单笔几何增长率，并用蒙特卡洛模拟给出爆仓概率。附公式含义与凯利失效的真实场景。'
+---
+
+<CommonPage title="凯利公式计算器" meta={{ title, description }}>
+  <div class="kelly-tool">
+    <p class="answer">
+      凯利公式回答的问题是「优势已知的重复赌局里，每次该押现有资金的百分之几」。
+      两个参数就够：<strong>胜率 p</strong> 和 <strong>盈亏比 b</strong>（赢时赚 b 倍、输时亏 1 倍）。
+      最优比例 <strong>f* = p − (1−p) ÷ b</strong>。押多了长期增长率反而下降，押少了浪费优势——只有 f*
+      让复利增长最快。实盘几乎总是用 <strong>半凯利（f*/2）</strong>起步。
+    </p>
+
+    <div class="card">
+      <div class="inputs">
+        <label>
+          <span>胜率 p（%）</span>
+          <input id="k-p" type="number" value="55" min="0" max="100" step="0.1" />
+        </label>
+        <label>
+          <span>盈亏比 b（赢:亏）</span>
+          <input id="k-b" type="number" value="2" min="0.01" step="0.05" />
+        </label>
+        <label>
+          <span>本金（可选，元）</span>
+          <input id="k-cap" type="number" value="100000" min="0" step="1000" />
+        </label>
+        <label>
+          <span>凯利比例</span>
+          <select id="k-frac">
+            <option value="1">全凯利 f*</option>
+            <option value="0.5" selected>半凯利 f*/2（推荐）</option>
+            <option value="0.25">四分之一凯利 f*/4</option>
+          </select>
+        </label>
+      </div>
+
+      <div id="k-verdict" class="verdict"></div>
+
+      <div class="outputs">
+        <div class="stat">
+          <b id="o-full">–</b>
+          <i>全凯利 f*</i>
+        </div>
+        <div class="stat">
+          <b id="o-use">–</b>
+          <i>本次建议仓位</i>
+        </div>
+        <div class="stat">
+          <b id="o-amt">–</b>
+          <i>本笔建议下注额</i>
+        </div>
+        <div class="stat">
+          <b id="o-growth">–</b>
+          <i>单笔几何增长率</i>
+        </div>
+        <div class="stat">
+          <b id="o-over">–</b>
+          <i>翻倍所需笔数</i>
+        </div>
+      </div>
+
+      <div class="mc">
+        <button id="k-mc" type="button">跑一次蒙特卡洛模拟（2000 条路径 × 100 笔）</button>
+        <span id="k-seed">mulberry32 · seed 42 · 结果可复现</span>
+        <button id="k-mc-again" type="button" class="resample">重新抽样（换一条路径集）</button>
+        <table id="k-mc-table" class="hidden">
+          <thead>
+            <tr>
+              <th>策略</th>
+              <th>中位终值</th>
+              <th>腰斩概率（&lt;50%）</th>
+              <th>接近爆仓（&lt;1%）</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <h2>公式在说什么</h2>
+    <p>
+      单笔资金的期望对数增长率是
+      <code>g(f) = p·ln(1 + b·f) + (1−p)·ln(1 − f)</code>。
+      对它求导置零，就得到 <code>f* = p − (1−p)/b</code>。这条曲线在 f* 处最高，
+      但右侧掉得又快又狠：f = 2f* 时的增长率和 f = 0 差不多（等于白干），f ≥ 2f*
+      长期必然归零。这就是「赌神也会破产」的数学版本。
+    </p>
+    <p>
+      另一个直觉：f* 恰好等于「下注后各结果的对数期望权重配平」的比例——赢时的对数收益和输时的对数损失
+      在期望上打平。所以它不是「赢面大就多押」的鸡汤，而是一个精确的临界点。
+    </p>
+
+    <h2>为什么实盘推荐半凯利</h2>
+    <ul>
+      <li><strong>p 和 b 都是估计出来的</strong>。历史胜率 55% 的策略，未来可能是 52%——全凯利对高估的胜率几乎零容错，而半凯利在胜率估错一半时增长率损失不到 25%。</li>
+      <li><strong>回撤是心理成本</strong>。全凯利在连续 10 笔亏损后剩余 (1−f*)¹⁰：55/2 的策略约剩 17%，绝大多数人拿不住。</li>
+      <li><strong>收益分布不健康</strong>。全凯利的终端财富是重尾分布：中位数很漂亮，但均值被少数暴富路径拉高，你的实盘不是无限次重复。</li>
+    </ul>
+
+    <h2>常见错误</h2>
+    <details>
+      <summary>p − (1−p)/b 算出负数，还要不要下？</summary>
+      <p>不要。负凯利 = 负期望，最优解是 f = 0（或者做对手方）。工具里会直接给「无正期望」的结论。</p>
+    </details>
+    <details>
+      <summary>胜率 95%、每笔只赚 1% 的「捡钢镚」策略，凯利说押多少？</summary>
+      <p>f* = 0.95 − 0.05/0.01×… 盈亏比 1:19 时 f* 很小，但很多新手把 0.01 的盈亏比代成 b=1，算出 90% 仓位——尾损一来直接归零。凯利对「卖尾部」类策略（期权卖方、网格、马丁）给出的仓位普遍虚高，务必再压一档。</p>
+    </details>
+    <details>
+      <summary>多个独立策略同时跑，凯利怎么用？</summary>
+      <p>单标的凯利比例之和不应超过 1；需要联合最优时要上协方差矩阵，常用近似是组合层面整体缩放到 1 以内，再按各策略 f* 的相对比例分配。这已经超出本计算器范围，长文里有推导。</p>
+    </details>
+
+    <h2>延伸阅读</h2>
+    <p>
+      完整推导、A 股/期货实例与半凯利的增长率代价表，见长文
+      <a href="/blog/2026-06-04-kelly-criterion-position-sizing">《凯利公式与仓位管理：用数学优化你的每次下注》</a>；
+      亏了之后要多久回本，用配套的 <a href="/tools/drawdown">回撤恢复计算器</a>；
+      更多风险管理主题在 <a href="/quant-column">量化专栏导航</a>，全部小工具在 <a href="/tools">量化工具箱</a>。
+    </p>
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'WebApplication',
+          name: '凯利公式计算器',
+          url: 'https://blog.halo26812.eu.org/tools/kelly',
+          applicationCategory: 'FinanceApplication',
+          inLanguage: 'zh-CN',
+          isAccessibleForFree: true,
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'CNY' },
+          description
+        },
+        {
+          '@type': 'FAQPage',
+          mainEntity: [
+            {
+              '@type': 'Question',
+              name: '凯利公式怎么算？',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'f* = p − (1−p) ÷ b，其中 p 是胜率，b 是盈亏比（赢时盈利与输时亏损之比）。f* 即让重复下注的长期几何增长率最大的仓位比例。'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: '为什么实际要用半凯利而不是全凯利？',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: '胜率和盈亏比都是对未来的估计，全凯利对参数高估零容错，超过 f* 后增长率急剧下降甚至转负；半凯利只放弃约 25% 的增长率，却把回撤和爆仓概率大幅压低。'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: '凯利公式算出负数代表什么？',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: '代表当前盈亏比下没有正期望，最优仓位是 0，不应该下注。'
+              }
+            }
+          ]
+        }
+      ]
+    })} />
+  </div>
+
+  <script>
+    const $ = (id: string) => document.getElementById(id) as HTMLElement
+    const num = (id: string) => parseFloat((document.getElementById(id) as HTMLInputElement).value)
+
+    const fmtPct = (x: number) => (Number.isFinite(x) ? `${(x * 100).toFixed(2)}%` : '—')
+
+    function growth(p: number, b: number, f: number) {
+      if (f >= 1) return -Infinity
+      return p * Math.log(1 + b * f) + (1 - p) * Math.log(1 - f)
+    }
+
+    // 固定种子 mulberry32：与工具箱其余工具一致，同参数永远同一结果，截图可复现。
+    const mulberry32 = (seed: number) => {
+      let a = seed >>> 0
+      return () => {
+        a = (a + 0x6d2b79f5) | 0
+        let t = Math.imul(a ^ (a >>> 15), 1 | a)
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+      }
+    }
+    let mcSeed = 42
+
+    function simulate(p: number, b: number, f: number, paths: number, trades: number, sd: number) {
+      const rnd = mulberry32(sd)
+      const finals = new Float64Array(paths)
+      let halved = 0
+      let busted = 0
+      for (let i = 0; i < paths; i++) {
+        let w = 1
+        for (let t = 0; t < trades; t++) {
+          w *= rnd() < p ? 1 + b * f : 1 - f
+          if (w <= 1e-9) break
+        }
+        finals[i] = w
+        if (w < 0.5) halved++
+        if (w < 0.01) busted++
+      }
+      const sorted = [...finals].sort((a, c) => a - c)
+      return { median: sorted[paths >> 1], halved: halved / paths, busted: busted / paths }
+    }
+
+    function calc() {
+      const p = num('k-p') / 100
+      const b = num('k-b')
+      const cap = num('k-cap') || 0
+      const frac = parseFloat((document.getElementById('k-frac') as HTMLSelectElement).value)
+      const verdict = $('k-verdict')
+      const set = (id: string, v: string) => ($(id).textContent = v)
+
+      if (!(p > 0 && p < 1) || !(b > 0)) {
+        verdict.textContent = '请输入 0–100 之间的胜率和大于 0 的盈亏比。'
+        verdict.className = 'verdict warn'
+        return
+      }
+      const fStar = p - (1 - p) / b
+      if (fStar <= 0) {
+        set('o-full', '0%')
+        set('o-use', '0%')
+        set('o-amt', '0')
+        set('o-growth', '—')
+        set('o-over', '—')
+        verdict.textContent = `f* ≤ 0：这个胜率和盈亏比组合没有正期望，最优策略是不下注。`
+        verdict.className = 'verdict warn'
+        return
+      }
+      const f = Math.min(fStar * frac, 0.95)
+      const g = growth(p, b, f)
+      set('o-full', fmtPct(fStar))
+      set('o-use', fmtPct(f))
+      set('o-amt', cap > 0 ? `${(cap * f).toLocaleString('zh-CN', { maximumFractionDigits: 0 })} 元` : '—')
+      set('o-growth', Number.isFinite(g) ? `${((Math.exp(g) - 1) * 100).toFixed(3)}%` : '-∞')
+      set('o-over', g > 0 ? String(Math.ceil(Math.LN2 / g)) : '永远翻倍不了')
+      verdict.textContent =
+        fStar >= 0.95
+          ? `f* = ${fmtPct(fStar)} 超过可执行上限，按 95% 封顶显示——这种「圣杯参数」现实中基本等于估计出错。`
+          : frac < 1
+            ? `建议：按 ${fmtPct(f)} 执行。全凯利对胜率估计零容错，半凯利是实盘的默认选择。`
+            : `当前为全凯利 ${fmtPct(f)}：请确认胜率不是回测里调出来的。`
+      verdict.className = 'verdict ok'
+    }
+
+    function runMc() {
+      const p = num('k-p') / 100
+      const b = num('k-b')
+      const table = $('k-mc-table') as HTMLTableElement
+      if (!(p > 0 && p < 1) || !(b > 0)) return
+      const fStar = Math.min(p - (1 - p) / b, 0.95)
+      if (fStar <= 0) return
+      table.classList.remove('hidden')
+      const tbody = table.querySelector('tbody')!
+      const rows: [string, number][] = [
+        [`全凯利 ${fmtPct(fStar)}`, fStar],
+        [`半凯利 ${fmtPct(fStar / 2)}`, fStar / 2],
+        [`1/4 凯利 ${fmtPct(fStar / 4)}`, fStar / 4],
+        ['超押 2×f*（对照）', Math.min(fStar * 2, 0.99)]
+      ]
+      tbody.innerHTML = rows
+        .map(([label, f]) => {
+          const r = simulate(p, b, f, 2000, 100, mcSeed)
+          return `<tr><td>${label}</td><td>${(r.median * 100).toFixed(0)}%</td><td>${(r.halved * 100).toFixed(1)}%</td><td>${(r.busted * 100).toFixed(1)}%</td></tr>`
+        })
+        .join('')
+    }
+
+    ;['k-p', 'k-b', 'k-cap', 'k-frac'].forEach((id) => document.getElementById(id)?.addEventListener('input', calc))
+    document.getElementById('k-mc')?.addEventListener('click', runMc)
+    document.getElementById('k-mc-again')?.addEventListener('click', () => {
+      mcSeed = (mcSeed % 100000) + 1
+      $('k-seed').textContent = `mulberry32 · seed ${mcSeed} · 结果可复现`
+      runMc()
+    })
+    calc()
+  </script>
+
+  <style>
+    .kelly-tool {
+      line-height: 1.8;
+    }
+    .kelly-tool .answer {
+      border-left: 3px solid rgb(var(--primary-hue, 220) var(--primary-saturation, 80%) 60% / 0.55);
+      padding-left: 1rem;
+      margin: 1rem 0 1.5rem;
+    }
+    .card {
+      border: 1px solid #8884;
+      border-radius: 0.9rem;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+    }
+    .inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+      gap: 0.9rem;
+    }
+    .inputs label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.9rem;
+    }
+    .inputs input,
+    .inputs select {
+      font: inherit;
+      padding: 0.45rem 0.6rem;
+      border: 1px solid #8886;
+      border-radius: 0.5rem;
+      background: transparent;
+      color: inherit;
+    }
+    .verdict {
+      margin: 1rem 0;
+      padding: 0.7rem 0.9rem;
+      border-radius: 0.6rem;
+      font-weight: 500;
+    }
+    .verdict.ok {
+      background: #22c55e1a;
+    }
+    .verdict.warn {
+      background: #f59e0b22;
+    }
+    .outputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+      gap: 0.75rem;
+      margin: 0.5rem 0 1rem;
+    }
+    .stat {
+      text-align: center;
+      padding: 0.6rem 0.3rem;
+      border: 1px dashed #8885;
+      border-radius: 0.6rem;
+    }
+    .stat b {
+      display: block;
+      font-size: 1.15rem;
+    }
+    .stat i {
+      font-style: normal;
+      font-size: 0.78rem;
+      opacity: 0.75;
+    }
+    .mc button {
+      font: inherit;
+      cursor: pointer;
+      padding: 0.55rem 1rem;
+      border-radius: 0.6rem;
+      border: none;
+      color: #fff;
+      background: #4f6ef7;
+    }
+    .mc button.resample {
+      margin-left: 0.5rem;
+      color: #4f6ef7;
+      background: transparent;
+      border: 1px solid #4f6ef7;
+    }
+    .mc #k-seed {
+      margin-left: 0.6rem;
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+    .mc table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.92rem;
+    }
+    .mc th,
+    .mc td {
+      border-bottom: 1px solid #8883;
+      padding: 0.45rem 0.5rem;
+      text-align: right;
+    }
+    .mc th:first-child,
+    .mc td:first-child {
+      text-align: left;
+    }
+    .hidden {
+      display: none;
+    }
+    code {
+      padding: 0.08em 0.35em;
+      border-radius: 0.35em;
+      background: #8882;
+    }
+    details {
+      border: 1px solid #8883;
+      border-radius: 0.6rem;
+      padding: 0.5rem 0.9rem;
+      margin: 0.6rem 0;
+    }
+    summary {
+      cursor: pointer;
+      font-weight: 500;
+    }
+  </style>
+</CommonPage>

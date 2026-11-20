@@ -11,6 +11,7 @@ import config from 'virtual:config'
 import QuantLab from '@/components/lab/QuantLab.astro'
 import QuantLabMC from '@/components/lab/QuantLabMC.astro'
 import LearningPathHint from '@/components/pages/LearningPathHint.astro'
+import PillarNav from '@/components/pages/PillarNav.astro'
 import GlossaryTooltip from '@/components/pages/GlossaryTooltip.astro'
 import ReadingProgress from '@/components/pages/ReadingProgress.astro'
 import SeriesNav from '@/components/pages/SeriesNav.astro'
@@ -118,6 +119,8 @@ const levelName = difficulty ? levelLabel[difficulty] : en ? 'Research note' : '
     <LearningPathHint slug={id} class='mt-3 sm:mt-6' />
     {/* 文章系列导航（tag 自动聚合，设计稿 docs/designs/2026-11-19-series-nav） */}
     <SeriesNav post={Astro.props.post} {posts} class='mt-3 sm:mt-6' />
+    {/* 策展互链：把 pillar 文章按主题串起来，缓解批量内容的孤儿页问题 */}
+    <PillarNav post={Astro.props.post} {posts} class='mt-3 sm:mt-6' />
     {/* Article recommend */}
     <ArticleBottom collections={posts} {id} class='mt-3 sm:mt-6' />
     {

@@ -128,4 +128,5 @@ position_size = (1 / volatility) / (1 / volatility).sum()
 *延伸阅读：*
 - Kelly, J. L. (1956). A New Interpretation of Information Rate
 - Vince, R. (1990). Portfolio Management Formulas
-- 实盘代码：https://github.com/yourusername/kelly-position-sizing
+
+> 🧮 想直接算：用本站的 [凯利公式在线计算器](/tools/kelly)，输入胜率与盈亏比即可得到全凯利/半凯利仓位和爆仓概率模拟。

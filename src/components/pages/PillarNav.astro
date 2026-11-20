@@ -1,0 +1,155 @@
+---
+/**
+ * 精选互链：把人工策展的 pillar 文章按主题分组，在每篇正文底部渲染一组深读链接。
+ * 解决批量写作的「孤儿文章」问题（99% 文章没有指向其他文章的链接）。
+ * 只维护本文件里的 ID 清单；显示标题从 posts 实时读取，文章改名会自动同步。
+ */
+import type { CollectionEntry } from 'astro:content'
+
+import { getLocale } from '@/i18n'
+
+interface Props {
+  post: CollectionEntry<'blog'>
+  posts: CollectionEntry<'blog'>[]
+  class?: string
+}
+
+const { post, posts, class: className } = Astro.props
+const locale = getLocale(Astro.url.pathname)
+const en = locale === 'en'
+
+const GROUPS: { title: string; enTitle: string; ids: string[] }[] = [
+  {
+    title: '量化策略与风险管理',
+    enTitle: 'Quant strategies & risk',
+    ids: [
+      'johansen-cointegration-basket',
+      'black-litterman-practical',
+      '2026-06-04-kelly-criterion-position-sizing',
+      'expectile-risk-evar',
+      'order-flow-toxicity-vpin',
+      'gamma-scalping-options',
+      'convertible-bond-double-low',
+      'execution-slippage-control'
+    ]
+  },
+  {
+    title: '机器学习 × 量化',
+    enTitle: 'ML × quant',
+    ids: [
+      'quant-backtesting-vectorbt-guide',
+      'llm-quant-backtesting-practice',
+      'time-series-foundation-model',
+      'kan-kolmogorov-arnold-network',
+      'deep-reinforcement-learning-quant-trading',
+      'llm-financial-nlp-revolution'
+    ]
+  },
+  {
+    title: 'AI 工程实战',
+    enTitle: 'AI engineering',
+    ids: ['openclaw-complete-guide']
+  }
+]
+
+const byId = new Map(posts.map((p) => [p.id, p]))
+const groups = GROUPS.map((g) => ({
+  ...g,
+  items: g.ids
+    .filter((id) => id !== post.id)
+    .map((id) => byId.get(id))
+    .filter((p): p is CollectionEntry<'blog'> => Boolean(p))
+})).filter((g) => g.items.length > 0)
+---
+
+{
+  groups.length > 0 && (
+    <nav class:list={['pillar', className]} aria-label={en ? 'Deep reading' : '深度阅读'}>
+      <div class='pillar-h'>
+        <span class='pillar-mark' aria-hidden='true'>◈</span>
+        <b>{en ? 'Deep reading' : '深度阅读'}</b>
+        <small>{en ? 'A curated path from this blog' : '本站精选 · 按主题串成线'}</small>
+      </div>
+      {groups.map((g) => (
+        <section class='pillar-group'>
+          <h3>{en ? g.enTitle : g.title}</h3>
+          <ul>
+            {g.items.map((p) => (
+              <li>
+                <a href={`/blog/${p.id}`} data-astro-prefetch>
+                  {p.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </nav>
+  )
+}
+
+<style>
+  .pillar {
+    margin-top: 1.5rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.9rem;
+    padding: 1.1rem 1.25rem;
+    background: hsl(var(--card));
+  }
+  .pillar-h {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    margin-bottom: 0.9rem;
+  }
+  .pillar-h .pillar-mark {
+    color: hsl(var(--primary));
+    font-size: 1rem;
+  }
+  .pillar-h b {
+    font-size: 1rem;
+  }
+  .pillar-h small {
+    color: hsl(var(--muted-foreground));
+    font-size: 0.78rem;
+  }
+  .pillar-group + .pillar-group {
+    margin-top: 0.9rem;
+    padding-top: 0.8rem;
+    border-top: 1px dashed hsl(var(--border));
+  }
+  .pillar-group h3 {
+    margin: 0 0 0.45rem;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: hsl(var(--muted-foreground));
+    letter-spacing: 0.04em;
+  }
+  .pillar-group ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.3rem;
+  }
+  .pillar-group li {
+    margin: 0;
+  }
+  .pillar-group a {
+    display: inline-block;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: hsl(var(--foreground));
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .pillar-group a:hover {
+    color: hsl(var(--primary));
+    border-bottom-color: hsl(var(--primary) / 0.4);
+  }
+  @media (max-width: 640px) {
+    .pillar {
+      padding: 0.9rem 1rem;
+    }
+  }
+</style>

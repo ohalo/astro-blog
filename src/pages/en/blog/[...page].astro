@@ -12,7 +12,14 @@ import config from '@/site-config'
 export const prerender = true
 
 export const getStaticPaths = (async ({ paginate }) => {
-  const collections = sortMDByDate(await getBlogCollection())
+  // 与 en/blog/[...id].astro 保持一致：列表只收录真正翻译成英文的文章，
+  // 一篇都没有时不生成任何 /en/blog 分页（避免中文列表页在英文路径下重复）。
+  const collections = sortMDByDate(
+    (await getBlogCollection()).filter((post) => post.data.language === 'English')
+  )
+  if (collections.length === 0) {
+    return []
+  }
   const uniqueTags = getUniqueTagsWithCount(collections).map(([tag]) => tag)
   const collectionsCount = collections.length
   return paginate(collections, {

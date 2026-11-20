@@ -9,10 +9,15 @@ export const prerender = true
 
 export async function getStaticPaths() {
   const posts = sortMDByDate(await getBlogCollection())
-  return posts.map((post) => ({
-    params: { id: post.id },
-    props: { post, posts }
-  }))
+  // 只有 frontmatter 标了 language: English 的文章才真正生成 /en/ 页面；
+  // 其余全部输出重定向页指回中文原文，避免整站中文内容在 /en/ 下原样镜像一份
+  // （2026-11 SEO 审计：旧逻辑让 4000+ 个未翻译 URL 与中文原文构成重复内容）。
+  return posts.map((post) => {
+    if (post.data.language === 'English') {
+      return { params: { id: post.id }, props: { post, posts } }
+    }
+    return { params: { id: post.id }, redirect: `/blog/${post.id}` }
+  })
 }
 
 type Props = {
@@ -21,6 +26,11 @@ type Props = {
 }
 
 const { post, posts } = Astro.props
+// 未翻译文章在 getStaticPaths 里以 redirect 条目返回，没有 props.post；
+// 此时组件直接返回 Astro.redirect（构建期生成静态 3xx + canonical 的跳转页）。
+if (!post) {
+  return Astro.redirect(`/blog/${Astro.params.id}`, 301)
+}
 const { Content, headings, remarkPluginFrontmatter } = await render(post)
 const locale = getLocale(Astro.url.pathname)
 const d = dict(locale)

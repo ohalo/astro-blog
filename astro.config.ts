@@ -149,7 +149,15 @@ export default defineConfig({
     // 显式注册 sitemap 并排除 404 页：astro-pure 仅在缺少 @astrojs/sitemap 时才注入默认实例，
     // 这里先注册带 filter 的实例，避免 404（含 /en/404）被写进 sitemap-0.xml 提交给搜索引擎。
     sitemap({
-      filter: (page) => !/^\/en\/404$|^\/404$/.test(new URL(page).pathname)
+      // 排除 404；排除 /en/blog、/en/tags 下的重定向/重复页（en 文章现在统一 301 回中文原文，
+      // 见 src/pages/en/blog/[...id].astro；将来真有英文文章后把 blog 那条放宽即可）。
+      filter: (page) => {
+        const p = new URL(page).pathname
+        return (
+          !/^\/(en\/)?404$/.test(p) &&
+          !/^\/en\/(blog|tags)(\/|$)/.test(p)
+        )
+      }
     }),
     // astro-pure will automatically add mdx & unocss
     // mdx(),
