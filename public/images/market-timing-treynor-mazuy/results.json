@@ -1,0 +1,85 @@
+{
+  "A_tm_world": {
+    "g_tm_mean": 6.0014,
+    "g_tm_std": 0.2399,
+    "t_tm_mean": 25.535,
+    "tm_sig_rate": 1.0,
+    "b2b1_hm_mean": 1.0546,
+    "b2b1_hm_std": 0.071,
+    "t_hm_mean": 21.501,
+    "hm_sig_rate": 1.0
+  },
+  "B_hm_world": {
+    "g_tm_mean": 3.495,
+    "g_tm_std": 0.3281,
+    "t_tm_mean": 14.192,
+    "tm_sig_rate": 1.0,
+    "b2b1_hm_mean": 0.6986,
+    "b2b1_hm_std": 0.043,
+    "t_hm_mean": 15.801,
+    "hm_sig_rate": 1.0
+  },
+  "C_no_timing": {
+    "g_tm_mean": -0.0017,
+    "g_tm_std": 0.2307,
+    "t_tm_mean": -0.008,
+    "tm_sig_rate": 0.0375,
+    "b2b1_hm_mean": 0.0012,
+    "b2b1_hm_std": 0.0431,
+    "t_hm_mean": 0.027,
+    "hm_sig_rate": 0.0325
+  },
+  "exp2_sample": {
+    "g_tm": 2.996,
+    "t_tm": 13.302,
+    "b_down": 0.63,
+    "b_up": 1.271,
+    "b2b1": 0.641,
+    "t_hm": 15.38
+  },
+  "exp3_power": {
+    "n": [
+      60,
+      120,
+      240,
+      360,
+      600
+    ],
+    "power_tm": [
+      0.276,
+      0.422,
+      0.704,
+      0.886,
+      0.976
+    ],
+    "power_hm": [
+      0.3,
+      0.478,
+      0.788,
+      0.916,
+      0.988
+    ],
+    "size_tm": [
+      0.05,
+      0.058,
+      0.044,
+      0.048,
+      0.052
+    ],
+    "size_hm": [
+      0.052,
+      0.06,
+      0.056,
+      0.048,
+      0.056
+    ]
+  },
+  "exp4_convexity_trap": {
+    "tm_g_mean": 1.999,
+    "tm_t_mean": 7.096,
+    "tm_false_pos": 1.0,
+    "hm_diff_mean": 0.3503,
+    "hm_t_mean": 6.547,
+    "hm_false_pos": 1.0
+  }
+}
