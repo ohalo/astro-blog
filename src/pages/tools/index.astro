@@ -1,0 +1,246 @@
+---
+import CommonPage from '@/layouts/CommonPage.astro'
+
+const title = '量化工具箱：凯利仓位、回撤恢复等免费在线计算工具'
+const description =
+  'QuantLab 量化工具箱：凯利公式计算器、回撤恢复计算器等免费在线工具。不注册、不上传数据，浏览器端当场计算；随机模拟固定种子，同参数永远同一结果。'
+---
+
+<CommonPage title="量化工具箱" meta={{ title, description }}>
+  <div class="th">
+    <p class="answer">
+      把量化里最常口算的几道题，做成浏览器里当场出数的<strong>小工具</strong>：不注册、不上传数据，
+      参数一拖结果就变；随机模拟全部用<strong>固定种子</strong>，同参数永远同一答案，截图可复现。
+    </p>
+
+    <section class="tools" aria-label="工具列表">
+      <article class="tool primary">
+        <a class="tool-link" href="/tools/drawdown" aria-label="打开回撤恢复计算器"></a>
+        <div class="no">01</div>
+        <div>
+          <div class="row">
+            <h2>回撤恢复计算器</h2>
+            <span class="badge new">新上线</span>
+          </div>
+          <p>亏 30% 要涨多少才回本？固定年化给你回本年限墙，蒙特卡洛再补一条 2000 条随机路径的恢复时间分布——中位数之外，把 20 年未恢复的尾部概率也算给你看。</p>
+          <div class="tags"><span>最大回撤</span><span>恢复时间</span><span>蒙特卡洛</span><span>风险管理</span></div>
+          <span class="go">打开计算器 <span class="arr">→</span></span>
+        </div>
+      </article>
+
+      <article class="tool plan">
+        <div class="no">02</div>
+        <div>
+          <div class="row">
+            <h2>凯利公式计算器</h2>
+            <span class="badge plan">内测中</span>
+          </div>
+          <p>胜率与盈亏比 → 最优仓位 f*、半凯利与四分之一凯利；蒙特卡洛把「赌神也会破产」翻译成腰斩概率和接近爆仓的概率。</p>
+          <div class="tags"><span>仓位管理</span><span>f*</span><span>半凯利</span><span>爆仓模拟</span></div>
+          <div class="sub">KELLY POSITION SIZING · 内测整理中，即将上线</div>
+        </div>
+      </article>
+
+      <article class="tool plan">
+        <div class="no">03</div>
+        <div>
+          <div class="row">
+            <h2>海龟仓位计算器</h2>
+            <span class="badge plan">计划中</span>
+          </div>
+          <p>账户 × 单笔风险 % ÷ (ATR 倍数 × 点值) = 下单数量；组合总风险热度一条看板上墙。</p>
+          <div class="sub">ATR POSITION SIZING · PLANNED</div>
+        </div>
+      </article>
+
+      <article class="tool plan">
+        <div class="no">04</div>
+        <div>
+          <div class="row">
+            <h2>回测过拟合检测</h2>
+            <span class="badge plan">计划中</span>
+          </div>
+          <p>纯噪声里试 N 组参数，期望最大 Sharpe 约为 √(2 ln N)——输入你的回测组数与 Sharpe，看看有多少像是数据挖掘出来的。</p>
+          <div class="sub">OVERFITTING / DEFLATED SHARPE · PLANNED</div>
+        </div>
+      </article>
+    </section>
+
+    <p class="note">
+      <strong>算法都摊开写。</strong>每个工具页面末尾附公式与判读，参数怎么代、结果怎么读、哪里会骗人，
+      不藏黑箱；模拟用 <code>mulberry32(种子)</code>，点「重新抽样」只换路径、不改数学。
+    </p>
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: '量化工具箱',
+    url: 'https://blog.halo26812.eu.org/tools',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: '回撤恢复计算器', url: 'https://blog.halo26812.eu.org/tools/drawdown' }
+    ]
+  })} />
+
+  <style>
+    .th .answer {
+      line-height: 1.8;
+    }
+    .th .answer strong {
+      color: hsl(var(--primary));
+    }
+    .th .tools {
+      display: grid;
+      gap: 14px;
+      margin-top: 24px;
+    }
+    .th .tool {
+      position: relative;
+      display: grid;
+      grid-template-columns: 46px 1fr;
+      gap: 14px;
+      border: 1px solid hsl(var(--border));
+      background: hsl(var(--card));
+      border-radius: 14px;
+      padding: 18px 20px;
+      transition: border-color 0.18s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .th a.tool-link:hover ~ .no,
+    .th .tool:hover {
+      border-color: hsl(var(--primary) / 0.4);
+      transform: translateY(-1px);
+    }
+    .th .tool .no {
+      font-family: var(--font-mono, ui-monospace, monospace);
+      font-size: 1rem;
+      color: hsl(var(--muted-foreground) / 0.85);
+      font-variant-numeric: tabular-nums;
+      padding-top: 2px;
+    }
+    .th .tool h2 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+      display: inline;
+    }
+    .th .tool p {
+      margin: 8px 0 0;
+      color: hsl(var(--muted-foreground));
+      font-size: 0.88rem;
+      line-height: 1.7;
+    }
+    .th .tool .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .th .badge {
+      font-family: var(--font-mono, ui-monospace, monospace);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      border-radius: 999px;
+      padding: 2px 9px;
+    }
+    .th .badge.new {
+      color: hsl(var(--primary-foreground));
+      background: hsl(var(--primary));
+    }
+    .th .badge.live {
+      color: hsl(var(--primary));
+      background: hsl(var(--primary) / 0.1);
+      border: 1px solid hsl(var(--primary) / 0.3);
+    }
+    .th .badge.plan {
+      color: hsl(var(--muted-foreground));
+      background: hsl(var(--muted));
+      border: 1px dashed hsl(var(--border));
+    }
+    .th .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .th .tags span {
+      font-size: 12px;
+      color: hsl(var(--muted-foreground));
+      border: 1px solid hsl(var(--border));
+      border-radius: 999px;
+      padding: 1px 9px;
+    }
+    .th .tool .go {
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: hsl(var(--primary));
+      min-height: 32px;
+    }
+    .th .tool .go .arr {
+      transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .th .tool:hover .go .arr {
+      transform: translateX(3px);
+    }
+    .th a.tool-link {
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      z-index: 1;
+    }
+    .th a.tool-link:focus-visible {
+      outline: 2px solid hsl(var(--ring));
+      outline-offset: 2px;
+    }
+    .th .tool.primary {
+      border-color: hsl(var(--primary) / 0.45);
+      background: linear-gradient(180deg, hsl(var(--primary) / 0.05), transparent 55%), hsl(var(--card));
+    }
+    .th .tool.plan {
+      background: transparent;
+      border-style: dashed;
+    }
+    .th .tool.plan h2,
+    .th .tool.plan .no {
+      color: hsl(var(--muted-foreground));
+    }
+    .th .tool.plan .sub {
+      font-family: var(--font-mono, ui-monospace, monospace);
+      font-size: 11px;
+      color: hsl(var(--muted-foreground) / 0.85);
+      margin-top: 8px;
+      letter-spacing: 0.06em;
+    }
+    .th .note {
+      margin-top: 28px;
+      border-left: 2px solid hsl(var(--primary) / 0.5);
+      padding: 6px 0 6px 14px;
+      color: hsl(var(--muted-foreground));
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+    .th .note strong {
+      color: hsl(var(--foreground));
+    }
+    .th .note code {
+      font-family: var(--font-mono, ui-monospace, monospace);
+      color: hsl(var(--primary));
+    }
+    @media (max-width: 640px) {
+      .th .tool {
+        grid-template-columns: 36px 1fr;
+        padding: 14px;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .th .tool,
+      .th .tool .go .arr {
+        transition: none;
+      }
+    }
+  </style>
+</CommonPage>
