@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dsh-design" content="web">
+<title>回撤恢复计算器 · 默认状态（−30%）</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  /* 字号阶梯（6 档）：12 / 13 / 14 / 15 / 18 / 32 */
+  .site-head { border-bottom: 1px solid hsl(var(--border)); }
+  .site-head .inner { max-width: 1080px; margin: 0 auto; padding: 14px 32px; display: flex; align-items: center; gap: 24px; }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 700; }
+  .brand .mark { width: 26px; height: 26px; border-radius: 7px; background: linear-gradient(135deg, hsl(var(--primary)), hsl(43 48% 42%)); color: hsl(var(--primary-foreground)); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 12px; font-weight: 700; }
+  .site-head nav { margin-left: auto; display: flex; gap: 4px; flex-wrap: wrap; }
+  .site-head nav a { padding: 6px 12px; border-radius: var(--radius-sm); font-size: 14px; color: hsl(var(--muted-foreground)); }
+  .site-head nav a:hover, .site-head nav a:focus-visible { color: hsl(var(--foreground)); background: hsl(var(--muted)); }
+  .site-head nav a[aria-current] { color: hsl(var(--primary)); background: hsl(var(--primary) / .08); }
+
+  main { max-width: 860px; margin: 0 auto; padding: 24px 32px 64px; }
+  @media (max-width: 760px) { main { padding: 16px 16px 48px; } .site-head .inner { padding: 12px 16px; } }
+
+  /* 面包屑（点击区 ≥24） */
+  .crumb { display: flex; flex-wrap: wrap; align-items: center; font-family: var(--font-mono); font-size: 13px; color: hsl(var(--muted-foreground)); margin: 0 -6px; }
+  .crumb a { color: hsl(var(--muted-foreground)); padding: 12px 6px; min-height: 24px; display: inline-flex; align-items: center; }
+  .crumb a:hover, .crumb a:focus-visible { color: hsl(var(--primary)); }
+  .crumb .sep { color: hsl(var(--muted-foreground)); margin: 0 6px; }
+  .crumb .now { color: hsl(var(--foreground)); padding: 12px 6px; }
+  h1 { font-size: 32px; line-height: 1.2; letter-spacing: -0.02em; margin: 6px 0 0; font-weight: 700; }
+  .kicker { font-family: var(--font-mono); font-size: 12px; letter-spacing: .22em; color: hsl(var(--primary)); text-transform: uppercase; margin-top: 14px; }
+  .answer { margin: 16px 0 0; max-width: 40em; line-height: 1.8; }
+  .answer b { color: hsl(var(--primary)); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  /* —— 卡片 —— */
+  .card { border: 1px solid hsl(var(--border)); background: hsl(var(--card)); border-radius: var(--radius-lg); padding: 24px; margin-top: 28px; }
+  @media (max-width: 560px) { .card { padding: 16px; } }
+  .card-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .card-head h2 { margin: 0; font-size: 18px; font-weight: 600; }
+  .card-head .tag { font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em; color: hsl(var(--muted-foreground)); text-transform: uppercase; margin-left: auto; }
+
+  /* 输入行 */
+  .inputs { display: flex; flex-wrap: wrap; gap: 16px 24px; margin-top: 20px; align-items: center; }
+  .field { display: flex; align-items: center; gap: 10px; }
+  .field > span { font-size: 14px; color: hsl(var(--muted-foreground)); white-space: nowrap; }
+  .field input[type="number"] {
+    width: 76px; min-height: 44px; text-align: right;
+    font-family: var(--font-mono); font-size: 18px; font-variant-numeric: tabular-nums;
+    color: hsl(var(--foreground)); background: hsl(var(--input));
+    border: 1px solid hsl(var(--border)); border-radius: var(--radius-sm); padding: 0 10px;
+  }
+  .field input[type="number"]:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 1px; }
+  .field .unit { font-family: var(--font-mono); color: hsl(var(--muted-foreground)); font-size: 14px; }
+
+  /* 滑杆（模拟 range，实现用 input[type=range]） */
+  .slider { position: relative; flex: 1; min-width: 180px; height: 44px; display: flex; align-items: center; }
+  .slider .rail { position: absolute; left: 0; right: 0; height: 4px; border-radius: 2px; background: hsl(var(--input)); }
+  .slider .fill { position: absolute; left: 0; width: 29.5%; height: 4px; border-radius: 2px; background: hsl(var(--primary)); }
+  .slider .knob { position: absolute; left: 29.5%; width: 20px; height: 20px; border-radius: 50%; transform: translateX(-50%); background: hsl(var(--primary)); border: 3px solid hsl(var(--background)); box-shadow: 0 0 0 1px hsl(var(--primary) / .5), 0 0 14px hsl(var(--primary) / .35); }
+  .slider .end { position: absolute; top: 50%; transform: translateY(9px); font-family: var(--font-mono); font-size: 12px; color: hsl(var(--muted-foreground)); }
+
+  /* 大读数 */
+  .verdict { margin-top: 24px; border: 1px solid hsl(var(--primary) / .35); background: hsl(var(--primary) / .06); border-radius: var(--radius-md); padding: 18px 20px; display: flex; align-items: baseline; gap: 12px 16px; flex-wrap: wrap; }
+  .verdict .big { font-family: var(--font-mono); font-size: 32px; font-weight: 700; color: hsl(var(--primary)); line-height: 1.1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .verdict .txt { font-size: 18px; }
+  .verdict .txt i { font-style: normal; color: hsl(var(--muted-foreground)); font-size: 14px; display: block; margin-top: 4px; }
+
+  /* 恢复墙表 */
+  .table-wrap { overflow-x: auto; margin-top: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 9px 10px; border-bottom: 1px solid hsl(var(--border) / .6); text-align: right; white-space: nowrap; }
+  th { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .1em; color: hsl(var(--muted-foreground)); text-transform: uppercase; }
+  td:first-child, th:first-child { text-align: left; }
+  tbody td:first-child { font-family: var(--font-mono); }
+  tbody tr:hover { background: hsl(var(--muted)); }
+  tbody tr.cur { background: hsl(var(--primary) / .07); }
+  tbody tr.cur td:first-child { color: hsl(var(--primary)); font-weight: 700; box-shadow: inset 2px 0 0 hsl(var(--primary)); }
+  .bar-cell { position: relative; min-width: 120px; }
+  .bar-cell .bar { position: absolute; left: 10px; top: 50%; height: 8px; transform: translateY(-50%); border-radius: 2px; background: hsl(var(--primary) / .22); }
+  .bar-cell b { position: relative; }
+  .tbl-note { margin-top: 10px; font-size: 13px; color: hsl(var(--muted-foreground)); line-height: 1.7; max-width: 46em; }
+  .tbl-note code { font-family: var(--font-mono); color: hsl(var(--primary)); font-size: 13px; }
+
+  /* —— 蒙特卡洛 —— */
+  .mc-readout { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 22px; }
+  @media (max-width: 560px) { .mc-readout { grid-template-columns: repeat(2, 1fr); } }
+  .stat { border: 1px solid hsl(var(--border)); border-radius: var(--radius-md); background: hsl(var(--muted)); padding: 12px 14px; }
+  .stat b { display: block; font-family: var(--font-mono); font-size: 18px; font-weight: 700; color: hsl(var(--foreground)); font-variant-numeric: tabular-nums; }
+  .stat.gold b { color: hsl(var(--primary)); }
+  .stat.bad b { color: hsl(4 70% 68%); }
+  .stat i { font-style: normal; font-size: 13px; color: hsl(var(--muted-foreground)); }
+
+  /* 恢复时间分布条：band 图 + 两行标注（上排分位、下排年头刻度），互不重叠 */
+  .dist { margin-top: 26px; }
+  .dist .lab { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; font-size: 14px; color: hsl(var(--muted-foreground)); margin-bottom: 10px; }
+  .dist .lab b { color: hsl(var(--foreground)); font-weight: 600; }
+  .dist .lab span:last-child { white-space: nowrap; }
+  .band { position: relative; height: 26px; border-radius: var(--radius-sm); background: hsl(var(--input)); }
+  .band .seg { position: absolute; top: 0; bottom: 0; }
+  .band .core { left: 7%; width: 16.5%; background: hsl(var(--primary)); border-radius: 4px; box-shadow: 0 0 12px hsl(var(--primary) / .3); }
+  .band .mid { left: 23.5%; width: 30.5%; background: hsl(var(--primary) / .38); border-radius: 0 4px 4px 0; }
+  .band .tail { left: 54%; right: 0; background: repeating-linear-gradient(-45deg, hsl(4 65% 55% / .5) 0 6px, transparent 6px 12px); border-radius: 0 4px 4px 0; border-right: 2px solid hsl(4 70% 68%); }
+  .plabels { position: relative; height: 42px; margin-top: 2px; font-family: var(--font-mono); font-size: 13px; }
+  .plabels span { position: absolute; white-space: nowrap; transform: translateX(-50%); color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
+  .plabels span.up { top: 0; }
+  .plabels span.down { top: 21px; }
+  .plabels span.peak { color: hsl(var(--primary)); }
+  .ticks { display: flex; justify-content: space-between; border-top: 1px solid hsl(var(--border)); padding-top: 7px; margin-top: 2px; font-family: var(--font-mono); font-size: 12px; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; }
+  .dist-cap { margin-top: 12px; font-size: 13px; color: hsl(var(--muted-foreground)); display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .dist-cap .swatch { display: inline-block; width: 18px; height: 8px; border-radius: 2px; background: repeating-linear-gradient(-45deg, hsl(4 65% 55% / .7) 0 4px, transparent 4px 8px); border-right: 2px solid hsl(4 70% 68%); transform: translateY(-1px); }
+  .dist-cap b { color: hsl(4 70% 68%); }
+  .mc-verdict { margin-top: 14px; border-left: 2px solid hsl(var(--primary) / .5); padding: 4px 0 4px 14px; font-size: 14px; line-height: 1.8; color: hsl(var(--muted-foreground)); max-width: 46em; }
+  .mc-verdict b { color: hsl(var(--foreground)); font-weight: 600; }
+  .mc-foot { display: flex; align-items: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    min-height: 44px; padding: 0 20px; display: inline-flex; align-items: center; gap: 8px;
+    font-size: 14px; font-weight: 600; border-radius: var(--radius-md); cursor: pointer;
+    color: hsl(var(--primary-foreground)); background: hsl(var(--primary));
+    border: 1px solid hsl(var(--primary));
+    transition: filter .18s var(--ease-out), transform .18s var(--ease-out);
+  }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: translateY(1px); }
+  .btn:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+  .seed { font-family: var(--font-mono); font-size: 12px; color: hsl(var(--muted-foreground)); }
+
+  /* —— 说明区（行长 ≤ 40 字） —— */
+  .prose { max-width: 40.5em; }
+  h2.sec { font-size: 18px; font-weight: 600; margin: 44px 0 12px; }
+  .prose p { line-height: 1.85; margin: 10px 0; }
+  .prose code { font-family: var(--font-mono); font-size: 13px; background: hsl(var(--input)); border-radius: 4px; padding: 2px 6px; color: hsl(var(--primary)); }
+  .prose a { color: hsl(var(--primary)); text-decoration: underline; text-decoration-color: hsl(var(--primary) / .4); text-underline-offset: 3px; }
+  details { border: 1px solid hsl(var(--border)); border-radius: var(--radius-md); padding: 12px 16px; margin: 10px 0; background: hsl(var(--card)); }
+  summary { cursor: pointer; font-weight: 500; min-height: 20px; }
+  details p { line-height: 1.8; color: hsl(var(--muted-foreground)); }
+  ul.rel { margin: 8px 0 0; padding-left: 22px; line-height: 2; overflow-wrap: anywhere; }
+
+  footer { border-top: 1px solid hsl(var(--border)); }
+  footer .inner { max-width: 1080px; margin: 0 auto; padding: 20px 32px; font-family: var(--font-mono); font-size: 12px; color: hsl(var(--muted-foreground)); display: flex; gap: 20px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <div class="inner">
+    <span class="brand"><span class="mark">QL</span>QuantLab</span>
+    <nav>
+      <a href="#">博客</a>
+      <a href="#">量化专栏</a>
+      <a href="#">量化看板</a>
+      <a href="tools-hub.html" aria-current="page">工具箱</a>
+      <a href="#">关于</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="crumb"><a href="tools-hub.html">工具箱</a><span class="sep">/</span><span class="now">回撤恢复计算器</span></div>
+  <div class="kicker">Drawdown Recovery Math</div>
+  <h1>回撤恢复计算器</h1>
+
+  <p class="answer">
+    亏损和回本是两道不等价的算术：亏 <b>10%</b> 只要涨 11.1% 就能回本，亏 <b>50%</b> 却要涨
+    <b>100%</b>，亏 90% 要涨 900%。这个计算器分两层：先把「固定年化下的恢复年限墙」摆出来，
+    再用蒙特卡洛给一条<b>带波动的真实路径</b>——恢复的中位数和尾部，分开回答。
+  </p>
+
+  <!-- 卡 1：亏损不对称墙 -->
+  <section class="card" aria-label="恢复墙">
+    <div class="card-head">
+      <h2>亏损不对称墙</h2>
+      <span class="tag">No. 1 · 固定年化</span>
+    </div>
+
+    <div class="inputs">
+      <div class="field" style="flex:1; min-width:260px;">
+        <span>当前回撤</span>
+        <div class="slider">
+          <div class="rail"></div>
+          <div class="fill"></div>
+          <div class="knob"></div>
+          <span class="end" style="left:0;">−5%</span>
+          <span class="end" style="right:0;">−90%</span>
+        </div>
+        <input type="number" value="30" min="5" max="90" step="1" aria-label="当前回撤百分比">
+        <span class="unit">%</span>
+      </div>
+    </div>
+
+    <div class="verdict">
+      <span class="big">+42.9%</span>
+      <span class="txt">这是回本所需涨幅<i>若一路按 12% 年化、无波动地复利，约 3.1 年回到本金</i></span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">回撤</th>
+            <th scope="col">需要涨幅（条长 = √涨幅）</th>
+            <th scope="col">年化 8%</th>
+            <th scope="col">年化 12%</th>
+            <th scope="col">年化 20%</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>−10%</td><td class="bar-cell"><span class="bar" style="width:11%"></span><b>+11.1%</b></td><td>1.4 年</td><td>0.9 年</td><td>0.6 年</td></tr>
+          <tr><td>−20%</td><td class="bar-cell"><span class="bar" style="width:16%"></span><b>+25.0%</b></td><td>2.9 年</td><td>2.0 年</td><td>1.2 年</td></tr>
+          <tr class="cur"><td>−30%</td><td class="bar-cell"><span class="bar" style="width:21%"></span><b>+42.9%</b></td><td>4.6 年</td><td>3.1 年</td><td>2.0 年</td></tr>
+          <tr><td>−40%</td><td class="bar-cell"><span class="bar" style="width:26%"></span><b>+66.7%</b></td><td>6.6 年</td><td>4.5 年</td><td>2.8 年</td></tr>
+          <tr><td>−50%</td><td class="bar-cell"><span class="bar" style="width:32%"></span><b>+100.0%</b></td><td>9.0 年</td><td>6.1 年</td><td>3.8 年</td></tr>
+          <tr><td>−60%</td><td class="bar-cell"><span class="bar" style="width:39%"></span><b>+150.0%</b></td><td>11.9 年</td><td>8.1 年</td><td>5.0 年</td></tr>
+          <tr><td>−70%</td><td class="bar-cell"><span class="bar" style="width:48%"></span><b>+233.3%</b></td><td>15.6 年</td><td>10.6 年</td><td>6.6 年</td></tr>
+          <tr><td>−80%</td><td class="bar-cell"><span class="bar" style="width:63%"></span><b>+400.0%</b></td><td>20.9 年</td><td>14.2 年</td><td>8.8 年</td></tr>
+          <tr><td>−90%</td><td class="bar-cell"><span class="bar" style="width:95%"></span><b>+900.0%</b></td><td>29.9 年</td><td>20.3 年</td><td>12.6 年</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tbl-note">表假设：按 <code>(1−d)(1+g)ᵗ ≥ 1</code> 一路恒定复利、零波动——真实路径永远比它毛糙，这就是下面第二层存在的理由。年化 20% 一列只作参照：它已经接近顶级基金的长期水平。</p>
+  </section>
+
+  <!-- 卡 2：蒙特卡洛 -->
+  <section class="card" aria-label="蒙特卡洛恢复时间分布">
+    <div class="card-head">
+      <h2>如果路径不是一条直线</h2>
+      <span class="tag">No. 2 · 蒙特卡洛</span>
+    </div>
+
+    <div class="inputs">
+      <div class="field">
+        <span>年化期望收益 μ</span>
+        <input type="number" value="12" min="-10" max="60" step="1" aria-label="年化期望收益">
+        <span class="unit">%</span>
+      </div>
+      <div class="field">
+        <span>年化波动 σ</span>
+        <input type="number" value="20" min="0" max="80" step="1" aria-label="年化波动率">
+        <span class="unit">%</span>
+      </div>
+      <div class="field">
+        <span>当前回撤</span>
+        <input type="number" value="30" min="5" max="90" step="1" aria-label="当前回撤">
+        <span class="unit">%</span>
+      </div>
+    </div>
+
+    <div class="mc-readout">
+      <div class="stat"><b>2.5 年</b><i>中位恢复 P50</i></div>
+      <div class="stat"><b>4.7 年</b><i>P75 恢复</i></div>
+      <div class="stat gold"><b>10.8 年</b><i>P95 恢复</i></div>
+      <div class="stat bad"><b>7.1%</b><i>10 年内未回本</i></div>
+    </div>
+
+    <div class="dist">
+      <div class="lab"><span>恢复时间分布 · <b>2000 条月度路径 × 20 年上限</b></span><span>单位：年</span></div>
+      <div class="band">
+        <span class="seg core"></span>
+        <span class="seg mid"></span>
+        <span class="seg tail"></span>
+      </div>
+      <div class="plabels">
+        <span class="peak up" style="left:12.5%;">P50 2.5</span>
+        <span class="down" style="left:7%;">P25 1.4</span>
+        <span class="down" style="left:23.5%;">P75 4.7</span>
+        <span class="down" style="left:54%;">P95 10.8</span>
+      </div>
+      <div class="ticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20</span></div>
+      <div class="dist-cap"><span class="swatch"></span>斜纹段是 P95 之后的尾部：10 年内未回本 <b>7.1%</b>，20 年仍未回本 <b>0.9%</b></div>
+    </div>
+
+    <p class="mc-verdict">
+      <b>中位数其实比固定年化的 3.1 年还快</b>——运气好的路径提前碰到本金额，算「已恢复」。
+      波动抬高的几乎全是尾部：每 20 条路径就有 1 条要等 10 年以上。
+      <b>波动率改变的不是平均值，是尾部的价格。</b>
+    </p>
+
+    <div class="mc-foot">
+      <button class="btn" type="button">重新抽样（换一条路径集）</button>
+      <span class="seed">mulberry32 · seed 42 · 结果可复现</span>
+    </div>
+  </section>
+
+  <!-- 说明区 -->
+  <div class="prose">
+    <h2 class="sec">两个算法在说什么</h2>
+    <p>回本所需涨幅只有一个式子：<code>(1−d)(1+R) = 1</code>，解出 <code>R = d ÷ (1−d)</code>。
+      它在 d → 1 处是凸的——越靠近底部，每多亏 10% 要多付的回本涨幅越陡：−10% 只需垫 1.1 个百分点，
+      −80% 到 −90% 一档直接从 400% 跳到 900%。</p>
+    <p>蒙特卡洛部分把年化拆成月度：每月按 <code>μ/12 与 σ/√12</code> 生成对数正态冲击（几何漂移
+      <code>μ − σ²/2</code>），数「<b>曾经</b>触到本金线」的第一时间——因为恢复的意义就是中途某刻回过本。
+      换 μ、σ 时留意：σ 进几何漂移要打对折。</p>
+
+    <h2 class="sec">三个会骗你的地方</h2>
+    <details open>
+      <summary>「跌了 40%，三年就回本」的自救计划</summary>
+      <p>它默认你能立刻把年化调回历史最好水平，且路径零波动。把上面 σ 拖到 30%，P95 会告诉你另一份时间表。恢复期里还要扣掉生活费与机会成本。</p>
+    </details>
+    <details>
+      <summary>加倍补仓摊成本，中位恢复确实变快——代价写在另一个字段里</summary>
+      <p>马丁格尔式的加仓把 P50 缩短，同时把「20 年未回本」的概率推向两位数：你在用尾部概率买时间。计算器不直接模拟加仓路径，方向可以从波动率一栏试出来。</p>
+    </details>
+    <details>
+      <summary>深回撤后重仓博回来</summary>
+      <p>回撤 −50% 时要涨 100%，重仓一搏的诱惑正是爆仓概率最高的时刻。先用凯利工具按新本金重新算一遍仓位，多数时候答案是「压一档」。</p>
+    </details>
+
+    <h2 class="sec">延伸阅读</h2>
+    <ul class="rel">
+      <li><a href="#">《量化交易的风险管理：止损、仓位控制与最大回撤》</a>——把「控制回撤」拆成止损、仓位、分散三件能做的事</li>
+      <li><a href="#">《凯利公式与仓位管理：用数学优化你的每次下注》</a>——本工具箱 No.02，控制「下一次亏多少」</li>
+      <li><a href="#">《分数 Kelly 与回撤约束：在增长率和最大回撤之间讨价还价》</a>——为什么多数人应该用分数凯利</li>
+      <li><a href="tools-hub.html">量化工具箱首页</a>——已上线与在计划的全部工具</li>
+    </ul>
+  </div>
+</main>
+
+<footer>
+  <div class="inner">
+    <span>QuantLab</span>
+    <span>浏览器端计算 · 无服务器依赖</span>
+    <span>© 2026</span>
+  </div>
+</footer>
+
+</body>
+</html>
