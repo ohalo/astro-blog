@@ -5,6 +5,7 @@
  * 保留 header-component 自定义元素与其滚动、主题、菜单交互逻辑。
  */
 import { getLocale, localePath, switchLocalePath, LOCALE_FULL, dict } from '@/i18n'
+import { canSwitchLocale, getTranslatedPostIds } from '@/i18n/availability'
 import type { Locale } from '@/i18n'
 import config from '@/site-config'
 
@@ -27,6 +28,9 @@ const menu = [
 ]
 
 const switcher = switchLocalePath(pathname)
+// 只在目标语言确实有对应页时给可点链接；否则渲染禁用态，避免 404 / meta refresh 原地回弹
+const switchable = canSwitchLocale(pathname, await getTranslatedPostIds())
+const switchLabel = locale === 'en' ? 'Switch to Chinese' : 'Switch to English'
 const homeLink = localePath(locale, '/')
 const isCurrent = (link: string) => {
   const path = link.replace(/\/$/, '') || '/'
@@ -92,17 +96,29 @@ const isCurrent = (link: string) => {
           </svg>
         </a>
 
-        <a
-          id='switchLocale'
-          class='hg-langbtn'
-          href={switcher.path}
-          hreflang={switcher.locale}
-          aria-label={locale === 'en' ? 'Switch to Chinese' : 'Switch to English'}
-          title={locale === 'en' ? 'Switch to Chinese' : 'Switch to English'}
-          data-astro-prefetch
-        >
-          {LOCALE_FULL[switcher.locale]}
-        </a>
+        {
+          switchable ? (
+            <a
+              id='switchLocale'
+              class='hg-langbtn'
+              href={switcher.path}
+              hreflang={switcher.locale}
+              aria-label={switchLabel}
+              title={switchLabel}
+              data-astro-prefetch
+            >
+              {LOCALE_FULL[switcher.locale]}
+            </a>
+          ) : (
+            <span
+              class='hg-langbtn hg-langbtn--disabled'
+              aria-disabled='true'
+              title={locale === 'en' ? 'Chinese version only' : '暂无英文版'}
+            >
+              {LOCALE_FULL[switcher.locale]}
+            </span>
+          )
+        }
 
         <button
           id='toggleDarkMode'

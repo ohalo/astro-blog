@@ -157,6 +157,7 @@ const jsonSafe = JSON.stringify(glossaryTerms).replace(/</g, '\\u003c')
     // 3) 单例定义卡 + 交互
     const card = document.createElement('div')
     card.className = 'hg-gloss-card'
+    card.id = 'hg-gloss-card'
     card.setAttribute('role', 'tooltip')
     card.dataset.open = 'false'
     document.body.appendChild(card)
@@ -182,6 +183,8 @@ const jsonSafe = JSON.stringify(glossaryTerms).replace(/</g, '\\u003c')
       const term = byId.get(el.dataset.gid || '')
       if (!term) return
       if (current === el) return
+      // 定义卡是单例：换术语时先把旧术语的 aria-describedby 摘掉，避免读屏读到过期定义
+      current?.removeAttribute('aria-describedby')
       current = el
       card.innerHTML = ''
       const b = document.createElement('b')
@@ -190,10 +193,13 @@ const jsonSafe = JSON.stringify(glossaryTerms).replace(/</g, '\\u003c')
       p.textContent = en ? term.en : term.zh
       card.append(b, p)
       card.dataset.open = 'true'
+      // 键盘 focusin 会弹卡，但读屏不会自动念 tooltip，必须显式关联
+      el.setAttribute('aria-describedby', card.id)
       position()
     }
 
     const close = () => {
+      current?.removeAttribute('aria-describedby')
       current = null
       card.dataset.open = 'false'
     }

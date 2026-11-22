@@ -315,6 +315,13 @@ body[data-hg='full'] .hg-shell {
   border-color: var(--hg-gold-deep);
   color: var(--hg-gold-light);
 }
+/* 无对应语言版本：保留占位避免布局跳动，但明确不可点 */
+.hg-langbtn--disabled,
+.hg-langbtn--disabled:hover {
+  color: var(--hg-dim-2);
+  border-color: var(--hg-border-soft);
+  cursor: default;
+}
 
 /* ------------------------------------------------------------- Shared --- */
 .hg-section {

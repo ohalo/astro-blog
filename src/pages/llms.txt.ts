@@ -59,11 +59,22 @@ export const GET: APIRoute = async () => {
     posts[0]?.data.publishDate ?? new Date()
   )
 
+  // 简介也用实测值：旧文案写「每篇通常 4000 字以上，含可运行代码」，
+  // 实际中文字数中位数不到 2000，且约 1/4 文章没有代码块。
+  const zhLength = (raw: string | undefined) =>
+    (raw ?? '')
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/\$\$[\s\S]*?\$\$/g, '')
+      .match(/[\u4e00-\u9fff]/g)?.length ?? 0
+  const lengths = posts.map((post) => zhLength(post.body)).sort((a, b) => a - b)
+  const medianZh = lengths[Math.floor(lengths.length / 2)] ?? 0
+  const withCode = posts.filter((post) => /```/.test(post.body ?? '')).length
+
   const body = `# halo 的技术博客
 
 > 中文个人技术博客，主线是「量化交易 × 大模型」：因子与统计套利、风险管理、
 > 期权衍生品、回测工程，以及 LLM 在金融研究中的落地。
-> 共 ${posts.length} 篇长文（每篇通常 4000 字以上，含可运行代码），最近更新于 ${latest.toISOString().slice(0, 10)}。
+> 共 ${posts.length} 篇文章（正文中文字符中位数约 ${medianZh} 字，${withCode} 篇含代码块），最近更新于 ${latest.toISOString().slice(0, 10)}。
 > 正文语言：简体中文；代码注释中英混合。
 
 ${sections}
