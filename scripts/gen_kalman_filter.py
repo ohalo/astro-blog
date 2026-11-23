@@ -59,7 +59,8 @@ mse_ma = float(np.mean((np.convolve(y, np.ones(20)/20, mode='same') - theta) ** 
 # 动态因子暴露数据
 T2 = 500
 K_factors = 3
-np.random.seed(20261032)
+# 与正文代码块保持同一随机流，保证「正文 exec 结果 = 配图 = results」三者一致。
+np.random.seed(20261031)
 beta_true = np.zeros((T2, K_factors))
 beta_true[0] = np.array([1.0, 0.5, -0.3])
 for t in range(1, T2):
@@ -67,7 +68,9 @@ for t in range(1, T2):
 
 f = np.random.normal(0, 0.02, (T2, K_factors))
 eps = np.random.normal(0, 0.01, T2)
-r = beta_true @ f.T + eps
+# 资产收益 r_t = Σ_i β_{t,i}·f_{t,i} + ε_t，是 (T2,) 向量。
+# 原写法 beta_true @ f.T 得到 (T2,T2) 矩阵，导致 KF 更新广播崩溃、fig06/07 从未生成。
+r = np.sum(beta_true * f, axis=1) + eps
 
 # KF for factor exposure
 Q_factor = np.eye(K_factors) * 0.0001
@@ -155,7 +158,11 @@ fig.savefig(os.path.join(output_dir, 'fig04.png'), dpi=150, bbox_inches='tight')
 plt.close()
 
 # ============ Fig 5: Kalman gain vs SNR ============
-snr = Q / (R + 1e-10)  # inverse SNR for scalar case
+# 用逐时刻变化的先验方差刻画动态信噪比：K_t = P_pred[t]/(P_pred[t]+R)，
+# snr_t = P_pred[t]/R 与 K_series 等长，scatter 才能画出 K 随 SNR 的轨迹。
+# 原写法 snr = Q/(R+1e-10) 是标量，与 K_series(T,) 尺寸不符，脚本在此崩溃，
+# 导致 fig06/fig07 从未生成。
+snr = P_pred / (R + 1e-10)
 fig, ax = plt.subplots(figsize=(10, 5))
 scatter = ax.scatter(snr, K_series, c=range(T), cmap='viridis', alpha=0.6, s=15)
 ax.set_xlabel('Process/obs noise ratio (Q/R)')

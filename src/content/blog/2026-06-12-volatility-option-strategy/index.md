@@ -82,7 +82,7 @@ def black_scholes_call(S, K, T, r, sigma, q=0):
 
 同一到期日、不同行权价的期权，隐含波动率并不相同，通常呈现"微笑"或"倾斜"形状。
 
-![波动率微笑曲线](/images/volatility-option-strategy/volatility_smile.png)
+![波动率微笑曲线](/images/2026-06-12-volatility-option-strategy/volatility_smile.png)
 
 **关键观察**：
 - 虚值看跌期权（OTM Put）的IV通常更高（左尾风险溢价）

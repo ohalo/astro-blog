@@ -15,7 +15,8 @@
      要改就跑 `python3 scripts/check_math_fences.py --fix <slug>`。
 
 用法：
-  python3 scripts/quant_verify.py <slug1> <core1.py> [<slug2> <core2.py> ...]
+  python3 scripts/quant_verify.py <slug1> <core1.py> [<slug2> <core2.py> ...]   单篇全套校验
+  python3 scripts/quant_verify.py --all-images                                 全库正文图片引用存在性巡检
 
 退出码 0 = 全部 PASS，1 = 有失败。
 """
@@ -161,9 +162,46 @@ def verify(slug, core_rel):
     return True
 
 
+def verify_all_images():
+    """全库扫描：每篇 md 正文 ![]() 引用的 /images/ 路径都必须在 public 下真实存在。
+
+    单篇 verify() 只检查传入 slug 的 5 张图，历史文章（无 difficulty/量化 tag、
+    不走 cron）的破图会漏检。本命令补上这道全库兜底，防止本次修复的 fig06/07、
+    volatility_smile 一类 404 再次出现。
+    """
+    import glob
+
+    blog_dir = os.path.join(ROOT, "src", "content", "blog")
+    missing = []
+    ref_count = 0
+    for md_path in glob.glob(os.path.join(blog_dir, "**", "*.md"), recursive=True):
+        txt = open(md_path, encoding="utf-8", errors="ignore").read()
+        for url in re.findall(r"!\[[^\]]*\]\((/images/[^)]+)\)", txt):
+            ref_count += 1
+            rel = url.split("?")[0]
+            if not os.path.exists(os.path.join(ROOT, "public", rel.lstrip("/"))):
+                slug = os.path.basename(os.path.dirname(md_path))
+                missing.append((slug, url))
+    print(f"  [all-images] 扫描正文图片引用 {ref_count} 处，缺失 {len(missing)} 处")
+    for slug, url in missing:
+        print(f"    ✗ {slug}: {url}")
+    assert not missing, f"全库有 {len(missing)} 处破图引用（见上）"
+    return True
+
+
 def main():
     args = sys.argv[1:]
-    assert len(args) >= 2 and len(args) % 2 == 0, "用法: quant_verify.py <slug> <core.py> [<slug> <core.py> ...]"
+    # 全库图片巡检模式：与按 slug 的单篇校验互斥，参数只需 --all-images。
+    if args and args[0] == "--all-images":
+        assert len(args) == 1, "--all-images 不接受其他参数"
+        try:
+            verify_all_images()
+        except AssertionError as e:
+            print(f"  ✗ FAIL: {e}")
+            sys.exit(1)
+        print("ALL CHECKS PASSED")
+        sys.exit(0)
+    assert len(args) >= 2 and len(args) % 2 == 0, "用法: quant_verify.py <slug> <core.py> [<slug> <core.py> ...] | quant_verify.py --all-images"
     ok = True
     for i in range(0, len(args), 2):
         try:
