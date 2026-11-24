@@ -8,6 +8,7 @@ export const en: Dictionary = {
     learn: 'Learning Path',
     links: 'Site Map',
     dash: 'Quant Dashboard',
+    game: 'Snake',
     about: 'About',
     home: 'Home'
   },

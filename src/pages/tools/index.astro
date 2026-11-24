@@ -1,9 +1,9 @@
 ---
 import CommonPage from '@/layouts/CommonPage.astro'
 
-const title = '量化工具箱：凯利仓位、回撤恢复等免费在线计算工具'
+const title = '量化工具箱：贪吃蛇小游戏、凯利仓位与回撤恢复计算器'
 const description =
-  'QuantLab 量化工具箱：凯利公式计算器、回撤恢复计算器等免费在线工具。不注册、不上传数据，浏览器端当场计算；随机模拟固定种子，同参数永远同一结果。'
+  'QuantLab 工具箱：贪吃蛇小游戏、凯利公式计算器、回撤恢复计算器等免费在线工具。不注册、不上传数据，浏览器端当场运行；随机模拟固定种子，同参数永远同一结果。'
 ---
 
 <CommonPage title="量化工具箱" meta={{ title, description }}>
@@ -15,8 +15,22 @@ const description =
 
     <section class="tools" aria-label="工具列表">
       <article class="tool primary">
-        <a class="tool-link" href="/tools/drawdown" aria-label="打开回撤恢复计算器"></a>
+        <a class="tool-link" href="/tools/snake" aria-label="打开贪吃蛇小游戏"></a>
         <div class="no">01</div>
+        <div>
+          <div class="row">
+            <h2>贪吃蛇 · Snake</h2>
+            <span class="badge new">新上线</span>
+          </div>
+          <p>写码间隙活动一下手指：26×26 棋盘铺满苹果，红 +1、金 +3、毒苹果即死。方向键 / WASD 控制，空格暂停，手机可滑动；无敌模式、本地最高分、WebAudio 音效全都有。</p>
+          <div class="tags"><span>小游戏</span><span>Canvas</span><span>键盘 / 触屏</span><span>本地最高分</span></div>
+          <span class="go">开始游戏 <span class="arr">→</span></span>
+        </div>
+      </article>
+
+      <article class="tool primary">
+        <a class="tool-link" href="/tools/drawdown" aria-label="打开回撤恢复计算器"></a>
+        <div class="no">02</div>
         <div>
           <div class="row">
             <h2>回撤恢复计算器</h2>
@@ -30,7 +44,7 @@ const description =
 
       <article class="tool primary">
         <a class="tool-link" href="/tools/kelly" aria-label="打开凯利公式计算器"></a>
-        <div class="no">02</div>
+        <div class="no">03</div>
         <div>
           <div class="row">
             <h2>凯利公式计算器</h2>
@@ -43,7 +57,7 @@ const description =
       </article>
 
       <article class="tool plan">
-        <div class="no">03</div>
+        <div class="no">04</div>
         <div>
           <div class="row">
             <h2>海龟仓位计算器</h2>
@@ -55,7 +69,7 @@ const description =
       </article>
 
       <article class="tool plan">
-        <div class="no">04</div>
+        <div class="no">05</div>
         <div>
           <div class="row">
             <h2>回测过拟合检测</h2>
@@ -79,8 +93,9 @@ const description =
     name: '量化工具箱',
     url: 'https://blog.halo26812.eu.org/tools',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: '回撤恢复计算器', url: 'https://blog.halo26812.eu.org/tools/drawdown' },
-      { '@type': 'ListItem', position: 2, name: '凯利公式计算器', url: 'https://blog.halo26812.eu.org/tools/kelly' }
+      { '@type': 'ListItem', position: 1, name: '贪吃蛇 · Snake', url: 'https://blog.halo26812.eu.org/tools/snake' },
+      { '@type': 'ListItem', position: 2, name: '回撤恢复计算器', url: 'https://blog.halo26812.eu.org/tools/drawdown' },
+      { '@type': 'ListItem', position: 3, name: '凯利公式计算器', url: 'https://blog.halo26812.eu.org/tools/kelly' }
     ]
   })} />
 
