@@ -1,0 +1,1099 @@
+---
+import CommonPage from '@/layouts/CommonPage.astro'
+
+const title = '贪吃蛇 · Snake：浏览器里的小游戏'
+const description =
+  '一个开箱即玩的贪吃蛇小游戏：方向键 / WASD 控制，空格暂停，手机可滑动棋盘或用方向键。红苹果 +1、金苹果 +3、毒苹果即死，支持无敌模式与本地最高分。'
+---
+
+<CommonPage title="贪吃蛇 · Snake" meta={{ title, description }}>
+  <div class="snake-page">
+    <p class="answer">
+      写码写累了就活动一下手指。地图上铺满苹果，红苹果 <strong>+1</strong>，金苹果 <strong>+3</strong>，
+      紫色毒苹果<strong>吃到即结束</strong>；撞墙或咬到自己也会出局。方向键 / WASD 控制，空格暂停，
+      手机上滑动棋盘或点下方方向键。最高分只存在你自己的浏览器里。
+    </p>
+
+    <div class="app">
+      <header class="head">
+        <div class="head-txt">
+          <h2>贪吃蛇</h2>
+          <p>方向键 / WASD 控制 · 空格暂停</p>
+        </div>
+        <div class="tools">
+          <button class="chip" id="invBtn" type="button" aria-pressed="false">无敌 关</button>
+          <button class="chip" id="pauseBtn" type="button" disabled>暂停</button>
+          <button class="chip" id="soundBtn" type="button" aria-pressed="true">音效 开</button>
+        </div>
+      </header>
+
+      <section class="hud">
+        <div class="stat"><span>得分</span><strong id="score">0</strong></div>
+        <div class="stat"><span>最高</span><strong id="best">0</strong></div>
+        <div class="stat"><span>速度</span><strong id="speed">1</strong></div>
+      </section>
+
+      <section class="board" id="board">
+        <canvas id="game" width="600" height="600" aria-label="贪吃蛇游戏区域"></canvas>
+        <div class="overlay" id="overlay">
+          <div class="card">
+            <p class="eyebrow" id="ovEyebrow">准备好了吗</p>
+            <h3 id="ovTitle">开始游戏</h3>
+            <p class="tip" id="ovTip">红苹果 +1 分，金苹果 +3 分，紫色的毒苹果吃到直接结束。</p>
+            <div class="btns">
+              <button class="primary" id="mainBtn" type="button">开始</button>
+              <button class="ghost" id="restartBtn" type="button" hidden>重开</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <p class="legend">
+        <span class="dot red"></span><span>红苹果 +1</span>
+        <span class="sep">/</span>
+        <span class="dot gold"></span><span>金苹果 +3</span>
+        <span class="sep">/</span>
+        <span class="dot poison"></span><span>毒苹果 即死</span>
+      </p>
+
+      <div class="pad" id="pad">
+        <span></span>
+        <button type="button" data-dir="up" aria-label="上">↑</button>
+        <span></span>
+        <button type="button" data-dir="left" aria-label="左">←</button>
+        <button type="button" data-dir="down" aria-label="下">↓</button>
+        <button type="button" data-dir="right" aria-label="右">→</button>
+      </div>
+
+      <p class="foot">按 <kbd>空格</kbd> 开始 / 暂停 · 手机上滑动棋盘或点下方方向键</p>
+    </div>
+
+    <div class="notes">
+      <h2>玩法与实现</h2>
+      <p>
+        棋盘是 26 × 26 格，开局随机铺满约 70% 的苹果，其中 10% 是金苹果，另有 3 个毒苹果。
+        每吃到一个苹果就按同类补一个，密度保持恒定；得分每增加 5 分，速度提升一级，最快到 10 级。
+        金苹果一次长 3 格，蛇身用逐格插值绘制，所以高速下也不会跳帧感很重。
+      </p>
+      <p>
+        游戏逻辑、渲染和音效全部在本页完成：贴图用 Canvas 预渲染，音效用 WebAudio 现场合成，
+        没有外部图片或音频请求。<strong>无敌模式</strong>可穿墙、穿身、无视毒苹果，但成绩不计入最高分；
+        窗口失焦或切到后台时会自动暂停，免得回来发现已经撞墙。
+      </p>
+      <p class="backlink">
+        更多浏览器端小工具在 <a href="/tools">量化工具箱</a>，那里还有回撤恢复与凯利仓位计算器。
+      </p>
+    </div>
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: '贪吃蛇 · Snake',
+      url: 'https://blog.halo26812.eu.org/tools/snake',
+      applicationCategory: 'GameApplication',
+      inLanguage: 'zh-CN',
+      isAccessibleForFree: true,
+      description
+    })} />
+  </div>
+
+  <script>
+    // @ts-nocheck
+    (() => {
+      'use strict'
+
+      const COLS = 26
+      const ROWS = 26
+      const APPLE_FILL = 0.7
+      const GOOD_RATIO = 0.1
+      const POISON_APPLES = 3
+      const BASE_STEP = 225
+      const MIN_STEP = 95
+      const BEST_KEY = 'snake.best'
+
+      const canvas = document.getElementById('game')
+      const ctx = canvas.getContext('2d')
+      const board = document.getElementById('board')
+      const overlay = document.getElementById('overlay')
+      const elScore = document.getElementById('score')
+      const elBest = document.getElementById('best')
+      const elSpeed = document.getElementById('speed')
+      const ovEyebrow = document.getElementById('ovEyebrow')
+      const ovTitle = document.getElementById('ovTitle')
+      const ovTip = document.getElementById('ovTip')
+      const mainBtn = document.getElementById('mainBtn')
+      const restartBtn = document.getElementById('restartBtn')
+      const pauseBtn = document.getElementById('pauseBtn')
+      const soundBtn = document.getElementById('soundBtn')
+      const invBtn = document.getElementById('invBtn')
+      const pad = document.getElementById('pad')
+
+      let size = 600
+      let cell = 30
+      let dpr = 1
+
+      let state = 'ready' // ready | playing | paused | over
+      let snake = []
+      let prevSnake = []
+      let dir = { x: 1, y: 0 }
+      let queue = []
+      let foods = []
+      let appleTotal = 0
+      let pendingGrowth = 0
+      let deathReason = ''
+      let score = 0
+      let stepMs = BASE_STEP
+      let acc = 0
+      let t = 0
+      let particles = []
+      let muted = false
+      let shakeUntil = 0
+      let poisonFlash = 0
+      let lastTs = 0
+      let best = Number(localStorage.getItem(BEST_KEY) || 0) || 0
+      let invincible = localStorage.getItem('snake.invincible') === '1'
+
+      function resize() {
+        const rect = board.getBoundingClientRect()
+        size = Math.max(200, Math.floor(rect.width))
+        dpr = Math.min(window.devicePixelRatio || 1, 2)
+        canvas.width = Math.round(size * dpr)
+        canvas.height = Math.round(size * dpr)
+        canvas.style.width = size + 'px'
+        canvas.style.height = size + 'px'
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        cell = size / COLS
+        buildSprites()
+        draw()
+      }
+
+      const sprites = { normal: null, good: null, poison: null }
+
+      function makeAppleSprite(kind) {
+        const box = Math.ceil(cell * (kind === 'normal' ? 2.4 : 2.9))
+        const c = document.createElement('canvas')
+        c.width = Math.round(box * dpr)
+        c.height = Math.round(box * dpr)
+        const g = c.getContext('2d')
+        g.setTransform(dpr, 0, 0, dpr, 0, 0)
+
+        const cx = box / 2
+        const cy = box / 2
+        const poison = kind === 'poison'
+        const good = kind === 'good'
+        const r = cell * (poison ? 0.3 : good ? 0.29 : 0.27)
+
+        g.save()
+        g.shadowColor = poison ? 'rgba(168,85,247,.95)' : good ? 'rgba(251,191,36,.95)' : 'rgba(255,80,116,.85)'
+        g.shadowBlur = cell * (poison ? 1.05 : good ? 1.0 : 0.7)
+
+        const grd = g.createRadialGradient(cx - r * 0.35, cy - r * 0.4, r * 0.1, cx, cy, r)
+        if (poison) {
+          grd.addColorStop(0, '#efd0ff')
+          grd.addColorStop(0.42, '#a855f7')
+          grd.addColorStop(1, '#40146e')
+        } else if (good) {
+          grd.addColorStop(0, '#fffbe6')
+          grd.addColorStop(0.45, '#fbbf24')
+          grd.addColorStop(1, '#b45309')
+        } else {
+          grd.addColorStop(0, '#ffb3c2')
+          grd.addColorStop(0.55, '#ff5674')
+          grd.addColorStop(1, '#cf2245')
+        }
+        g.fillStyle = grd
+        g.beginPath()
+        g.arc(cx, cy, r, 0, Math.PI * 2)
+        g.fill()
+        g.restore()
+
+        g.fillStyle = poison ? 'rgba(132,204,22,.7)' : good ? 'rgba(190,242,100,.85)' : 'rgba(110,231,160,.92)'
+        g.beginPath()
+        g.ellipse(cx + r * 0.42, cy - r * 1.0, r * 0.4, r * (poison ? 0.17 : 0.18), -0.65, 0, Math.PI * 2)
+        g.fill()
+
+        if (poison) {
+          const a = r * 0.36
+          g.strokeStyle = 'rgba(255,240,255,.9)'
+          g.lineWidth = Math.max(1.1, cell * 0.058)
+          g.lineCap = 'round'
+          g.beginPath()
+          g.moveTo(cx - a, cy - a); g.lineTo(cx + a, cy + a)
+          g.moveTo(cx + a, cy - a); g.lineTo(cx - a, cy + a)
+          g.stroke()
+        }
+
+        if (good) {
+          g.strokeStyle = 'rgba(255,255,235,.95)'
+          g.lineWidth = Math.max(1, cell * 0.05)
+          g.lineCap = 'round'
+          const a = r * 0.42
+          g.beginPath()
+          g.moveTo(cx - a, cy - a * 0.2); g.lineTo(cx + a, cy - a * 0.2)
+          g.moveTo(cx - a * 0.2, cy - a); g.lineTo(cx - a * 0.2, cy + a)
+          g.stroke()
+        }
+
+        c.disp = box
+        return c
+      }
+
+      function buildSprites() {
+        if (!cell) return
+        sprites.normal = makeAppleSprite('normal')
+        sprites.good = makeAppleSprite('good')
+        sprites.poison = makeAppleSprite('poison')
+      }
+
+      let ac = null
+      function audioCtx() {
+        if (!ac) {
+          const AC = window.AudioContext || window.webkitAudioContext
+          if (!AC) return null
+          ac = new AC()
+        }
+        if (ac.state === 'suspended') ac.resume()
+        return ac
+      }
+      function tone(freq, dur, type, gain, delay) {
+        if (muted) return
+        const a = audioCtx()
+        if (!a) return
+        const t0 = a.currentTime + (delay || 0)
+        const osc = a.createOscillator()
+        const g = a.createGain()
+        osc.type = type || 'triangle'
+        osc.frequency.setValueAtTime(freq, t0)
+        g.gain.setValueAtTime(0.0001, t0)
+        g.gain.exponentialRampToValueAtTime(gain || 0.06, t0 + 0.012)
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur)
+        osc.connect(g).connect(a.destination)
+        osc.start(t0)
+        osc.stop(t0 + dur + 0.03)
+      }
+      const sfxEat = () => { tone(680, 0.09, 'triangle', 0.07); tone(1020, 0.1, 'triangle', 0.05, 0.055) }
+      const sfxGood = () => { tone(880, 0.08, 'triangle', 0.06); tone(1180, 0.09, 'triangle', 0.05, 0.06); tone(1560, 0.12, 'sine', 0.045, 0.13) }
+      const sfxDie = () => { tone(300, 0.16, 'sawtooth', 0.055); tone(160, 0.34, 'sawtooth', 0.05, 0.14) }
+      const sfxPoison = () => { tone(190, 0.42, 'square', 0.045); tone(130, 0.5, 'sawtooth', 0.04, 0.04); tone(86, 0.62, 'triangle', 0.035, 0.2) }
+      const sfxStart = () => { tone(520, 0.08, 'triangle', 0.05); tone(780, 0.1, 'triangle', 0.05, 0.06) }
+
+      function speedLevel() {
+        return Math.min(10, 1 + Math.floor(score / 5))
+      }
+      function stepForScore() {
+        return Math.max(MIN_STEP, BASE_STEP - (speedLevel() - 1) * 14)
+      }
+
+      function spawnFood(good, poison) {
+        const occupied = new Set()
+        for (const s of snake) occupied.add(s.x + ',' + s.y)
+        for (const f of foods) occupied.add(f.x + ',' + f.y)
+
+        const head0 = snake[0] || { x: 0, y: 0 }
+        const free = []
+        const safe = []
+        for (let y = 0; y < ROWS; y++) {
+          for (let x = 0; x < COLS; x++) {
+            if (occupied.has(x + ',' + y)) continue
+            free.push({ x, y })
+            if (Math.abs(x - head0.x) + Math.abs(y - head0.y) >= 5) safe.push({ x, y })
+          }
+        }
+
+        const pool = poison && safe.length ? safe : free
+        if (!pool.length) return null
+
+        const spot = pool[(Math.random() * pool.length) | 0]
+        const item = { x: spot.x, y: spot.y, good: !!good, poison: !!poison }
+        foods.push(item)
+        return item
+      }
+
+      function fillBoard() {
+        const occupied = new Set(snake.map(s => s.x + ',' + s.y))
+        const free = []
+        for (let y = 0; y < ROWS; y++) {
+          for (let x = 0; x < COLS; x++) {
+            if (!occupied.has(x + ',' + y)) free.push({ x, y })
+          }
+        }
+        for (let i = free.length - 1; i > 0; i--) {
+          const j = (Math.random() * (i + 1)) | 0
+          const tmp = free[i]; free[i] = free[j]; free[j] = tmp
+        }
+
+        const total = Math.min(free.length, Math.round(COLS * ROWS * APPLE_FILL))
+        const goodCount = Math.round(total * GOOD_RATIO)
+        appleTotal = total
+
+        for (let i = 0; i < total; i++) {
+          const c = free.pop()
+          foods.push({ x: c.x, y: c.y, good: i < goodCount, poison: false })
+        }
+        for (let i = 0; i < POISON_APPLES; i++) spawnFood(false, true)
+      }
+
+      function reset() {
+        const cy = Math.floor(ROWS / 2)
+        const cx = Math.floor(COLS / 2)
+        snake = [{ x: cx, y: cy }, { x: cx - 1, y: cy }, { x: cx - 2, y: cy }]
+        prevSnake = snake.map(s => ({ ...s }))
+        dir = { x: 1, y: 0 }
+        queue = []
+        foods = []
+        score = 0
+        acc = 0
+        t = 0
+        pendingGrowth = 0
+        deathReason = ''
+        particles = []
+        poisonFlash = 0
+        stepMs = BASE_STEP
+        fillBoard()
+        updateHud()
+      }
+
+      function updateHud() {
+        elScore.textContent = score
+        elBest.textContent = best
+        elSpeed.textContent = speedLevel()
+      }
+
+      function queueDir(x, y) {
+        if (state === 'ready') start()
+        if (state !== 'playing') return
+        const last = queue.length ? queue[queue.length - 1] : dir
+        if (last.x === -x && last.y === -y) return
+        if (last.x === x && last.y === y) return
+        if (queue.length < 2) queue.push({ x, y })
+      }
+
+      function step() {
+        if (queue.length) {
+          const nd = queue.shift()
+          if (!(nd.x === -dir.x && nd.y === -dir.y)) dir = nd
+        }
+
+        prevSnake = snake.map(s => ({ ...s }))
+        const next = { x: snake[0].x + dir.x, y: snake[0].y + dir.y }
+
+        let head = next
+        if (invincible) {
+          const wrapped = next.x < 0 || next.x >= COLS || next.y < 0 || next.y >= ROWS
+          head = { x: (next.x + COLS) % COLS, y: (next.y + ROWS) % ROWS }
+          if (wrapped) prevSnake[0] = { x: head.x, y: head.y }
+        } else if (next.x < 0 || next.x >= COLS || next.y < 0 || next.y >= ROWS) {
+          die('wall')
+          return
+        }
+
+        const eatenIndex = foods.findIndex(f => f.x === head.x && f.y === head.y)
+        const willEat = eatenIndex >= 0
+        const body = willEat ? snake : snake.slice(0, -1)
+        if (!invincible && body.some(s => s.x === head.x && s.y === head.y)) {
+          die('self')
+          return
+        }
+
+        const target = willEat ? foods[eatenIndex] : null
+
+        if (target && target.poison) {
+          if (!invincible) {
+            snake.unshift(head)
+            foods.splice(eatenIndex, 1)
+            burst((target.x + 0.5) * cell, (target.y + 0.5) * cell, 285, 22)
+            poisonFlash = performance.now() + 520
+            die('poison')
+            return
+          }
+          snake.unshift(head)
+          if (pendingGrowth > 0) pendingGrowth -= 1; else snake.pop()
+          return
+        }
+
+        snake.unshift(head)
+
+        if (target) {
+          const tx = (target.x + 0.5) * cell
+          const ty = (target.y + 0.5) * cell
+          const isGood = !!target.good
+
+          foods.splice(eatenIndex, 1)
+          score += isGood ? 3 : 1
+          pendingGrowth += isGood ? 3 : 1
+          stepMs = stepForScore()
+
+          spawnFood(isGood, false)
+
+          burst(tx, ty, isGood ? 45 : 340, isGood ? 24 : 14)
+          if (isGood) sfxGood(); else sfxEat()
+
+          if (!invincible && score > best) { best = score; localStorage.setItem(BEST_KEY, String(best)) }
+          updateHud()
+        }
+
+        if (pendingGrowth > 0) pendingGrowth -= 1
+        else snake.pop()
+      }
+
+      function die(reason) {
+        if (invincible) return
+        state = 'over'
+        deathReason = reason || 'wall'
+        shakeUntil = performance.now() + 240
+        if (deathReason === 'poison') sfxPoison(); else sfxDie()
+        if (score > best) { best = score; localStorage.setItem(BEST_KEY, String(best)) }
+        updateHud()
+        showOverlay('over')
+        syncButtons()
+      }
+
+      function start() {
+        if (state !== 'ready') reset()
+        state = 'playing'
+        hideOverlay()
+        syncButtons()
+        sfxStart()
+      }
+      function pause() {
+        if (state !== 'playing') return
+        state = 'paused'
+        showOverlay('paused')
+        syncButtons()
+      }
+      function resume() {
+        if (state !== 'paused') return
+        state = 'playing'
+        hideOverlay()
+        syncButtons()
+      }
+      function togglePause() {
+        if (state === 'playing') pause()
+        else if (state === 'paused') resume()
+      }
+
+      function showOverlay(kind) {
+        restartBtn.hidden = true
+        pauseBtn.textContent = '暂停'
+
+        if (kind === 'ready') {
+          ovEyebrow.textContent = '准备好了吗'
+          ovTitle.textContent = '开始游戏'
+          const baseTip = '地图上铺了 ' + appleTotal + ' 个苹果：红 +1 分，金 +3 分，紫色的毒苹果吃到直接结束。'
+          ovTip.textContent = invincible
+            ? baseTip + ' 无敌模式已开：穿墙、穿身、毒苹果无效，成绩不计入最高分。'
+            : baseTip
+          mainBtn.textContent = '开始'
+        } else if (kind === 'paused') {
+          ovEyebrow.textContent = '已暂停'
+          ovTitle.textContent = '休息一下'
+          ovTip.textContent = '按空格或点下面的按钮继续。'
+          mainBtn.textContent = '继续'
+        } else if (kind === 'over') {
+          const tips = {
+            poison: '吃到了毒苹果，直接出局。看清楚颜色再下嘴。',
+            wall: '撞到墙上了。',
+            self: '咬到自己了。'
+          }
+          ovEyebrow.textContent = deathReason === 'poison' ? '中毒身亡' : '游戏结束'
+          ovTitle.textContent = '得分 ' + score
+          ovTip.textContent = (tips[deathReason] || tips.wall) + ' 最高分 ' + best + ' · 长度 ' + snake.length
+          mainBtn.textContent = '再来一局'
+          restartBtn.hidden = false
+        }
+        overlay.classList.remove('hidden')
+      }
+
+      function hideOverlay() {
+        overlay.classList.add('hidden')
+      }
+
+      function syncButtons() {
+        pauseBtn.disabled = (state === 'ready' || state === 'over')
+        pauseBtn.textContent = state === 'paused' ? '继续' : '暂停'
+      }
+
+      function setInvincible(on, silent) {
+        invincible = !!on
+        localStorage.setItem('snake.invincible', invincible ? '1' : '0')
+        invBtn.textContent = invincible ? '无敌 开' : '无敌 关'
+        invBtn.setAttribute('aria-pressed', String(invincible))
+        invBtn.classList.toggle('on', invincible)
+        if (state === 'ready') showOverlay('ready')
+        if (!silent) tone(invincible ? 720 : 420, 0.1, 'triangle', 0.05)
+      }
+
+      function burst(x, y, baseHue, count) {
+        const n = count || 16
+        const hue0 = baseHue || 340
+        for (let i = 0; i < n; i++) {
+          const a = Math.random() * Math.PI * 2
+          const sp = (0.5 + Math.random() * 1.9) * cell * 0.075
+          particles.push({
+            x, y,
+            vx: Math.cos(a) * sp,
+            vy: Math.sin(a) * sp,
+            life: 1,
+            size: cell * (0.05 + Math.random() * 0.07),
+            hue: hue0 + Math.random() * 24
+          })
+        }
+      }
+
+      function updateParticles(dt) {
+        const k = dt / 16.67
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i]
+          p.x += p.vx * k
+          p.y += p.vy * k
+          p.vx *= 0.94
+          p.vy = p.vy * 0.94 + 0.05 * cell * 0.06 * k
+          p.life -= dt / 620
+          if (p.life <= 0) particles.splice(i, 1)
+        }
+      }
+
+      function draw() {
+        const S = size
+        const now = performance.now()
+
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+
+        // 站点黑金底色：近黑背景 + 极淡金色网格
+        const bg = ctx.createRadialGradient(S * 0.5, S * 0.34, S * 0.08, S * 0.5, S * 0.5, S * 0.82)
+        bg.addColorStop(0, '#17150f')
+        bg.addColorStop(1, '#08080a')
+        ctx.fillStyle = bg
+        ctx.fillRect(0, 0, S, S)
+
+        ctx.save()
+        if (now < shakeUntil) {
+          const k = (shakeUntil - now) / 240
+          ctx.translate((Math.random() - 0.5) * 9 * k, (Math.random() - 0.5) * 9 * k)
+        }
+
+        ctx.lineWidth = 1
+        ctx.strokeStyle = 'rgba(201,169,97,.055)'
+        for (let i = 1; i < COLS; i++) {
+          const p = Math.round(i * cell) + 0.5
+          ctx.beginPath(); ctx.moveTo(p, 0); ctx.lineTo(p, S); ctx.stroke()
+          ctx.beginPath(); ctx.moveTo(0, p); ctx.lineTo(S, p); ctx.stroke()
+        }
+
+        for (let fi = 0; fi < foods.length; fi++) {
+          const f = foods[fi]
+          const spr = f.poison ? sprites.poison : f.good ? sprites.good : sprites.normal
+          if (!spr) continue
+
+          let scale = 1
+          if (f.poison) scale = 1 + Math.sin(now / 175 + fi * 2.3) * 0.1
+          else if (f.good) scale = 1 + Math.sin(now / 230 + fi * 1.7) * 0.07
+
+          const ds = spr.disp * scale
+          ctx.drawImage(spr, (f.x + 0.5) * cell - ds / 2, (f.y + 0.5) * cell - ds / 2, ds, ds)
+        }
+
+        if (now < poisonFlash) {
+          const k = (poisonFlash - now) / 520
+          ctx.fillStyle = 'rgba(126,34,206,' + (0.4 * k).toFixed(3) + ')'
+          ctx.fillRect(0, 0, S, S)
+        }
+
+        const pts = snake.map((s, i) => {
+          const p = prevSnake[i] || s
+          return {
+            x: (p.x + (s.x - p.x) * t + 0.5) * cell,
+            y: (p.y + (s.y - p.y) * t + 0.5) * cell
+          }
+        })
+
+        const n = pts.length
+        ctx.lineCap = 'round'
+        ctx.lineJoin = 'round'
+
+        for (let i = n - 1; i >= 1; i--) {
+          const f = n > 1 ? i / (n - 1) : 0
+          ctx.strokeStyle = 'hsl(' + (150 + 8 * f) + ' ' + (82 - 14 * f) + '% ' + (67 - 15 * f) + '%)'
+          ctx.lineWidth = cell * (0.82 - 0.1 * f)
+          ctx.beginPath()
+          ctx.moveTo(pts[i].x, pts[i].y)
+          ctx.lineTo(pts[i - 1].x, pts[i - 1].y)
+          ctx.stroke()
+        }
+
+        const head = pts[0]
+        if (head) {
+          ctx.save()
+          ctx.shadowColor = 'rgba(110,255,170,.55)'
+          ctx.shadowBlur = cell * 0.85
+          ctx.fillStyle = '#adffc6'
+          ctx.beginPath(); ctx.arc(head.x, head.y, cell * 0.42, 0, Math.PI * 2); ctx.fill()
+          ctx.restore()
+
+          let dx = dir.x, dy = dir.y
+          if (pts.length > 1) {
+            const vx = head.x - pts[1].x
+            const vy = head.y - pts[1].y
+            const len = Math.hypot(vx, vy)
+            if (len > 0.001) { dx = vx / len; dy = vy / len }
+          }
+          const px = -dy, py = dx
+          const eyeOff = cell * 0.155
+          const eyeFwd = cell * 0.11
+          const eyeR = cell * 0.115
+          for (const s of [1, -1]) {
+            const cx = head.x + dx * eyeFwd + px * s * eyeOff
+            const cy = head.y + dy * eyeFwd + py * s * eyeOff
+            ctx.fillStyle = '#f8fffb'
+            ctx.beginPath(); ctx.arc(cx, cy, eyeR, 0, Math.PI * 2); ctx.fill()
+            ctx.fillStyle = '#0a1420'
+            ctx.beginPath(); ctx.arc(cx + dx * eyeR * 0.35, cy + dy * eyeR * 0.35, eyeR * 0.55, 0, Math.PI * 2); ctx.fill()
+          }
+        }
+
+        for (const p of particles) {
+          ctx.globalAlpha = Math.max(0, p.life)
+          ctx.fillStyle = 'hsl(' + p.hue + ' 90% 68%)'
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill()
+        }
+        ctx.globalAlpha = 1
+
+        ctx.restore()
+      }
+
+      function loop(ts) {
+        if (!lastTs) lastTs = ts
+        let dt = ts - lastTs
+        lastTs = ts
+        if (dt > 90) dt = 90
+        if (dt < 0) dt = 0
+
+        if (state === 'playing') {
+          acc += dt
+          let guard = 0
+          while (acc >= stepMs && guard++ < 5) {
+            acc -= stepMs
+            step()
+            if (state !== 'playing') break
+          }
+          if (state === 'playing') t = Math.min(1, acc / stepMs)
+        }
+
+        if (particles.length) updateParticles(dt)
+        draw()
+        requestAnimationFrame(loop)
+      }
+
+      const KEYMAP = {
+        arrowup: [0, -1], w: [0, -1],
+        arrowdown: [0, 1], s: [0, 1],
+        arrowleft: [-1, 0], a: [-1, 0],
+        arrowright: [1, 0], d: [1, 0]
+      }
+
+      window.addEventListener('keydown', (e) => {
+        if (e.metaKey || e.ctrlKey || e.altKey) return
+        const k = e.key.toLowerCase()
+
+        if (k === ' ' || k === 'spacebar' || k === 'enter') {
+          e.preventDefault()
+          if (state === 'playing') pause()
+          else if (state === 'paused') resume()
+          else start()
+          return
+        }
+
+        const m = KEYMAP[k]
+        if (!m) return
+        e.preventDefault()
+        queueDir(m[0], m[1])
+      }, { passive: false })
+
+      let touchStart = null
+      board.addEventListener('touchstart', (e) => {
+        const t0 = e.touches[0]
+        touchStart = { x: t0.clientX, y: t0.clientY }
+      }, { passive: true })
+
+      board.addEventListener('touchend', (e) => {
+        if (!touchStart) return
+        const t1 = e.changedTouches[0]
+        const dx = t1.clientX - touchStart.x
+        const dy = t1.clientY - touchStart.y
+        touchStart = null
+
+        if (Math.hypot(dx, dy) < 22) {
+          if (state === 'ready' || state === 'over') start()
+          return
+        }
+        if (Math.abs(dx) > Math.abs(dy)) queueDir(dx > 0 ? 1 : -1, 0)
+        else queueDir(0, dy > 0 ? 1 : -1)
+      }, { passive: true })
+
+      pad.addEventListener('pointerdown', (e) => {
+        const btn = e.target.closest('button[data-dir]')
+        if (!btn) return
+        e.preventDefault()
+        const map = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }
+        const m = map[btn.dataset.dir]
+        if (m) queueDir(m[0], m[1])
+      })
+
+      mainBtn.addEventListener('click', () => {
+        if (state === 'paused') resume()
+        else start()
+      })
+      restartBtn.addEventListener('click', () => start())
+      pauseBtn.addEventListener('click', () => togglePause())
+
+      soundBtn.addEventListener('click', () => {
+        muted = !muted
+        soundBtn.textContent = muted ? '音效 关' : '音效 开'
+        soundBtn.setAttribute('aria-pressed', String(!muted))
+        if (!muted) tone(720, 0.08, 'triangle', 0.05)
+      })
+
+      invBtn.addEventListener('click', () => setInvincible(!invincible))
+
+      window.addEventListener('blur', () => { if (state === 'playing') pause() })
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && state === 'playing') pause()
+      })
+
+      if (window.ResizeObserver) {
+        new ResizeObserver(() => resize()).observe(board)
+      } else {
+        window.addEventListener('resize', resize)
+      }
+
+      resize()
+      reset()
+      updateHud()
+      syncButtons()
+      setInvincible(invincible, true)
+      showOverlay('ready')
+      requestAnimationFrame(loop)
+    })()
+  </script>
+
+  <style>
+    .snake-page {
+      line-height: 1.8;
+    }
+    .snake-page .answer {
+      border-left: 3px solid hsl(var(--primary) / 0.55);
+      padding-left: 1rem;
+      margin: 1rem 0 1.8rem;
+      color: hsl(var(--muted-foreground));
+    }
+    .snake-page .answer strong {
+      color: hsl(var(--primary));
+    }
+    .snake-page .app {
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+      min-width: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .snake-page .head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .snake-page .head h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: hsl(var(--foreground));
+    }
+    .snake-page .head p {
+      margin: 3px 0 0;
+      font-size: 0.82rem;
+      color: hsl(var(--muted-foreground));
+    }
+    .snake-page .tools {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .snake-page button {
+      font: inherit;
+      cursor: pointer;
+      color: inherit;
+      background: none;
+      border: 0;
+    }
+    .snake-page .chip {
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      font-size: 12.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      color: hsl(var(--muted-foreground));
+      background: hsl(var(--card));
+      box-shadow: inset 0 0 0 1px hsl(var(--border));
+      transition: color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+    }
+    .snake-page .chip:hover {
+      color: hsl(var(--primary));
+      box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.45);
+    }
+    .snake-page .chip:active {
+      transform: scale(0.96);
+    }
+    .snake-page .chip:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+    .snake-page .chip.on {
+      color: hsl(var(--primary));
+      background: hsl(var(--primary) / 0.12);
+      box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.6);
+    }
+    .snake-page .hud {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .snake-page .stat {
+      padding: 10px 14px 12px;
+      border: 1px solid hsl(var(--border));
+      border-radius: 14px;
+      background: hsl(var(--card));
+    }
+    .snake-page .stat span {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: hsl(var(--muted-foreground));
+    }
+    .snake-page .stat strong {
+      display: block;
+      margin-top: 2px;
+      font-size: 22px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: hsl(var(--foreground));
+    }
+    .snake-page .board {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      border: 1px solid hsl(var(--primary) / 0.2);
+      border-radius: 18px;
+      background: #08080a;
+      box-shadow: 0 24px 50px -30px #000, inset 0 0 0 1px #ffffff08;
+      touch-action: none;
+      user-select: none;
+    }
+    .snake-page .board canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .snake-page .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      background: rgba(6, 6, 8, 0.68);
+      -webkit-backdrop-filter: blur(7px);
+      backdrop-filter: blur(7px);
+      transition: opacity 0.22s ease, visibility 0.22s ease;
+    }
+    .snake-page .overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .snake-page .card {
+      width: 100%;
+      max-width: 300px;
+      padding: 24px 22px 20px;
+      text-align: center;
+      border: 1px solid hsl(var(--primary) / 0.35);
+      border-radius: 18px;
+      background: hsl(var(--card) / 0.96);
+      box-shadow: 0 18px 40px -18px #000;
+      color: hsl(var(--foreground));
+    }
+    .snake-page .card .eyebrow {
+      margin: 0;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: hsl(var(--primary));
+    }
+    .snake-page .card h3 {
+      margin: 8px 0 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: hsl(var(--foreground));
+    }
+    .snake-page .card .tip {
+      margin: 9px 0 0;
+      font-size: 13px;
+      line-height: 1.6;
+      color: hsl(var(--muted-foreground));
+    }
+    .snake-page .card .btns {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .snake-page .primary {
+      flex: 1;
+      height: 44px;
+      border-radius: 12px;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: hsl(var(--background));
+      background: hsl(var(--primary));
+      transition: filter 0.16s ease, transform 0.12s ease;
+    }
+    .snake-page .primary:hover {
+      filter: brightness(1.08);
+    }
+    .snake-page .primary:active {
+      transform: scale(0.97);
+    }
+    .snake-page .ghost {
+      height: 44px;
+      padding: 0 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      color: hsl(var(--muted-foreground));
+      box-shadow: inset 0 0 0 1px hsl(var(--border));
+    }
+    .snake-page .ghost:hover {
+      color: hsl(var(--primary));
+      box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.45);
+    }
+    .snake-page .legend {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin: 13px 0 0;
+      font-size: 12px;
+      color: hsl(var(--muted-foreground));
+    }
+    .snake-page .legend .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .snake-page .legend .dot.red {
+      background: radial-gradient(circle at 34% 28%, #ffb3c2, #e11d48);
+      box-shadow: 0 0 7px rgba(244, 63, 94, 0.55);
+    }
+    .snake-page .legend .dot.gold {
+      background: radial-gradient(circle at 34% 28%, #fff7d6, #d97706);
+      box-shadow: 0 0 7px rgba(251, 191, 36, 0.65);
+    }
+    .snake-page .legend .dot.poison {
+      background: radial-gradient(circle at 34% 28%, #efd0ff, #7e22ce);
+      box-shadow: 0 0 7px rgba(168, 85, 247, 0.6);
+    }
+    .snake-page .legend .sep {
+      color: hsl(var(--border));
+      margin: 0 1px;
+    }
+    .snake-page .pad {
+      margin: 16px auto 0;
+      display: grid;
+      grid-template-columns: repeat(3, 58px);
+      grid-template-rows: repeat(2, 50px);
+      gap: 8px;
+      justify-content: center;
+    }
+    .snake-page .pad button {
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: 600;
+      color: hsl(var(--foreground));
+      background: hsl(var(--card));
+      box-shadow: inset 0 0 0 1px hsl(var(--border));
+      transition: transform 0.1s ease, color 0.15s ease, background 0.15s ease;
+    }
+    .snake-page .pad button:active {
+      transform: scale(0.95);
+      color: hsl(var(--background));
+      background: hsl(var(--primary));
+    }
+    .snake-page .foot {
+      margin: 18px 0 0;
+      text-align: center;
+      font-size: 12px;
+      color: hsl(var(--muted-foreground));
+    }
+    .snake-page .foot kbd {
+      font-family: inherit;
+      font-size: 11.5px;
+      padding: 1px 5px;
+      border-radius: 5px;
+      background: hsl(var(--muted));
+      box-shadow: inset 0 0 0 1px hsl(var(--border));
+      color: hsl(var(--muted-foreground));
+    }
+    .snake-page .notes {
+      max-width: 560px;
+      margin: 40px auto 0;
+      padding-top: 20px;
+      border-top: 1px solid hsl(var(--border));
+      color: hsl(var(--muted-foreground));
+      font-size: 0.9rem;
+    }
+    .snake-page .notes h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: hsl(var(--foreground));
+    }
+    .snake-page .notes strong {
+      color: hsl(var(--primary));
+    }
+    .snake-page .notes .backlink {
+      margin-top: 1.2rem;
+    }
+    .snake-page .notes a {
+      color: hsl(var(--primary));
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .snake-page .pad {
+        display: none;
+      }
+    }
+    @media (max-width: 400px) {
+      .snake-page .head h2 {
+        font-size: 1.3rem;
+      }
+      .snake-page .stat strong {
+        font-size: 1.2rem;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .snake-page .chip,
+      .snake-page .primary,
+      .snake-page .pad button,
+      .snake-page .overlay {
+        transition: none;
+      }
+    }
+  </style>
+</CommonPage>
