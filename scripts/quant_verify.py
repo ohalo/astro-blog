@@ -16,7 +16,8 @@
 
 用法：
   python3 scripts/quant_verify.py <slug1> <core1.py> [<slug2> <core2.py> ...]   单篇全套校验
-  python3 scripts/quant_verify.py --all-images                                 全库正文图片引用存在性巡检
+  python3 scripts/quant_verify.py --all-images                                 全库正文图片引用存在性巡检（Markdown ![]() + 原生 <img>）
+  python3 scripts/quant_verify.py --all-links                                  全库站内链接（md 链接 + <a href>）死链巡检
 
 退出码 0 = 全部 PASS，1 = 有失败。
 """
@@ -163,20 +164,26 @@ def verify(slug, core_rel):
 
 
 def verify_all_images():
-    """全库扫描：每篇 md 正文 ![]() 引用的 /images/ 路径都必须在 public 下真实存在。
+    """全库扫描：每篇 md 正文引用的 /images/ 路径都必须在 public 下真实存在。
 
-    单篇 verify() 只检查传入 slug 的 5 张图，历史文章（无 difficulty/量化 tag、
-    不走 cron）的破图会漏检。本命令补上这道全库兜底，防止本次修复的 fig06/07、
-    volatility_smile 一类 404 再次出现。
+    同时覆盖 Markdown `![]()` 与原生 HTML `<img src="...">` 两种写法——
+    历史上 digital-minimalism 一文用 <img> 标签引用了 3 张不存在的图，
+    只扫 Markdown 语法会漏检（单篇 verify() 只检查传入 slug 的 5 张图，
+    历史文章不走 cron，破图会长期漏检）。
     """
     import glob
 
     blog_dir = os.path.join(ROOT, "src", "content", "blog")
     missing = []
     ref_count = 0
+    img_re = re.compile(
+        r"!\[[^\]]*\]\((/images/[^)]+)\)"      # Markdown 图片
+        r"|<img[^>]+src=\"(/images/[^\"]+)\""   # 原生 HTML <img>
+    )
     for md_path in glob.glob(os.path.join(blog_dir, "**", "*.md"), recursive=True):
         txt = open(md_path, encoding="utf-8", errors="ignore").read()
-        for url in re.findall(r"!\[[^\]]*\]\((/images/[^)]+)\)", txt):
+        for m in img_re.finditer(txt):
+            url = m.group(1) or m.group(2)
             ref_count += 1
             rel = url.split("?")[0]
             if not os.path.exists(os.path.join(ROOT, "public", rel.lstrip("/"))):
@@ -189,19 +196,110 @@ def verify_all_images():
     return True
 
 
+def _collect_routes_and_tags():
+    """构建站内有效路由集合（静态页 + 博客 slug）与全量标签集合。"""
+    import glob
+
+    routes = set()
+    pages_dir = os.path.join(ROOT, "src", "pages")
+    for dirpath, _dirnames, filenames in os.walk(pages_dir):
+        for fn in filenames:
+            if not fn.endswith((".astro", ".md")):
+                continue
+            rel = os.path.relpath(os.path.join(dirpath, fn), pages_dir)
+            rel = os.path.splitext(rel)[0]
+            if os.path.basename(rel) == "index":
+                rel = os.path.dirname(rel)
+            route = "/" + rel.replace(os.sep, "/")
+            if "[" not in route:  # 动态路由单独按内容推导
+                routes.add(route)
+    blog_dir = os.path.join(ROOT, "src", "content", "blog")
+    tags = set()
+    for md_path in glob.glob(os.path.join(blog_dir, "**", "*.md"), recursive=True):
+        routes.add("/blog/" + os.path.relpath(os.path.dirname(md_path), blog_dir).replace(os.sep, "/"))
+        txt = open(md_path, encoding="utf-8", errors="ignore").read()[:1500]
+        m = re.search(r"^tags:\s*\[(.*?)\]", txt, re.M)
+        lst = [x.strip().strip("'\"") for x in m.group(1).split(",")] if m else []
+        m2 = re.search(r"^tags:\n((?:\s+- .*\n)+)", txt, re.M)
+        if m2:
+            lst = [ln.split("-", 1)[1].strip().strip("'\"") for ln in m2.group(1).strip().splitlines()]
+        tags.update(x for x in lst if x)
+    return routes, tags
+
+
+def verify_all_links():
+    """全库扫描：md 正文里的站内链接（Markdown 链接 + 原生 <a href>）必须可达。
+
+    覆盖相对路径与同域绝对 URL（https://blog.halo26812.eu.org/...）。
+    可达判定：public/ 下存在文件、静态页路由、博客 slug、标签页
+    （astro-pure 会把标签统一转小写，故大小写不敏感比较）、/blog 分页数字。
+    站点历史上 /posts/... 旧结构链接曾 10 处 404 长期漏检，本命令兜底。
+    """
+    import glob
+    from urllib.parse import unquote
+
+    blog_dir = os.path.join(ROOT, "src", "content", "blog")
+    routes, tags = _collect_routes_and_tags()
+    tag_low = {t.lower() for t in tags}
+    link_re = re.compile(
+        r"(?<!\!)\[[^\]]*\]\((/[^)\s]+|https://blog\.halo26812\.eu\.org[^)\s]*)\)"
+        r"|<a[^>]+href=\"(/[^\"]+|https://blog\.halo26812\.eu\.org[^\"]*)\""
+    )
+    missing = []
+    ref_count = 0
+    for md_path in glob.glob(os.path.join(blog_dir, "**", "*.md"), recursive=True):
+        txt = open(md_path, encoding="utf-8", errors="ignore").read()
+        txt = re.sub(r"^---\n.*?\n---\n", "", txt, flags=re.S)  # 去 frontmatter
+        txt = re.sub(r"```.*?\n```", "", txt, flags=re.S)       # 去代码块
+        for m in link_re.finditer(txt):
+            raw = m.group(1) or m.group(2)
+            if not raw:
+                continue
+            ref_count += 1
+            u = raw.replace("https://blog.halo26812.eu.org", "")
+            u = unquote(u.split("#")[0].split("?")[0])
+            if not u:
+                continue  # 纯锚点
+            path = u.rstrip("/") or "/"
+            ok = False
+            if path == "/":
+                ok = True
+            elif not path.startswith(("/blog", "/tags")) and os.path.exists(
+                os.path.join(ROOT, "public", path.lstrip("/"))
+            ):
+                ok = True  # public 静态资产/文件
+            elif path in routes:
+                ok = True
+            elif path == "/blog" or path.startswith("/en/blog"):
+                ok = True
+            elif path.startswith("/blog/") and (path[len("/blog/"):].isdigit() or path.endswith("rss.xml")):
+                ok = True
+            elif path == "/tags":
+                ok = True
+            elif path.startswith("/tags/"):
+                ok = path[len("/tags/"):].lower() in tag_low  # astro-pure 将标签统一转小写
+            if not ok:
+                missing.append((os.path.basename(os.path.dirname(md_path)), raw))
+    print(f"  [all-links] 扫描站内链接 {ref_count} 处，死链 {len(missing)} 处")
+    for slug, url in missing:
+        print(f"    ✗ {slug}: {url}")
+    assert not missing, f"全库有 {len(missing)} 处死链（见上）"
+    return True
+
+
 def main():
     args = sys.argv[1:]
-    # 全库图片巡检模式：与按 slug 的单篇校验互斥，参数只需 --all-images。
-    if args and args[0] == "--all-images":
-        assert len(args) == 1, "--all-images 不接受其他参数"
+    # 全库巡检模式：与按 slug 的单篇校验互斥。
+    if args and args[0] in ("--all-images", "--all-links"):
+        assert len(args) == 1, f"{args[0]} 不接受其他参数"
         try:
-            verify_all_images()
+            verify_all_images() if args[0] == "--all-images" else verify_all_links()
         except AssertionError as e:
             print(f"  ✗ FAIL: {e}")
             sys.exit(1)
         print("ALL CHECKS PASSED")
         sys.exit(0)
-    assert len(args) >= 2 and len(args) % 2 == 0, "用法: quant_verify.py <slug> <core.py> [<slug> <core.py> ...] | quant_verify.py --all-images"
+    assert len(args) >= 2 and len(args) % 2 == 0, "用法: quant_verify.py <slug> <core.py> [<slug> <core.py> ...] | quant_verify.py --all-images | quant_verify.py --all-links"
     ok = True
     for i in range(0, len(args), 2):
         try:

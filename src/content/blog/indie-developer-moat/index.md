@@ -69,6 +69,6 @@ language: Chinese
 
 记住：技术是杠杆，用户关系是支点。没有支点，杠杆再长也撬不动任何东西。
 
-[<- 返回独立开发者飞轮](/posts/ai-observation/indie-app-flywheel/)
+[<- 返回 AI 观察](/tags/ai观察)
 
 (C) 2026 [halo](https://github.com/ohalo). All rights reserved.

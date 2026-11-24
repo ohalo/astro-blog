@@ -226,5 +226,5 @@ _作者：halo，5年开发老狗，现在专注用AI提效。关注我，一起
 
 相关阅读：
 
-  * [Claude Code子代理系统：一支AI团队的管理术](https://blog.halo26812.eu.org/posts/ai-tools/claude-code/2026-04-09-claude-code-agents.html)
-  * [被Claude Code自作主张坑了三次后，我终于搞懂了什么叫「主线程思维」](https://blog.halo26812.eu.org/posts/ai-tools/claude-code/2026-04-09-claude-code-main-thread.html)
+  * [Claude Code子代理系统：一支AI团队的管理术](/blog/claude-code-agents)
+  * [被Claude Code自作主张坑了三次后，我终于搞懂了什么叫「主线程思维」](/blog/claude-code-main-thread)

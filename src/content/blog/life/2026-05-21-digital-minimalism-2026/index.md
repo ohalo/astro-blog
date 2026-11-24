@@ -10,7 +10,6 @@ tags: []
 
 
 
-<img alt="AI时代的专注力" src="/images/digital-minimalism-2026/focus-in-ai-era.jpg" style="width:100%; max-width:800px; margin:2rem auto; display:block; border-radius:8px;"/>
 <h2>引言：2026年的"专注力危机"</h2>
 <p>2026年，我们生活在一个前所未有的"注意力争夺战"中：</p>
 <ul>
@@ -28,8 +27,6 @@ tags: []
 <li><strong>旧定义（2019）：</strong>减少社交媒体使用，关闭不必要通知</li>
 <li><strong>新定义（2026）：</strong>在AI工具泛滥的环境中，建立"人类思考优先，AI辅助为辅"的工作方式</li>
 </ul>
-<img alt="数字极简主义的演变" src="/images/digital-minimalism-2026/digital-minimalism-evolution.png" style="width:100%; max-width:700px; margin:2rem auto; display:block; border-radius:8px;"/>
-<p><em>图表：数字极简主义从2019到2026的演变</em></p>
 <h2>为什么AI时代更需要数字极简主义？</h2>
 <h3>1. AI工具创造了"虚假的效率感"</h3>
 <p>很多人认为"用AI写代码/写文章/做PPT"就是高效，但事实是：</p>
@@ -101,8 +98,6 @@ tags: []
 <li><strong>启动：</strong>用"5分钟自由书写"进入状态（类似运动员热身）</li>
 <li><strong>结束：</strong>记录本次深度工作的成果和感受（建立正反馈）</li>
 </ul>
-<img alt="深度工作环境设置" src="/images/digital-minimalism-2026/deep-work-setup.png" style="width:100%; max-width:700px; margin:2rem auto; display:block; border-radius:8px;"/>
-<p><em>图表：我的深度工作环境设置（极简、无干扰）</em></p>
 <h3>第三层：AI工具理性使用（Rational AI Usage）</h3>
 <p><strong>原则：</strong>AI是"副驾驶",不是"主驾驶"。人类负责思考和决策,AI负责执行和辅助。</p>
 <p><strong>规则1：三步思考法（Before AI）</strong></p>

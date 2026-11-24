@@ -41,6 +41,6 @@ language: Chinese
 
 深度工作不是一种技能，是一种选择。而且是每天都要做的那种选择。
 
-[<- 返回效率技巧](/posts/tech-tips/)
+[<- 返回效率技巧](/tags/效率技巧)
 
 (C) 2026 [halo](https://github.com/ohalo). All rights reserved.

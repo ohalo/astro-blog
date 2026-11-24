@@ -144,10 +144,10 @@ language: Chinese
 
 想清楚，再出发。出发了，就别回头。
 
-[<- 返回职业成长](/posts/career/)
+[<- 返回职业发展](/tags/职业发展)
 
 请在浏览器中启用 JavaScript 以访问 [评论系统](https://giscus.app)。
 
-[<- 返回职业成长](/posts/career/)
+[<- 返回职业发展](/tags/职业发展)
 
 (C) 2026 halo的技术博客. Powered by GitHub Pages.

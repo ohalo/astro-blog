@@ -46,7 +46,10 @@ export default defineConfig({
   // https://docs.astro.build/en/guides/prefetch/
   prefetch: {
     // prefetchAll: true,
-    defaultStrategy: 'viewport'
+    // 默认 hover 而非 viewport：归档页有 1600+ 个带 data-astro-prefetch 的文章链接，
+    // viewport 策略会让滚动归档页触发上百 MB 的预取请求；hover 只在悬停时预取。
+    // 需要进入视口即预取的少量入口（导航/系列跳转）保持显式 data-astro-prefetch 即可。
+    defaultStrategy: 'hover'
   },
   // 设计工作台 / 预览代理里 @id/astro/runtime/client/dev-toolbar/entrypoint.js 载不出来
   // （虚拟模块经代理路径解析 404，页面本身并不需要它），关掉 dev toolbar 消除该报错。

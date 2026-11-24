@@ -10,6 +10,8 @@ import PageLayout from '@/layouts/BaseLayout.astro'
 interface Props {
   meta: SiteMeta
   highlightColor?: string
+  /** 透传 BaseLayout：统一页头标题用 h1 还是 div */
+  hgTitleAs?: 'h1' | 'div'
 }
 
 const { meta, ...props } = Astro.props

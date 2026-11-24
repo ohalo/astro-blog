@@ -5,10 +5,14 @@
  */
 import { getHgPageMeta } from '@/data/hg-page-meta'
 
-const { pathname } = Astro.props
+const { pathname, titleAs = 'div' } = Astro.props
 const m = getHgPageMeta(pathname)
 const home = m.locale === 'en' ? '/en/' : '/'
 const homeLabel = m.locale === 'en' ? 'Home' : '首页'
+
+// 页头标题默认不用 <h1>：页面内容里通常另有真正的 H1（全站 4800+ 页曾是双 H1）。
+// 只有 terms/archives/dash 这类「页头即唯一标题」的页面经 BaseLayout 传 titleAs='h1'。
+const TitleTag = titleAs
 ---
 
 <header class='hg-pagehead'>
@@ -24,7 +28,7 @@ const homeLabel = m.locale === 'en' ? 'Home' : '首页'
         <i></i>
         <span>{m.eyebrow}</span>
       </div>
-      <h1 class='hg-pagehead__title'>{m.title}</h1>
+      <TitleTag class='hg-pagehead__title'>{m.title}</TitleTag>
       <p class='hg-pagehead__desc'>{m.desc}</p>
     </div>
     <div class='hg-pagehead__aside' aria-hidden='true'>

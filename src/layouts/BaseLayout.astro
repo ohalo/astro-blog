@@ -26,6 +26,8 @@ interface Props {
   wide?: boolean
   /** blackgold：首页/专栏/文章详情；page：其余内页统一页壳；classic：保留旧布局 */
   frame?: 'classic' | 'blackgold' | 'page'
+  /** 统一页头标题用 h1 还是 div（默认 div，避免与内容 H1 形成双 H1） */
+  hgTitleAs?: 'h1' | 'div'
 }
 
 const {
@@ -33,6 +35,7 @@ const {
   highlightColor,
   wide = false,
   frame = 'page',
+  hgTitleAs = 'div',
   locale = getLocale(Astro.url.pathname),
   ...props
 } = Astro.props
@@ -88,7 +91,7 @@ const {
     >
       <Header {locale} pathname={Astro.url.pathname} />
       <div class='flex-1 w-full'>
-        {frame === 'page' && <HgInnerHead pathname={Astro.url.pathname} />}
+        {frame === 'page' && <HgInnerHead pathname={Astro.url.pathname} titleAs={hgTitleAs} />}
         <slot />
       </div>
       <Footer {locale} />

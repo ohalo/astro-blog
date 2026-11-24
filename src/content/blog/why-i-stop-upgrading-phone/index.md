@@ -61,6 +61,6 @@ language: Chinese
 
 仅此而已。
 
-[<- 返回生活方式](/posts/life/)
+[<- 返回生活方式](/tags/生活方式)
 
 (C) 2026 [halo](https://github.com/ohalo). All rights reserved.
