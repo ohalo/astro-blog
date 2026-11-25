@@ -39,6 +39,13 @@ const {
   locale = getLocale(Astro.url.pathname),
   ...props
 } = Astro.props
+
+// Pagefind 收录控制：只要站点上出现 data-pagefind-body，没有该属性的页面一律不进索引。
+// 这里统一给中文正式页面加标记，排除 404 与所有 /en/*（英文页目前只是中文内容的镜像/跳转壳，
+// 索引它们会让搜索结果重复且 35% 指向无效页）。将来真有英文正文时再按 locale 精细放开。
+const pathname = Astro.url.pathname
+const pagefindIndexable =
+  locale !== 'en' && !/^\/404(?:\.html)?\/?$/.test(pathname)
 ---
 
 <html lang={locale === 'en' ? 'en' : 'zh-CN'}>
@@ -90,7 +97,10 @@ const {
       class={`w-full min-h-[100dvh] flex flex-col justify-between ${wide ? 'max-w-[110rem]' : 'max-w-[70rem]'}`}
     >
       <Header {locale} pathname={Astro.url.pathname} />
-      <div class='flex-1 w-full'>
+      <div
+        class='flex-1 w-full'
+        {...(pagefindIndexable ? { 'data-pagefind-body': '' } : {})}
+      >
         {frame === 'page' && <HgInnerHead pathname={Astro.url.pathname} titleAs={hgTitleAs} />}
         <slot />
       </div>

@@ -17,7 +17,7 @@ import { getLocale } from './index'
 /** 与 src/pages/en/** 一一对应的静态页（UI 有完整英文文案）。 */
 const TRANSLATED_STATIC = new Set([
   '/',
-  '/404',
+  // /404 不在此列：英文 404 页已移除，切过去只会得到真正的 404（见 src/pages/en/404.astro 的删除记录）
   '/about',
   '/archives',
   '/dash',

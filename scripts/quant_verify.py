@@ -56,9 +56,23 @@ def stitch(md_path, core_path):
 
 
 def _is_timing(path):
-    """壁钟计时类字段（键名以 t_ 开头或含 speedup）：跨运行天然抖动，放宽容差。"""
-    key = path.rsplit(".", 1)[-1].rsplit("[", 1)[0]
-    return key.startswith("t_") or "speedup" in key
+    """壁钟计时类字段：跨运行天然抖动，放宽容差。
+
+    历史规则只认 `t_` 前缀和 `speedup`，导致 `exp5_t_exact_ms` / `ms_exact` /
+    `runtime_s` 这类带实验前缀的计时字段被当成精确统计量做 1e-9 比对，
+    每次 exec 复跑都会随机失败（11-25 曾靠改字段名规避）。这里按语义匹配：
+    键名含独立的时间/计时词片段（t、time、ms、runtime、elapsed、wall、speedup）。
+    """
+    key = path.rsplit(".", 1)[-1].rsplit("[", 1)[0].lower()
+    if "speedup" in key:
+        return True
+    # `t` 单独作为键名常是确定性的时间网格，不能放宽；只认带后缀/前缀的计时命名
+    if re.search(r"(^|_)t_", key) or re.search(r"_t($|_|\d)", key):
+        return True
+    return any(
+        re.search(rf"(^|_){word}(_|$|\d)", key)
+        for word in ("time", "ms", "runtime", "elapsed", "wall")
+    )
 
 
 def deep_equal(a, b, path="root"):
