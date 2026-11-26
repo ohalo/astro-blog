@@ -1,0 +1,34 @@
+name: Quant content gate
+
+# 只拦「本次提交新增」的量化文章；历史存量只出报表，不把 CI 永久卡死。
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check added quant articles
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="origin/${{ github.base_ref }}"
+            git fetch origin "${{ github.base_ref }}" --depth=1 || true
+          else
+            BASE="${{ github.event.before }}"
+            if [ -z "$BASE" ] || [ "${#BASE}" -ne 40 ]; then BASE="HEAD~1"; fi
+            git cat-file -e "$BASE^{commit}" 2>/dev/null || BASE="HEAD~1"
+          fi
+          echo "gate base: $BASE"
+          python3 scripts/quant_verify.py --all-content --git-added "$BASE"

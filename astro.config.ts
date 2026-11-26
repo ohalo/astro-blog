@@ -158,7 +158,9 @@ export default defineConfig({
         const p = new URL(page).pathname
         return (
           !/^\/(en\/)?404$/.test(p) &&
-          !/^\/en\/(blog|tags)(\/|$)/.test(p)
+          !/^\/en\/(blog|tags)(\/|$)/.test(p) &&
+          // 英文搜索页只有中文索引（Pagefind 的 languages 仅 zh-cn），不交给搜索引擎
+          !/^\/en\/search$/.test(p)
         )
       }
     }),

@@ -1,9 +1,7 @@
 ---
-import { PFSearch } from 'astro-pure/components/pages'
 import { Button } from 'astro-pure/user'
 import PageLayout from '@/layouts/BaseLayout.astro'
 import { dict, getLocale, localePath } from '@/i18n'
-import { integ } from '@/site-config'
 
 const locale = getLocale(Astro.url.pathname)
 const d = dict(locale)
@@ -14,7 +12,7 @@ const meta = {
 }
 ---
 
-<PageLayout {meta} {locale}>
+<PageLayout {meta} {locale} noindex={true}>
   <Button title={d.common.back} href={localePath(locale, '/blog')} variant='back' />
   <main class='mt-6 lg:mt-10'>
     <div id='content-header' class='animate'>
@@ -22,16 +20,10 @@ const meta = {
     </div>
 
     <div id='content' class='animate'>
-      {
-        integ.pagefind ? (
-          <>
-            <p>{d.blog.searchIntro}</p>
-            <PFSearch />
-          </>
-        ) : (
-          <p>{d.blog.searchDisabled}</p>
-        )
-      }
+      <p class='my-4'>
+        Search currently indexes Chinese articles only. This page does not return English results;
+        use the <a href='/search'>Chinese search page</a> to search the full archive.
+      </p>
     </div>
   </main>
 </PageLayout>

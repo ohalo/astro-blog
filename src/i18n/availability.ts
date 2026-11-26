@@ -25,7 +25,7 @@ const TRANSLATED_STATIC = new Set([
   '/links',
   '/projects',
   '/quant-column',
-  '/search',
+  // /search 不在此列：Pagefind 只索引中文页，英文搜索框只会返回中文结果（见 en/search/index.astro）
   '/stock',
   '/stock-links',
   '/tags',

@@ -18,6 +18,10 @@
   python3 scripts/quant_verify.py <slug1> <core1.py> [<slug2> <core2.py> ...]   单篇全套校验
   python3 scripts/quant_verify.py --all-images                                 全库正文图片引用存在性巡检（Markdown ![]() + 原生 <img>）
   python3 scripts/quant_verify.py --all-links                                  全库站内链接（md 链接 + <a href>）死链巡检
+  python3 scripts/quant_verify.py --all-content                                全库只读内容契约报表（默认不失败，存量不硬拦）
+  python3 scripts/quant_verify.py --all-content --since 2026-11-25             只查指定日期之后发布的文章，违规即失败
+  python3 scripts/quant_verify.py --all-content --git-added [base]             只查相对 base 新增的文章（发布闸门），违规即失败
+  python3 scripts/quant_verify.py --all-content slug-a slug-b                  只查显式 slug，违规即失败
 
 退出码 0 = 全部 PASS，1 = 有失败。
 """
@@ -28,6 +32,8 @@ import re
 import sys
 import io
 import contextlib
+import subprocess
+import glob as globmod
 
 from check_math_fences import scan_math
 
@@ -301,9 +307,180 @@ def verify_all_links():
     return True
 
 
+def _fm_value(fm, key):
+    m = re.search(rf'^{key}:[ \t]*(.*)$', fm, re.M)
+    return m.group(1).strip() if m else None
+
+
+def _fm_tags(fm):
+    """兼容 `tags: [a, b]` 与 YAML 列表两种写法。"""
+    m = re.search(r'^tags:[ \t]*(.*)$', fm, re.M)
+    if not m:
+        return []
+    inline = m.group(1).strip()
+    if inline.startswith('[') and inline.endswith(']'):
+        return [x.strip().strip('"\'') for x in inline[1:-1].split(',') if x.strip()]
+    tags = []
+    for line in fm[m.end():].splitlines():
+        if re.match(r'^[A-Za-z_][A-Za-z0-9_]*:', line):
+            break
+        item = re.match(r'^\s*-\s+(.+)$', line)
+        if item:
+            tags.append(item.group(1).strip().strip('"\''))
+    return tags
+
+
+def content_contract(md_path):
+    """只读检查一篇的内容契约，返回 (errors, warnings)。
+
+    与 verify() 的区别：绝不调用 stitch()，不写回任何文件；只做静态契约检查。
+    量化高阶文章（difficulty: advanced + 量化类 tag）才检查 5 图 / 单代码块 /
+    可运行入口 / results.json，避免把普通生活类文章误判。
+    """
+    txt = open(md_path, encoding='utf-8').read()
+    m = re.match(r'^---\n(.*?)\n---\n', txt, re.S)
+    if not m:
+        return ['frontmatter 解析失败'], []
+    fm, body = m.group(1), txt[m.end():]
+    slug = os.path.basename(os.path.dirname(md_path))
+    errors, warns = [], []
+
+    desc = re.search(r'^description:\s*"?([^"\n]*)"?\s*$', fm, re.M)
+    if not desc or len(desc.group(1)) > 600:
+        errors.append(f'description 缺失或超过 600 字符（{len(desc.group(1)) if desc else 0}）')
+    if not re.search(r'^publishDate:\s*\S', fm, re.M):
+        errors.append('缺 publishDate')
+    tags = _fm_tags(fm)
+    difficulty = _fm_value(fm, 'difficulty') or ''
+    is_quant = difficulty.strip('"\'') == 'advanced' and any(
+        t in ('量化', 'quant', '交易', '投资') for t in tags
+    )
+
+    if is_quant:
+        refs = re.findall(r'!\[.*?\]\(/images/' + re.escape(slug) + r'/([^)]+)\)', txt)
+        if len(refs) != 5:
+            errors.append(f'图片引用 {len(refs)} 张（应为 5）')
+        else:
+            img_dir = os.path.join(ROOT, 'public', 'images', slug)
+            hashes = set()
+            for f in refs:
+                p = os.path.join(img_dir, f)
+                if not os.path.isfile(p):
+                    errors.append(f'缺图 {f}')
+                    continue
+                h = hashlib.sha256(open(p, 'rb').read()).hexdigest()
+                if h in hashes:
+                    errors.append(f'重复图 {f}')
+                hashes.add(h)
+        blocks = re.findall(r'```python\n(.*?)\n```', txt, re.S)
+        if len(blocks) != 1:
+            errors.append(f'python 代码块 {len(blocks)} 个（应为 1）')
+        else:
+            if '__main__' not in blocks[0]:
+                errors.append('代码块缺 __main__ 入口（不可独立运行）')
+            if 'savefig' not in blocks[0]:
+                warns.append('代码块无 savefig（图片生成方式不可判定）')
+        if not os.path.isfile(os.path.join(ROOT, 'public', 'images', slug, 'results.json')):
+            errors.append('缺 results.json')
+        cjk = len(re.findall(r'[\u4e00-\u9fff]', body))
+        if not 2000 <= cjk <= 3000:
+            errors.append(f'正文中文字数 {cjk} 不在 2000–3000')
+        hard = [p for p in scan_math(body) if p[0] != 'inline_math']
+        if hard:
+            errors.append(f'数学围栏 HARD {len(hard)} 处：' + ' '.join(f'L{ln}' for _, ln, _ in hard[:5]))
+        body_low = body.lower()
+        hit = [w for w in BANNED if w in body_low]
+        if hit:
+            errors.append(f'禁用词残留 {hit}')
+    return errors, warns
+
+
+def _git_added_slugs(base):
+    """取相对 base 新增的文章 slug（含已暂存），刻意不含未跟踪文件——用户 WIP 不参与闸门。"""
+    paths = set()
+    for extra in (['diff', '--name-only', '--diff-filter=A', f'{base}..HEAD'],
+                  ['diff', '--name-only', '--diff-filter=A', '--cached']):
+        out = subprocess.run(['git'] + extra, cwd=ROOT, capture_output=True, text=True)
+        for line in out.stdout.splitlines():
+            if line.startswith('src/content/blog/') and line.endswith('/index.md'):
+                paths.add(line)
+    return [os.path.basename(os.path.dirname(p)) for p in sorted(paths)]
+
+
+def verify_all_content(since=None, git_added=None, slugs=None, strict=False):
+    """内容契约巡检：全库默认只出报表；限定范围或 --strict 时违规即失败。"""
+    if slugs:
+        paths = [os.path.join(ROOT, 'src', 'content', 'blog', s, 'index.md') for s in slugs]
+    elif git_added is not None:
+        paths = [os.path.join(ROOT, 'src', 'content', 'blog', s, 'index.md')
+                 for s in _git_added_slugs(git_added)]
+    else:
+        paths = sorted(globmod.glob(os.path.join(ROOT, 'src', 'content', 'blog', '**', 'index.md'), recursive=True))
+    if since:
+        def _pub(p):
+            txt = open(p, encoding='utf-8').read()
+            fm = re.match(r'^---\n(.*?)\n---\n', txt, re.S)
+            return (_fm_value(fm.group(1), 'publishDate') or '').strip('"\'')[:10] if fm else ''
+        paths = [p for p in paths if os.path.isfile(p) and _pub(p) >= since]
+
+    bad, quant_n = [], 0
+    for p in paths:
+        if not os.path.isfile(p):
+            bad.append((os.path.basename(os.path.dirname(p)), ['文章不存在'], []))
+            continue
+        errors, warns = content_contract(p)
+        slug = os.path.basename(os.path.dirname(p))
+        txt = open(p, encoding='utf-8').read()
+        fm = re.match(r'^---\n(.*?)\n---\n', txt, re.S)
+        fm = fm.group(1) if fm else ''
+        if (_fm_value(fm, 'difficulty') or '').strip('"\'') == 'advanced':
+            quant_n += 1
+        if errors or warns:
+            bad.append((slug, errors, warns))
+    scope = f'since={since}' if since else (f'git-added({git_added})' if git_added is not None else ('explicit' if slugs else '全库'))
+    print(f'  [all-content] 范围 {scope}：扫描 {len(paths)} 篇（advanced {quant_n} 篇），有问题 {len(bad)} 篇')
+    for slug, errors, warns in bad[:40]:
+        for e in errors:
+            print(f'    ✗ {slug}: {e}')
+        for w in warns:
+            print(f'    ⚠ {slug}: {w}')
+    if len(bad) > 40:
+        print(f'    ... 另有 {len(bad) - 40} 篇未展开')
+    fail = [b for b in bad if b[1]]
+    if fail:
+        print(f'  [all-content] 硬违规 {len(fail)} 篇（只出报表，不失败）' if not (strict or since or git_added is not None or slugs)
+              else f'  [all-content] FAIL：{len(fail)} 篇硬违规')
+    else:
+        print('  [all-content] 无硬违规')
+    return not fail or not (strict or since or git_added is not None or slugs)
+
+
 def main():
     args = sys.argv[1:]
     # 全库巡检模式：与按 slug 的单篇校验互斥。
+    if args and args[0] == '--all-content':
+        rest = args[1:]
+        strict = '--strict' in rest
+        rest = [x for x in rest if x != '--strict']
+        since = git_added = None
+        if '--since' in rest:
+            i = rest.index('--since')
+            assert i + 1 < len(rest), '--since 需要一个日期参数'
+            since = rest[i + 1]
+            del rest[i:i + 2]
+        if '--git-added' in rest:
+            i = rest.index('--git-added')
+            has_base = i + 1 < len(rest) and not rest[i + 1].startswith('-')
+            git_added = rest[i + 1] if has_base else 'HEAD~1'
+            del rest[i:i + 2 if has_base else 1]
+        assert not (since and git_added is not None), '--since 与 --git-added 不能同时用'
+        assert not (rest and (since or git_added is not None)), '显式 slug 不能与 --since/--git-added 同时用'
+        try:
+            ok = verify_all_content(since=since, git_added=git_added, slugs=rest or None, strict=strict)
+        except Exception as e:  # noqa
+            print(f'  ✗ ERROR: {e}')
+            sys.exit(1)
+        sys.exit(0 if ok else 1)
     if args and args[0] in ("--all-images", "--all-links"):
         assert len(args) == 1, f"{args[0]} 不接受其他参数"
         try:
@@ -313,7 +490,7 @@ def main():
             sys.exit(1)
         print("ALL CHECKS PASSED")
         sys.exit(0)
-    assert len(args) >= 2 and len(args) % 2 == 0, "用法: quant_verify.py <slug> <core.py> [<slug> <core.py> ...] | quant_verify.py --all-images | quant_verify.py --all-links"
+    assert len(args) >= 2 and len(args) % 2 == 0, "用法: quant_verify.py <slug> <core.py> [...] | --all-images | --all-links | --all-content [--since DATE | --git-added [base] | slug...] [--strict]"
     ok = True
     for i in range(0, len(args), 2):
         try:

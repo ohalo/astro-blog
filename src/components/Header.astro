@@ -83,7 +83,7 @@ const isCurrent = (link: string) => {
       <div class='hg-navactions'>
         <a
           class='hg-iconbtn'
-          href={localePath(locale, '/search')}
+          href={locale === 'en' ? '/search' : localePath(locale, '/search')}
           title={d.common.search}
           aria-label={d.common.search}
         >

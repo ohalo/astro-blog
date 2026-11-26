@@ -104,6 +104,11 @@ if git diff --cached --quiet; then
   exit 1
 fi
 git commit -m "feat: add 2 quant articles $(date +'%Y-%m-%d')"
+
+# ---- 2b. 内容契约闸门（只查本次提交新增的文章，挡住绕过 quant_verify 的批次） ---
+echo "---- content gate (added in this commit) ----"
+python3 scripts/quant_verify.py --all-content --git-added HEAD~1
+
 git pull --rebase
 git push
 echo "push exit=$?"

@@ -44,6 +44,8 @@ const LS_KEY = 'qk-watchlist'
   const resEl = q('qk-search-res') as HTMLElement
 
   const f2 = (n: number | null) => (n == null || isNaN(n) ? '--' : n.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+  // 上游行情/搜索接口返回的名称是外部字符串，拼进 innerHTML 前必须转义（与 StockSearch.astro 保持一致）
+  const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!))
   const cls = (n: number | null) => (n == null ? 'flat' : n > 0 ? 'up' : n < 0 ? 'down' : 'flat')
   const sparkSvg = (vals: number[]) => {
     if (vals.length < 2) return ''
@@ -97,9 +99,9 @@ const LS_KEY = 'qk-watchlist'
     rowsEl.innerHTML = view.map((r) => {
       const loading = r.price == null
       return `
-      <div class='qd-wrow ${r.code === activeCode ? 'active' : ''}' data-code='${r.code}' role='button' tabindex='0'>
-        <div class='qd-w-l'><div class='qd-w-nm'>${r.name ?? r.code}</div><div class='qd-w-cd num'>${r.code}</div></div>
-        <button class='qd-w-del' data-del='${r.code}' title='移除自选' aria-label='移除'>×</button>
+      <div class='qd-wrow ${r.code === activeCode ? 'active' : ''}' data-code='${esc(r.code)}' tabindex='0' aria-label='${esc(String(r.name ?? r.code))} 行情'>
+        <div class='qd-w-l'><div class='qd-w-nm'>${esc(String(r.name ?? r.code))}</div><div class='qd-w-cd num'>${esc(r.code)}</div></div>
+        <button class='qd-w-del' data-del='${esc(r.code)}' title='移除自选' aria-label='移除'>×</button>
         <div class='qd-w-r'>
           <div class='num ${cls(r.chgPct)}'>${f2(r.price)}</div>
           <div class='num ${cls(r.chgPct)}'>${r.chgPct == null ? '--' : `${r.chgPct >= 0 ? '+' : ''}${f2(r.chgPct)}%`}</div>
@@ -173,7 +175,7 @@ const LS_KEY = 'qk-watchlist'
         srItems = items
         srIdx = -1
         if (!items.length) { resEl.innerHTML = `<div class='qk-sr-empty'>无匹配</div>`; resEl.hidden = false; return }
-        resEl.innerHTML = items.map((it) => `<button class='qk-sr-item' data-code='${it.code}' data-name='${it.name}'><span>${it.name}</span><span class='num'>${it.code}</span></button>`).join('')
+        resEl.innerHTML = items.map((it) => `<button class='qk-sr-item' data-code='${esc(it.code)}' data-name='${esc(it.name)}'><span>${esc(it.name)}</span><span class='num'>${esc(it.code)}</span></button>`).join('')
         resEl.hidden = false
       } catch { resEl.hidden = true }
     }, 250)

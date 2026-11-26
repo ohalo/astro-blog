@@ -28,6 +28,8 @@ interface Props {
   frame?: 'classic' | 'blackgold' | 'page'
   /** 统一页头标题用 h1 还是 div（默认 div，避免与内容 H1 形成双 H1） */
   hgTitleAs?: 'h1' | 'div'
+  /** 明确不希望被索引的页（如只有中文索引的英文搜索页） */
+  noindex?: boolean
 }
 
 const {
@@ -36,6 +38,7 @@ const {
   wide = false,
   frame = 'page',
   hgTitleAs = 'div',
+  noindex = false,
   locale = getLocale(Astro.url.pathname),
   ...props
 } = Astro.props
@@ -51,6 +54,7 @@ const pagefindIndexable =
 <html lang={locale === 'en' ? 'en' : 'zh-CN'}>
   <head>
     <BaseHead {articleDate} {description} {ogImage} {title} />
+    {noindex && <meta name='robots' content='noindex, follow' />}
     <ThemeProvider />
 
     {/* Google tag (gtag.js) / GA4 —— Measurement ID: G-738KDCJ1C9
