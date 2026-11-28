@@ -1,0 +1,97 @@
+{
+  "calm2_false_alarms": 0,
+  "calm2_lam_false_alarms": 1,
+  "det_alert_day": 555.0,
+  "det_lead_days": -10.0,
+  "det_threshold": 0.337449,
+  "embedding_dim": 3,
+  "embedding_sensitivity": {
+    "2": {
+      "det_calm": 0.19863,
+      "det_crisis": 0.230594
+    },
+    "3": {
+      "det_calm": 0.259346,
+      "det_crisis": 0.299065
+    },
+    "4": {
+      "det_calm": 0.316667,
+      "det_crisis": 0.354762
+    },
+    "5": {
+      "det_calm": 0.365854,
+      "det_crisis": 0.358537
+    }
+  },
+  "eps_quantile": 0.05,
+  "lam_alert_day": 405.0,
+  "lam_false_alarms": 6,
+  "lam_lead_days": 140.0,
+  "lam_threshold": 0.334139,
+  "lmin": 2,
+  "n_days": 1500,
+  "pre_alert_false_alarms": 0,
+  "seed": 20261128,
+  "segments": {
+    "calm": {
+      "det": 0.28430214645167917,
+      "lam": 0.14442333367567012,
+      "lmean": 2.5235384421922453,
+      "n": 91,
+      "rr": 0.10004675081813931
+    },
+    "crisis": {
+      "det": 0.3198338525441329,
+      "lam": 0.38888888888888895,
+      "lmean": 2.714676717744277,
+      "n": 36,
+      "rr": 0.10004675081813935
+    },
+    "pre-stress": {
+      "det": 0.2906931464174455,
+      "lam": 0.2850467289719626,
+      "lmean": 2.53695771601495,
+      "n": 24,
+      "rr": 0.10004675081813934
+    },
+    "recovery": {
+      "det": 0.2824766355140187,
+      "lam": 0.1736915887850467,
+      "lmean": 2.5144189453897017,
+      "n": 50,
+      "rr": 0.10004675081813931
+    }
+  },
+  "step": 5,
+  "theiler": 5,
+  "threshold_sensitivity": {
+    "0.02": {
+      "det_calm": 0.151163,
+      "det_crisis": 0.25,
+      "rr_calm": 0.040206,
+      "rr_crisis": 0.040206
+    },
+    "0.05": {
+      "det_calm": 0.259346,
+      "det_crisis": 0.299065,
+      "rr_calm": 0.100047,
+      "rr_crisis": 0.100047
+    },
+    "0.1": {
+      "det_calm": 0.296729,
+      "det_crisis": 0.334112,
+      "rr_calm": 0.200094,
+      "rr_crisis": 0.200094
+    },
+    "0.2": {
+      "det_calm": 0.374416,
+      "det_crisis": 0.39486,
+      "rr_calm": 0.400187,
+      "rr_crisis": 0.400187
+    }
+  },
+  "vol_alert_day": 545.0,
+  "vol_false_alarms": 0,
+  "vol_threshold": 0.007216,
+  "window": 100
+}

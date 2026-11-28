@@ -1,0 +1,100 @@
+{
+  "a": 10.0,
+  "a_sweep": {
+    "10.0": {
+      "ce_normal": 0.00033307,
+      "ce_saddle": 0.00030048,
+      "w_normal": 0.854031,
+      "w_saddle": 0.73
+    },
+    "2.0": {
+      "ce_normal": 0.0009645,
+      "ce_saddle": 0.00095687,
+      "w_normal": 1.5,
+      "w_saddle": 1.5
+    },
+    "20.0": {
+      "ce_normal": 0.00016654,
+      "ce_saddle": 0.00015024,
+      "w_normal": 0.427015,
+      "w_saddle": 0.365
+    },
+    "40.0": {
+      "ce_normal": 8.327e-05,
+      "ce_saddle": 7.511e-05,
+      "w_normal": 0.213508,
+      "w_saddle": 0.18
+    },
+    "5.0": {
+      "ce_normal": 0.00065626,
+      "ce_saddle": 0.00060095,
+      "w_normal": 1.5,
+      "w_saddle": 1.46
+    }
+  },
+  "ce_mc_at_normal": 0.0003161,
+  "ce_mc_at_saddle": 0.0003205,
+  "ce_normal_at_saddle": 0.00032605,
+  "ce_normal_best": 0.00033307,
+  "ce_regret_annual_bp": 25.618,
+  "ce_regret_of_normal": 1.017e-05,
+  "ce_saddle_at_normal": 0.00029031,
+  "ce_saddle_best": 0.00030048,
+  "cgf_max_abs_error": 0.000397,
+  "estimation": {
+    "1000": {
+      "mean_regret_normal": 0.00012554,
+      "mean_regret_saddle": 8.474e-05,
+      "mean_w_normal": 0.888614,
+      "mean_w_saddle": 0.778438,
+      "median_regret_normal": 6.099e-05,
+      "median_regret_saddle": 4.047e-05,
+      "saddle_win_rate": 0.529167
+    },
+    "250": {
+      "mean_regret_normal": 0.00025195,
+      "mean_regret_saddle": 0.00022257,
+      "mean_w_normal": 0.910628,
+      "mean_w_saddle": 0.850312,
+      "median_regret_normal": 0.00028743,
+      "median_regret_saddle": 0.00019393,
+      "saddle_win_rate": 0.325
+    },
+    "60": {
+      "mean_regret_normal": 0.0003334,
+      "mean_regret_saddle": 0.00032877,
+      "mean_w_normal": 0.955213,
+      "mean_w_saddle": 0.944479,
+      "median_regret_normal": 0.00044929,
+      "median_regret_saddle": 0.00044929,
+      "saddle_win_rate": 0.133333
+    }
+  },
+  "excess_kurtosis": 52.885943,
+  "mc_relative_se": 0.00014985,
+  "mix_mu": [
+    0.0015,
+    -0.003,
+    -0.015
+  ],
+  "mix_p": [
+    0.92,
+    0.05,
+    0.03
+  ],
+  "mix_sigma": [
+    0.004,
+    0.012,
+    0.045
+  ],
+  "n_mc": 300000,
+  "seed": 20261129,
+  "skewness": -3.489777,
+  "trials": 240,
+  "true_mean": 0.00078,
+  "true_sd": 0.00955676,
+  "true_var": 9.13316e-05,
+  "w_normal": 0.854031,
+  "w_saddle": 0.73,
+  "weight_gap": 0.124031
+}
