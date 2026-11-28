@@ -74,7 +74,7 @@ def main():
     def spearman(rho):
         return (6.0 / math.pi) * math.asin(rho / 2.0)
 
-    rho_grid = [-0.9, -0.5, 0.0, 0.5, 0.9, 0.99]
+    rho_grid = [-0.9, -0.5, 0.0, 0.5, 0.65, 0.9, 0.99]
     rho_sweep = []
     for rho in rho_grid:
         p = gaussian_price([rho], F2, V2, W2, K)
