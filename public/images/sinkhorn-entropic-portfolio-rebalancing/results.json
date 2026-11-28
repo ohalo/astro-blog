@@ -1,0 +1,170 @@
+{
+  "seed": 20261129,
+  "w0": [
+    0.3,
+    0.22,
+    0.16,
+    0.12,
+    0.08,
+    0.06,
+    0.04,
+    0.02
+  ],
+  "w1": [
+    0.05,
+    0.08,
+    0.12,
+    0.15,
+    0.18,
+    0.16,
+    0.14,
+    0.12
+  ],
+  "fee": [
+    0.0008,
+    0.0012000000000000001,
+    0.0016,
+    0.002,
+    0.0024000000000000002,
+    0.0028,
+    0.0032,
+    0.0036
+  ],
+  "fixed_ticket": 0.00012,
+  "turnover_lower_bound": 0.43,
+  "grid": {
+    "0.0001": {
+      "eps": 0.0001,
+      "turnover": 0.43,
+      "n_trades": 15,
+      "proportional_cost": 0.001692,
+      "cost_with_ticket": 0.003492,
+      "entropy": 2.852475,
+      "ghost_flow": 0.0,
+      "diag_retention": 0.57,
+      "max_offdiag": 0.05814,
+      "marginal_error": 7.913808497406194e-13
+    },
+    "0.0003": {
+      "eps": 0.0003,
+      "turnover": 0.430259,
+      "n_trades": 16,
+      "proportional_cost": 0.00169251,
+      "cost_with_ticket": 0.00361251,
+      "entropy": 2.854427,
+      "ghost_flow": 3e-06,
+      "diag_retention": 0.569741,
+      "max_offdiag": 0.058164,
+      "marginal_error": 8.848893839896732e-13
+    },
+    "0.001": {
+      "eps": 0.001,
+      "turnover": 0.498387,
+      "n_trades": 39,
+      "proportional_cost": 0.00190871,
+      "cost_with_ticket": 0.00658871,
+      "entropy": 3.149566,
+      "ghost_flow": 0.021554,
+      "diag_retention": 0.501613,
+      "max_offdiag": 0.052942,
+      "marginal_error": 6.563083410071613e-13
+    },
+    "0.003": {
+      "eps": 0.003,
+      "turnover": 0.741422,
+      "n_trades": 56,
+      "proportional_cost": 0.00287674,
+      "cost_with_ticket": 0.00959674,
+      "entropy": 3.714765,
+      "ghost_flow": 0.162498,
+      "diag_retention": 0.258578,
+      "max_offdiag": 0.05219,
+      "marginal_error": 3.839636941727065e-13
+    },
+    "0.01": {
+      "eps": 0.01,
+      "turnover": 0.861429,
+      "n_trades": 56,
+      "proportional_cost": 0.00341173,
+      "cost_with_ticket": 0.01013173,
+      "entropy": 3.833773,
+      "ghost_flow": 0.245274,
+      "diag_retention": 0.138571,
+      "max_offdiag": 0.053487,
+      "marginal_error": 3.93796106834543e-13
+    },
+    "0.03": {
+      "eps": 0.03,
+      "turnover": 0.887071,
+      "n_trades": 56,
+      "proportional_cost": 0.00352423,
+      "cost_with_ticket": 0.01024423,
+      "entropy": 3.841396,
+      "ghost_flow": 0.262625,
+      "diag_retention": 0.112929,
+      "max_offdiag": 0.053836,
+      "marginal_error": 2.4952262478450393e-14
+    },
+    "0.1": {
+      "eps": 0.1,
+      "turnover": 0.894976,
+      "n_trades": 56,
+      "proportional_cost": 0.00355844,
+      "cost_with_ticket": 0.01027844,
+      "entropy": 3.842142,
+      "ghost_flow": 0.267876,
+      "diag_retention": 0.105024,
+      "max_offdiag": 0.053952,
+      "marginal_error": 1.4464818232085008e-13
+    }
+  },
+  "sensitivity": {
+    "0.0001": 1.0918,
+    "0.0003": 1.1418,
+    "0.001": 1.1681,
+    "0.003": 1.0158,
+    "0.01": 1.0047,
+    "0.03": 1.0,
+    "0.1": 1.0
+  },
+  "extreme": {
+    "0.0003": {
+      "eps": 0.0003,
+      "turnover": 0.390457,
+      "n_trades": 17,
+      "proportional_cost": 0.00117075,
+      "cost_with_ticket": 0.00321075,
+      "entropy": 2.472344,
+      "ghost_flow": 0.000431,
+      "diag_retention": 0.609543,
+      "max_offdiag": 0.130972,
+      "inflow_to_A1": 0.300431,
+      "marginal_error": 8.905653992030693e-13
+    },
+    "0.03": {
+      "eps": 0.03,
+      "turnover": 0.775182,
+      "n_trades": 56,
+      "proportional_cost": 0.002593,
+      "cost_with_ticket": 0.009313,
+      "entropy": 3.263313,
+      "ghost_flow": 0.170863,
+      "diag_retention": 0.224818,
+      "max_offdiag": 0.131281,
+      "inflow_to_A1": 0.416416,
+      "marginal_error": 1.4060974606877608e-13
+    }
+  },
+  "naive": {
+    "eps": 0.0,
+    "turnover": 0.43,
+    "n_trades": 15,
+    "proportional_cost": 0.001692,
+    "cost_with_ticket": 0.003492,
+    "entropy": 2.852475,
+    "ghost_flow": 0.0,
+    "diag_retention": 0.57,
+    "max_offdiag": 0.05814,
+    "label": "proportional funding"
+  }
+}
