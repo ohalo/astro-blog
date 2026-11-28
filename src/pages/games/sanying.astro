@@ -1,0 +1,100 @@
+---
+import CommonPage from '@/layouts/CommonPage.astro'
+
+const title = '三英戏吕布 · 文字塔防小游戏'
+const description =
+  '三英戏吕布是一款汉字水墨风的合成塔防小游戏：征兵抽字、同类合成、拼字唤将，刀枪弓三类武将各有攻击范围与攻速，地图每局随机。打开网页即可开玩。'
+---
+
+<CommonPage title="三英戏吕布" meta={{ title, description }}>
+  <div class="game-page">
+    <p class="answer">
+      汉字水墨风的<strong>合成塔防对战</strong>。花馒头征兵抽字牌，同种同级拖到一起升级；凑齐姓名横向相邻摆放唤出武将，
+      守住自己的阿斗即为胜。点武将可以查看攻击范围、攻速和当前伤害。
+    </p>
+
+    <div class="stage">
+      <iframe
+        src="/games/sanying/index.html"
+        title="三英戏吕布游戏"
+        loading="lazy"
+        scrolling="no"
+        allow="fullscreen"
+      ></iframe>
+    </div>
+
+    <div class="notes">
+      <h2>玩法速览</h2>
+      <p>
+        <strong>征兵与合成</strong>：每次征兵花 3 馒头，随机抽到基础兵种、武将单字或铲子；两个同种同级兵种叠在一起即可升级。
+      </p>
+      <p>
+        <strong>拼字唤将</strong>：武将单字要凑齐姓名并横向相邻摆放才会激活，武将占两格且不可移动。刀为近战、枪为中程、弓为远程，
+        点击武将弹出属性卡，棋盘高亮的部分就是它的实际攻击范围。
+      </p>
+      <p>
+        <strong>波次与胜负</strong>：敌人沿每局随机生成的折线通道推进，漏过会打阿斗；阿斗 3 点血，先被打光的一方落败。
+        商人用金币买道具，暂停按钮可随时冻结战局；武器存在浏览器本地，下次打开还在。
+      </p>
+      <p class="backlink">
+        返回 <a href="/games">游戏列表</a>，或去玩 <a href="/games/snake">贪吃蛇</a>。
+      </p>
+    </div>
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: '三英戏吕布 · 文字塔防',
+    url: 'https://blog.halo26812.eu.org/games/sanying',
+    applicationCategory: 'GameApplication',
+    inLanguage: 'zh-CN',
+    isAccessibleForFree: true,
+    description
+  })} />
+
+  <style>
+    .game-page { line-height: 1.8; }
+    .game-page .answer {
+      border-left: 3px solid hsl(var(--primary) / 0.55);
+      padding-left: 1rem;
+      margin: 1rem 0 1.4rem;
+      color: hsl(var(--muted-foreground));
+    }
+    .game-page .answer strong { color: hsl(var(--primary)); }
+    .stage {
+      display: flex;
+      justify-content: center;
+      padding: 14px;
+      border: 1px solid hsl(var(--border));
+      border-radius: 18px;
+      background: hsl(var(--card));
+    }
+    .stage iframe {
+      display: block;
+      width: 100%;
+      max-width: 430px;
+      height: min(844px, 78vh);
+      min-height: 560px;
+      border: 0;
+      border-radius: 10px;
+      background: #efe7d6;
+    }
+    .notes {
+      max-width: 620px;
+      margin: 32px auto 0;
+      padding-top: 20px;
+      border-top: 1px solid hsl(var(--border));
+      color: hsl(var(--muted-foreground));
+      font-size: 0.9rem;
+    }
+    .notes h2 { font-size: 1.1rem; font-weight: 600; color: hsl(var(--foreground)); }
+    .notes strong { color: hsl(var(--primary)); }
+    .notes .backlink { margin-top: 1.2rem; }
+    .notes a { color: hsl(var(--primary)); }
+    @media (max-width: 480px) {
+      .stage { padding: 8px; border-radius: 12px; }
+      .stage iframe { height: calc(100dvh - 190px); min-height: 480px; }
+    }
+  </style>
+</CommonPage>

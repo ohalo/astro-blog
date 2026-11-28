@@ -9,7 +9,7 @@ export const zh = {
     learn: '学习路线',
     links: '网址导航',
     dash: '量化工作台',
-    game: '贪吃蛇',
+    game: '游戏',
     about: '关于',
     home: '首页'
   },

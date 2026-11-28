@@ -1,0 +1,151 @@
+---
+import CommonPage from '@/layouts/CommonPage.astro'
+
+const title = '游戏：三英戏吕布与贪吃蛇'
+const description =
+  '浏览器里直接开玩的小游戏：三英戏吕布是汉字水墨风的合成塔防对战，征兵抽字、同类合成、拼字唤将；贪吃蛇是 26×26 棋盘的经典重制。无需注册，打开即玩。'
+---
+
+<CommonPage title="游戏" meta={{ title, description }}>
+  <div class="games">
+    <p class="answer">
+      写码间隙活动一下手指：这里放了两个<strong>打开即玩</strong>的浏览器小游戏，不注册、不下载，
+      进度只存在你自己的浏览器里。
+    </p>
+
+    <section class="list" aria-label="游戏列表">
+      <article class="card">
+        <a class="card-link" href="/games/sanying" aria-label="打开三英戏吕布"></a>
+        <div class="no">01</div>
+        <div class="body">
+          <div class="row">
+            <h2>三英戏吕布 · 文字塔防</h2>
+            <span class="badge">新上线</span>
+          </div>
+          <p>
+            汉字水墨风的合成塔防对战。花馒头征兵抽字牌，同种同级拖到一起升级；凑齐姓名横向相邻摆放唤出武将，
+            刀近战、枪中程、弓远程，点武将还能看攻击范围与攻速。每局地图与石堆随机生成，守住阿斗即为胜。
+          </p>
+          <div class="tags"><span>汉字水墨</span><span>合成塔防</span><span>单机对战</span><span>随机地图</span></div>
+          <span class="go">开始游戏 <span class="arr">→</span></span>
+        </div>
+      </article>
+
+      <article class="card">
+        <a class="card-link" href="/games/snake" aria-label="打开贪吃蛇"></a>
+        <div class="no">02</div>
+        <div class="body">
+          <div class="row">
+            <h2>贪吃蛇 · Snake</h2>
+            <span class="badge">经典重制</span>
+          </div>
+          <p>
+            26×26 棋盘铺满苹果，红苹果 +1、金苹果 +3、紫色毒苹果吃到即结束。方向键 / WASD 控制，空格暂停，
+            手机上滑动棋盘或点方向键；无敌模式与本地最高分也都备好了。
+          </p>
+          <div class="tags"><span>Canvas</span><span>键盘 / 触屏</span><span>WebAudio</span><span>本地最高分</span></div>
+          <span class="go">开始游戏 <span class="arr">→</span></span>
+        </div>
+      </article>
+    </section>
+
+    <p class="note">
+      两个游戏都是纯前端实现，逻辑在浏览器本地运行；<strong>切换设备不会同步存档</strong>，武器、最高分等记录保存在当前浏览器。
+    </p>
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: '游戏',
+    url: 'https://blog.halo26812.eu.org/games',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: '三英戏吕布 · 文字塔防', url: 'https://blog.halo26812.eu.org/games/sanying' },
+      { '@type': 'ListItem', position: 2, name: '贪吃蛇 · Snake', url: 'https://blog.halo26812.eu.org/games/snake' }
+    ]
+  })} />
+
+  <style>
+    .games { line-height: 1.8; }
+    .games .answer {
+      border-left: 3px solid hsl(var(--primary) / 0.55);
+      padding-left: 1rem;
+      margin: 1rem 0 1.8rem;
+      color: hsl(var(--muted-foreground));
+    }
+    .games .answer strong { color: hsl(var(--primary)); }
+    .games .list { display: grid; gap: 14px; }
+    .games .card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 46px 1fr;
+      gap: 14px;
+      padding: 18px;
+      border: 1px solid hsl(var(--border));
+      border-radius: 16px;
+      background: hsl(var(--card));
+      transition: border-color 0.18s ease, transform 0.18s ease;
+    }
+    .games .card:hover {
+      border-color: hsl(var(--primary) / 0.5);
+      transform: translateY(-2px);
+    }
+    .games .card-link { position: absolute; inset: 0; z-index: 1; }
+    .games .no {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: hsl(var(--primary));
+      padding-top: 4px;
+    }
+    .games .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .games h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: hsl(var(--foreground));
+    }
+    .games .badge {
+      padding: 1px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      color: hsl(var(--background));
+      background: hsl(var(--primary));
+      white-space: nowrap;
+    }
+    .games p {
+      margin: 8px 0 0;
+      font-size: 0.9rem;
+      color: hsl(var(--muted-foreground));
+    }
+    .games .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .games .tags span {
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      color: hsl(var(--muted-foreground));
+      background: hsl(var(--muted) / 0.6);
+    }
+    .games .go {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: hsl(var(--primary));
+    }
+    .games .arr { display: inline-block; transition: transform 0.18s ease; }
+    .games .card:hover .arr { transform: translateX(4px); }
+    .games .note {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid hsl(var(--border));
+      font-size: 0.85rem;
+      color: hsl(var(--muted-foreground));
+    }
+    .games .note strong { color: hsl(var(--primary)); }
+    @media (prefers-reduced-motion: reduce) {
+      .games .card, .games .arr { transition: none; }
+    }
+  </style>
+</CommonPage>

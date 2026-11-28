@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#efe7d6">
+<link rel="icon" href="data:,">
+<title>三英戏吕布 · 文字塔防</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand"><span class="seal">蜀</span><h1>三英戏吕布</h1></div>
+    <div class="top-actions">
+      <button class="mini" id="merchantBtn">商人</button>
+      <button class="mini" id="pauseBtn">暂停</button>
+    </div>
+    <div class="status">
+      <span class="wave" id="waveLabel">第 1 波</span>
+      <span class="clock" id="timeLabel">00:00</span>
+    </div>
+  </header>
+  <div class="wave-bar"><i id="waveBar"></i></div>
+
+  <section class="field enemy-field" id="enemyField">
+    <div class="field-head">
+      <span class="side-name">敌方阵 · 电脑对手</span>
+      <span class="hp" id="aiHp"></span>
+    </div>
+    <div class="battle-area">
+      <div class="adou adou-top" id="aiAdou"><span class="adou-face">斗</span><span class="adou-tag">阿斗</span></div>
+      <div class="grid" id="aiGrid">
+        <div class="enemy-layer"></div>
+        <div class="fx-layer"></div>
+        <div class="cell-layer"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span>汉 界</span></div>
+
+  <section class="field player-field" id="playerField">
+    <div class="battle-area">
+      <div class="grid" id="playerGrid">
+        <div class="range-ring hidden" id="rangeRing"></div>
+        <div class="enemy-layer"></div>
+        <div class="fx-layer"></div>
+        <div class="cell-layer"></div>
+      </div>
+      <div class="adou adou-bottom" id="myAdou"><span class="adou-face">斗</span><span class="adou-tag">阿斗</span></div>
+    </div>
+    <div class="field-head">
+      <span class="side-name">我军阵 · 护住阿斗</span>
+      <span class="hp" id="myHp"></span>
+    </div>
+  </section>
+
+  <section class="dock">
+    <div class="buffs" id="buffs"></div>
+    <div class="tray" id="tray"></div>
+    <div class="dock-row">
+      <div class="resource">
+        <span class="mantou">馒头</span><strong id="mantouCount">0</strong>
+        <span class="coin">金币</span><strong id="goldCount">0</strong>
+      </div>
+      <button class="recruit" id="recruitBtn">征 兵<small>3 馒头</small></button>
+    </div>
+    <p class="hint" id="hint">拖动字牌入阵 · 同类合成升级 · 凑齐姓名唤武将</p>
+  </section>
+</div>
+
+<div class="hero-card hidden" id="heroCard">
+  <button class="hc-close" id="heroCardClose" aria-label="关闭武将信息">×</button>
+  <div id="heroCardBody"></div>
+</div>
+
+<div class="pause-panel hidden" id="pausePanel">
+  <div class="pause-box">
+    <h2>暂 停</h2>
+    <p>战局已停，整装再战</p>
+    <button id="resumeBtn">继 续 战 斗</button>
+  </div>
+</div>
+
+<div class="merchant hidden" id="merchant">
+  <div class="merchant-head"><span>神秘商人</span><span id="merchantTimer">8s</span></div>
+  <div class="merchant-sub">金币 <b id="merchantGold">0</b> · 道具仅本局生效</div>
+  <div class="merchant-cards" id="merchantCards"></div>
+  <button class="merchant-close" id="merchantClose">继续战斗</button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="panel" id="panel"></div>
+</div>
+<div class="ghost" id="ghost"></div>
+<script src="game.js"></script>
+</body>
+</html>
